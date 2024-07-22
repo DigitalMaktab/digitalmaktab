@@ -1,0 +1,34 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+*.DS_Store
+
+# DigitalMaktab Single Page Application
+# dependencies
+digitalmaktabspa/.vscode
+digitalmaktabspa/node_modules
+digitalmaktabspa/.pnp
+digitalmaktabspa/.pnp.js
+
+# testing
+digitalmaktabspa/coverage
+
+# production
+digitalmaktabspa/build
+
+# misc
+digitalmaktabspa/.env.local
+digitalmaktabspa/.env.development.local
+digitalmaktabspa/.env.test.local
+digitalmaktabspa/.env.production.local
+
+digitalmaktabspa/npm-debug.log*
+digitalmaktabspa/yarn-debug.log*
+digitalmaktabspa/yarn-error.log*
+
+
+# DigitalMaktab API
+digitalmaktabapi/bin
+digitalmaktabapi/Resources
+digitalmaktabapi/obj
+digitalmaktabapi/.vscode
+
+

@@ -1,0 +1,6 @@
+@digitalmaktabapi_HostAddress = http://localhost:5239
+
+GET {{digitalmaktabapi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
