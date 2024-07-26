@@ -8,9 +8,9 @@ using digitalmaktabapi.Dtos;
 using digitalmaktabapi.Headers;
 using digitalmaktabapi.Helpers;
 using digitalmaktabapi.Models;
-using digitalmaktabapi.Services.Auth;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 
 namespace digitalmaktabapi.Controllers
 {
@@ -20,12 +20,12 @@ namespace digitalmaktabapi.Controllers
     public class SchoolController(
         ISchoolRepository schoolRepository,
         IMapper mapper,
-        AuthService authService
+        IStringLocalizer<SchoolController> localizer
         ) : ControllerBase
     {
         private readonly ISchoolRepository schoolRepository = schoolRepository;
         private readonly IMapper mapper = mapper;
-        private readonly AuthService authService = authService;
+        private readonly IStringLocalizer<SchoolController> localizer = localizer;
 
         [HttpGet("schools")]
         public async Task<IActionResult> GetSchools([FromQuery] UserParams userParams)
@@ -43,8 +43,7 @@ namespace digitalmaktabapi.Controllers
             schoolForAddDto.Email = schoolForAddDto.Email.ToLower();
             if (await this.schoolRepository.Exists(schoolForAddDto.Email))
             {
-                // TODO: Add localization as the next step after the authentication happened.
-                return BadRequest("School Exists");
+                return BadRequest(this.localizer["SchoolExists"].Value);
             }
 
             var schoolToCreate = this.mapper.Map<School>(schoolForAddDto);

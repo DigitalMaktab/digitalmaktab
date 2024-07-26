@@ -1,7 +1,10 @@
+using System.Globalization;
+using System.Net;
 using System.Text;
 using digitalmaktabapi.Data;
 using digitalmaktabapi.Data.Seed;
 using digitalmaktabapi.Dtos;
+using digitalmaktabapi.Helpers;
 using digitalmaktabapi.Models;
 using digitalmaktabapi.Services;
 using digitalmaktabapi.Services.Auth;
@@ -13,14 +16,31 @@ using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
-builder.Services.AddControllers();
+// Add Localization
+builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
+builder.Services.AddControllers().AddViewLocalization();
+builder.Services.Configure<RequestLocalizationOptions>(options =>
+{
+    var supportedCultures = new List<CultureInfo>
+    {
+        new ("en-US"),
+        new ("fa-AF"),
+        new ("ps-AF")
+    };
+    options.DefaultRequestCulture = new RequestCulture("en-US");
+    options.SupportedCultures = supportedCultures;
+    options.SupportedUICultures = supportedCultures;
+});
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -73,22 +93,6 @@ builder.Services.AddSingleton<IAuthorizationPolicyProvider, AuthorizationPolicyP
 // Default Authorization will be replaced by the above custom provider.
 builder.Services.AddAuthorization();
 
-// builder.Services.AddAuthorization(options =>
-// {
-//     var adminPolicy = builder.Configuration.GetSection("AuthorizationPolicies:AdminPolicy").Value!;
-//     var principalPolicy = builder.Configuration.GetSection("AuthorizationPolicies:PrincipalPolicy").Value!;
-//     var headMasterPolicy = builder.Configuration.GetSection("AuthorizationPolicies:HeadMasterPolicy").Value!;
-//     var teacherPolicy = builder.Configuration.GetSection("AuthorizationPolicies:TeacherPolicy").Value!;
-//     var studentPolicy = builder.Configuration.GetSection("AuthorizationPolicies:StudentPolicy").Value!;
-
-//     options.AddPolicy(adminPolicy, policy => policy.RequireRole(UserRole.ADMIN.ToString()));
-//     options.AddPolicy(principalPolicy, policy => policy.RequireRole(UserRole.PRINCIPAL.ToString()));
-//     options.AddPolicy(headMasterPolicy, policy => policy.RequireRole(UserRole.HEAD_MASTER.ToString()));
-//     options.AddPolicy(teacherPolicy, policy => policy.RequireRole(UserRole.TEACHER.ToString()));
-//     options.AddPolicy(studentPolicy, policy => policy.RequireRole(UserRole.STUDENT.ToString()));
-// });
-
-
 // Add Repositories
 builder.Services.AddScoped<IRootRepository, RootRepository>();
 builder.Services.AddScoped<ISchoolRepository, SchoolRepository>();
@@ -99,11 +103,70 @@ builder.Services.AddScoped<IStudentRepository, StudentRepository>();
 builder.Services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new PdfTools()));
 var app = builder.Build();
 
+// Configure Localization
+app.UseRequestLocalization(app.Services.GetRequiredService<IOptions<RequestLocalizationOptions>>().Value);
+
+app.Use(async (context, next) =>
+{
+    string acceptLanguage = context.Request.Headers.AcceptLanguage.ToString();
+    CultureInfo? culture = null;
+
+    if (!string.IsNullOrEmpty(acceptLanguage))
+    {
+        var cultures = acceptLanguage.Split(',');
+        if (cultures.Length > 0)
+        {
+            foreach (var lang in cultures)
+            {
+                try
+                {
+                    culture = CultureInfo.GetCultureInfo(lang.Split(';')[0]);
+                    break;
+                }
+                catch (CultureNotFoundException)
+                {
+                    // Culture not found, try the next one
+                }
+            }
+        }
+    }
+
+    // If culture is still null, use a default culture
+    culture ??= new CultureInfo("en-US"); // You can use any default culture you prefer
+
+    CultureInfo.DefaultThreadCurrentCulture = culture;
+    CultureInfo.DefaultThreadCurrentUICulture = culture;
+    await next();
+});
+
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(c =>
+    {
+        var localizer = app.Services.GetRequiredService<IStringLocalizer<Program>>();
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", localizer["DigitalMaktabAPIV1"]);
+    });
+}
+else
+{
+    app.UseExceptionHandler(builder =>
+    {
+        builder.Run(async context =>
+        {
+            context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+
+            var error = context.Features.Get<IExceptionHandlerFeature>();
+
+            if (error != null)
+            {
+                context.Response.AddApplicationError(error.Error.Message);
+                await context.Response.WriteAsync(error.Error.Message);
+            }
+        });
+    });
 }
 
 Seeder.SeedCountries(app);
