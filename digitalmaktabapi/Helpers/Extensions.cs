@@ -7,6 +7,8 @@ using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using digitalmaktabapi.Models;
+using System.Net.Http.Headers;
 
 namespace digitalmaktabapi.Helpers
 {
@@ -41,16 +43,19 @@ namespace digitalmaktabapi.Helpers
         public static Session GetSessionDetails(ControllerBase controller)
         {
             Guid id = Guid.Parse(controller.User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-            // int plantId = int.Parse(controller.User.FindFirst(ClaimTypes.Sid)!.Value);
-            string userType = controller.User.FindFirst(ClaimTypes.Actor)!.Value;
+            string userRoleString = controller.User.FindFirst(ClaimTypes.Role)!.Value;
             string email = controller.User.FindFirst(ClaimTypes.Email)!.Value;
-            Guid adminUserId = Guid.Parse(controller.User.FindFirst(AppClaimTypes.AdminUserId)!.Value);
+
+            if (!Enum.TryParse(userRoleString, out UserRole userRole))
+            {
+                userRole = UserRole.UNKNOWN;
+            }
 
             session = new Session
             {
                 Id = id,
                 Email = email,
-                AdminUserId = adminUserId
+                UserRole = userRole
             };
             return session;
         }

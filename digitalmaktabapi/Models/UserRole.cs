@@ -7,6 +7,7 @@ namespace digitalmaktabapi.Models
         HEAD_MASTER,
         TEACHER,
         STUDENT,
-        ROOT_USER
+        ROOT_USER,
+        UNKNOWN
     }
 }

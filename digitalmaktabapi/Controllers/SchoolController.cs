@@ -8,6 +8,7 @@ using digitalmaktabapi.Dtos;
 using digitalmaktabapi.Headers;
 using digitalmaktabapi.Helpers;
 using digitalmaktabapi.Models;
+using digitalmaktabapi.Services.Upload;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
@@ -38,15 +39,24 @@ namespace digitalmaktabapi.Controllers
         }
         [AllowAnonymous]
         [HttpPost]
-        public async Task<ActionResult> AddSchool(SchoolForAddDto schoolForAddDto)
+        public async Task<ActionResult> AddSchool([FromForm] SchoolForAddDto schoolForAddDto)
         {
             schoolForAddDto.Email = schoolForAddDto.Email.ToLower();
             if (await this.schoolRepository.Exists(schoolForAddDto.Email))
             {
                 return BadRequest(this.localizer["SchoolExists"].Value);
             }
+            UploadResponse uploadResponse = new() { Status = Status.FAILURE };
+            if (schoolForAddDto.Logo != null && schoolForAddDto.Logo.Length > 0)
+            {
+                uploadResponse = await UploadService.Upload(schoolForAddDto.Logo, schoolForAddDto.Code.ToString());
+            }
 
             var schoolToCreate = this.mapper.Map<School>(schoolForAddDto);
+            if (uploadResponse.Status == Status.SUCCESS)
+            {
+                schoolToCreate.Logo = uploadResponse.Path!;
+            }
             await this.schoolRepository.Register(schoolToCreate, schoolForAddDto.Password);
             return StatusCode(201);
         }

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using DinkToPdf;
 using DinkToPdf.Contracts;
 
-namespace digitalmaktabapi.Services
+namespace digitalmaktabapi.Services.PDF
 {
     public class PdfService
     {

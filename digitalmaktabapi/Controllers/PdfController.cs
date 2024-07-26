@@ -2,8 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using digitalmaktabapi.Dtos;
-using digitalmaktabapi.Services;
+using digitalmaktabapi.Services.PDF;
 using Microsoft.AspNetCore.Mvc;
 
 namespace digitalmaktabapi.Controllers
