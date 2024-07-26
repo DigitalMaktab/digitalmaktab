@@ -1,0 +1,18 @@
+namespace digitalmaktabapi.Models
+{
+    public enum Language
+    {
+        DARI,
+        PASHTO,
+        TAJIKI,
+        UZBEKI,
+        PASHAYI,
+        TURKMANI,
+        GUJARI,
+        BALUCHI,
+        NURISTANI,
+        WAKHANI,
+        SHAIGHANI,
+        HINDI
+    }
+}
