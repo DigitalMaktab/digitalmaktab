@@ -28,6 +28,16 @@ namespace digitalmaktabapi.Controllers
         private readonly IMapper mapper = mapper;
         private readonly IStringLocalizer<SchoolController> localizer = localizer;
 
+        [HttpGet]
+        public async Task<IActionResult> GetSchool()
+        {
+            Guid schoolId = Extensions.GetSessionDetails(this).SchoolId;
+            var school = await schoolRepository.GetSchool(schoolId);
+            var schoolToReturn = this.mapper.Map<SchoolDto>(school);
+            return Ok(schoolToReturn);
+        }
+
+        [Authorize(Policy = "RootUserPolicy")]
         [HttpGet("schools")]
         public async Task<IActionResult> GetSchools([FromQuery] UserParams userParams)
         {
@@ -46,19 +56,74 @@ namespace digitalmaktabapi.Controllers
             {
                 return BadRequest(this.localizer["SchoolExists"].Value);
             }
-            UploadResponse uploadResponse = new() { Status = Status.FAILURE };
-            if (schoolForAddDto.Logo != null && schoolForAddDto.Logo.Length > 0)
-            {
-                uploadResponse = await UploadService.Upload(schoolForAddDto.Logo, schoolForAddDto.Code.ToString());
-            }
-
-            var schoolToCreate = this.mapper.Map<School>(schoolForAddDto);
-            if (uploadResponse.Status == Status.SUCCESS)
-            {
-                schoolToCreate.Logo = uploadResponse.Path!;
-            }
+            var schoolToCreate = await PrepareSchoolEntity(schoolForAddDto);
             await this.schoolRepository.Register(schoolToCreate, schoolForAddDto.Password);
             return StatusCode(201);
+        }
+
+        [HttpPut("{schoolId?}")]
+        public async Task<IActionResult> EditSchool(Guid? schoolId, [FromForm] SchoolForAddDto schoolForAddDto)
+        {
+            // If root user, the school Id should be passed, otherwise which is admin, it should get it from session.
+            if (schoolId == null || schoolId == Guid.Empty)
+            {
+                schoolId = Extensions.GetSessionDetails(this).SchoolId;
+            }
+
+            var school = await this.schoolRepository.GetSchool(schoolId.Value);
+            await UpdateSchoolEntity(school, schoolForAddDto);
+            await this.schoolRepository.SaveAll();
+            return NoContent();
+        }
+
+        [HttpPut("update-password")]
+        public async Task<IActionResult> UpdatePassword(UpdatePasswordDto updatePasswordDto)
+        {
+            string email = Extensions.GetSessionDetails(this).Email;
+            School school = await this.schoolRepository.Authenticate(email, updatePasswordDto.CurrentPassword);
+
+            if (school == null)
+            {
+                return BadRequest(localizer["InvalidCurrentPassword"].Value);
+            }
+            await this.schoolRepository.UpdatePassword(school, updatePasswordDto.NewPassword);
+            return NoContent();
+        }
+
+        // Helper methods
+
+        private async Task<School> PrepareSchoolEntity(SchoolForAddDto schoolForAddDto)
+        {
+            var school = this.mapper.Map<School>(schoolForAddDto);
+            UploadResponse uploadResponse = await UploadLogo(schoolForAddDto.Logo, schoolForAddDto.Code);
+
+            if (uploadResponse.Status == Status.SUCCESS)
+            {
+                school.Logo = uploadResponse.Path!;
+            }
+
+            return school;
+        }
+
+        private async Task UpdateSchoolEntity(School school, SchoolForAddDto schoolForAddDto)
+        {
+            this.mapper.Map(schoolForAddDto, school);
+            UploadResponse uploadResponse = await UploadLogo(schoolForAddDto.Logo, schoolForAddDto.Code);
+
+            if (uploadResponse.Status == Status.SUCCESS)
+            {
+                school.Logo = uploadResponse.Path!;
+            }
+        }
+
+        private static async Task<UploadResponse> UploadLogo(IFormFile? file, int code)
+        {
+            UploadResponse uploadResponse = new() { Status = Status.FAILURE };
+            if (file != null && file.Length > 0)
+            {
+                uploadResponse = await UploadService.Upload(file, code.ToString());
+            }
+            return uploadResponse;
         }
     }
 }

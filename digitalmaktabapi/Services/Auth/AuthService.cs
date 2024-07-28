@@ -35,6 +35,7 @@ namespace digitalmaktabapi.Services.Auth
                 session.Email = admin.Email;
                 session.UserRole = admin.UserRole;
                 session.Id = admin.Id;
+                session.SchoolId = admin.Id;
                 return new AuthUser
                 {
                     Token = this.tokenService.GenerateToken(session),
@@ -48,6 +49,7 @@ namespace digitalmaktabapi.Services.Auth
                 session.Email = student.Email;
                 session.UserRole = student.UserRole;
                 session.Id = student.Id;
+                session.SchoolId = student.SchoolId;
                 return new AuthUser
                 {
                     Token = this.tokenService.GenerateToken(session),

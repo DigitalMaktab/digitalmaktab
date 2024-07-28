@@ -6,6 +6,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using digitalmaktabapi.Helpers;
+using DotCommon.Extensions;
 using Microsoft.IdentityModel.Tokens;
 
 namespace digitalmaktabapi.Services.Auth
@@ -21,6 +22,7 @@ namespace digitalmaktabapi.Services.Auth
                 new Claim(ClaimTypes.NameIdentifier, session.Id.ToString()),
                 new Claim(ClaimTypes.Email, session.Email),
                 new Claim(ClaimTypes.Role, session.UserRole.ToString()),
+                new Claim(ClaimTypes.Sid, session.SchoolId.ToString())
             };
 
             var key = new SymmetricSecurityKey(Encoding

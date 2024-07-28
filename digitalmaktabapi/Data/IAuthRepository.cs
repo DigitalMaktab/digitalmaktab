@@ -10,5 +10,6 @@ namespace digitalmaktabapi.Data
         Task<T> Authenticate(string email, string password);
         Task<T> Register(T entity, string password);
         Task<bool> Exists(string prop);
+        Task<bool> UpdatePassword(T entity, string password);
     }
 }

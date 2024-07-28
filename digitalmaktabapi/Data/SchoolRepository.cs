@@ -61,5 +61,15 @@ namespace digitalmaktabapi.Data
             await this.context.SaveChangesAsync();
             return school;
         }
+
+        public async Task<bool> UpdatePassword(School school, string password)
+        {
+            Helpers.Extensions.CreatePasswordHash(password, out byte[] passwordHash, out byte[] passwordSalt);
+            school.PasswordHash = passwordHash;
+            school.PasswordHash = passwordHash;
+
+            int changes = await this.context.SaveChangesAsync();
+            return changes > 0;
+        }
     }
 }

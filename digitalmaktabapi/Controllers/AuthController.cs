@@ -34,9 +34,6 @@ namespace digitalmaktabapi.Controllers
                     return Unauthorized();
             }
 
-
-
-
         }
     }
 }

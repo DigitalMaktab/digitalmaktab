@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using digitalmaktabapi.Models;
-using System.Net.Http.Headers;
 
 namespace digitalmaktabapi.Helpers
 {
@@ -17,9 +16,9 @@ namespace digitalmaktabapi.Helpers
         private static Session? session;
         public static void AddApplicationError(this HttpResponse response, string message)
         {
-            response.Headers.Add("Application-Error", message);
-            response.Headers.Add("Access-Control-Expose-Headers", "Application-Error");
-            response.Headers.Add("Access-Control-Allow-Origin", "*");
+            response.Headers.Append("Application-Error", message);
+            response.Headers.Append("Access-Control-Expose-Headers", "Application-Error");
+            response.Headers.Append("Access-Control-Allow-Origin", "*");
         }
 
         public static void AddPagintaion(this HttpResponse response, int currentPage, int itemsPerPage, int totalItems, int totalPages)
@@ -29,8 +28,8 @@ namespace digitalmaktabapi.Helpers
             {
                 ContractResolver = new CamelCasePropertyNamesContractResolver()
             };
-            response.Headers.Add("Pagination", JsonConvert.SerializeObject(paginationHeader, camelCaseFormatter));
-            response.Headers.Add("Access-Control-Expose-Headers", "Pagination");
+            response.Headers.Append("Pagination", JsonConvert.SerializeObject(paginationHeader, camelCaseFormatter));
+            response.Headers.Append("Access-Control-Expose-Headers", "Pagination");
         }
 
         public static async void ErrorResponse(this HttpResponse response, string message)
@@ -45,6 +44,7 @@ namespace digitalmaktabapi.Helpers
             Guid id = Guid.Parse(controller.User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
             string userRoleString = controller.User.FindFirst(ClaimTypes.Role)!.Value;
             string email = controller.User.FindFirst(ClaimTypes.Email)!.Value;
+            Guid schoolId = Guid.Parse(controller.User.FindFirst(ClaimTypes.Sid)!.Value);
 
             if (!Enum.TryParse(userRoleString, out UserRole userRole))
             {
@@ -55,33 +55,30 @@ namespace digitalmaktabapi.Helpers
             {
                 Id = id,
                 Email = email,
-                UserRole = userRole
+                UserRole = userRole,
+                SchoolId = schoolId
             };
             return session;
         }
 
         public static bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt)
         {
-            using (var hmac = new System.Security.Cryptography.HMACSHA512(passwordSalt))
+            using var hmac = new System.Security.Cryptography.HMACSHA512(passwordSalt);
+            var computedHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
+
+            for (int i = 0; i < computedHash.Length; i++)
             {
-                var computedHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
-
-                for (int i = 0; i < computedHash.Length; i++)
-                {
-                    if (computedHash[i] != passwordHash[i]) return false;
-                }
-
-                return true;
+                if (computedHash[i] != passwordHash[i]) return false;
             }
+
+            return true;
         }
 
         public static void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
         {
-            using (var hmac = new System.Security.Cryptography.HMACSHA512())
-            {
-                passwordSalt = hmac.Key;
-                passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
-            }
+            using var hmac = new System.Security.Cryptography.HMACSHA512();
+            passwordSalt = hmac.Key;
+            passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
         }
 
 

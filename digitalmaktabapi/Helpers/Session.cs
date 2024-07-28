@@ -11,6 +11,6 @@ namespace digitalmaktabapi.Helpers
         public Guid Id { get; set; }
         public required string Email { get; set; }
         public UserRole UserRole { get; set; }
-        public Guid AdminUserId { get; set; }
+        public Guid SchoolId { get; set; }
     }
 }

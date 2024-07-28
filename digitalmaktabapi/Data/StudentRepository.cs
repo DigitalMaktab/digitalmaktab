@@ -52,5 +52,10 @@ namespace digitalmaktabapi.Data
         {
             throw new NotImplementedException();
         }
+
+        public Task<bool> UpdatePassword(Student entity, string password)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
