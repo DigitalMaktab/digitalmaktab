@@ -15,7 +15,7 @@ namespace digitalmaktabapi.Dtos
         public required string Email { get; set; }
         public required string Password { get; set; }
         public required string ConfirmPassword { get; set; }
-        public IFormFile Logo { get; set; }
+        public IFormFile? Logo { get; set; }
         public required int Code { get; set; }
     }
 

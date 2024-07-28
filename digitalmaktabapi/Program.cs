@@ -26,7 +26,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Add Localization
-builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
+builder.Services.AddLocalization(options => options.ResourcesPath = "Resources/Localization");
 builder.Services.AddControllers().AddViewLocalization();
 builder.Services.Configure<RequestLocalizationOptions>(options =>
 {
@@ -61,6 +61,7 @@ builder.Services.AddScoped<TokenService>();
 // Adding Fluent Validation
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddScoped<IValidator<SchoolForAddDto>, SchoolForAddDtoValidator>();
+builder.Services.AddScoped<IValidator<LoginDto>, LoginDtoValidator>();
 
 // Add Data Seeder
 // Add Seeds
