@@ -14,6 +14,17 @@ namespace digitalmaktabapi.Data
         public DbSet<Country> Countries { get; set; }
         public DbSet<City> Cities { get; set; }
         public DbSet<District> Districts { get; set; }
+        public DbSet<Book> Books { get; set; }
+        public DbSet<CalendarYear> CalendarYears { get; set; }
+        public DbSet<Subject> Subjects { get; set; }
+        public DbSet<Class> Classes { get; set; }
+        public DbSet<ClassSubject> ClassSubjects { get; set; }
+        public DbSet<Enrollment> Enrollments { get; set; }
+        public DbSet<Fee> Fees { get; set; }
+        public DbSet<Grade> Grades { get; set; }
+        public DbSet<Schedule> Schedules { get; set; }
+        public DbSet<Teacher> Teachers { get; set; }
+        public DbSet<User> Users { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             foreach (var entityType in modelBuilder.Model.GetEntityTypes())
@@ -46,49 +57,6 @@ namespace digitalmaktabapi.Data
                 .Property(a => a.UserRole)
                 .HasDefaultValue(UserRole.STUDENT);
 
-            // modelBuilder.Entity<School>()
-            //     .OwnsOne(a => a.Address, address =>
-            //     {
-            //         address.WithOwner().HasForeignKey("SchoolId");
-            //         address.HasOne(d => d.District)
-            //         .WithMany()
-            //         .HasForeignKey(a => a.DistrictId);
-            //     });
-
-            // modelBuilder.Entity<School>()
-            //     .OwnsOne(a => a.PhoneNumber, pn =>
-            //     {
-            //         pn.WithOwner().HasForeignKey("SchoolId");
-            //         pn.HasOne(d => d.Country)
-            //         .WithMany()
-            //         .HasForeignKey(a => a.CountryId);
-            //     });
-
-            // modelBuilder.Entity<Student>()
-            //     .OwnsOne(a => a.PrimaryAddress, address =>
-            //     {
-            //         address.WithOwner().HasForeignKey("StudentId");
-            //         address.HasOne(d => d.District)
-            //         .WithMany()
-            //         .HasForeignKey(a => a.DistrictId);
-            //     });
-            // modelBuilder.Entity<Student>()
-            //     .OwnsOne(a => a.SecondaryAddress, address =>
-            //     {
-            //         address.WithOwner().HasForeignKey("StudentId");
-            //         address.HasOne(d => d.District)
-            //         .WithMany()
-            //         .HasForeignKey(a => a.DistrictId);
-            //     });
-            // modelBuilder.Entity<Student>()
-            //     .OwnsOne(a => a.PhoneNumber, pn =>
-            //     {
-            //         pn.WithOwner().HasForeignKey("StudentId");
-            //         pn.HasOne(d => d.Country)
-            //         .WithMany()
-            //         .HasForeignKey(a => a.CountryId);
-            //     });
-
             modelBuilder.Entity<School>().OwnsOne(a => a.Address);
             modelBuilder.Entity<School>().OwnsOne(a => a.PhoneNumber);
 
@@ -96,6 +64,10 @@ namespace digitalmaktabapi.Data
             modelBuilder.Entity<Student>().OwnsOne(a => a.SecondaryAddress);
             modelBuilder.Entity<Student>().OwnsOne(a => a.PhoneNumber);
             modelBuilder.Entity<Student>().OwnsOne(a => a.NationalId);
+
+
+            modelBuilder.Entity<Teacher>().OwnsOne(a => a.PrimaryAddress);
+            modelBuilder.Entity<Teacher>().OwnsOne(a => a.PhoneNumber);
 
         }
     }

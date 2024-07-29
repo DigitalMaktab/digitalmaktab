@@ -20,12 +20,14 @@ namespace digitalmaktabapi.Models
         public required int AsasNumber { get; set; }
         public required DateOnly JoiningYear { get; set; }
         public required int JoiningAge { get; set; }
+        public required Guid JoiningClassId { get; set; }
         public required Class JoiningClass { get; set; }
+        public required Guid JoiningBranchId { get; set; }
         public required Branch JoiningBranch { get; set; }
+        public required Guid CurrentClassId { get; set; }
         public required Class CurrentClass { get; set; }
-        public required ClassType ClassType { get; set; }
+        public required Guid CurrentBranchId { get; set; }
         public required Branch CurrentBranch { get; set; }
-        public required Shift Shift { get; set; }
         public required Address PrimaryAddress { get; set; }
         public required Address SecondaryAddress { get; set; }
         public NationalId? NationalId { get; set; }
@@ -47,5 +49,6 @@ namespace digitalmaktabapi.Models
         public required byte[] PasswordHash { get; set; }
         public required byte[] PasswordSalt { get; set; }
         public required UserRole UserRole { get; set; }
+        public required decimal MonthlyFee { get; set; }
     }
 }

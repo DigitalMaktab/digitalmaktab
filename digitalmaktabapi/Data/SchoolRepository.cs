@@ -66,7 +66,7 @@ namespace digitalmaktabapi.Data
         {
             Helpers.Extensions.CreatePasswordHash(password, out byte[] passwordHash, out byte[] passwordSalt);
             school.PasswordHash = passwordHash;
-            school.PasswordHash = passwordHash;
+            school.PasswordSalt = passwordSalt;
 
             int changes = await this.context.SaveChangesAsync();
             return changes > 0;
