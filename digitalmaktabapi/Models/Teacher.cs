@@ -11,6 +11,8 @@ namespace digitalmaktabapi.Models
     {
         public required Guid SchoolId { get; set; }
         public required School School { get; set; }
+        public required Guid ClassId { get; set; }
+        public required Class Class { get; set; }
 
         public required string FirstName { get; set; }
         public required string LastName { get; set; }
@@ -21,5 +23,6 @@ namespace digitalmaktabapi.Models
         public required string Email { get; set; }
         public required byte[] PasswordHash { get; set; }
         public required byte[] PasswordSalt { get; set; }
+        public required ICollection<Schedule> Schedules { get; set; }
     }
 }

@@ -69,6 +69,11 @@ namespace digitalmaktabapi.Data
             modelBuilder.Entity<Teacher>().OwnsOne(a => a.PrimaryAddress);
             modelBuilder.Entity<Teacher>().OwnsOne(a => a.PhoneNumber);
 
+            modelBuilder.Entity<Class>()
+                .HasOne(a => a.Teacher)
+                .WithOne(a => a.Class)
+                .HasForeignKey<Teacher>(a => a.ClassId);
+
         }
     }
 }

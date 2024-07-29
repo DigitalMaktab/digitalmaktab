@@ -18,6 +18,8 @@ namespace digitalmaktabapi.Models
         public required CalendarYear CalendarYear { get; set; }
         public required ClassType ClassType { get; set; }
         public required Shift Shift { get; set; }
+        public required Guid TeacherId { get; set; }
+        public required Teacher Teacher { get; set; }
         public required ICollection<ClassSubject> ClassSubjects { get; set; } = [];
     }
 }
