@@ -21,5 +21,6 @@ namespace digitalmaktabapi.Models
         public required Guid TeacherId { get; set; }
         public required Teacher Teacher { get; set; }
         public required ICollection<ClassSubject> ClassSubjects { get; set; } = [];
+        public required ICollection<Attendance> Attendances { get; set; } = [];
     }
 }
