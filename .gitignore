@@ -1,6 +1,7 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 *.DS_Store
 .vscode
+.editorconfig
 
 # DigitalMaktab Single Page Application
 # dependencies
@@ -27,13 +28,14 @@ digitalmaktabspa/yarn-error.log*
 
 
 # DigitalMaktab API
+
+digitalmaktabapi/appsettings*.json
 digitalmaktabapi/bin
-digitalmaktabapi/Resources
+digitalmaktabapi/Resources/*/
+!digitalmaktabapi/Resources/Reports
+!digitalmaktabapi/Resources/Localization
 digitalmaktabapi/obj
 digitalmaktabapi/.vscode
-digitalmaktabapi/appsettings.json
-digitalmaktabapi/appsettings.Development.json
 
-.editorconfig
-
+digitalmaktabapi/digitalmaktab*.db
 
