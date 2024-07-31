@@ -9,15 +9,9 @@ namespace digitalmaktabapi.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class PdfController : ControllerBase
+    public class ReportController(ReportService pdfService) : ControllerBase
     {
-        private readonly PdfService _pdfService;
-
-        public PdfController(PdfService pdfService)
-        {
-            _pdfService = pdfService;
-        }
-
+        private readonly ReportService _pdfService = pdfService;
 
         [HttpPost]
         [Route("generate")]

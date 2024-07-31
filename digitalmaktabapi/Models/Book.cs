@@ -13,5 +13,8 @@ namespace digitalmaktabapi.Models
         public School? School { get; set; }
         public required string BookTitle { get; set; }
 
+        public required Guid SubjectId { get; set; }
+        public required Subject Subject { get; set; }
+
     }
 }

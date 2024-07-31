@@ -74,6 +74,10 @@ namespace digitalmaktabapi.Data
                 .WithOne(a => a.Class)
                 .HasForeignKey<Teacher>(a => a.ClassId);
 
+            modelBuilder.Entity<Subject>()
+                .HasOne(a => a.Book)
+                .WithOne(a => a.Subject)
+                .HasForeignKey<Book>(a => a.SubjectId);
         }
     }
 }

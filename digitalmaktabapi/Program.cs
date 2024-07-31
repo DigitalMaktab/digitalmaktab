@@ -46,6 +46,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(a =>
 {
     a.SwaggerDoc("v1", new OpenApiInfo { Title = "Digital API", Version = "v1" });
+    // Configure the route naming convention
+    a.DocumentFilter<CamelCaseDocumentFilter>();
     // Configure Swagger to use Bearer Token Authentication.
     a.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
@@ -80,7 +82,7 @@ builder.Services.AddTransient<IMailService, MailService>();
 
 // Add Services
 builder.Services.AddAutoMapper(typeof(Program));
-builder.Services.AddTransient<PdfService>();
+builder.Services.AddTransient<ReportService>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<TokenService>();
 

@@ -7,11 +7,11 @@ using DinkToPdf.Contracts;
 
 namespace digitalmaktabapi.Services.PDF
 {
-    public class PdfService
+    public class ReportService
     {
         private readonly IConverter _converter;
         // We can also use primary constructor inseated, througout the application we will use primary one.
-        public PdfService(IConverter converter)
+        public ReportService(IConverter converter)
         {
             _converter = converter;
         }

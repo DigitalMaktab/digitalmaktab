@@ -37,16 +37,6 @@ namespace digitalmaktabapi.Controllers
             return Ok(schoolToReturn);
         }
 
-        [Authorize(Policy = "RootUserPolicy")]
-        [HttpGet("schools")]
-        public async Task<IActionResult> GetSchools([FromQuery] UserParams userParams)
-        {
-            var schoolsFromRepo = await this.schoolRepository.GetSchools(userParams);
-            var schoolsToReturn = this.mapper.Map<ICollection<SchoolDto>>(schoolsFromRepo);
-            Response.AddPagintaion(schoolsFromRepo.CurrentPage, schoolsFromRepo.PageSize, schoolsFromRepo.TotalCount, schoolsFromRepo.TotalPages);
-            return Ok(schoolsToReturn);
-
-        }
         [AllowAnonymous]
         [HttpPost]
         public async Task<ActionResult> AddSchool([FromForm] SchoolForAddDto schoolForAddDto)
@@ -76,7 +66,7 @@ namespace digitalmaktabapi.Controllers
             return NoContent();
         }
 
-        [HttpPut("update-password")]
+        [HttpPut("updatePassword")]
         public async Task<IActionResult> UpdatePassword(UpdatePasswordDto updatePasswordDto)
         {
             string email = Extensions.GetSessionDetails(this).Email;

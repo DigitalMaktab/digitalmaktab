@@ -15,6 +15,6 @@ namespace digitalmaktabapi.Models
         ELEVENTH,
         TWELVETH,
         THIRTEENTH,
-        FOURTHEENTH
+        FOURTEENTH
     }
 }

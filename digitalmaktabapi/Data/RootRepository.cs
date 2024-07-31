@@ -12,6 +12,30 @@ namespace digitalmaktabapi.Data
     {
         private readonly DataContext context = context;
 
+        public async Task<Book> GetBook(Guid bookId)
+        {
+            var entity = await this.context.Books.FirstOrDefaultAsync(a => a.Id == bookId);
+            return entity;
+        }
+
+        public async Task<PagedList<Book>> GetBooks(Guid? schoolId, UserParams userParams)
+        {
+            var entities = this.context.Books.
+                Where(
+                    a => a.SchoolId == schoolId ||
+                    a.SchoolId == Guid.Empty ||
+                    !a.SchoolId.HasValue).AsQueryable();
+
+            if (userParams.ClassId.HasValue && userParams.ClassId != Guid.Empty)
+            {
+                entities = this.context.Books
+                .Where(
+                    a => a.Subject.ClassSubjects
+                    .Any(a => a.ClassId == userParams.ClassId));
+            }
+            return await PagedList<Book>.CreateAsync(entities, userParams.PageNumber, userParams.PageSize);
+        }
+
         public async Task<PagedList<City>> GetCities(Guid countryId, UserParams userParams)
         {
             var entities = this.context.Cities.Where(a => a.CountryId == countryId).AsQueryable();
@@ -23,6 +47,7 @@ namespace digitalmaktabapi.Data
             var entity = await this.context.Cities.FirstOrDefaultAsync(a => a.Id == cityId);
             return entity;
         }
+
 
         public async Task<PagedList<Country>> GetCountries(UserParams userParams)
         {

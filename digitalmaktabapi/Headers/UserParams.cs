@@ -7,6 +7,6 @@ namespace digitalmaktabapi.Headers
 {
     public class UserParams : GeneralParams
     {
-
+        public Guid? ClassId { get; set; }
     }
 }

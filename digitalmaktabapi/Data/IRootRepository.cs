@@ -15,6 +15,7 @@ namespace digitalmaktabapi.Data
         Task<City> GetCity(Guid cityId);
         Task<PagedList<District>> GetDistricts(Guid cityId, UserParams userParams);
         Task<District> GetDistrict(Guid districtId);
-        // Get the library as well and rest of the modules
+        Task<PagedList<Book>> GetBooks(Guid? schoolId, UserParams userParams);
+        Task<Book> GetBook(Guid bookId);
     }
 }
