@@ -53,5 +53,6 @@ namespace digitalmaktabapi.Models
         public required ICollection<Attendance> Attendances { get; set; } = [];
 
         public required ICollection<Schedule> Schedules { get; set; } = [];
+        public required ICollection<Fee> Fees { get; set; } = [];
     }
 }

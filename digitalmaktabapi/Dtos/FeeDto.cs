@@ -1,18 +1,17 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
+using digitalmaktabapi.Models;
 
-namespace digitalmaktabapi.Models
+namespace digitalmaktabapi.Dtos
 {
-    [Table("Fee")]
-    public class Fee : Base
+    public class FeeDto : BaseDto
     {
         public required Guid StudentId { get; set; }
-        public required Student Student { get; set; }
+        public required StudentDto Student { get; set; }
         public required Guid CalendarYearId { get; set; }
-        public required CalendarYear CalendarYear { get; set; }
+        public required CalendarYearDto CalendarYear { get; set; }
         public required Month Month { get; set; }
         public required decimal Amount { get; set; }
     }
