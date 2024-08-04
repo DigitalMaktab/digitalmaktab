@@ -3,9 +3,10 @@ namespace digitalmaktabapi.Models
     public enum ClassType
     {
         MORNING,
-        EVENTING,
+        EVENING,
         LOCAL,
         ACCELERATED,
-        APPENDIX
+        APPENDIX,
+        NIGTH
     }
 }

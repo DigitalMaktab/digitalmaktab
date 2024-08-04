@@ -176,4 +176,60 @@
         <value>چهاردهم</value>
         <comment/>
     </data>
+    <data name="MORNING" xml:space="preserve">
+        <value>موجود صبح</value>
+        <comment/>
+    </data>
+    <data name="EVENING" xml:space="preserve">
+        <value>موجود عصر</value>
+        <comment/>
+    </data>
+    <data name="LOCAL" xml:space="preserve">
+        <value>محلی</value>
+        <comment/>
+    </data>
+    <data name="ACCELERATED" xml:space="preserve">
+        <value>تسریعی</value>
+        <comment/>
+    </data>
+    <data name="APPENDIX" xml:space="preserve">
+        <value>الحاقیه</value>
+        <comment/>
+    </data>
+    <data name="NIGTH" xml:space="preserve">
+        <value>شبانه</value>
+        <comment/>
+    </data>
+    <data name="A_PLUS" xml:space="preserve">
+        <value>A+</value>
+        <comment/>
+    </data>
+    <data name="A_MINUS" xml:space="preserve">
+        <value>A-</value>
+        <comment/>
+    </data>
+    <data name="B_PLUS" xml:space="preserve">
+        <value>B+</value>
+        <comment/>
+    </data>
+    <data name="B_MINUS" xml:space="preserve">
+        <value>B-</value>
+        <comment/>
+    </data>
+    <data name="O_PLUS" xml:space="preserve">
+        <value>O+</value>
+        <comment/>
+    </data>
+    <data name="O_MINUS" xml:space="preserve">
+        <value>O-</value>
+        <comment/>
+    </data>
+    <data name="AB_PLUS" xml:space="preserve">
+        <value>AB+</value>
+        <comment/>
+    </data>
+    <data name="AB_MINUS" xml:space="preserve">
+        <value>AB-</value>
+        <comment/>
+    </data>
 </root>

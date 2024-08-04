@@ -77,31 +77,180 @@ namespace digitalmaktabapi.Controllers
         }
 
         [HttpGet("classNames")]
-        public async Task<ActionResult<IEnumerable<ClassNamesDto>>> GetClassNames()
+        public async Task<ActionResult<IEnumerable<EnumsDto>>> GetClassNames()
         {
-            var classNames = Enum.GetValues(typeof(ClassName))
-                            .Cast<ClassName>()
-                            .Select(e => new ClassNamesDto
-                            {
-                                Id = (int)e,
-                                ClassName = this.localizer[e.ToString()].Value
-                            }).ToList();
-
-            return await Task.FromResult(Ok(classNames));
+            var classTypes = GetEnumList<ClassName>();
+            return await Task.FromResult(Ok(classTypes));
         }
 
         [HttpGet("className/{id}")]
-        public async Task<ActionResult<ClassNamesDto>> GetClassName(int id)
+        public async Task<ActionResult<EnumsDto>> GetClassName(int id)
         {
-            if (Enum.IsDefined(typeof(ClassName), id))
+            return await GetEnumResponse<ClassName>(id);
+        }
+
+        [HttpGet("classTypes")]
+        public async Task<ActionResult<IEnumerable<EnumsDto>>> GetClasTypes()
+        {
+            var classTypes = GetEnumList<ClassType>();
+            return await Task.FromResult(Ok(classTypes));
+        }
+
+        [HttpGet("classType/{id}")]
+        public async Task<ActionResult<EnumsDto>> GetClassType(int id)
+        {
+            return await GetEnumResponse<ClassType>(id);
+        }
+
+
+        [HttpGet("bloodGroups")]
+        public async Task<ActionResult<IEnumerable<EnumsDto>>> GetBloodGroups()
+        {
+            var classTypes = GetEnumList<BloodGroup>();
+            return await Task.FromResult(Ok(classTypes));
+        }
+
+        [HttpGet("bloodGroup/{id}")]
+        public async Task<ActionResult<EnumsDto>> GetBloodGroup(int id)
+        {
+            return await GetEnumResponse<BloodGroup>(id);
+        }
+
+        [HttpGet("disabilities")]
+        public async Task<ActionResult<IEnumerable<EnumsDto>>> GetDisabilities()
+        {
+            var classTypes = GetEnumList<DisabilityType>();
+            return await Task.FromResult(Ok(classTypes));
+        }
+
+        [HttpGet("disability/{id}")]
+        public async Task<ActionResult<EnumsDto>> GetDisability(int id)
+        {
+            return await GetEnumResponse<DisabilityType>(id);
+        }
+
+        [HttpGet("examTypes")]
+        public async Task<ActionResult<IEnumerable<EnumsDto>>> GetExamTypes()
+        {
+            var classTypes = GetEnumList<ExamType>();
+            return await Task.FromResult(Ok(classTypes));
+        }
+
+        [HttpGet("examType/{id}")]
+        public async Task<ActionResult<EnumsDto>> GetExamType(int id)
+        {
+            return await GetEnumResponse<ExamType>(id);
+        }
+
+
+        [HttpGet("genders")]
+        public async Task<ActionResult<IEnumerable<EnumsDto>>> GetGenders()
+        {
+            var classTypes = GetEnumList<Gender>();
+            return await Task.FromResult(Ok(classTypes));
+        }
+
+        [HttpGet("gender/{id}")]
+        public async Task<ActionResult<EnumsDto>> GetGender(int id)
+        {
+            return await GetEnumResponse<Gender>(id);
+        }
+
+        [HttpGet("isOrphans")]
+        public async Task<ActionResult<IEnumerable<EnumsDto>>> GetIsOrphans()
+        {
+            var classTypes = GetEnumList<IsOrphan>();
+            return await Task.FromResult(Ok(classTypes));
+        }
+
+        [HttpGet("isOrphan/{id}")]
+        public async Task<ActionResult<EnumsDto>> GetIsOrphan(int id)
+        {
+            return await GetEnumResponse<IsOrphan>(id);
+        }
+
+
+        [HttpGet("languages")]
+        public async Task<ActionResult<IEnumerable<EnumsDto>>> GetLanguages()
+        {
+            var classTypes = GetEnumList<Language>();
+            return await Task.FromResult(Ok(classTypes));
+        }
+
+        [HttpGet("language/{id}")]
+        public async Task<ActionResult<EnumsDto>> GetLanguage(int id)
+        {
+            return await GetEnumResponse<Language>(id);
+        }
+
+        [HttpGet("months")]
+        public async Task<ActionResult<IEnumerable<EnumsDto>>> GetMonths()
+        {
+            var classTypes = GetEnumList<Month>();
+            return await Task.FromResult(Ok(classTypes));
+        }
+
+        [HttpGet("month/{id}")]
+        public async Task<ActionResult<EnumsDto>> GetMonth(int id)
+        {
+            return await GetEnumResponse<Month>(id);
+        }
+
+        [HttpGet("scheduleTimes")]
+        public async Task<ActionResult<IEnumerable<EnumsDto>>> GetSchedculeTimes()
+        {
+            var classTypes = GetEnumList<ScheduleTime>();
+            return await Task.FromResult(Ok(classTypes));
+        }
+
+        [HttpGet("scheduleTime/{id}")]
+        public async Task<ActionResult<EnumsDto>> GetScheduleTime(int id)
+        {
+            return await GetEnumResponse<ScheduleTime>(id);
+        }
+
+        [HttpGet("shifts")]
+        public async Task<ActionResult<IEnumerable<EnumsDto>>> GetShifts()
+        {
+            var classTypes = GetEnumList<Shift>();
+            return await Task.FromResult(Ok(classTypes));
+        }
+
+        [HttpGet("shift/{id}")]
+        public async Task<ActionResult<EnumsDto>> GetShift(int id)
+        {
+            return await GetEnumResponse<Shift>(id);
+        }
+
+        // Helper methods
+
+        private List<EnumsDto> GetEnumList<T>() where T : Enum
+        {
+            return Enum.GetValues(typeof(T))
+                        .Cast<T>()
+                        .Select(e => new EnumsDto
+                        {
+                            Id = Convert.ToInt32(e),
+                            Name = this.localizer[e.ToString()].Value
+                        }).ToList();
+        }
+
+        private EnumsDto GetEnumById<T>(int id) where T : Enum
+        {
+            var enumValue = (T)Enum.ToObject(typeof(T), id);
+            return new EnumsDto
             {
-                var className = (ClassName)id;
-                var classNameModel = new ClassNamesDto
-                {
-                    Id = id,
-                    ClassName = this.localizer[className.ToString()].Value
-                };
-                return await Task.FromResult(Ok(classNameModel));
+                Id = id,
+                Name = this.localizer[enumValue.ToString()].Value
+            };
+        }
+
+        private async Task<ActionResult<EnumsDto>> GetEnumResponse<T>(int id) where T : Enum
+        {
+            if (Enum.IsDefined(typeof(T), id))
+            {
+                var enumValue = GetEnumById<T>(id);
+                return await Task.FromResult(Ok(enumValue));
             }
             else
             {

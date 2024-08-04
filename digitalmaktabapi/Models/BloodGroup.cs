@@ -8,7 +8,7 @@ namespace digitalmaktabapi.Models
         B_MINUS,
         O_PLUS,
         O_MINUS,
-        A_BPLUS,
-        A_PMINUS
+        AB_PLUS,
+        AB_MINUS
     }
 }

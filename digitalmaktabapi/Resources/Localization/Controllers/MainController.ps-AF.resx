@@ -176,4 +176,36 @@
         <value>Fourteenth</value>
         <comment/>
     </data>
+<data name="A_PLUS" xml:space="preserve">
+        <value>A+</value>
+        <comment/>
+    </data>
+    <data name="A_MINUS" xml:space="preserve">
+        <value>A-</value>
+        <comment/>
+    </data>
+    <data name="B_PLUS" xml:space="preserve">
+        <value>B+</value>
+        <comment/>
+    </data>
+    <data name="B_MINUS" xml:space="preserve">
+        <value>B-</value>
+        <comment/>
+    </data>
+    <data name="O_PLUS" xml:space="preserve">
+        <value>O+</value>
+        <comment/>
+    </data>
+    <data name="O_MINUS" xml:space="preserve">
+        <value>O-</value>
+        <comment/>
+    </data>
+    <data name="AB_PLUS" xml:space="preserve">
+        <value>AB+</value>
+        <comment/>
+    </data>
+    <data name="AB_MINUS" xml:space="preserve">
+        <value>AB-</value>
+        <comment/>
+    </data>
 </root>
