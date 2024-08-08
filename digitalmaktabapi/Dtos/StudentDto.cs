@@ -19,16 +19,13 @@ namespace digitalmaktabapi.Dtos
         public required string FatherNameEnglish { get; set; }
         public required string GrandFatherNameEnglish { get; set; }
         public required int AsasNumber { get; set; }
-        public required DateOnly JoiningYear { get; set; }
+        public required Guid CalendarYearId { get; set; }
+        public required CalendarYearDto JoiningYear { get; set; }
         public required int JoiningAge { get; set; }
         public required Guid JoiningClassId { get; set; }
         public required ClassDto JoiningClass { get; set; }
-        public required Guid JoiningBranchId { get; set; }
-        public required BranchDto JoiningBranch { get; set; }
         public required Guid CurrentClassId { get; set; }
         public required ClassDto CurrentClass { get; set; }
-        public required Guid CurrentBranchId { get; set; }
-        public required BranchDto CurrentBranch { get; set; }
         public required AddressDto PrimaryAddress { get; set; }
         public required AddressDto SecondaryAddress { get; set; }
         public NationalIdDto? NationalId { get; set; }
@@ -47,8 +44,10 @@ namespace digitalmaktabapi.Dtos
         public required DateTime DateOfBirth { get; set; }
         public required Gender Gender { get; set; }
         public required string Email { get; set; }
+        public required byte[] PasswordHash { get; set; }
+        public required byte[] PasswordSalt { get; set; }
         public required UserRole UserRole { get; set; }
-        public required decimal MonthlyFee { get; set; }
+        public decimal? MonthlyFee { get; set; }
         public required ICollection<AttendanceDto> Attendances { get; set; } = [];
 
         public required ICollection<ScheduleDto> Schedules { get; set; } = [];
