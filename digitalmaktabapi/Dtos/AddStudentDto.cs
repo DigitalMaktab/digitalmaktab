@@ -3,13 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using digitalmaktabapi.Models;
+using FluentValidation;
 
 namespace digitalmaktabapi.Dtos
 {
-    public class StudentDto : BaseDto
+    public class AddStudentDto
     {
-        public required Guid SchoolId { get; set; }
-        public required SchoolDto School { get; set; }
         public required string FirstNameNative { get; set; }
         public required string LastNameNative { get; set; }
         public required string FatherNameNative { get; set; }
@@ -20,15 +19,10 @@ namespace digitalmaktabapi.Dtos
         public required string GrandFatherNameEnglish { get; set; }
         public required int AsasNumber { get; set; }
         public required DateOnly JoiningYear { get; set; }
-        public required int JoiningAge { get; set; }
         public required Guid JoiningClassId { get; set; }
-        public required ClassDto JoiningClass { get; set; }
         public required Guid JoiningBranchId { get; set; }
-        public required BranchDto JoiningBranch { get; set; }
         public required Guid CurrentClassId { get; set; }
-        public required ClassDto CurrentClass { get; set; }
         public required Guid CurrentBranchId { get; set; }
-        public required BranchDto CurrentBranch { get; set; }
         public required AddressDto PrimaryAddress { get; set; }
         public required AddressDto SecondaryAddress { get; set; }
         public NationalIdDto? NationalId { get; set; }
@@ -48,10 +42,22 @@ namespace digitalmaktabapi.Dtos
         public required Gender Gender { get; set; }
         public required string Email { get; set; }
         public required UserRole UserRole { get; set; }
-        public required decimal MonthlyFee { get; set; }
-        public required ICollection<AttendanceDto> Attendances { get; set; } = [];
+        public decimal? MonthlyFee { get; set; }
+    }
 
-        public required ICollection<ScheduleDto> Schedules { get; set; } = [];
-        public required ICollection<FeeDto> Fees { get; set; } = [];
+    public class AddStudentDtoValidator : AbstractValidator<AddStudentDto>
+    {
+        public AddStudentDtoValidator()
+        {
+            RuleFor(a => a.FirstNameNative).NotNull().NotEmpty();
+            RuleFor(a => a.LastNameNative).NotNull().NotEmpty();
+            RuleFor(a => a.FatherNameNative).NotNull().NotEmpty();
+            RuleFor(a => a.GrandFatherNameNative).NotNull().NotEmpty();
+
+            RuleFor(a => a.FirstNameEnglish).NotNull().NotEmpty();
+            RuleFor(a => a.LastNameEnglish).NotNull().NotEmpty();
+            RuleFor(a => a.FatherNameEnglish).NotNull().NotEmpty();
+            RuleFor(a => a.GrandFatherNameEnglish).NotNull().NotEmpty();
+        }
     }
 }

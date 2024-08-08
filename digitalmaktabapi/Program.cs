@@ -92,6 +92,7 @@ builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddScoped<IValidator<SchoolForAddDto>, SchoolForAddDtoValidator>();
 builder.Services.AddScoped<IValidator<LoginDto>, LoginDtoValidator>();
 builder.Services.AddScoped<IValidator<UpdatePasswordDto>, UpdatePasswordDtoValidator>();
+builder.Services.AddScoped<IValidator<AddStudentDto>, AddStudentDtoValidator>();
 
 // Add Data Seeder
 // Add Seeds

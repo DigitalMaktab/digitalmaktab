@@ -49,7 +49,7 @@ namespace digitalmaktabapi.Models
         public required byte[] PasswordHash { get; set; }
         public required byte[] PasswordSalt { get; set; }
         public required UserRole UserRole { get; set; }
-        public required decimal MonthlyFee { get; set; }
+        public decimal? MonthlyFee { get; set; }
         public required ICollection<Attendance> Attendances { get; set; } = [];
 
         public required ICollection<Schedule> Schedules { get; set; } = [];

@@ -4,6 +4,7 @@ namespace digitalmaktabapi.Models
     {
         NO_DISABILITY,
         BLIND,
+        DEAF,
         PARALYZED,
         CRIPPLED,
         MUTE,

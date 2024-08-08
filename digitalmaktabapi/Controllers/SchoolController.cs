@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using AutoMapper;
 using digitalmaktabapi.Data;
 using digitalmaktabapi.Dtos;
-using digitalmaktabapi.Headers;
 using digitalmaktabapi.Helpers;
 using digitalmaktabapi.Models;
 using digitalmaktabapi.Services.Upload;
@@ -79,6 +78,13 @@ namespace digitalmaktabapi.Controllers
             await this.schoolRepository.UpdatePassword(school, updatePasswordDto.NewPassword);
             return NoContent();
         }
+
+        // [HttpPost("registerStudent")]
+        // public async Task<IActionResult> RegisterStudent(AddStudentDto studentDto)
+        // {
+        //     Guid schoolId = Extensions.GetSessionDetails(this).SchoolId;
+
+        // }
 
         // Helper methods
 

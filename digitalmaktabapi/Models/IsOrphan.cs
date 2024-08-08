@@ -2,7 +2,7 @@ namespace digitalmaktabapi.Models
 {
     public enum IsOrphan
     {
-        NO,
+        NOT_ORPHAN,
         FATHER_SIDE,
         MOTHER_SIDE,
         BOTH_SIDES

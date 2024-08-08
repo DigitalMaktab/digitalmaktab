@@ -232,4 +232,168 @@
         <value>AB-</value>
         <comment/>
     </data>
+    <data name="PRIMARY" xml:space="preserve">
+        <value>Primary</value>
+        <comment/>
+    </data>
+    <data name="SECONDARY" xml:space="preserve">
+        <value>Secondary</value>
+        <comment/>
+    </data>
+    <data name="NO_DISABILITY" xml:space="preserve">
+        <value>No Disability</value>
+        <comment/>
+    </data>
+    <data name="BLIND" xml:space="preserve">
+        <value>Blind</value>
+        <comment/>
+    </data>
+    <data name="DEAF" xml:space="preserve">
+        <value>Deaf</value>
+        <comment/>
+    </data>
+    <data name="PARALYZED" xml:space="preserve">
+        <value>Paralyzed</value>
+        <comment/>
+    </data>
+    <data name="CRIPPLED" xml:space="preserve">
+        <value>Crippled</value>
+        <comment/>
+    </data>
+    <data name="MUTE" xml:space="preserve">
+        <value>Mute</value>
+        <comment/>
+    </data>
+    <data name="OTHER" xml:space="preserve">
+        <value>Other</value>
+        <comment/>
+    </data>
+    <data name="MID_TERM" xml:space="preserve">
+        <value>Mid Term</value>
+        <comment/>
+    </data>
+    <data name="FINAL" xml:space="preserve">
+        <value>Final</value>
+        <comment/>
+    </data>
+    <data name="MALE" xml:space="preserve">
+        <value>Male</value>
+        <comment/>
+    </data>
+    <data name="FEMALE" xml:space="preserve">
+        <value>Female</value>
+        <comment/>
+    </data>
+    <data name="NOT_ORPHAN" xml:space="preserve">
+        <value>Not Orphan</value>
+        <comment/>
+    </data>
+    <data name="FATHER_SIDE" xml:space="preserve">
+        <value>Father Side</value>
+        <comment/>
+    </data>
+    <data name="MOTHER_SIDE" xml:space="preserve">
+        <value>Mother Side</value>
+        <comment/>
+    </data>
+    <data name="BOTH_SIDES" xml:space="preserve">
+        <value>Both Sides</value>
+        <comment/>
+    </data>
+    <data name="DARI" xml:space="preserve">
+        <value>Dari</value>
+        <comment/>
+    </data>
+    <data name="PASHTO" xml:space="preserve">
+        <value>Pashto</value>
+        <comment/>
+    </data>
+    <data name="TAJIKI" xml:space="preserve">
+        <value>Tajiki</value>
+        <comment/>
+    </data>
+    <data name="UZBEKI" xml:space="preserve">
+        <value>Uzbeki</value>
+        <comment/>
+    </data>
+    <data name="PASHAYI" xml:space="preserve">
+        <value>Pashayi</value>
+        <comment/>
+    </data>
+    <data name="TURKMANI" xml:space="preserve">
+        <value>Turkmani</value>
+        <comment/>
+    </data>
+    <data name="GUJARI" xml:space="preserve">
+        <value>Gujari</value>
+        <comment/>
+    </data>
+    <data name="BALUCHI" xml:space="preserve">
+        <value>Baluchi</value>
+        <comment/>
+    </data>
+    <data name="NURISTANI" xml:space="preserve">
+        <value>Nuristani</value>
+        <comment/>
+    </data>
+    <data name="WAKHANI" xml:space="preserve">
+        <value>Wakhani</value>
+        <comment/>
+    </data>
+    <data name="SHAIGHANI" xml:space="preserve">
+        <value>Shaighani</value>
+        <comment/>
+    </data>
+    <data name="HINDI" xml:space="preserve">
+        <value>Hindi</value>
+        <comment/>
+    </data>
+    <data name="JANUARY" xml:space="preserve">
+        <value>January</value>
+        <comment/>
+    </data>
+    <data name="FEBRUARY" xml:space="preserve">
+        <value>February</value>
+        <comment/>
+    </data>
+    <data name="MARCH" xml:space="preserve">
+        <value>MARCH</value>
+        <comment/>
+    </data>
+    <data name="APRIL" xml:space="preserve">
+        <value>April</value>
+        <comment/>
+    </data>
+    <data name="MAY" xml:space="preserve">
+        <value>May</value>
+        <comment/>
+    </data>
+    <data name="JUNE" xml:space="preserve">
+        <value>June</value>
+        <comment/>
+    </data>
+    <data name="JULY" xml:space="preserve">
+        <value>July</value>
+        <comment/>
+    </data>
+    <data name="AUGUST" xml:space="preserve">
+        <value>August</value>
+        <comment/>
+    </data>
+    <data name="SEPTEMBER" xml:space="preserve">
+        <value>September</value>
+        <comment/>
+    </data>
+    <data name="OCTOBER" xml:space="preserve">
+        <value>October</value>
+        <comment/>
+    </data>
+    <data name="NOVEMBER" xml:space="preserve">
+        <value>November</value>
+        <comment/>
+    </data>
+    <data name="DECEMBER" xml:space="preserve">
+        <value>December</value>
+        <comment/>
+    </data>
 </root>

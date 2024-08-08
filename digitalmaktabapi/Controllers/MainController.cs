@@ -222,6 +222,19 @@ namespace digitalmaktabapi.Controllers
             return await GetEnumResponse<Shift>(id);
         }
 
+        [HttpGet("addressTypes")]
+        public async Task<ActionResult<IEnumerable<EnumsDto>>> GetAddressTypes()
+        {
+            var classTypes = GetEnumList<AddressType>();
+            return await Task.FromResult(Ok(classTypes));
+        }
+
+        [HttpGet("addressType/{id}")]
+        public async Task<ActionResult<EnumsDto>> GetAddressType(int id)
+        {
+            return await GetEnumResponse<AddressType>(id);
+        }
+
         // Helper methods
 
         private List<EnumsDto> GetEnumList<T>() where T : Enum

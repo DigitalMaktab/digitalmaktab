@@ -232,4 +232,168 @@
         <value>AB-</value>
         <comment/>
     </data>
+    <data name="PRIMARY" xml:space="preserve">
+        <value>آدرس اصلی</value>
+        <comment/>
+    </data>
+    <data name="SECONDARY" xml:space="preserve">
+        <value>آدرس دایمی</value>
+        <comment/>
+    </data>
+    <data name="NO_DISABILITY" xml:space="preserve">
+        <value>معلولیت ندارد</value>
+        <comment/>
+    </data>
+    <data name="BLIND" xml:space="preserve">
+        <value>کور</value>
+        <comment/>
+    </data>
+    <data name="DEAF" xml:space="preserve">
+        <value>کر</value>
+        <comment/>
+    </data>
+    <data name="PARALYZED" xml:space="preserve">
+        <value>شل</value>
+        <comment/>
+    </data>
+    <data name="CRIPPLED" xml:space="preserve">
+        <value>لنگ</value>
+        <comment/>
+    </data>
+    <data name="MUTE" xml:space="preserve">
+        <value>گنک</value>
+        <comment/>
+    </data>
+    <data name="OTHER" xml:space="preserve">
+        <value>وغیره</value>
+        <comment/>
+    </data>
+    <data name="MID_TERM" xml:space="preserve">
+        <value>چهار نیم ماهه</value>
+        <comment/>
+    </data>
+    <data name="FINAL" xml:space="preserve">
+        <value>سالانه</value>
+        <comment/>
+    </data>
+    <data name="MALE" xml:space="preserve">
+        <value>مذکر</value>
+        <comment/>
+    </data>
+    <data name="FEMALE" xml:space="preserve">
+        <value>مونث</value>
+        <comment/>
+    </data>
+    <data name="NOT_ORPHAN" xml:space="preserve">
+        <value>یتیم نیست</value>
+        <comment/>
+    </data>
+    <data name="FATHER_SIDE" xml:space="preserve">
+        <value>از طرف پدر یتیم است</value>
+        <comment/>
+    </data>
+    <data name="MOTHER_SIDE" xml:space="preserve">
+        <value>از طرف مادر یتیم است</value>
+        <comment/>
+    </data>
+    <data name="BOTH_SIDES" xml:space="preserve">
+        <value>از هر دو طرف یتیم است</value>
+        <comment/>
+    </data>
+    <data name="DARI" xml:space="preserve">
+        <value>دری</value>
+        <comment/>
+    </data>
+    <data name="PASHTO" xml:space="preserve">
+        <value>پشتو</value>
+        <comment/>
+    </data>
+    <data name="TAJIKI" xml:space="preserve">
+        <value>تاجیکی</value>
+        <comment/>
+    </data>
+    <data name="UZBEKI" xml:space="preserve">
+        <value>ازبیکی</value>
+        <comment/>
+    </data>
+    <data name="PASHAYI" xml:space="preserve">
+        <value>پشه ای</value>
+        <comment/>
+    </data>
+    <data name="TURKMANI" xml:space="preserve">
+        <value>ترکمنی</value>
+        <comment/>
+    </data>
+    <data name="GUJARI" xml:space="preserve">
+        <value>گوجری</value>
+        <comment/>
+    </data>
+    <data name="BALUCHI" xml:space="preserve">
+        <value>بلوچی</value>
+        <comment/>
+    </data>
+    <data name="NURISTANI" xml:space="preserve">
+        <value>نورستانی</value>
+        <comment/>
+    </data>
+    <data name="WAKHANI" xml:space="preserve">
+        <value>واخانی</value>
+        <comment/>
+    </data>
+    <data name="SHAIGHANI" xml:space="preserve">
+        <value>شیغانی</value>
+        <comment/>
+    </data>
+    <data name="HINDI" xml:space="preserve">
+        <value>هندی</value>
+        <comment/>
+    </data>
+    <data name="JANUARY" xml:space="preserve">
+        <value>دلو</value>
+        <comment/>
+    </data>
+    <data name="FEBRUARY" xml:space="preserve">
+        <value>حوت</value>
+        <comment/>
+    </data>
+    <data name="MARCH" xml:space="preserve">
+        <value>حمل</value>
+        <comment/>
+    </data>
+    <data name="APRIL" xml:space="preserve">
+        <value>ثور</value>
+        <comment/>
+    </data>
+    <data name="MAY" xml:space="preserve">
+        <value>جوزا</value>
+        <comment/>
+    </data>
+    <data name="JUNE" xml:space="preserve">
+        <value>سرطان</value>
+        <comment/>
+    </data>
+    <data name="JULY" xml:space="preserve">
+        <value>اسد</value>
+        <comment/>
+    </data>
+    <data name="AUGUST" xml:space="preserve">
+        <value>سنبله</value>
+        <comment/>
+    </data>
+    <data name="SEPTEMBER" xml:space="preserve">
+        <value>میزان</value>
+        <comment/>
+    </data>
+    <data name="OCTOBER" xml:space="preserve">
+        <value>عقرب</value>
+        <comment/>
+    </data>
+    <data name="NOVEMBER" xml:space="preserve">
+        <value>قوس</value>
+        <comment/>
+    </data>
+    <data name="DECEMBER" xml:space="preserve">
+        <value>جدی</value>
+        <comment/>
+    </data>
 </root>
