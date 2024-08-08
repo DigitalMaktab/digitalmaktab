@@ -19,11 +19,13 @@ namespace digitalmaktabapi.Controllers
     [Authorize(Policy = "AdminPolicy")]
     public class SchoolController(
         ISchoolRepository schoolRepository,
+        IStudentRepository studentRepository,
         IMapper mapper,
         IStringLocalizer<SchoolController> localizer
         ) : ControllerBase
     {
         private readonly ISchoolRepository schoolRepository = schoolRepository;
+        private readonly IStudentRepository studentRepository = studentRepository;
         private readonly IMapper mapper = mapper;
         private readonly IStringLocalizer<SchoolController> localizer = localizer;
 
@@ -79,12 +81,22 @@ namespace digitalmaktabapi.Controllers
             return NoContent();
         }
 
-        // [HttpPost("registerStudent")]
-        // public async Task<IActionResult> RegisterStudent(AddStudentDto studentDto)
-        // {
-        //     Guid schoolId = Extensions.GetSessionDetails(this).SchoolId;
-
-        // }
+        [HttpPost("registerStudent")]
+        public async Task<IActionResult> RegisterStudent(AddStudentDto studentDto)
+        {
+            Guid schoolId = Extensions.GetSessionDetails(this).SchoolId;
+            studentDto.Email = studentDto.Email.ToLower();
+            if (await this.studentRepository.Exists(studentDto.Email))
+            {
+                return BadRequest(this.localizer["StudentExists"].Value);
+            }
+            var studentToCreate = this.mapper.Map<Student>(studentDto);
+            studentToCreate.SchoolId = schoolId;
+            string studentPassword = Extensions.GeneratePassword(12);
+            await this.studentRepository.Register(studentToCreate, studentPassword);
+            // TODO: Email password to student for signing in to the system.
+            return StatusCode(201);
+        }
 
         // Helper methods
 

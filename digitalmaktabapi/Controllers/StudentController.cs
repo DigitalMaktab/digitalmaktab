@@ -10,6 +10,7 @@ namespace digitalmaktabapi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Policy = "StudentPolicy")]
     public class StudentController(IStudentRepository studentRepository) : ControllerBase
     {
         private readonly IStudentRepository studentRepository = studentRepository;

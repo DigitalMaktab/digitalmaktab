@@ -24,9 +24,9 @@ namespace digitalmaktabapi.Data
             return student;
         }
 
-        public Task<bool> Exists(string prop)
+        public async Task<bool> Exists(string prop)
         {
-            throw new NotImplementedException();
+            return await this.context.Students.AnyAsync(a => a.Email.Equals(prop));
         }
 
         public async Task<Student> GetStudent(Guid id)
@@ -48,9 +48,15 @@ namespace digitalmaktabapi.Data
             return await PagedList<Student>.CreateAsync(students, userParams.PageNumber, userParams.PageSize);
         }
 
-        public Task<Student> Register(Student entity, string password)
+        public async Task<Student> Register(Student student, string password)
         {
-            throw new NotImplementedException();
+            Helpers.Extensions.CreatePasswordHash(password, out byte[] passwordHash, out byte[] passwordSalt);
+            student.PasswordHash = passwordHash;
+            student.PasswordSalt = passwordSalt;
+
+            await this.context.Students.AddAsync(student);
+            await this.context.SaveChangesAsync();
+            return student;
         }
 
         public Task<bool> UpdatePassword(Student entity, string password)

@@ -92,5 +92,13 @@ namespace digitalmaktabapi.Helpers
             } while (code < 100000);
             return code;
         }
+
+        public static string GeneratePassword(int length)
+        {
+            const string validChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890!@#$%^&*()";
+            Random random = new();
+            return new string(Enumerable.Repeat(validChars, length)
+                .Select(s => s[random.Next(s.Length)]).ToArray());
+        }
     }
 }
