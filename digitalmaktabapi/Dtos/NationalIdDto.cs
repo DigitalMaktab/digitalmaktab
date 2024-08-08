@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace digitalmaktabapi.Dtos
 {
-    public class NationalIdDto : BaseDto
+    public class NationalIdDto
     {
         public required string ElectoricNationIdNumber { get; set; }
         public int? NationalIdNumber { get; set; }

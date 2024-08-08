@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using digitalmaktabapi.Data;
 
@@ -10,9 +11,11 @@ using digitalmaktabapi.Data;
 namespace digitalmaktabapi.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20240808214031_JoiningYearChangedToCalendarYear")]
+    partial class JoiningYearChangedToCalendarYear
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.7");
@@ -681,6 +684,9 @@ namespace digitalmaktabapi.Migrations
                     b.Property<Guid?>("CreationUserId")
                         .HasColumnType("TEXT");
 
+                    b.Property<Guid>("CurrentBranchId")
+                        .HasColumnType("TEXT");
+
                     b.Property<Guid>("CurrentClassId")
                         .HasColumnType("TEXT");
 
@@ -732,6 +738,9 @@ namespace digitalmaktabapi.Migrations
 
                     b.Property<int>("JoiningAge")
                         .HasColumnType("INTEGER");
+
+                    b.Property<Guid>("JoiningBranchId")
+                        .HasColumnType("TEXT");
 
                     b.Property<Guid>("JoiningClassId")
                         .HasColumnType("TEXT");
@@ -787,13 +796,17 @@ namespace digitalmaktabapi.Migrations
 
                     b.HasIndex("CalendarYearId");
 
+                    b.HasIndex("CurrentBranchId");
+
                     b.HasIndex("CurrentClassId");
+
+                    b.HasIndex("JoiningBranchId");
 
                     b.HasIndex("JoiningClassId");
 
                     b.HasIndex("SchoolId");
 
-                    b.ToTable("Student");
+                    b.ToTable("Students");
                 });
 
             modelBuilder.Entity("digitalmaktabapi.Models.Subject", b =>
@@ -1247,9 +1260,21 @@ namespace digitalmaktabapi.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("digitalmaktabapi.Models.Branch", "CurrentBranch")
+                        .WithMany()
+                        .HasForeignKey("CurrentBranchId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("digitalmaktabapi.Models.Class", "CurrentClass")
                         .WithMany()
                         .HasForeignKey("CurrentClassId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("digitalmaktabapi.Models.Branch", "JoiningBranch")
+                        .WithMany()
+                        .HasForeignKey("JoiningBranchId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -1288,7 +1313,7 @@ namespace digitalmaktabapi.Migrations
 
                             b1.HasKey("StudentId");
 
-                            b1.ToTable("Student");
+                            b1.ToTable("Students");
 
                             b1.WithOwner()
                                 .HasForeignKey("StudentId");
@@ -1310,7 +1335,7 @@ namespace digitalmaktabapi.Migrations
 
                             b1.HasIndex("CountryId");
 
-                            b1.ToTable("Student");
+                            b1.ToTable("Students");
 
                             b1.HasOne("digitalmaktabapi.Models.Country", "Country")
                                 .WithMany()
@@ -1351,7 +1376,7 @@ namespace digitalmaktabapi.Migrations
 
                             b1.HasIndex("DistrictId");
 
-                            b1.ToTable("Student");
+                            b1.ToTable("Students");
 
                             b1.HasOne("digitalmaktabapi.Models.District", "District")
                                 .WithMany()
@@ -1390,7 +1415,7 @@ namespace digitalmaktabapi.Migrations
 
                             b1.HasIndex("DistrictId");
 
-                            b1.ToTable("Student");
+                            b1.ToTable("Students");
 
                             b1.HasOne("digitalmaktabapi.Models.District", "District")
                                 .WithMany()
@@ -1402,7 +1427,11 @@ namespace digitalmaktabapi.Migrations
                             b1.Navigation("District");
                         });
 
+                    b.Navigation("CurrentBranch");
+
                     b.Navigation("CurrentClass");
+
+                    b.Navigation("JoiningBranch");
 
                     b.Navigation("JoiningClass");
 

@@ -10,8 +10,8 @@ namespace digitalmaktabapi.Dtos
     public class SchoolForAddDto
     {
         public required string SchoolName { get; set; }
-        public required AddressDto Address { get; set; }
-        public required PhoneNumberDto PhoneNumber { get; set; }
+        public required AddPhoneNumberDto Address { get; set; }
+        public required AddPhoneNumberDto PhoneNumber { get; set; }
         public required string Email { get; set; }
         public required string Password { get; set; }
         public required string ConfirmPassword { get; set; }

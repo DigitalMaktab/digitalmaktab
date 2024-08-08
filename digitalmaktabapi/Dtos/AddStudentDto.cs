@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using digitalmaktabapi.Models;
+using DotCommon.Extensions;
 using FluentValidation;
 
 namespace digitalmaktabapi.Dtos
@@ -18,21 +19,18 @@ namespace digitalmaktabapi.Dtos
         public required string FatherNameEnglish { get; set; }
         public required string GrandFatherNameEnglish { get; set; }
         public required int AsasNumber { get; set; }
-        public required DateOnly JoiningYear { get; set; }
+        public required Guid CalendarYearId { get; set; }
         public required Guid JoiningClassId { get; set; }
-        public required Guid JoiningBranchId { get; set; }
         public required Guid CurrentClassId { get; set; }
-        public required Guid CurrentBranchId { get; set; }
-        public required AddressDto PrimaryAddress { get; set; }
-        public required AddressDto SecondaryAddress { get; set; }
+        public required AddAddressDto PrimaryAddress { get; set; }
+        public required AddAddressDto SecondaryAddress { get; set; }
         public NationalIdDto? NationalId { get; set; }
         public string? BrotherName { get; set; }
         public string? FUncleName { get; set; }
         public string? FCousinName { get; set; }
         public string? MUncleName { get; set; }
         public string? MCousinName { get; set; }
-        public PhoneNumberDto? PhoneNumber { get; set; }
-
+        public AddPhoneNumberDto? PhoneNumber { get; set; }
         public BloodGroup? BloodGroup { get; set; }
         public DisabilityType DisabilityType { get; set; }
         public IsOrphan IsOrphan { get; set; }
@@ -41,7 +39,6 @@ namespace digitalmaktabapi.Dtos
         public required DateTime DateOfBirth { get; set; }
         public required Gender Gender { get; set; }
         public required string Email { get; set; }
-        public required UserRole UserRole { get; set; }
         public decimal? MonthlyFee { get; set; }
     }
 
@@ -58,6 +55,29 @@ namespace digitalmaktabapi.Dtos
             RuleFor(a => a.LastNameEnglish).NotNull().NotEmpty();
             RuleFor(a => a.FatherNameEnglish).NotNull().NotEmpty();
             RuleFor(a => a.GrandFatherNameEnglish).NotNull().NotEmpty();
+            RuleFor(a => a.AsasNumber).NotNull().NotEmpty();
+            RuleFor(a => a.CalendarYearId)
+                .NotNull()
+                .NotEmpty()
+                .Must(a => a != Guid.Empty);
+            RuleFor(a => a.JoiningClassId)
+                .NotNull()
+                .NotEmpty()
+                .Must(a => a != Guid.Empty);
+            RuleFor(a => a.CurrentClassId)
+                .NotNull()
+                .NotEmpty()
+                .Must(a => a != Guid.Empty);
+
+            RuleFor(a => a.PrimaryAddress).NotNull().NotEmpty();
+            RuleFor(a => a.SecondaryAddress).NotNull().NotEmpty();
+
+            RuleFor(a => a.DisabilityType).NotEmpty().NotNull().IsInEnum();
+            RuleFor(a => a.IsOrphan).NotEmpty().NotNull().IsInEnum();
+            RuleFor(a => a.MotherTongue).NotEmpty().NotNull().IsInEnum();
+            RuleFor(a => a.Gender).NotEmpty().NotNull().IsInEnum();
+            RuleFor(a => a.DateOfBirth).NotEmpty().NotNull();
+            RuleFor(a => a.Email).NotEmpty().NotNull().EmailAddress();
         }
     }
 }

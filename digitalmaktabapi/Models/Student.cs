@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace digitalmaktabapi.Models
 {
+    [Table("Student")]
     public class Student : Base
     {
         public required Guid SchoolId { get; set; }
@@ -18,16 +20,14 @@ namespace digitalmaktabapi.Models
         public required string FatherNameEnglish { get; set; }
         public required string GrandFatherNameEnglish { get; set; }
         public required int AsasNumber { get; set; }
-        public required DateOnly JoiningYear { get; set; }
+        public required Guid CalendarYearId { get; set; }
+        [ForeignKey("CalendarYearId")]
+        public required CalendarYear JoiningYear { get; set; }
         public required int JoiningAge { get; set; }
         public required Guid JoiningClassId { get; set; }
         public required Class JoiningClass { get; set; }
-        public required Guid JoiningBranchId { get; set; }
-        public required Branch JoiningBranch { get; set; }
         public required Guid CurrentClassId { get; set; }
         public required Class CurrentClass { get; set; }
-        public required Guid CurrentBranchId { get; set; }
-        public required Branch CurrentBranch { get; set; }
         public required Address PrimaryAddress { get; set; }
         public required Address SecondaryAddress { get; set; }
         public NationalId? NationalId { get; set; }
