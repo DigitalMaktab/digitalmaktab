@@ -36,6 +36,18 @@ namespace digitalmaktabapi.Data
             return await PagedList<Book>.CreateAsync(entities, userParams.PageNumber, userParams.PageSize);
         }
 
+        public async Task<CalendarYear> GetCalendarYear(Guid calendarYearId)
+        {
+            var entity = await this.context.CalendarYears.FirstOrDefaultAsync(a => a.Id == calendarYearId);
+            return entity;
+        }
+
+        public async Task<PagedList<CalendarYear>> GetCalendarYears(UserParams userParams)
+        {
+            var entities = this.context.CalendarYears.AsQueryable();
+            return await PagedList<CalendarYear>.CreateAsync(entities, userParams.PageNumber, userParams.PageSize);
+        }
+
         public async Task<PagedList<City>> GetCities(Guid countryId, UserParams userParams)
         {
             var entities = this.context.Cities.Where(a => a.CountryId == countryId).AsQueryable();

@@ -128,4 +128,12 @@
         <value>رمز وردو فعلی شما درست نمیباشد.</value>
         <comment/>
     </data>
+    <data name="StudentAccountAccessSubject" xml:space="preserve">
+        <value>دسترسی به حساب</value>
+        <comment/>
+    </data>
+    <data name="StudentAccountDetails" xml:space="preserve">
+        <value>{} عزیز. مشخصات حساب کاربردی تان قرار ذیل است. ایمیل: {}, پسورد: {}</value>
+        <comment/>
+    </data>
 </root>

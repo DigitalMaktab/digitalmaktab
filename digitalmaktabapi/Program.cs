@@ -93,6 +93,7 @@ builder.Services.AddScoped<IValidator<SchoolForAddDto>, SchoolForAddDtoValidator
 builder.Services.AddScoped<IValidator<LoginDto>, LoginDtoValidator>();
 builder.Services.AddScoped<IValidator<UpdatePasswordDto>, UpdatePasswordDtoValidator>();
 builder.Services.AddScoped<IValidator<AddStudentDto>, AddStudentDtoValidator>();
+builder.Services.AddScoped<IValidator<AddCalendarYearDto>, AddCalendarYearDtoValidator>();
 
 // Add Data Seeder
 // Add Seeds

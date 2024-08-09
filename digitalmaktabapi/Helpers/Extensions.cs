@@ -100,5 +100,15 @@ namespace digitalmaktabapi.Helpers
             return new string(Enumerable.Repeat(validChars, length)
                 .Select(s => s[random.Next(s.Length)]).ToArray());
         }
+
+        public static RequestHeader GetRequestHeaders(HttpRequest request)
+        {
+            RequestHeader requestHeader = new();
+            if (request.Headers.TryGetValue("Accept-Language", out var headerValue))
+            {
+                requestHeader.AcceptLanguage = headerValue.FirstOrDefault();
+            }
+            return requestHeader;
+        }
     }
 }

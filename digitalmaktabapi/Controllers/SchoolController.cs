@@ -7,6 +7,7 @@ using digitalmaktabapi.Data;
 using digitalmaktabapi.Dtos;
 using digitalmaktabapi.Helpers;
 using digitalmaktabapi.Models;
+using digitalmaktabapi.Services.Mail;
 using digitalmaktabapi.Services.Upload;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -21,13 +22,15 @@ namespace digitalmaktabapi.Controllers
         ISchoolRepository schoolRepository,
         IStudentRepository studentRepository,
         IMapper mapper,
-        IStringLocalizer<SchoolController> localizer
+        IStringLocalizer<SchoolController> localizer,
+        IMailService mailService
         ) : ControllerBase
     {
         private readonly ISchoolRepository schoolRepository = schoolRepository;
         private readonly IStudentRepository studentRepository = studentRepository;
         private readonly IMapper mapper = mapper;
         private readonly IStringLocalizer<SchoolController> localizer = localizer;
+        private readonly IMailService mailService = mailService;
 
         [HttpGet]
         public async Task<IActionResult> GetSchool()
@@ -90,11 +93,30 @@ namespace digitalmaktabapi.Controllers
             {
                 return BadRequest(this.localizer["StudentExists"].Value);
             }
-            var studentToCreate = this.mapper.Map<Student>(studentDto);
-            studentToCreate.SchoolId = schoolId;
+
             string studentPassword = Extensions.GeneratePassword(12);
-            await this.studentRepository.Register(studentToCreate, studentPassword);
-            // TODO: Email password to student for signing in to the system.
+
+            RequestHeader requestHeaders = Extensions.GetRequestHeaders(Request);
+            string studentName = studentDto.FirstNameNative + " " + studentDto.LastNameNative;
+            if (requestHeaders.AcceptLanguage != null && requestHeaders.AcceptLanguage.Equals("en-US"))
+            {
+                studentName = studentDto.FirstNameEnglish + " " + studentDto.LastNameEnglish;
+            }
+            MailData mailData = new()
+            {
+                EmailToId = studentDto.Email,
+                EmailToName = studentName,
+                EmailSubject = this.localizer["StudentAccountAccessSubject"],
+                EmailBody = this.localizer["StudentAccountDetails", studentName, studentDto.Email, studentPassword]
+            };
+
+            if (await this.mailService.SendMail(mailData))
+            {
+                var studentToCreate = this.mapper.Map<Student>(studentDto);
+                studentToCreate.SchoolId = schoolId;
+                await this.studentRepository.Register(studentToCreate, studentPassword);
+            }
+
             return StatusCode(201);
         }
 

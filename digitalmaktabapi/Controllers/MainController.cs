@@ -235,6 +235,20 @@ namespace digitalmaktabapi.Controllers
             return await GetEnumResponse<AddressType>(id);
         }
 
+        [HttpGet("calendarYears")]
+        public async Task<IActionResult> GetCalendarYears([FromQuery] UserParams userParams)
+        {
+            var calendarYears = await this.rootRepository.GetCalendarYears(userParams);
+            return Ok(calendarYears);
+        }
+
+        [HttpGet("calendarYear/{calendarYearId}")]
+        public async Task<IActionResult> GetCalendarYear(Guid calendarYearId)
+        {
+            var calendarYear = await this.rootRepository.GetCalendarYear(calendarYearId);
+            return Ok(calendarYear);
+        }
+
         // Helper methods
 
         private List<EnumsDto> GetEnumList<T>() where T : Enum

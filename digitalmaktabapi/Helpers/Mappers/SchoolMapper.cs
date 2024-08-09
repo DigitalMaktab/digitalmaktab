@@ -14,6 +14,8 @@ namespace digitalmaktabapi.Helpers.Mappers
         {
             CreateMap<School, SchoolDto>();
             CreateMap<SchoolForAddDto, School>();
+            CreateMap<AddCalendarYearDto, CalendarYear>();
+            CreateMap<CalendarYear, CalendarYearDto>();
         }
     }
 }
