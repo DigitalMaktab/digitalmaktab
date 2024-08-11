@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace digitalmaktabapi.Dtos
 {
-    public class DistrictDto
+    public class DistrictDto : BaseDto
     {
 
     }

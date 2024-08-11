@@ -8,5 +8,7 @@ namespace digitalmaktabapi.Dtos
     public class BranchDto : BaseDto
     {
         public required string BranchName { get; set; }
+        public required Guid SchoolId { get; set; }
+        public required SchoolDto School { get; set; }
     }
 }

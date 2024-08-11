@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace digitalmaktabapi.Dtos
 {
-    public class SchoolDto
+    public class SchoolDto : BaseDto
     {
         public required string SchoolName { get; set; }
         public required AddressDto Address { get; set; }

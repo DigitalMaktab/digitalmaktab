@@ -10,5 +10,7 @@ namespace digitalmaktabapi.Models
     public class Branch : Base
     {
         public required string BranchName { get; set; }
+        public required Guid SchoolId { get; set; }
+        public required School School { get; set; }
     }
 }

@@ -12,17 +12,31 @@ namespace digitalmaktabapi.Helpers.Mappers
     {
         public AppMapper()
         {
+
             CreateMap<Address, AddressDto>();
             CreateMap<AddressDto, Address>();
             CreateMap<PhoneNumber, PhoneNumberDto>();
             CreateMap<PhoneNumberDto, PhoneNumber>();
-            CreateMap<Country, CountryDto>();
             CreateMap<CountryDto, Country>();
-            CreateMap<City, CityDto>();
             CreateMap<CityDto, City>();
-            CreateMap<District, DistrictDto>();
             CreateMap<DistrictDto, District>();
+            ApplyMappingConvention(typeof(Base), typeof(BaseDto));
+        }
 
+        private void ApplyMappingConvention(Type baseSourceType, Type baseDestinationType)
+        {
+            var mapTypes = new[]
+            {
+                new { Source = typeof(Country), Destination = typeof(CountryDto) },
+                new { Source = typeof(City), Destination = typeof(CityDto) },
+                new { Source = typeof(District), Destination = typeof(DistrictDto) }
+            };
+
+            foreach (var mapType in mapTypes)
+            {
+                var map = CreateMap(mapType.Source, mapType.Destination);
+                map.IncludeBase(baseSourceType, baseDestinationType);
+            }
         }
     }
 }

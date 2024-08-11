@@ -19,5 +19,6 @@ namespace digitalmaktabapi.Models
         public required int Code { get; set; }
         public required UserRole UserRole { get; set; }
         public ICollection<Student> Students { get; set; } = [];
+        public ICollection<Branch> Branches { get; set; } = [];
     }
 }

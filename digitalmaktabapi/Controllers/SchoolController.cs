@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using digitalmaktabapi.Data;
 using digitalmaktabapi.Dtos;
+using digitalmaktabapi.Headers;
 using digitalmaktabapi.Helpers;
 using digitalmaktabapi.Models;
 using digitalmaktabapi.Services.Mail;
@@ -119,6 +120,40 @@ namespace digitalmaktabapi.Controllers
 
             return StatusCode(201);
         }
+
+        [HttpPost("addBranch")]
+        public async Task<IActionResult> AddBranch(AddBranchDto branchDto)
+        {
+            Guid id = Extensions.GetSessionDetails(this).Id;
+            Guid schoolId = Extensions.GetSessionDetails(this).SchoolId;
+
+            var branchToCreate = this.mapper.Map<Branch>(branchDto);
+            branchToCreate.CreationUserId = id;
+            branchToCreate.UpdateUserId = id;
+            branchToCreate.SchoolId = schoolId;
+            this.schoolRepository.Add(branchToCreate);
+            await this.schoolRepository.SaveAll();
+            return NoContent();
+        }
+
+        [HttpGet("branch/{branchId}")]
+        public async Task<IActionResult> GetBranch(Guid branchId)
+        {
+            var branch = await this.schoolRepository.GetBranch(branchId);
+            var branchToReturn = this.mapper.Map<BranchDto>(branch);
+            return Ok(branchToReturn);
+        }
+
+        [HttpGet("branches")]
+        public async Task<IActionResult> GetBranches([FromQuery] UserParams userParams)
+        {
+            var schoolId = Extensions.GetSessionDetails(this).SchoolId;
+            var branches = await this.schoolRepository.GetBranches(schoolId, userParams);
+            var branchesToReturn = this.mapper.Map<ICollection<BranchDto>>(branches);
+            Response.AddPagintaion(branches.CurrentPage, branches.PageSize, branches.TotalCount, branches.TotalPages);
+            return Ok(branchesToReturn);
+        }
+
 
         // Helper methods
 

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using digitalmaktabapi.Data;
 using digitalmaktabapi.Dtos;
 using digitalmaktabapi.Headers;
@@ -18,9 +19,11 @@ namespace digitalmaktabapi.Controllers
     [Authorize]
     public class MainController(
         IRootRepository rootRepository,
+        IMapper mapper,
         IStringLocalizer<MainController> localizer) : ControllerBase
     {
         private readonly IRootRepository rootRepository = rootRepository;
+        private readonly IMapper mapper = mapper;
         private readonly IStringLocalizer<MainController> localizer = localizer;
 
 
@@ -29,7 +32,9 @@ namespace digitalmaktabapi.Controllers
         {
             Guid schoolId = Extensions.GetSessionDetails(this).SchoolId;
             var books = await this.rootRepository.GetBooks(schoolId, userParams);
-            return Ok(books);
+            var countreisToReturn = this.mapper.Map<ICollection<BookDto>>(books);
+            Response.AddPagintaion(books.CurrentPage, books.PageSize, books.TotalCount, books.TotalPages);
+            return Ok(countreisToReturn);
         }
 
 
@@ -37,14 +42,17 @@ namespace digitalmaktabapi.Controllers
         public async Task<IActionResult> GetCountries([FromQuery] UserParams userParams)
         {
             var countires = await this.rootRepository.GetCountries(userParams);
-            return Ok(countires);
+            var countreisToReturn = this.mapper.Map<ICollection<CountryDto>>(countires);
+            Response.AddPagintaion(countires.CurrentPage, countires.PageSize, countires.TotalCount, countires.TotalPages);
+            return Ok(countreisToReturn);
         }
 
         [HttpGet("country/{countryId}")]
         public async Task<IActionResult> GetCountry(Guid countryId)
         {
             var country = await this.rootRepository.GetCountry(countryId);
-            return Ok(country);
+            var countryToReturn = this.mapper.Map<CountryDto>(country);
+            return Ok(countryToReturn);
         }
 
 
@@ -52,28 +60,34 @@ namespace digitalmaktabapi.Controllers
         public async Task<IActionResult> GetCities(Guid countryId, [FromQuery] UserParams userParams)
         {
             var cities = await this.rootRepository.GetCities(countryId, userParams);
-            return Ok(cities);
+            var citiesToReturn = this.mapper.Map<ICollection<CityDto>>(cities);
+            Response.AddPagintaion(cities.CurrentPage, cities.PageSize, cities.TotalCount, cities.TotalPages);
+            return Ok(citiesToReturn);
         }
 
         [HttpGet("city/{cityId}")]
         public async Task<IActionResult> GetCity(Guid cityId)
         {
             var city = await this.rootRepository.GetCity(cityId);
-            return Ok(city);
+            var cityToReturn = this.mapper.Map<CityDto>(city);
+            return Ok(cityToReturn);
         }
 
         [HttpGet("districts/{cityId}")]
         public async Task<IActionResult> GetDistricts(Guid cityId, [FromQuery] UserParams userParams)
         {
             var districts = await this.rootRepository.GetDistricts(cityId, userParams);
-            return Ok(districts);
+            var districtsToReturn = this.mapper.Map<ICollection<DistrictDto>>(districts);
+            Response.AddPagintaion(districts.CurrentPage, districts.PageSize, districts.TotalCount, districts.TotalPages);
+            return Ok(districtsToReturn);
         }
 
         [HttpGet("district/{districtId}")]
         public async Task<IActionResult> GetDistrict(Guid districtId)
         {
             var district = await this.rootRepository.GetDistrict(districtId);
-            return Ok(district);
+            var districtToReturn = this.mapper.Map<DistrictDto>(district);
+            return Ok(districtToReturn);
         }
 
         [HttpGet("classNames")]
@@ -239,14 +253,15 @@ namespace digitalmaktabapi.Controllers
         public async Task<IActionResult> GetCalendarYears([FromQuery] UserParams userParams)
         {
             var calendarYears = await this.rootRepository.GetCalendarYears(userParams);
-            return Ok(calendarYears);
+            var calendarYearsToReturn = this.mapper.Map<ICollection<CalendarYearDto>>(calendarYears);
+            Response.AddPagintaion(calendarYears.CurrentPage, calendarYears.PageSize, calendarYears.TotalCount, calendarYears.TotalPages);
+            return Ok(calendarYearsToReturn);
         }
 
         [HttpGet("calendarYear/{calendarYearId}")]
         public async Task<IActionResult> GetCalendarYear(Guid calendarYearId)
         {
-            var calendarYear = await this.rootRepository.GetCalendarYear(calendarYearId);
-            return Ok(calendarYear);
+            return Ok(this.mapper.Map<CalendarYear>(await this.rootRepository.GetCalendarYear(calendarYearId)));
         }
 
         // Helper methods

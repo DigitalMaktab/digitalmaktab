@@ -35,6 +35,18 @@ namespace digitalmaktabapi.Data
             return false;
         }
 
+        public async Task<Branch> GetBranch(Guid branchId)
+        {
+            var entity = await this.context.Branches.FirstOrDefaultAsync(a => a.Id == branchId);
+            return entity;
+        }
+
+        public async Task<PagedList<Branch>> GetBranches(Guid schoolId, UserParams userParams)
+        {
+            var branches = this.context.Branches.Where(a => a.SchoolId == schoolId).AsQueryable();
+            return await PagedList<Branch>.CreateAsync(branches, userParams.PageNumber, userParams.PageSize);
+        }
+
         public async Task<School> GetSchool(Guid id)
         {
             var school = await this.context.Schools.FirstOrDefaultAsync(a => a.Id == id);
@@ -44,7 +56,6 @@ namespace digitalmaktabapi.Data
         public async Task<PagedList<School>> GetSchools(UserParams userParams)
         {
             var schools = this.context.Schools.AsQueryable();
-
             return await PagedList<School>.CreateAsync(schools, userParams.PageNumber, userParams.PageSize);
         }
 
