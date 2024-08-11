@@ -22,6 +22,7 @@ namespace digitalmaktabapi.Controllers
     public class SchoolController(
         ISchoolRepository schoolRepository,
         IStudentRepository studentRepository,
+        ITeacherRepository teacherRepository,
         IMapper mapper,
         IStringLocalizer<SchoolController> localizer,
         IMailService mailService
@@ -29,6 +30,7 @@ namespace digitalmaktabapi.Controllers
     {
         private readonly ISchoolRepository schoolRepository = schoolRepository;
         private readonly IStudentRepository studentRepository = studentRepository;
+        private readonly ITeacherRepository teacherRepository = teacherRepository;
         private readonly IMapper mapper = mapper;
         private readonly IStringLocalizer<SchoolController> localizer = localizer;
         private readonly IMailService mailService = mailService;
@@ -107,8 +109,8 @@ namespace digitalmaktabapi.Controllers
             {
                 EmailToId = studentDto.Email,
                 EmailToName = studentName,
-                EmailSubject = this.localizer["StudentAccountAccessSubject"],
-                EmailBody = this.localizer["StudentAccountDetails", studentName, studentDto.Email, studentPassword]
+                EmailSubject = this.localizer["AccountAccessSubject"],
+                EmailBody = this.localizer["AccountDetails", studentName, studentDto.Email, studentPassword]
             };
 
             if (await this.mailService.SendMail(mailData))
@@ -153,6 +155,57 @@ namespace digitalmaktabapi.Controllers
             Response.AddPagintaion(branches.CurrentPage, branches.PageSize, branches.TotalCount, branches.TotalPages);
             return Ok(branchesToReturn);
         }
+
+        // [HttpPost("registerTeacher")]
+        // public async Task<IActionResult> RegisterTeacher(AddTeacherDto teacherDto)
+        // {
+        //     Guid schoolId = Extensions.GetSessionDetails(this).SchoolId;
+        //     teacherDto.Email = teacherDto.Email.ToLower();
+        //     if (await this.studentRepository.Exists(teacherDto.Email))
+        //     {
+        //         return BadRequest(this.localizer["TeacherExists"].Value);
+        //     }
+
+        //     string studentPassword = Extensions.GeneratePassword(12);
+
+        //     RequestHeader requestHeaders = Extensions.GetRequestHeaders(Request);
+        //     string studentName = teacherDto.FirstNameNative + " " + teacherDto.LastNameNative;
+        //     if (requestHeaders.AcceptLanguage != null && requestHeaders.AcceptLanguage.Equals("en-US"))
+        //     {
+        //         studentName = teacherDto.FirstNameEnglish + " " + teacherDto.LastNameEnglish;
+        //     }
+        //     MailData mailData = new()
+        //     {
+        //         EmailToId = teacherDto.Email,
+        //         EmailToName = studentName,
+        //         EmailSubject = this.localizer["AccountAccessSubject"],
+        //         EmailBody = this.localizer["AccountDetails", studentName, teacherDto.Email, studentPassword]
+        //     };
+
+        //     if (await this.mailService.SendMail(mailData))
+        //     {
+        //         var studentToCreate = this.mapper.Map<Student>(teacherDto);
+        //         studentToCreate.SchoolId = schoolId;
+        //         await this.studentRepository.Register(studentToCreate, studentPassword);
+        //     }
+
+        //     return StatusCode(201);
+        // }
+
+        // [HttpPost("addClass")]
+        // public async Task<IActionResult> AddClass(AddClassDto classDto)
+        // {
+        //     Guid id = Extensions.GetSessionDetails(this).Id;
+        //     Guid schoolId = Extensions.GetSessionDetails(this).SchoolId;
+
+        //     var classToCreate = this.mapper.Map<Class>(classDto);
+        //     classToCreate.CreationUserId = id;
+        //     classToCreate.UpdateUserId = id;
+        //     classToCreate.SchoolId = schoolId;
+        //     this.schoolRepository.Add(classToCreate);
+        //     await this.schoolRepository.SaveAll();
+        //     return NoContent();
+        // }
 
 
         // Helper methods

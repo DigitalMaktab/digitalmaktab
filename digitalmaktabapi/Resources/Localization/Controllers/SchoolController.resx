@@ -128,12 +128,20 @@
         <value>Your current password is not correct.</value>
         <comment/>
     </data>
-    <data name="StudentAccountAccessSubject" xml:space="preserve">
+    <data name="AccountAccessSubject" xml:space="preserve">
         <value>Account Access</value>
         <comment/>
     </data>
-    <data name="StudentAccountDetails" xml:space="preserve">
+    <data name="AccountDetails" xml:space="preserve">
         <value>Dear {}, Please find your accoun access information here. Email: {}, Password: {}</value>
+        <comment/>
+    </data>
+    <data name="StudentExists" xml:space="preserve">
+        <value>The student with Email Exists in the system.</value>
+        <comment/>
+    </data>
+    <data name="TeacherExists" xml:space="preserve">
+        <value>The teacher with Email Exists in the system.</value>
         <comment/>
     </data>
 </root>
