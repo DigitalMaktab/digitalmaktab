@@ -47,6 +47,38 @@ namespace digitalmaktabapi.Data
             return await PagedList<Branch>.CreateAsync(branches, userParams.PageNumber, userParams.PageSize);
         }
 
+        public async Task<Class> GetClass(Guid classId)
+        {
+            var entity = await this.context.Classes.FirstOrDefaultAsync(a => a.Id == classId);
+            return entity;
+        }
+
+        public async Task<PagedList<Class>> GetClasses(Guid schoolId, ClassParams classParams)
+        {
+            var entities = this.context.Classes.Where(a => a.SchoolId == schoolId).AsQueryable();
+            if (classParams.BranchId.HasValue)
+            {
+                entities = entities.Where(a => a.BranchId == classParams.BranchId);
+            }
+            if (classParams.CalendarYearId.HasValue)
+            {
+                entities = entities.Where(a => a.CalendarYearId == classParams.CalendarYearId);
+            }
+            if (classParams.ClassType.HasValue)
+            {
+                entities = entities.Where(a => a.ClassType == classParams.ClassType);
+            }
+            if (classParams.Shift.HasValue)
+            {
+                entities = entities.Where(a => a.Shift == classParams.Shift);
+            }
+            if (classParams.TeacherId.HasValue)
+            {
+                entities = entities.Where(a => a.TeacherId == classParams.TeacherId);
+            }
+            return await PagedList<Class>.CreateAsync(entities, classParams.PageNumber, classParams.PageSize);
+        }
+
         public async Task<School> GetSchool(Guid id)
         {
             var school = await this.context.Schools.FirstOrDefaultAsync(a => a.Id == id);

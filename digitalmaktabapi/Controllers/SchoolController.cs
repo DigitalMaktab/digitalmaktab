@@ -189,21 +189,38 @@ namespace digitalmaktabapi.Controllers
             return StatusCode(201);
         }
 
-        // [HttpPost("addClass")]
-        // public async Task<IActionResult> AddClass(AddClassDto classDto)
-        // {
-        //     Guid id = Extensions.GetSessionDetails(this).Id;
-        //     Guid schoolId = Extensions.GetSessionDetails(this).SchoolId;
+        [HttpPost("addClass")]
+        public async Task<IActionResult> AddClass(AddClassDto classDto)
+        {
+            Guid id = Extensions.GetSessionDetails(this).Id;
+            Guid schoolId = Extensions.GetSessionDetails(this).SchoolId;
 
-        //     var classToCreate = this.mapper.Map<Class>(classDto);
-        //     classToCreate.CreationUserId = id;
-        //     classToCreate.UpdateUserId = id;
-        //     classToCreate.SchoolId = schoolId;
-        //     this.schoolRepository.Add(classToCreate);
-        //     await this.schoolRepository.SaveAll();
-        //     return NoContent();
-        // }
+            var classToCreate = this.mapper.Map<Class>(classDto);
+            classToCreate.CreationUserId = id;
+            classToCreate.UpdateUserId = id;
+            classToCreate.SchoolId = schoolId;
+            this.schoolRepository.Add(classToCreate);
+            await this.schoolRepository.SaveAll();
+            return NoContent();
+        }
 
+        [HttpGet("classes")]
+        public async Task<IActionResult> GetClasses([FromQuery] ClassParams classParams)
+        {
+            var schoolId = Extensions.GetSessionDetails(this).SchoolId;
+            var classes = await this.schoolRepository.GetClasses(schoolId, classParams);
+            var classesToReturn = this.mapper.Map<ICollection<ClassDto>>(classes);
+            Response.AddPagintaion(classes.CurrentPage, classes.PageSize, classes.TotalCount, classes.TotalPages);
+            return Ok(classesToReturn);
+        }
+
+        [HttpGet("class/{classId}")]
+        public async Task<IActionResult> GetClass(Guid classId)
+        {
+            var classFromRepo = await this.schoolRepository.GetClass(classId);
+            var classToReturn = this.mapper.Map<ClassDto>(classFromRepo);
+            return Ok(classToReturn);
+        }
 
         // Helper methods
 

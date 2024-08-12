@@ -17,6 +17,7 @@ namespace digitalmaktabapi.Helpers.Mappers
             CreateMap<AddCalendarYearDto, CalendarYear>();
             CreateMap<AddBranchDto, Branch>();
             CreateMap<AddTeacherDto, Teacher>();
+            CreateMap<AddClassDto, Class>();
         }
 
         private void ApplyMappingConvention(Type baseSourceType, Type baseDestinationType)
@@ -25,7 +26,8 @@ namespace digitalmaktabapi.Helpers.Mappers
             {
                 new { Source = typeof(School), Destination = typeof(SchoolDto) },
                 new { Source = typeof(CalendarYear), Destination = typeof(CalendarYearDto) },
-                new { Source = typeof(Branch), Destination = typeof(BranchDto) }
+                new { Source = typeof(Branch), Destination = typeof(BranchDto) },
+                new { Source = typeof(Class), Destination = typeof(ClassDto) },
             };
 
             foreach (var mapType in mapTypes)

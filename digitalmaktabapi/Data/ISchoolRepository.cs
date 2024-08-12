@@ -13,5 +13,8 @@ namespace digitalmaktabapi.Data
         Task<PagedList<School>> GetSchools(UserParams userParams);
         Task<PagedList<Branch>> GetBranches(Guid schoolId, UserParams userParams);
         Task<Branch> GetBranch(Guid branchId);
+
+        Task<PagedList<Class>> GetClasses(Guid schoolId, ClassParams userParams);
+        Task<Class> GetClass(Guid classId);
     }
 }
