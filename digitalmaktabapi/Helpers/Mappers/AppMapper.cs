@@ -15,8 +15,10 @@ namespace digitalmaktabapi.Helpers.Mappers
 
             CreateMap<Address, AddressDto>();
             CreateMap<AddressDto, Address>();
+            CreateMap<AddAddressDto, Address>();
             CreateMap<PhoneNumber, PhoneNumberDto>();
             CreateMap<PhoneNumberDto, PhoneNumber>();
+            CreateMap<AddPhoneNumberDto, PhoneNumber>();
             CreateMap<CountryDto, Country>();
             CreateMap<CityDto, City>();
             CreateMap<DistrictDto, District>();

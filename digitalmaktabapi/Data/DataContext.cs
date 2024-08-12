@@ -71,10 +71,9 @@ namespace digitalmaktabapi.Data
             modelBuilder.Entity<Teacher>().OwnsOne(a => a.PhoneNumber);
 
             modelBuilder.Entity<Class>()
-                .HasOne(a => a.Teacher)
-                .WithOne(a => a.Class)
-                .HasForeignKey<Teacher>(a => a.ClassId);
-
+                .HasOne(c => c.Teacher)
+                .WithOne(t => t.Class)
+                .HasForeignKey<Class>(c => c.TeacherId);
             modelBuilder.Entity<Subject>()
                 .HasOne(a => a.Book)
                 .WithOne(a => a.Subject)

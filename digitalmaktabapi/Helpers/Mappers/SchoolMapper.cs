@@ -16,6 +16,7 @@ namespace digitalmaktabapi.Helpers.Mappers
             CreateMap<SchoolForAddDto, School>();
             CreateMap<AddCalendarYearDto, CalendarYear>();
             CreateMap<AddBranchDto, Branch>();
+            CreateMap<AddTeacherDto, Teacher>();
         }
 
         private void ApplyMappingConvention(Type baseSourceType, Type baseDestinationType)

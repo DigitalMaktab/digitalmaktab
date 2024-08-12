@@ -133,7 +133,7 @@
         <comment/>
     </data>
     <data name="AccountDetails" xml:space="preserve">
-        <value>{} عزیز. مشخصات حساب کاربردی تان قرار ذیل است. ایمیل: {}, پسورد: {}</value>
+        <value>{0} عزیز. مشخصات حساب کاربردی تان قرار ذیل است. ایمیل: {1}, پسورد: {2}</value>
         <comment/>
     </data>
     <data name="StudentExists" xml:space="preserve">

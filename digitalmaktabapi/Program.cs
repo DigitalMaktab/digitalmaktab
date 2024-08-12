@@ -94,6 +94,7 @@ builder.Services.AddScoped<IValidator<LoginDto>, LoginDtoValidator>();
 builder.Services.AddScoped<IValidator<UpdatePasswordDto>, UpdatePasswordDtoValidator>();
 builder.Services.AddScoped<IValidator<AddStudentDto>, AddStudentDtoValidator>();
 builder.Services.AddScoped<IValidator<AddCalendarYearDto>, AddCalendarYearDtoValidator>();
+builder.Services.AddScoped<IValidator<AddTeacherDto>, AddTeacherDtoValidator>();
 
 // Add Data Seeder
 // Add Seeds
@@ -129,6 +130,7 @@ builder.Services.AddAuthorization();
 builder.Services.AddScoped<IRootRepository, RootRepository>();
 builder.Services.AddScoped<ISchoolRepository, SchoolRepository>();
 builder.Services.AddScoped<IStudentRepository, StudentRepository>();
+builder.Services.AddScoped<ITeacherRepository, TeacherRepository>();
 
 
 

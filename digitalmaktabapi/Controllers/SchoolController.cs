@@ -156,41 +156,38 @@ namespace digitalmaktabapi.Controllers
             return Ok(branchesToReturn);
         }
 
-        // [HttpPost("registerTeacher")]
-        // public async Task<IActionResult> RegisterTeacher(AddTeacherDto teacherDto)
-        // {
-        //     Guid schoolId = Extensions.GetSessionDetails(this).SchoolId;
-        //     teacherDto.Email = teacherDto.Email.ToLower();
-        //     if (await this.studentRepository.Exists(teacherDto.Email))
-        //     {
-        //         return BadRequest(this.localizer["TeacherExists"].Value);
-        //     }
+        [HttpPost("registerTeacher")]
+        public async Task<IActionResult> RegisterTeacher(AddTeacherDto teacherDto)
+        {
+            Guid schoolId = Extensions.GetSessionDetails(this).SchoolId;
+            teacherDto.Email = teacherDto.Email.ToLower();
+            if (await this.teacherRepository.Exists(teacherDto.Email))
+            {
+                return BadRequest(this.localizer["TeacherExists"].Value);
+            }
 
-        //     string studentPassword = Extensions.GeneratePassword(12);
+            string teacherPassword = Extensions.GeneratePassword(12);
+            string teacherName = teacherDto.FirstName + " " + teacherDto.LastName;
 
-        //     RequestHeader requestHeaders = Extensions.GetRequestHeaders(Request);
-        //     string studentName = teacherDto.FirstNameNative + " " + teacherDto.LastNameNative;
-        //     if (requestHeaders.AcceptLanguage != null && requestHeaders.AcceptLanguage.Equals("en-US"))
-        //     {
-        //         studentName = teacherDto.FirstNameEnglish + " " + teacherDto.LastNameEnglish;
-        //     }
-        //     MailData mailData = new()
-        //     {
-        //         EmailToId = teacherDto.Email,
-        //         EmailToName = studentName,
-        //         EmailSubject = this.localizer["AccountAccessSubject"],
-        //         EmailBody = this.localizer["AccountDetails", studentName, teacherDto.Email, studentPassword]
-        //     };
+            MailData mailData = new()
+            {
+                EmailToId = teacherDto.Email,
+                EmailToName = teacherName,
+                EmailSubject = this.localizer["AccountAccessSubject"],
+                EmailBody = this.localizer["AccountDetails", teacherName, teacherDto.Email, teacherPassword]
+            };
 
-        //     if (await this.mailService.SendMail(mailData))
-        //     {
-        //         var studentToCreate = this.mapper.Map<Student>(teacherDto);
-        //         studentToCreate.SchoolId = schoolId;
-        //         await this.studentRepository.Register(studentToCreate, studentPassword);
-        //     }
+            if (await this.mailService.SendMail(mailData))
+            {
+                var teacherToCreate = this.mapper.Map<Teacher>(teacherDto);
+                teacherToCreate.SchoolId = schoolId;
+                teacherToCreate.CreationUserId = schoolId;
+                teacherToCreate.UpdateUserId = schoolId;
+                await this.teacherRepository.Register(teacherToCreate, teacherPassword);
+            }
 
-        //     return StatusCode(201);
-        // }
+            return StatusCode(201);
+        }
 
         // [HttpPost("addClass")]
         // public async Task<IActionResult> AddClass(AddClassDto classDto)

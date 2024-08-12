@@ -133,7 +133,7 @@
         <comment/>
     </data>
     <data name="AccountDetails" xml:space="preserve">
-        <value>Dear {}, Please find your accoun access information here. Email: {}, Password: {}</value>
+        <value>Dear {0}, Please find your accoun access information here. Email: {1}, Password: {2}</value>
         <comment/>
     </data>
     <data name="StudentExists" xml:space="preserve">
