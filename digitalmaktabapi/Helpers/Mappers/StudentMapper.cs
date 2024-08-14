@@ -8,27 +8,20 @@ using digitalmaktabapi.Models;
 
 namespace digitalmaktabapi.Helpers.Mappers
 {
-    public class SchoolMapper : Profile
+    public class StudentMapper : Profile
     {
-        public SchoolMapper()
+
+        public StudentMapper()
         {
             ApplyMappingConvention(typeof(Base), typeof(BaseDto));
-            CreateMap<SchoolForAddDto, School>();
-            CreateMap<AddCalendarYearDto, CalendarYear>();
-            CreateMap<AddBranchDto, Branch>();
-            CreateMap<AddTeacherDto, Teacher>();
-            CreateMap<AddClassDto, Class>();
-            CreateMap<AddStudentDto, Student>();
         }
+
 
         private void ApplyMappingConvention(Type baseSourceType, Type baseDestinationType)
         {
             var mapTypes = new[]
             {
-                new { Source = typeof(School), Destination = typeof(SchoolDto) },
-                new { Source = typeof(CalendarYear), Destination = typeof(CalendarYearDto) },
-                new { Source = typeof(Branch), Destination = typeof(BranchDto) },
-                new { Source = typeof(Class), Destination = typeof(ClassDto) },
+                new { Source = typeof(Student), Destination = typeof(StudentDto) }
             };
 
             foreach (var mapType in mapTypes)
@@ -38,4 +31,6 @@ namespace digitalmaktabapi.Helpers.Mappers
             }
         }
     }
+
+
 }

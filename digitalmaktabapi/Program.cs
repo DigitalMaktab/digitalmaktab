@@ -76,6 +76,8 @@ builder.Services.AddSwaggerGen(a =>
 // Add DataContext
 builder.Services.AddDbContext<DataContext>(x => x.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")).EnableSensitiveDataLogging());
 
+// Adding Cross Origin Resrouce Sharing Policy
+
 // Mail Settings
 builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("MailSettings"));
 builder.Services.AddTransient<IMailService, MailService>();

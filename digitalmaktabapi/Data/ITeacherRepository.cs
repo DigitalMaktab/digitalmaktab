@@ -9,9 +9,9 @@ namespace digitalmaktabapi.Data
 {
     public interface ITeacherRepository : IBaseRepository, IAuthRepository<Teacher>
     {
-        Task<Teacher> GetStudent(Guid id);
-        Task<PagedList<Teacher>> GetStudents(Guid schoolId, UserParams userParams);
+        Task<Teacher> GetTeacher(Guid id);
+        Task<PagedList<Teacher>> GetTeachers(Guid schoolId, UserParams userParams);
 
-        Task<int> GetStudentCount(Guid schoolId);
+        Task<int> GetTeachersCount(Guid schoolId);
     }
 }

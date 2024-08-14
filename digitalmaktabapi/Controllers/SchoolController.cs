@@ -117,11 +117,33 @@ namespace digitalmaktabapi.Controllers
             {
                 var studentToCreate = this.mapper.Map<Student>(studentDto);
                 studentToCreate.SchoolId = schoolId;
+                studentToCreate.CreationUserId = schoolId;
+                studentToCreate.UpdateUserId = schoolId;
                 await this.studentRepository.Register(studentToCreate, studentPassword);
             }
 
             return StatusCode(201);
         }
+
+        [HttpGet("students")]
+        public async Task<IActionResult> GetStudents([FromQuery] UserParams userParams)
+        {
+            var schoolId = Extensions.GetSessionDetails(this).SchoolId;
+            var students = await this.studentRepository.GetStudents(schoolId, userParams);
+            var studentsToReturn = this.mapper.Map<ICollection<StudentDto>>(students);
+            Response.AddPagintaion(students.CurrentPage, students.PageSize, students.TotalCount, students.TotalPages);
+            return Ok(studentsToReturn);
+        }
+
+
+        [HttpGet("student/{studentId}")]
+        public async Task<IActionResult> GetStudent(Guid studentId)
+        {
+            var student = await this.studentRepository.GetStudent(studentId);
+            var studentsToReturn = this.mapper.Map<StudentDto>(student);
+            return Ok(studentsToReturn);
+        }
+
 
         [HttpPost("addBranch")]
         public async Task<IActionResult> AddBranch(AddBranchDto branchDto)
@@ -187,6 +209,25 @@ namespace digitalmaktabapi.Controllers
             }
 
             return StatusCode(201);
+        }
+
+        [HttpGet("teachers")]
+        public async Task<IActionResult> GetTeachers([FromQuery] UserParams userParams)
+        {
+            var schoolId = Extensions.GetSessionDetails(this).SchoolId;
+            var teachers = await this.teacherRepository.GetTeachers(schoolId, userParams);
+            var teachersToReturn = this.mapper.Map<ICollection<TeacherDto>>(teachers);
+            Response.AddPagintaion(teachers.CurrentPage, teachers.PageSize, teachers.TotalCount, teachers.TotalPages);
+            return Ok(teachersToReturn);
+        }
+
+
+        [HttpGet("teacher/{teacherId}")]
+        public async Task<IActionResult> GetTeacher(Guid teacherId)
+        {
+            var teacher = await this.teacherRepository.GetTeacher(teacherId);
+            var teacherToReturn = this.mapper.Map<TeacherDto>(teacher);
+            return Ok(teacherToReturn);
         }
 
         [HttpPost("addClass")]

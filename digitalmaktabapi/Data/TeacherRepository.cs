@@ -29,19 +29,19 @@ namespace digitalmaktabapi.Data
             return await this.context.Teachers.AnyAsync(a => a.Email.Equals(prop));
         }
 
-        public async Task<Teacher> GetStudent(Guid id)
+        public async Task<Teacher> GetTeacher(Guid id)
         {
             var teacher = await this.context.Teachers.FirstOrDefaultAsync(a => a.Id == id);
             return teacher;
         }
 
-        public async Task<int> GetStudentCount(Guid schoolId)
+        public async Task<int> GetTeachersCount(Guid schoolId)
         {
             int count = await this.context.Teachers.Where(a => a.SchoolId == schoolId).CountAsync();
             return count;
         }
 
-        public async Task<PagedList<Teacher>> GetStudents(Guid schoolId, UserParams userParams)
+        public async Task<PagedList<Teacher>> GetTeachers(Guid schoolId, UserParams userParams)
         {
             var teachers = this.context.Teachers.Where(a => a.SchoolId == schoolId).AsQueryable();
 

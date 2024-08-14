@@ -72,11 +72,11 @@ namespace digitalmaktabapi.Dtos
             RuleFor(a => a.PrimaryAddress).NotNull().NotEmpty();
             RuleFor(a => a.SecondaryAddress).NotNull().NotEmpty();
 
-            RuleFor(a => a.DisabilityType).NotEmpty().NotNull().IsInEnum();
-            RuleFor(a => a.IsOrphan).NotEmpty().NotNull().IsInEnum();
-            RuleFor(a => a.MotherTongue).NotEmpty().NotNull().IsInEnum();
-            RuleFor(a => a.Gender).NotEmpty().NotNull().IsInEnum();
-            RuleFor(a => a.DateOfBirth).NotEmpty().NotNull();
+            RuleFor(a => a.DisabilityType).NotNull().IsInEnum();
+            RuleFor(a => a.IsOrphan).NotNull().IsInEnum();
+            RuleFor(a => a.MotherTongue).NotNull().IsInEnum();
+            RuleFor(a => a.Gender).NotNull().IsInEnum();
+            RuleFor(a => a.DateOfBirth).NotNull();
             RuleFor(a => a.Email).NotEmpty().NotNull().EmailAddress();
         }
     }

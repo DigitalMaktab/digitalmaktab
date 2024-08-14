@@ -22,6 +22,8 @@ namespace digitalmaktabapi.Helpers.Mappers
             CreateMap<CountryDto, Country>();
             CreateMap<CityDto, City>();
             CreateMap<DistrictDto, District>();
+            CreateMap<NationalIdDto, NationalId>();
+            CreateMap<NationalId, NationalIdDto>();
             ApplyMappingConvention(typeof(Base), typeof(BaseDto));
         }
 

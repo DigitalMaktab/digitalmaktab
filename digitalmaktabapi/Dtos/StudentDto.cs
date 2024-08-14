@@ -44,8 +44,6 @@ namespace digitalmaktabapi.Dtos
         public required DateTime DateOfBirth { get; set; }
         public required Gender Gender { get; set; }
         public required string Email { get; set; }
-        public required byte[] PasswordHash { get; set; }
-        public required byte[] PasswordSalt { get; set; }
         public required UserRole UserRole { get; set; }
         public decimal? MonthlyFee { get; set; }
         public required ICollection<AttendanceDto> Attendances { get; set; } = [];
