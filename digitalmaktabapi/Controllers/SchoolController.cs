@@ -221,7 +221,6 @@ namespace digitalmaktabapi.Controllers
             return Ok(teachersToReturn);
         }
 
-
         [HttpGet("teacher/{teacherId}")]
         public async Task<IActionResult> GetTeacher(Guid teacherId)
         {
@@ -261,6 +260,67 @@ namespace digitalmaktabapi.Controllers
             var classFromRepo = await this.schoolRepository.GetClass(classId);
             var classToReturn = this.mapper.Map<ClassDto>(classFromRepo);
             return Ok(classToReturn);
+        }
+
+
+        [HttpPost("addClassSubject")]
+        public async Task<IActionResult> AddClassSubject(AddClassSubjectDto classSubjectDto)
+        {
+            Guid id = Extensions.GetSessionDetails(this).Id;
+
+            var classSubjectToCreate = this.mapper.Map<ClassSubject>(classSubjectDto);
+            classSubjectToCreate.CreationUserId = id;
+            classSubjectToCreate.UpdateUserId = id;
+
+            this.schoolRepository.Add(classSubjectToCreate);
+            await this.schoolRepository.SaveAll();
+            return NoContent();
+        }
+
+        [HttpPost("enroll")]
+        public async Task<IActionResult> Enroll(AddEnrollmentDto enrollmentDto)
+        {
+            Guid id = Extensions.GetSessionDetails(this).Id;
+            if (await this.schoolRepository.IsSudentEnrolled(enrollmentDto.StudentId, enrollmentDto.CalendarYearId, enrollmentDto.ClassId))
+            {
+                return BadRequest(this.localizer["StudentIsEnrolled"].Value);
+            }
+
+            var enrollmentToCreate = this.mapper.Map<Enrollment>(enrollmentDto);
+            enrollmentToCreate.CreationUserId = id;
+            enrollmentToCreate.UpdateUserId = id;
+
+            this.schoolRepository.Add(enrollmentToCreate);
+            await this.schoolRepository.SaveAll();
+            return NoContent();
+        }
+
+        [HttpGet("classStudents/{classId}/{calendarYearId}")]
+        public async Task<IActionResult> GetClassStuddents(Guid classId, Guid calendarYearId, [FromQuery] UserParams userParams)
+        {
+            var enrollments = await this.schoolRepository.GetEnrollments(classId, calendarYearId, userParams);
+            var enrollmentsToReturn = this.mapper.Map<ICollection<EnrollmentDto>>(enrollments);
+            Response.AddPagintaion(enrollments.CurrentPage, enrollments.PageSize, enrollments.TotalCount, enrollments.TotalPages);
+            return Ok(enrollmentsToReturn);
+        }
+
+        [HttpGet("classStudent/{enrollmentId}")]
+        public async Task<IActionResult> GetClassStuddent(Guid enrollmentId)
+        {
+            var enrollment = await this.schoolRepository.GetEnrollment(enrollmentId);
+            var enrollmentToReturn = this.mapper.Map<EnrollmentDto>(enrollment);
+            return Ok(enrollmentToReturn);
+        }
+
+        [HttpDelete("withdraw/{id}")]
+        public async Task<IActionResult> Withdraw(Guid id)
+        {
+            var enrollment = await this.schoolRepository.GetEnrollment(id);
+
+            this.schoolRepository.Delete(enrollment);
+            await this.schoolRepository.SaveAll();
+
+            return NoContent();
         }
 
         // Helper methods

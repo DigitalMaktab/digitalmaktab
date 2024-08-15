@@ -144,4 +144,8 @@
         <value>The teacher with Email Exists in the system.</value>
         <comment/>
     </data>
+    <data name="StudentIsEnrolled" xml:space="preserve">
+        <value>The student is already enrolled in the class.</value>
+        <comment/>
+    </data>
 </root>

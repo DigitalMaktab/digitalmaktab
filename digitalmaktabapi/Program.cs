@@ -28,7 +28,15 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 // Add Localization
 builder.Services.AddLocalization(options => options.ResourcesPath = "Resources/Localization");
-builder.Services.AddControllers().AddViewLocalization();
+builder.Services
+.AddControllers()
+.AddNewtonsoftJson(a => a.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore)
+.AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new DateTimeConverter());
+    }
+)
+.AddViewLocalization();
 builder.Services.Configure<RequestLocalizationOptions>(options =>
 {
     var supportedCultures = new List<CultureInfo>
@@ -97,6 +105,9 @@ builder.Services.AddScoped<IValidator<UpdatePasswordDto>, UpdatePasswordDtoValid
 builder.Services.AddScoped<IValidator<AddStudentDto>, AddStudentDtoValidator>();
 builder.Services.AddScoped<IValidator<AddCalendarYearDto>, AddCalendarYearDtoValidator>();
 builder.Services.AddScoped<IValidator<AddTeacherDto>, AddTeacherDtoValidator>();
+builder.Services.AddScoped<IValidator<AddRootBookDto>, AddRootBookDtoValidator>();
+builder.Services.AddScoped<IValidator<AddSubjectDto>, AddSubjectDtoValidator>();
+builder.Services.AddScoped<IValidator<AddClassSubjectDto>, AddClassSubjectDtoValidator>();
 
 // Add Data Seeder
 // Add Seeds

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using digitalmaktabapi.Data;
 
@@ -10,9 +11,11 @@ using digitalmaktabapi.Data;
 namespace digitalmaktabapi.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20240815153504_StudentClassIdChanged")]
+    partial class StudentClassIdChanged
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.7");
@@ -684,6 +687,9 @@ namespace digitalmaktabapi.Migrations
                     b.Property<Guid>("CalendarYearId")
                         .HasColumnType("TEXT");
 
+                    b.Property<Guid>("ClassId")
+                        .HasColumnType("TEXT");
+
                     b.Property<DateTime?>("CreationDate")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT")
@@ -794,6 +800,8 @@ namespace digitalmaktabapi.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CalendarYearId");
+
+                    b.HasIndex("ClassId");
 
                     b.HasIndex("JoiningClassId");
 
@@ -1083,13 +1091,13 @@ namespace digitalmaktabapi.Migrations
                         .IsRequired();
 
                     b.HasOne("digitalmaktabapi.Models.Class", "Class")
-                        .WithMany("Enrollments")
+                        .WithMany()
                         .HasForeignKey("ClassId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("digitalmaktabapi.Models.Student", "Student")
-                        .WithMany("Enrollments")
+                        .WithMany()
                         .HasForeignKey("StudentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1264,6 +1272,12 @@ namespace digitalmaktabapi.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("digitalmaktabapi.Models.Class", "Class")
+                        .WithMany()
+                        .HasForeignKey("ClassId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("digitalmaktabapi.Models.Class", "JoiningClass")
                         .WithMany()
                         .HasForeignKey("JoiningClassId")
@@ -1413,6 +1427,8 @@ namespace digitalmaktabapi.Migrations
                             b1.Navigation("District");
                         });
 
+                    b.Navigation("Class");
+
                     b.Navigation("JoiningClass");
 
                     b.Navigation("JoiningYear");
@@ -1526,8 +1542,6 @@ namespace digitalmaktabapi.Migrations
                     b.Navigation("Attendances");
 
                     b.Navigation("ClassSubjects");
-
-                    b.Navigation("Enrollments");
                 });
 
             modelBuilder.Entity("digitalmaktabapi.Models.Country", b =>
@@ -1545,8 +1559,6 @@ namespace digitalmaktabapi.Migrations
             modelBuilder.Entity("digitalmaktabapi.Models.Student", b =>
                 {
                     b.Navigation("Attendances");
-
-                    b.Navigation("Enrollments");
 
                     b.Navigation("Fees");
 

@@ -21,7 +21,6 @@ namespace digitalmaktabapi.Dtos
         public required int AsasNumber { get; set; }
         public required Guid CalendarYearId { get; set; }
         public required Guid JoiningClassId { get; set; }
-        public required Guid CurrentClassId { get; set; }
         public required AddAddressDto PrimaryAddress { get; set; }
         public required AddAddressDto SecondaryAddress { get; set; }
         public NationalIdDto? NationalId { get; set; }
@@ -61,10 +60,6 @@ namespace digitalmaktabapi.Dtos
                 .NotEmpty()
                 .Must(a => a != Guid.Empty);
             RuleFor(a => a.JoiningClassId)
-                .NotNull()
-                .NotEmpty()
-                .Must(a => a != Guid.Empty);
-            RuleFor(a => a.CurrentClassId)
                 .NotNull()
                 .NotEmpty()
                 .Must(a => a != Guid.Empty);

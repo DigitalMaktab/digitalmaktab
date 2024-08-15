@@ -20,7 +20,8 @@ namespace digitalmaktabapi.Dtos
         public required Shift Shift { get; set; }
         public required Guid TeacherId { get; set; }
         public required TeacherDto Teacher { get; set; }
-        public required ICollection<ClassSubjectDto> ClassSubjects { get; set; } = [];
+        public required ICollection<ClassSubjectForClassDto> ClassSubjects { get; set; } = [];
         public required ICollection<AttendanceDto> Attendances { get; set; } = [];
+        public required ICollection<EnrollmentDto> Enrollments { get; set; } = [];
     }
 }

@@ -24,11 +24,17 @@ namespace digitalmaktabapi.Helpers.Mappers
             CreateMap<DistrictDto, District>();
             CreateMap<NationalIdDto, NationalId>();
             CreateMap<NationalId, NationalIdDto>();
+            CreateMap<AddRootBookDto, Book>();
+            CreateMap<AddSubjectDto, Subject>();
 
             MappingHepler.ApplyMappingConvention(this, typeof(Base), typeof(BaseDto),
                 (typeof(Country), typeof(CountryDto)),
                 (typeof(City), typeof(CityDto)),
-                (typeof(District), typeof(DistrictDto))
+                (typeof(District), typeof(DistrictDto)),
+                (typeof(Subject), typeof(SubjectDto)),
+                (typeof(Subject), typeof(SubjectForClassDto)),
+                (typeof(Book), typeof(BookDto)),
+                (typeof(Book), typeof(BookForClassDto))
             );
         }
     }

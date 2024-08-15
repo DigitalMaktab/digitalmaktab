@@ -24,8 +24,6 @@ namespace digitalmaktabapi.Dtos
         public required int JoiningAge { get; set; }
         public required Guid JoiningClassId { get; set; }
         public required ClassDto JoiningClass { get; set; }
-        public required Guid CurrentClassId { get; set; }
-        public required ClassDto CurrentClass { get; set; }
         public required AddressDto PrimaryAddress { get; set; }
         public required AddressDto SecondaryAddress { get; set; }
         public NationalIdDto? NationalId { get; set; }

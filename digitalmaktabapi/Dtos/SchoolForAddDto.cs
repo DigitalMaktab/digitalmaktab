@@ -2,8 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using digitalmaktabapi.Controllers;
+using digitalmaktabapi.Helpers;
 using digitalmaktabapi.Models;
 using FluentValidation;
+using Microsoft.Extensions.Localization;
 
 namespace digitalmaktabapi.Dtos
 {
@@ -22,7 +25,7 @@ namespace digitalmaktabapi.Dtos
 
     public class SchoolForAddDtoValidator : AbstractValidator<SchoolForAddDto>
     {
-        public SchoolForAddDtoValidator()
+        public SchoolForAddDtoValidator(IStringLocalizer<MainController> localizer)
         {
             RuleFor(a => a.SchoolName).NotEmpty().NotNull();
             RuleFor(a => a.Address).NotNull();
@@ -31,6 +34,7 @@ namespace digitalmaktabapi.Dtos
             RuleFor(a => a.Password).NotEmpty().NotNull().MinimumLength(8);
             RuleFor(a => a.ConfirmPassword).NotEmpty().NotNull().Matches(a => a.Password);
             RuleFor(a => a.Code).NotNull().NotEmpty();
+            RuleFor(a => a.Logo).ValidateFile(maxSize: 1 * 1024 * 1024, localizer, allowedExtensions: [".png"]);
         }
     }
 }

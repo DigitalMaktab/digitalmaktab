@@ -396,4 +396,16 @@
         <value>جدی</value>
         <comment/>
     </data>
+    <data name="FileCannotBeEmpty" xml:space="preserve">
+        <value>فایل نمی تواند خالی باشد.</value>
+        <comment/>
+    </data>
+    <data name="FileSizeLimit" xml:space="preserve">
+        <value>حجم فایل نمی تواند بیشتر از {0} مگابایت باشد.</value>
+        <comment/>
+    </data>
+    <data name="AllowedFileTypes" xml:space="preserve">
+        <value>فقط فایل های {0} مجاز هستند.</value>
+        <comment/>
+    </data>
 </root>

@@ -26,6 +26,7 @@ namespace digitalmaktabapi.Data
         public DbSet<Teacher> Teachers { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<Branch> Branches { get; set; }
+        public DbSet<Attendance> Attendances { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             foreach (var entityType in modelBuilder.Model.GetEntityTypes())
@@ -71,7 +72,7 @@ namespace digitalmaktabapi.Data
             modelBuilder.Entity<Teacher>().OwnsOne(a => a.PhoneNumber);
 
             modelBuilder.Entity<Subject>()
-                .HasOne(a => a.Book)
+            .HasOne(a => a.Book)
                 .WithOne(a => a.Subject)
                 .HasForeignKey<Book>(a => a.SubjectId);
         }

@@ -28,11 +28,7 @@ namespace digitalmaktabapi.Data
 
         public async Task<bool> Exists(string prop)
         {
-            if (await this.context.Schools.AnyAsync(a => a.Email == prop))
-            {
-                return true;
-            }
-            return false;
+            return await this.context.Schools.AnyAsync(a => a.Email == prop);
         }
 
         public async Task<Branch> GetBranch(Guid branchId)
@@ -49,7 +45,11 @@ namespace digitalmaktabapi.Data
 
         public async Task<Class> GetClass(Guid classId)
         {
-            var entity = await this.context.Classes.FirstOrDefaultAsync(a => a.Id == classId);
+            var entity = await this.context.Classes
+            .Include(a => a.ClassSubjects)
+            .ThenInclude(a => a.Subject)
+            .ThenInclude(a => a.Book)
+            .FirstOrDefaultAsync(a => a.Id == classId);
             return entity;
         }
 
@@ -79,6 +79,25 @@ namespace digitalmaktabapi.Data
             return await PagedList<Class>.CreateAsync(entities, classParams.PageNumber, classParams.PageSize);
         }
 
+        public async Task<Enrollment> GetEnrollment(Guid id)
+        {
+            var entity = await this.context.Enrollments
+            .Include(a => a.Student)
+            .Include(a => a.Class)
+            .Include(a => a.CalendarYear)
+            .FirstOrDefaultAsync(a => a.Id == id);
+            return entity;
+        }
+
+        public async Task<PagedList<Enrollment>> GetEnrollments(Guid classId, Guid calendarYearId, UserParams userParams)
+        {
+            var enrollments = this.context.Enrollments
+            .Include(a => a.Student)
+            .Include(a => a.CalendarYear)
+            .Where(a => a.ClassId == classId && a.CalendarYearId == calendarYearId).AsQueryable();
+            return await PagedList<Enrollment>.CreateAsync(enrollments, userParams.PageNumber, userParams.PageSize);
+        }
+
         public async Task<School> GetSchool(Guid id)
         {
             var school = await this.context.Schools.FirstOrDefaultAsync(a => a.Id == id);
@@ -89,6 +108,11 @@ namespace digitalmaktabapi.Data
         {
             var schools = this.context.Schools.AsQueryable();
             return await PagedList<School>.CreateAsync(schools, userParams.PageNumber, userParams.PageSize);
+        }
+
+        public async Task<bool> IsSudentEnrolled(Guid studentId, Guid calendarYearId, Guid classId)
+        {
+            return await this.context.Enrollments.AnyAsync(a => a.StudentId == studentId && a.CalendarYearId == calendarYearId && a.ClassId == classId);
         }
 
         public async Task<School> Register(School school, string password)

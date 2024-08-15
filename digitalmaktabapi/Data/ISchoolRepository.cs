@@ -16,5 +16,10 @@ namespace digitalmaktabapi.Data
 
         Task<PagedList<Class>> GetClasses(Guid schoolId, ClassParams userParams);
         Task<Class> GetClass(Guid classId);
+
+        Task<bool> IsSudentEnrolled(Guid studentId, Guid calendarYearId, Guid classId);
+
+        Task<PagedList<Enrollment>> GetEnrollments(Guid classId, Guid calendarYearId, UserParams userParams);
+        Task<Enrollment> GetEnrollment(Guid id);
     }
 }

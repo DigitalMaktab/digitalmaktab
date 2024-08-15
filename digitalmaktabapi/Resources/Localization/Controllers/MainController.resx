@@ -396,4 +396,16 @@
         <value>December</value>
         <comment/>
     </data>
+    <data name="FileCannotBeEmpty" xml:space="preserve">
+        <value>The file can not be empty</value>
+        <comment/>
+    </data>
+    <data name="FileSizeLimit" xml:space="preserve">
+        <value>The file size can not exceed {0} MB.</value>
+        <comment/>
+    </data>
+    <data name="AllowedFileTypes" xml:space="preserve">
+        <value>Only {0} files are allowed.</value>
+        <comment/>
+    </data>
 </root>

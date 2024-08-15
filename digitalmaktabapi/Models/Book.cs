@@ -12,9 +12,10 @@ namespace digitalmaktabapi.Models
         public Guid? SchoolId { get; set; }
         public School? School { get; set; }
         public required string BookTitle { get; set; }
+        public required string BookPath { get; set; }
 
-        public required Guid SubjectId { get; set; }
-        public required Subject Subject { get; set; }
+        public Guid? SubjectId { get; set; }
+        public Subject? Subject { get; set; }
 
     }
 }

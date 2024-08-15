@@ -144,4 +144,8 @@
         <value>حسابی با این ایمیل معلم در سیستم موجود است.</value>
         <comment/>
     </data>
+    <data name="StudentIsEnrolled" xml:space="preserve">
+        <value>شاگرد در حال حاضر در این صنف ثبت نام شده است.</value>
+        <comment/>
+    </data>
 </root>

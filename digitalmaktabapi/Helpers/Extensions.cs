@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using digitalmaktabapi.Models;
+using FluentValidation;
+using Microsoft.Extensions.Localization;
 
 namespace digitalmaktabapi.Helpers
 {
@@ -109,6 +111,22 @@ namespace digitalmaktabapi.Helpers
                 requestHeader.AcceptLanguage = headerValue.FirstOrDefault();
             }
             return requestHeader;
+        }
+
+        // Used to validate files with fluent validation.
+        public static IRuleBuilderOptions<T, IFormFile?> ValidateFile<T>(
+            this IRuleBuilder<T, IFormFile?> ruleBuilder,
+            long maxSize,
+            IStringLocalizer localizer,
+            params string[] allowedExtensions)
+        {
+            return ruleBuilder
+                .Must(file => file == null || file.Length > 0)
+                .WithMessage(localizer["FileCannotBeEmpty"])
+                .Must(file => file == null || file.Length <= maxSize)
+                .WithMessage(localizer["FileSizeLimit", maxSize / (1024 * 1024)])
+                .Must(file => file == null || allowedExtensions.Contains(Path.GetExtension(file.FileName).ToLower()))
+                .WithMessage(localizer["AllowedFileTypes", string.Join(", ", allowedExtensions)]);
         }
     }
 }

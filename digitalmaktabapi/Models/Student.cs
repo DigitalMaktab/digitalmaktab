@@ -26,8 +26,6 @@ namespace digitalmaktabapi.Models
         public required int JoiningAge { get; set; }
         public required Guid JoiningClassId { get; set; }
         public required Class JoiningClass { get; set; }
-        public required Guid CurrentClassId { get; set; }
-        public required Class CurrentClass { get; set; }
         public required Address PrimaryAddress { get; set; }
         public required Address SecondaryAddress { get; set; }
         public NationalId? NationalId { get; set; }
@@ -54,5 +52,6 @@ namespace digitalmaktabapi.Models
 
         public required ICollection<Schedule> Schedules { get; set; } = [];
         public required ICollection<Fee> Fees { get; set; } = [];
+        public required ICollection<Enrollment> Enrollments { get; set; } = [];
     }
 }
