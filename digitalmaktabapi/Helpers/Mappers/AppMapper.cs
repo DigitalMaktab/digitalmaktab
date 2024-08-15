@@ -24,23 +24,12 @@ namespace digitalmaktabapi.Helpers.Mappers
             CreateMap<DistrictDto, District>();
             CreateMap<NationalIdDto, NationalId>();
             CreateMap<NationalId, NationalIdDto>();
-            ApplyMappingConvention(typeof(Base), typeof(BaseDto));
-        }
 
-        private void ApplyMappingConvention(Type baseSourceType, Type baseDestinationType)
-        {
-            var mapTypes = new[]
-            {
-                new { Source = typeof(Country), Destination = typeof(CountryDto) },
-                new { Source = typeof(City), Destination = typeof(CityDto) },
-                new { Source = typeof(District), Destination = typeof(DistrictDto) }
-            };
-
-            foreach (var mapType in mapTypes)
-            {
-                var map = CreateMap(mapType.Source, mapType.Destination);
-                map.IncludeBase(baseSourceType, baseDestinationType);
-            }
+            MappingHepler.ApplyMappingConvention(this, typeof(Base), typeof(BaseDto),
+                (typeof(Country), typeof(CountryDto)),
+                (typeof(City), typeof(CityDto)),
+                (typeof(District), typeof(DistrictDto))
+            );
         }
     }
 }

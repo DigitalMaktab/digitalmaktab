@@ -8,16 +8,13 @@ using digitalmaktabapi.Models;
 
 namespace digitalmaktabapi.Helpers.Mappers
 {
-    public class StudentMapper : Profile
+    public class TeacherMapper : Profile
     {
-
-        public StudentMapper()
+        public TeacherMapper()
         {
             MappingHepler.ApplyMappingConvention(this, typeof(Base), typeof(BaseDto),
-                (typeof(Student), typeof(StudentDto))
+                (typeof(Teacher), typeof(TeacherDto))
             );
         }
     }
-
-
 }
