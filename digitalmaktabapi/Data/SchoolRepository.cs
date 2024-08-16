@@ -110,6 +110,16 @@ namespace digitalmaktabapi.Data
             return await PagedList<School>.CreateAsync(schools, userParams.PageNumber, userParams.PageSize);
         }
 
+        public async Task<bool> IsScheduleExist(Guid classSubjectId, Guid teacherId, Models.DayOfWeek dayOfWeek, ScheduleTime scheduleTime)
+        {
+            return await this.context.Schedules.AnyAsync(
+                a => a.ClassSubjectId == teacherId &&
+                a.TeacherId == teacherId &&
+                a.DayOfWeek == dayOfWeek &&
+                a.ScheduleTime == scheduleTime
+            );
+        }
+
         public async Task<bool> IsSudentEnrolled(Guid studentId, Guid calendarYearId, Guid classId)
         {
             return await this.context.Enrollments.AnyAsync(a => a.StudentId == studentId && a.CalendarYearId == calendarYearId && a.ClassId == classId);

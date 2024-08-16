@@ -148,4 +148,8 @@
         <value>The student is already enrolled in the class.</value>
         <comment/>
     </data>
+    <data name="SchedulExist" xml:space="preserve">
+        <value>This Schedule is already added for this class.</value>
+        <comment/>
+    </data>
 </root>

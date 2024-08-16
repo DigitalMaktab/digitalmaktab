@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using digitalmaktabapi.Headers;
 using digitalmaktabapi.Models;
+using DayOfWeek = digitalmaktabapi.Models.DayOfWeek;
 
 namespace digitalmaktabapi.Data
 {
@@ -21,5 +22,7 @@ namespace digitalmaktabapi.Data
 
         Task<PagedList<Enrollment>> GetEnrollments(Guid classId, Guid calendarYearId, UserParams userParams);
         Task<Enrollment> GetEnrollment(Guid id);
+
+        Task<bool> IsScheduleExist(Guid classSubjectId, Guid teacherId, DayOfWeek dayOfWeek, ScheduleTime scheduleTime);
     }
 }

@@ -148,4 +148,8 @@
         <value>شاگرد در حال حاضر در این صنف ثبت نام شده است.</value>
         <comment/>
     </data>
+    <data name="SchedulExist" xml:space="preserve">
+        <value>این برنامه درسی قبلاً برای این صنف اضافه شده است.</value>
+        <comment/>
+    </data>
 </root>

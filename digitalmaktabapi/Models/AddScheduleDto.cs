@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DotCommon.Extensions;
 using FluentValidation;
 
 namespace digitalmaktabapi.Models
@@ -28,7 +29,8 @@ namespace digitalmaktabapi.Models
                 .NotEmpty()
                 .Must(a => a != Guid.Empty);
 
-            // RuleFor(a => a.DayOfWeek)
+            RuleFor(a => a.DayOfWeek).IsInEnum().NotNull();
+            RuleFor(a => a.ScheduleTime).IsInEnum().NotNull();
         }
     }
 }

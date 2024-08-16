@@ -324,6 +324,25 @@ namespace digitalmaktabapi.Controllers
             return NoContent();
         }
 
+
+        [HttpPost("addSchedule")]
+        public async Task<IActionResult> AddSchedule(AddScheduleDto scheduleDto)
+        {
+            Guid id = Extensions.GetSessionDetails(this).Id;
+            if (await this.schoolRepository.IsScheduleExist(scheduleDto.ClassSubjectId, scheduleDto.TeacherId, scheduleDto.DayOfWeek, scheduleDto.ScheduleTime))
+            {
+                return BadRequest(this.localizer["SchedulExist"].Value);
+            }
+
+            var scheduleToCreate = this.mapper.Map<Schedule>(scheduleDto);
+            scheduleToCreate.CreationUserId = id;
+            scheduleToCreate.UpdateUserId = id;
+
+            this.schoolRepository.Add(scheduleToCreate);
+            await this.schoolRepository.SaveAll();
+            return NoContent();
+        }
+
         // Helper methods
 
         private async Task<School> PrepareSchoolEntity(SchoolForAddDto schoolForAddDto)
