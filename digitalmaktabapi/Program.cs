@@ -93,7 +93,7 @@ builder.Services.AddTransient<IMailService, MailService>();
 // Add Services
 builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddTransient<ReportService>();
-builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<TokenService>();
 
 // Add Validation

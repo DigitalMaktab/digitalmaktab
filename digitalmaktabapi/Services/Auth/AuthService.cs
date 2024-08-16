@@ -15,14 +15,14 @@ namespace digitalmaktabapi.Services.Auth
         ISchoolRepository schoolRepository,
         IStudentRepository studentRepository,
         TokenService tokenService
-    )
+    ) : IAuthService
     {
         private readonly ISchoolRepository schoolRepository = schoolRepository;
         private readonly IStudentRepository studentRepository = studentRepository;
         private readonly TokenService tokenService = tokenService;
 
 
-        public async Task<AuthUser> Authenticate(string email, string password)
+        public async Task<AuthUser?> Authenticate(string email, string password)
         {
 
             Session session = new()

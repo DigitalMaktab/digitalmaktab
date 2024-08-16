@@ -12,14 +12,14 @@ namespace digitalmaktabapi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AuthController(AuthService authService, IMapper mapper) : ControllerBase
+    public class AuthController(IAuthService authService, IMapper mapper) : ControllerBase
     {
-        private readonly AuthService authService = authService;
+        private readonly IAuthService authService = authService;
         private readonly IMapper mapper = mapper;
         [HttpPost]
         public async Task<IActionResult> Authenticate(LoginDto loginDto)
         {
-            AuthUser authUser = await this.authService.Authenticate(loginDto.Email, loginDto.Password);
+            AuthUser? authUser = await this.authService.Authenticate(loginDto.Email, loginDto.Password);
             if (authUser == null)
             {
                 return Unauthorized();
