@@ -13,8 +13,6 @@ namespace digitalmaktabapi.Models
         public required Enrollment Enrollment { get; set; }
         public required Guid ClassSubjectId { get; set; }
         public required ClassSubject ClassSubject { get; set; }
-        public required Guid CalendarYearId { get; set; }
-        public required CalendarYear CalendarYear { get; set; }
         public required ExamType ExamType { get; set; }
         public required decimal Score { get; set; }
     }

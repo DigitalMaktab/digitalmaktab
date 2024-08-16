@@ -316,10 +316,11 @@ namespace digitalmaktabapi.Controllers
         public async Task<IActionResult> Withdraw(Guid id)
         {
             var enrollment = await this.schoolRepository.GetEnrollment(id);
-
-            this.schoolRepository.Delete(enrollment);
-            await this.schoolRepository.SaveAll();
-
+            if (enrollment != null)
+            {
+                this.schoolRepository.Delete(enrollment);
+                await this.schoolRepository.SaveAll();
+            }
             return NoContent();
         }
 

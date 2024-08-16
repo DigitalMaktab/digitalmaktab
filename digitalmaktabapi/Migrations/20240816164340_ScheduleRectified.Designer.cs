@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using digitalmaktabapi.Data;
 
@@ -10,9 +11,11 @@ using digitalmaktabapi.Data;
 namespace digitalmaktabapi.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20240816164340_ScheduleRectified")]
+    partial class ScheduleRectified
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.7");
@@ -562,8 +565,8 @@ namespace digitalmaktabapi.Migrations
                     b.Property<Guid?>("CreationUserId")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("DayOfWeek")
-                        .HasColumnType("INTEGER");
+                    b.Property<DateTime>("DayOfWeek")
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("ScheduleTime")
                         .HasColumnType("INTEGER");

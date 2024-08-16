@@ -11,6 +11,7 @@ using digitalmaktabapi.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
+using DayOfWeek = digitalmaktabapi.Models.DayOfWeek;
 
 namespace digitalmaktabapi.Controllers
 {
@@ -200,14 +201,27 @@ namespace digitalmaktabapi.Controllers
         [HttpGet("months")]
         public async Task<ActionResult<IEnumerable<EnumsDto>>> GetMonths()
         {
-            var classTypes = GetEnumList<Month>();
-            return await Task.FromResult(Ok(classTypes));
+            var months = GetEnumList<Month>();
+            return await Task.FromResult(Ok(months));
         }
 
         [HttpGet("month/{id}")]
         public async Task<ActionResult<EnumsDto>> GetMonth(int id)
         {
             return await GetEnumResponse<Month>(id);
+        }
+
+        [HttpGet("days")]
+        public async Task<ActionResult<IEnumerable<EnumsDto>>> GetDays()
+        {
+            var days = GetEnumList<DayOfWeek>();
+            return await Task.FromResult(Ok(days));
+        }
+
+        [HttpGet("day/{id}")]
+        public async Task<ActionResult<EnumsDto>> GetDay(int id)
+        {
+            return await GetEnumResponse<DayOfWeek>(id);
         }
 
         [HttpGet("scheduleTimes")]

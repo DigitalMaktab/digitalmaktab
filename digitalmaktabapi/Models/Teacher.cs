@@ -21,6 +21,7 @@ namespace digitalmaktabapi.Models
         public required string Email { get; set; }
         public required byte[] PasswordHash { get; set; }
         public required byte[] PasswordSalt { get; set; }
+        public required UserRole UserRole { get; set; }
         public required ICollection<Schedule> Schedules { get; set; } = [];
         public required ICollection<Class> Classes { get; set; } = [];
     }

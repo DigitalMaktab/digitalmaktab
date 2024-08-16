@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using digitalmaktabapi.Data;
 
@@ -10,9 +11,11 @@ using digitalmaktabapi.Data;
 namespace digitalmaktabapi.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20240816163957_UserRoleAddedToTeacher")]
+    partial class UserRoleAddedToTeacher
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.7");
@@ -551,6 +554,12 @@ namespace digitalmaktabapi.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
+                    b.Property<DateOnly>("CalendarYear")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("ClassId")
+                        .HasColumnType("TEXT");
+
                     b.Property<Guid>("ClassSubjectId")
                         .HasColumnType("TEXT");
 
@@ -562,8 +571,8 @@ namespace digitalmaktabapi.Migrations
                     b.Property<Guid?>("CreationUserId")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("DayOfWeek")
-                        .HasColumnType("INTEGER");
+                    b.Property<DateTime>("DayOfWeek")
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("ScheduleTime")
                         .HasColumnType("INTEGER");
@@ -586,6 +595,8 @@ namespace digitalmaktabapi.Migrations
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ClassId");
 
                     b.HasIndex("ClassSubjectId");
 
@@ -1135,6 +1146,12 @@ namespace digitalmaktabapi.Migrations
 
             modelBuilder.Entity("digitalmaktabapi.Models.Schedule", b =>
                 {
+                    b.HasOne("digitalmaktabapi.Models.Class", "Class")
+                        .WithMany()
+                        .HasForeignKey("ClassId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("digitalmaktabapi.Models.ClassSubject", "ClassSubject")
                         .WithMany()
                         .HasForeignKey("ClassSubjectId")
@@ -1150,6 +1167,8 @@ namespace digitalmaktabapi.Migrations
                         .HasForeignKey("TeacherId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Class");
 
                     b.Navigation("ClassSubject");
 

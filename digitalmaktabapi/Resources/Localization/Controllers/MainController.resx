@@ -408,4 +408,32 @@
         <value>Only {0} files are allowed.</value>
         <comment/>
     </data>
+    <data name="SATURDAY" xml:space="preserve">
+        <value>Saturday</value>
+        <comment/>
+    </data>
+    <data name="SUNDAY" xml:space="preserve">
+        <value>Sunday</value>
+        <comment/>
+    </data>
+    <data name="MONDAY" xml:space="preserve">
+        <value>Monday</value>
+        <comment/>
+    </data>
+    <data name="TUESDAY" xml:space="preserve">
+        <value>Tuesday</value>
+        <comment/>
+    </data>
+    <data name="WEDNESDAY" xml:space="preserve">
+        <value>Wednesday</value>
+        <comment/>
+    </data>
+    <data name="THURSDAY" xml:space="preserve">
+        <value>Thursday</value>
+        <comment/>
+    </data>
+    <data name="FRIDAY" xml:space="preserve">
+        <value>Friday</value>
+        <comment/>
+    </data>
 </root>

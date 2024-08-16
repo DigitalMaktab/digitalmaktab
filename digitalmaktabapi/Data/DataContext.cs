@@ -59,6 +59,16 @@ namespace digitalmaktabapi.Data
                 .Property(a => a.UserRole)
                 .HasDefaultValue(UserRole.STUDENT);
 
+            modelBuilder.Entity<Teacher>()
+                .Property(a => a.UserRole)
+                .HasDefaultValue(UserRole.TEACHER);
+
+            modelBuilder.Entity<User>()
+                .Property(a => a.UserRole)
+                .HasDefaultValue(UserRole.ROOT_USER);
+
+
+
             modelBuilder.Entity<School>().OwnsOne(a => a.Address);
             modelBuilder.Entity<School>().OwnsOne(a => a.PhoneNumber);
 

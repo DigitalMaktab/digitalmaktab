@@ -408,4 +408,32 @@
         <value>فقط فایل های {0} مجاز هستند.</value>
         <comment/>
     </data>
+    <data name="SATURDAY" xml:space="preserve">
+        <value>شنبه</value>
+        <comment/>
+    </data>
+    <data name="SUNDAY" xml:space="preserve">
+        <value>یکشنبه</value>
+        <comment/>
+    </data>
+    <data name="MONDAY" xml:space="preserve">
+        <value>دو شنبه</value>
+        <comment/>
+    </data>
+    <data name="TUESDAY" xml:space="preserve">
+        <value>سه شنبه</value>
+        <comment/>
+    </data>
+    <data name="WEDNESDAY" xml:space="preserve">
+        <value>چهار شنبه</value>
+        <comment/>
+    </data>
+    <data name="THURSDAY" xml:space="preserve">
+        <value>پنج شنبه</value>
+        <comment/>
+    </data>
+    <data name="FRIDAY" xml:space="preserve">
+        <value>جمعه</value>
+        <comment/>
+    </data>
 </root>
