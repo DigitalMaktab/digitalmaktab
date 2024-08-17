@@ -7,6 +7,6 @@ namespace digitalmaktabapi.Helpers
 {
     public class AppClaimTypes
     {
-        public const string AdminUserId = "admin_user_id";
+        public const string CalendaryYearId = "calendaryearid";
     }
 }

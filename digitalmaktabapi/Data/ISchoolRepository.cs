@@ -24,5 +24,6 @@ namespace digitalmaktabapi.Data
         Task<Enrollment> GetEnrollment(Guid id);
 
         Task<bool> IsScheduleExist(Guid classSubjectId, Guid teacherId, DayOfWeek dayOfWeek, ScheduleTime scheduleTime);
+        Task<bool> IsClassHasScheduleInDayAndTime(Guid calendarYearId, DayOfWeek dayOfWeek, ScheduleTime scheduleTime);
     }
 }

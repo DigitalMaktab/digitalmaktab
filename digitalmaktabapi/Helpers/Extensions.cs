@@ -10,6 +10,7 @@ using Newtonsoft.Json.Serialization;
 using digitalmaktabapi.Models;
 using FluentValidation;
 using Microsoft.Extensions.Localization;
+using digitalmaktabapi.Services.DMCryptography;
 
 namespace digitalmaktabapi.Helpers
 {
@@ -43,10 +44,14 @@ namespace digitalmaktabapi.Helpers
 
         public static Session GetSessionDetails(ControllerBase controller)
         {
-            Guid id = Guid.Parse(controller.User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-            string userRoleString = controller.User.FindFirst(ClaimTypes.Role)!.Value;
-            string email = controller.User.FindFirst(ClaimTypes.Email)!.Value;
-            Guid schoolId = Guid.Parse(controller.User.FindFirst(ClaimTypes.Sid)!.Value);
+            using var encryptionService = new CryptographyService();
+
+            Guid id = Guid.Parse(encryptionService.Decrypt(controller.User.FindFirst(ClaimTypes.NameIdentifier)!.Value));
+            string userRoleString = encryptionService.Decrypt(controller.User.FindFirst(ClaimTypes.Role)!.Value);
+            string email = encryptionService.Decrypt(controller.User.FindFirst(ClaimTypes.Email)!.Value);
+            Guid schoolId = Guid.Parse(encryptionService.Decrypt(controller.User.FindFirst(ClaimTypes.Sid)!.Value));
+            Claim? calendarYearIdClaim = controller.User.FindFirst(AppClaimTypes.CalendaryYearId);
+            Guid? calendarYearId = Guid.Parse(calendarYearIdClaim == null ? encryptionService.Decrypt(string.Empty) : encryptionService.Decrypt(calendarYearIdClaim.Value));
 
             if (!Enum.TryParse(userRoleString, out UserRole userRole))
             {
@@ -58,7 +63,8 @@ namespace digitalmaktabapi.Helpers
                 Id = id,
                 Email = email,
                 UserRole = userRole,
-                SchoolId = schoolId
+                SchoolId = schoolId,
+                CalendarYearId = (Guid)(calendarYearId == null || !calendarYearId.HasValue ? Guid.Empty : calendarYearId)
             };
             return session;
         }

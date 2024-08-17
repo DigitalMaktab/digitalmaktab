@@ -334,6 +334,13 @@ namespace digitalmaktabapi.Controllers
                 return BadRequest(this.localizer["SchedulExist"].Value);
             }
 
+            // TODO: Add active calendar year id to the session properties.
+
+            // if (await this.schoolRepository.IsClassHasScheduleInDayAndTime(scheduleDto.ClassSubjectId, scheduleDto.TeacherId, scheduleDto.DayOfWeek, scheduleDto.ScheduleTime))
+            // {
+            //     return BadRequest(this.localizer["SchedulExist"].Value);
+            // }
+
             var scheduleToCreate = this.mapper.Map<Schedule>(scheduleDto);
             scheduleToCreate.CreationUserId = id;
             scheduleToCreate.UpdateUserId = id;
@@ -342,6 +349,12 @@ namespace digitalmaktabapi.Controllers
             await this.schoolRepository.SaveAll();
             return NoContent();
         }
+
+        // [HttpGet("getSchedules")]
+        // public async Task<IActionResult> GetSchedules()
+        // {
+
+        // }
 
         // Helper methods
 

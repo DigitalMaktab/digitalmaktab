@@ -5,7 +5,9 @@ using digitalmaktabapi.Data;
 using digitalmaktabapi.Data.Seed;
 using digitalmaktabapi.Dtos;
 using digitalmaktabapi.Helpers;
+using digitalmaktabapi.Models;
 using digitalmaktabapi.Services.Auth;
+using digitalmaktabapi.Services.DMCryptography;
 using digitalmaktabapi.Services.Mail;
 using digitalmaktabapi.Services.PDF;
 using digitalmaktabapi.Services.Providers;
@@ -95,6 +97,7 @@ builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddTransient<ReportService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<TokenService>();
+builder.Services.AddScoped<CryptographyService>();
 
 // Add Validation
 // Adding Fluent Validation
@@ -108,6 +111,7 @@ builder.Services.AddScoped<IValidator<AddTeacherDto>, AddTeacherDtoValidator>();
 builder.Services.AddScoped<IValidator<AddRootBookDto>, AddRootBookDtoValidator>();
 builder.Services.AddScoped<IValidator<AddSubjectDto>, AddSubjectDtoValidator>();
 builder.Services.AddScoped<IValidator<AddClassSubjectDto>, AddClassSubjectDtoValidator>();
+builder.Services.AddScoped<IValidator<AddScheduleDto>, AddScheduleDtoValidator>();
 
 // Add Data Seeder
 // Add Seeds

@@ -20,6 +20,7 @@ namespace digitalmaktabapi.Helpers.Mappers
             CreateMap<AddStudentDto, Student>();
             CreateMap<AddClassSubjectDto, ClassSubject>();
             CreateMap<AddEnrollmentDto, Enrollment>();
+            CreateMap<AddScheduleDto, Schedule>();
             MappingHepler.ApplyMappingConvention(this, typeof(Base), typeof(BaseDto),
                 (typeof(School), typeof(SchoolDto)),
                 (typeof(CalendarYear), typeof(CalendarYearDto)),
