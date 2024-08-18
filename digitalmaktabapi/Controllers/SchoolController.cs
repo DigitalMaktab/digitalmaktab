@@ -329,17 +329,16 @@ namespace digitalmaktabapi.Controllers
         public async Task<IActionResult> AddSchedule(AddScheduleDto scheduleDto)
         {
             Guid id = Extensions.GetSessionDetails(this).Id;
-            if (await this.schoolRepository.IsScheduleExist(scheduleDto.ClassSubjectId, scheduleDto.TeacherId, scheduleDto.DayOfWeek, scheduleDto.ScheduleTime))
+            Guid calendarYearId = Extensions.GetSessionDetails(this).CalendarYearId;
+            if (await this.schoolRepository.IsScheduleExist(calendarYearId, scheduleDto.ClassSubjectId, scheduleDto.TeacherId, scheduleDto.DayOfWeek, scheduleDto.ScheduleTime))
             {
                 return BadRequest(this.localizer["SchedulExist"].Value);
             }
 
-            // TODO: Add active calendar year id to the session properties.
-
-            // if (await this.schoolRepository.IsClassHasScheduleInDayAndTime(scheduleDto.ClassSubjectId, scheduleDto.TeacherId, scheduleDto.DayOfWeek, scheduleDto.ScheduleTime))
-            // {
-            //     return BadRequest(this.localizer["SchedulExist"].Value);
-            // }
+            if (await this.schoolRepository.IsClassHasScheduleInDayAndTime(calendarYearId, scheduleDto.DayOfWeek, scheduleDto.ScheduleTime))
+            {
+                return BadRequest(this.localizer["SchedulExist"].Value);
+            }
 
             var scheduleToCreate = this.mapper.Map<Schedule>(scheduleDto);
             scheduleToCreate.CreationUserId = id;
@@ -350,11 +349,15 @@ namespace digitalmaktabapi.Controllers
             return NoContent();
         }
 
-        // [HttpGet("getSchedules")]
-        // public async Task<IActionResult> GetSchedules()
-        // {
-
-        // }
+        [HttpGet("schedules/{classId}")]
+        public async Task<IActionResult> GetSchedules(Guid classId, [FromQuery] UserParams userParams)
+        {
+            Guid calendarYearId = Extensions.GetSessionDetails(this).CalendarYearId;
+            var schedules = await this.schoolRepository.GetSchedules(calendarYearId, classId, userParams);
+            var schedulesToReturn = this.mapper.Map<ICollection<ScheduleDto>>(schedules);
+            Response.AddPagintaion(schedules.CurrentPage, schedules.PageSize, schedules.TotalCount, schedules.TotalPages);
+            return Ok(schedulesToReturn);
+        }
 
         // Helper methods
 

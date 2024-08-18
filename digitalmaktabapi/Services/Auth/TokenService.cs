@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using digitalmaktabapi.Data;
 using digitalmaktabapi.Helpers;
 using digitalmaktabapi.Models;
-using digitalmaktabapi.Services.DMCryptography;
 using DotCommon.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -22,22 +21,21 @@ namespace digitalmaktabapi.Services.Auth
 
         public async Task<string> GenerateToken(Session session)
         {
-            using var encryptionService = new CryptographyService();
             CalendarYear? calendarYear = await this.dataContext.CalendarYears.FirstOrDefaultAsync(a => a.Status == true);
 
-            Claim? calendarYearIdClaim = new(AppClaimTypes.CalendaryYearId, "");
+            Claim? calendarYearIdClaim = new Claim(AppClaimTypes.CalendaryYearId, "");
 
             if (calendarYear != null)
             {
-                calendarYearIdClaim = new Claim(AppClaimTypes.CalendaryYearId, encryptionService.Encrypt(calendarYear.Id.ToString()));
+                calendarYearIdClaim = new Claim(AppClaimTypes.CalendaryYearId, calendarYear.Id.ToString());
             }
 
             var claims = new[]
                         {
-                new Claim(ClaimTypes.NameIdentifier, encryptionService.Encrypt(session.Id.ToString())),
-                new Claim(ClaimTypes.Email, encryptionService.Encrypt(session.Email)),
-                new Claim(ClaimTypes.Role, encryptionService.Encrypt(session.UserRole.ToString())),
-                new Claim(ClaimTypes.Sid, encryptionService.Encrypt(session.SchoolId.ToString())),
+                new Claim(ClaimTypes.NameIdentifier, session.Id.ToString()),
+                new Claim(ClaimTypes.Email, session.Email),
+                new Claim(ClaimTypes.Role, session.UserRole.ToString()),
+                new Claim(ClaimTypes.Sid, session.SchoolId.ToString()),
                 calendarYearIdClaim
             };
 
@@ -60,7 +58,6 @@ namespace digitalmaktabapi.Services.Auth
             var token = tokenHandler.CreateToken(tokenDescriptor);
 
             return new JwtSecurityTokenHandler().WriteToken(token);
-
         }
     }
 }

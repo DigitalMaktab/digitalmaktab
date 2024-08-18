@@ -98,6 +98,15 @@ namespace digitalmaktabapi.Data
             return await PagedList<Enrollment>.CreateAsync(enrollments, userParams.PageNumber, userParams.PageSize);
         }
 
+        public async Task<PagedList<Schedule>> GetSchedules(Guid calendarYearId, Guid classId, UserParams userParams)
+        {
+            var schedules = this.context.Schedules
+            .Include(a => a.ClassSubject)
+            .ThenInclude(a => a.Class)
+            .Where(a => a.ClassSubject.ClassId == classId && a.ClassSubject.Class.CalendarYearId == calendarYearId).AsQueryable();
+            return await PagedList<Schedule>.CreateAsync(schedules, userParams.PageNumber, userParams.PageSize);
+        }
+
         public async Task<School> GetSchool(Guid id)
         {
             var school = await this.context.Schools.FirstOrDefaultAsync(a => a.Id == id);
@@ -122,13 +131,17 @@ namespace digitalmaktabapi.Data
                 );
         }
 
-        public async Task<bool> IsScheduleExist(Guid classSubjectId, Guid teacherId, Models.DayOfWeek dayOfWeek, ScheduleTime scheduleTime)
+        public async Task<bool> IsScheduleExist(Guid calendarYearId, Guid classSubjectId, Guid teacherId, Models.DayOfWeek dayOfWeek, ScheduleTime scheduleTime)
         {
-            return await this.context.Schedules.AnyAsync(
-                a => a.ClassSubjectId == classSubjectId &&
-                a.TeacherId == teacherId &&
-                a.DayOfWeek == dayOfWeek &&
-                a.ScheduleTime == scheduleTime
+            return await this.context.Schedules
+                .Include(a => a.ClassSubject)
+                .ThenInclude(a => a.Class)
+                .AnyAsync(
+                    a => a.ClassSubjectId == classSubjectId &&
+                    a.TeacherId == teacherId &&
+                    a.DayOfWeek == dayOfWeek &&
+                    a.ScheduleTime == scheduleTime &&
+                    a.ClassSubject.Class.CalendarYearId == calendarYearId
             );
         }
 

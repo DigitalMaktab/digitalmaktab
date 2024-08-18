@@ -28,7 +28,8 @@ namespace digitalmaktabapi.Helpers.Mappers
                 (typeof(Class), typeof(ClassDto)),
                 (typeof(ClassSubject), typeof(ClassSubjectDto)),
                 (typeof(ClassSubject), typeof(ClassSubjectForClassDto)),
-                (typeof(Enrollment), typeof(EnrollmentDto))
+                (typeof(Enrollment), typeof(EnrollmentDto)),
+                (typeof(Schedule), typeof(ScheduleDto))
             );
         }
     }
