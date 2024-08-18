@@ -15,6 +15,7 @@ namespace digitalmaktabapi.Dtos
         public required Gender Gender { get; set; }
         public required AddAddressDto PrimaryAddress { get; set; }
         public required AddPhoneNumberDto PhoneNumber { get; set; }
+        public required UserRole UserRole { get; set; }
         public required string Email { get; set; }
     }
 
@@ -27,6 +28,7 @@ namespace digitalmaktabapi.Dtos
             RuleFor(a => a.PrimaryAddress).NotEmpty();
             RuleFor(a => a.PhoneNumber).NotEmpty();
             RuleFor(a => a.Email).NotEmpty();
+            RuleFor(a => a.UserRole).NotNull().IsInEnum();
         }
     }
 
