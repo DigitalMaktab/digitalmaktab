@@ -13,5 +13,8 @@ namespace digitalmaktabapi.Data
         Task<PagedList<Teacher>> GetTeachers(Guid schoolId, UserParams userParams);
 
         Task<int> GetTeachersCount(Guid schoolId);
+        Task<bool> IsAttendanceExists(Guid enrollmentId, DateTime dateTime);
+
+        Task<PagedList<Attendance>> GetAttendances(UserParams userParams);
     }
 }

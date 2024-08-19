@@ -349,11 +349,13 @@ namespace digitalmaktabapi.Controllers
             return NoContent();
         }
 
-        [HttpGet("schedules/{classId}")]
-        public async Task<IActionResult> GetSchedules(Guid classId, [FromQuery] UserParams userParams)
+        [HttpGet("schedules")]
+        public async Task<IActionResult> GetSchedules([FromQuery] ScheduleParams scheduleParams)
         {
             Guid calendarYearId = Extensions.GetSessionDetails(this).CalendarYearId;
-            var schedules = await this.schoolRepository.GetSchedules(calendarYearId, classId, userParams);
+            var headerParams = this.mapper.Map<UserParams>(scheduleParams);
+            headerParams.CalendarYearId = calendarYearId;
+            var schedules = await this.schoolRepository.GetSchedules(headerParams);
             var schedulesToReturn = this.mapper.Map<ICollection<ScheduleDto>>(schedules);
             Response.AddPagintaion(schedules.CurrentPage, schedules.PageSize, schedules.TotalCount, schedules.TotalPages);
             return Ok(schedulesToReturn);

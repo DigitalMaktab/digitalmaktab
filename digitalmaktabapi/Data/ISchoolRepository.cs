@@ -25,6 +25,6 @@ namespace digitalmaktabapi.Data
 
         Task<bool> IsScheduleExist(Guid calendarYearId, Guid classSubjectId, Guid teacherId, DayOfWeek dayOfWeek, ScheduleTime scheduleTime);
         Task<bool> IsClassHasScheduleInDayAndTime(Guid calendarYearId, DayOfWeek dayOfWeek, ScheduleTime scheduleTime);
-        Task<PagedList<Schedule>> GetSchedules(Guid calendarYearId, Guid classId, UserParams userParams);
+        Task<PagedList<Schedule>> GetSchedules(UserParams userParams);
     }
 }

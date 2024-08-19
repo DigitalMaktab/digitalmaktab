@@ -43,7 +43,21 @@ namespace digitalmaktabapi.Data
 
         public async Task<PagedList<Student>> GetStudents(Guid schoolId, UserParams userParams)
         {
-            var students = this.context.Students.Where(a => a.SchoolId == schoolId).AsQueryable();
+            var students = this.context.Students
+            .Include(a => a.Enrollments)
+            .ThenInclude(a => a.Class)
+            .Where(a => a.SchoolId == schoolId)
+            .AsQueryable();
+
+            if (userParams.ClassId.HasValue)
+            {
+                students = students.Where(a => a.Enrollments.Any(a => a.ClassId == userParams.ClassId));
+            }
+
+            if (userParams.CalendarYearId.HasValue)
+            {
+                students = students.Where(a => a.Enrollments.Any(a => a.CalendarYearId == userParams.CalendarYearId));
+            }
 
             return await PagedList<Student>.CreateAsync(students, userParams.PageNumber, userParams.PageSize);
         }

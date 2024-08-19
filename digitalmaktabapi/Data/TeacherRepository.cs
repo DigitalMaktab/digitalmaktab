@@ -63,5 +63,29 @@ namespace digitalmaktabapi.Data
         {
             throw new NotImplementedException();
         }
+
+        public async Task<bool> IsAttendanceExists(Guid enrollmentId, DateTime dateTime)
+        {
+            return await this.context.Attendances.AnyAsync(a => a.EnrollmentId == enrollmentId && a.DateTime.Date == dateTime.Date);
+        }
+
+        public async Task<PagedList<Attendance>> GetAttendances(UserParams userParams)
+        {
+            var attendances = this.context.Attendances
+                .Include(a => a.Enrollment).ThenInclude(a => a.Student)
+                .AsQueryable();
+
+            if (userParams.ClassId.HasValue)
+            {
+                attendances = attendances.Where(a => a.Enrollment.ClassId == userParams.ClassId);
+            }
+
+            if (userParams.DateTime != null && userParams.DateTime.HasValue)
+            {
+                attendances = attendances.Where(a => a.DateTime.Date == userParams.DateTime.Value.Date);
+            }
+
+            return await PagedList<Attendance>.CreateAsync(attendances, userParams.PageNumber, userParams.PageSize);
+        }
     }
 }

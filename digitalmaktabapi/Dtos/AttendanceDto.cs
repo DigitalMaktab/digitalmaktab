@@ -7,10 +7,8 @@ namespace digitalmaktabapi.Dtos
 {
     public class AttendanceDto : BaseDto
     {
-        public required Guid StudentId { get; set; }
-        public required StudentDto Student { get; set; }
-        public required Guid ClassId { get; set; }
-        public required ClassDto Class { get; set; }
+        public required Guid EnrollmentId { get; set; }
+        public required EnrollmentDto Enrollment { get; set; }
         public required DateTime DateTime { get; set; }
     }
 }

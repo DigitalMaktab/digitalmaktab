@@ -112,6 +112,7 @@ builder.Services.AddScoped<IValidator<AddRootBookDto>, AddRootBookDtoValidator>(
 builder.Services.AddScoped<IValidator<AddSubjectDto>, AddSubjectDtoValidator>();
 builder.Services.AddScoped<IValidator<AddClassSubjectDto>, AddClassSubjectDtoValidator>();
 builder.Services.AddScoped<IValidator<AddScheduleDto>, AddScheduleDtoValidator>();
+builder.Services.AddScoped<IValidator<AddAttendanceDto>, AddAttendanceDtoValidator>();
 
 // Add Data Seeder
 // Add Seeds

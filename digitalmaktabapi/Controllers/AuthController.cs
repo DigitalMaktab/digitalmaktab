@@ -30,6 +30,12 @@ namespace digitalmaktabapi.Controllers
                 case School school:
                     var adminToReturn = this.mapper.Map<SchoolDto>(school);
                     return Ok(new { admin = adminToReturn, authUser.Token });
+                case Teacher teacher:
+                    var teacherToReturn = this.mapper.Map<TeacherDto>(teacher);
+                    return Ok(new { teacher = teacherToReturn, authUser.Token });
+                case Student student:
+                    var studentToReurn = this.mapper.Map<StudentDto>(student);
+                    return Ok(new { student = studentToReurn, authUser.Token });
                 default:
                     return Unauthorized();
             }

@@ -98,12 +98,27 @@ namespace digitalmaktabapi.Data
             return await PagedList<Enrollment>.CreateAsync(enrollments, userParams.PageNumber, userParams.PageSize);
         }
 
-        public async Task<PagedList<Schedule>> GetSchedules(Guid calendarYearId, Guid classId, UserParams userParams)
+        public async Task<PagedList<Schedule>> GetSchedules(UserParams userParams)
         {
             var schedules = this.context.Schedules
             .Include(a => a.ClassSubject)
             .ThenInclude(a => a.Class)
-            .Where(a => a.ClassSubject.ClassId == classId && a.ClassSubject.Class.CalendarYearId == calendarYearId).AsQueryable();
+            .AsQueryable();
+
+            if (userParams.ClassId.HasValue)
+            {
+                schedules = schedules.Where(a => a.ClassSubject.ClassId == userParams.ClassId);
+            }
+            if (userParams.CalendarYearId.HasValue)
+            {
+                schedules = schedules.Where(a => a.ClassSubject.Class.CalendarYearId == userParams.CalendarYearId);
+            }
+
+            if (userParams.TeacherId.HasValue)
+            {
+                schedules = schedules.Where(a => a.TeacherId == userParams.TeacherId);
+            }
+
             return await PagedList<Schedule>.CreateAsync(schedules, userParams.PageNumber, userParams.PageSize);
         }
 
