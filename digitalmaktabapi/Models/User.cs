@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace digitalmaktabapi.Models
 {
-    [Table("user")]
+    [Table("User")]
     public class User : Base
     {
         public required UserRole UserRole { get; set; }

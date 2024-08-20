@@ -13,6 +13,8 @@ namespace digitalmaktabapi.Helpers.Mappers
         public SchoolMapper()
         {
             CreateMap<SchoolForAddDto, School>();
+            CreateMap<AddAddressDto, Address>();
+            CreateMap<AddPhoneNumberDto, PhoneNumber>();
             CreateMap<AddCalendarYearDto, CalendarYear>();
             CreateMap<AddBranchDto, Branch>();
             CreateMap<AddTeacherDto, Teacher>();

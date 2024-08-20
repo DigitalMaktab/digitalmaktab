@@ -13,7 +13,7 @@ namespace digitalmaktabapi.Dtos
     public class SchoolForAddDto
     {
         public required string SchoolName { get; set; }
-        public required AddPhoneNumberDto Address { get; set; }
+        public required AddAddressDto Address { get; set; }
         public required AddPhoneNumberDto PhoneNumber { get; set; }
         public required string Email { get; set; }
         public required string Password { get; set; }
@@ -34,7 +34,7 @@ namespace digitalmaktabapi.Dtos
             RuleFor(a => a.Password).NotEmpty().NotNull().MinimumLength(8);
             RuleFor(a => a.ConfirmPassword).NotEmpty().NotNull().Matches(a => a.Password);
             RuleFor(a => a.Code).NotNull().NotEmpty();
-            RuleFor(a => a.Logo).ValidateFile(maxSize: 1 * 1024 * 1024, localizer, allowedExtensions: [".png"]);
+            RuleFor(a => a.Logo).ValidateFile(maxSize: 1 * 1024 * 1024, localizer, allowedExtensions: [".png", ".jpg"]);
         }
     }
 }
