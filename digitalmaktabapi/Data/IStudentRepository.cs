@@ -13,5 +13,7 @@ namespace digitalmaktabapi.Data
         Task<PagedList<Student>> GetStudents(Guid schoolId, UserParams userParams);
 
         Task<int> GetStudentCount(Guid schoolId);
+
+        Task<Class> GetStudentClass(Guid id, Guid calendarYearId);
     }
 }

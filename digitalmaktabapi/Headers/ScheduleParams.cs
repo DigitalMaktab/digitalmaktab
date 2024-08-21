@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace digitalmaktabapi.Headers
 {
-    public class ScheduleParams
+    public class ScheduleParams : GeneralParams
     {
         public required Guid ClassId { get; set; }
     }

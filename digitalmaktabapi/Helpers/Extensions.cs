@@ -47,8 +47,15 @@ namespace digitalmaktabapi.Helpers
             string userRoleString = controller.User.FindFirst(ClaimTypes.Role)!.Value;
             string email = controller.User.FindFirst(ClaimTypes.Email)!.Value;
             Guid schoolId = Guid.Parse(controller.User.FindFirst(ClaimTypes.Sid)!.Value);
+
             Claim? calendarYearIdClaim = controller.User.FindFirst(AppClaimTypes.CalendaryYearId);
-            Guid? calendarYearId = Guid.Parse(calendarYearIdClaim == null ? string.Empty : calendarYearIdClaim.Value);
+            Guid? calendarYearId = null;
+
+            if (calendarYearIdClaim != null && Guid.TryParse(calendarYearIdClaim.Value, out Guid parsedGuid))
+            {
+                calendarYearId = parsedGuid;
+            }
+
 
             if (!Enum.TryParse(userRoleString, out UserRole userRole))
             {

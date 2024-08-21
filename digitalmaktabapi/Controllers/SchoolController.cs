@@ -335,11 +335,6 @@ namespace digitalmaktabapi.Controllers
                 return BadRequest(this.localizer["SchedulExist"].Value);
             }
 
-            if (await this.schoolRepository.IsClassHasScheduleInDayAndTime(calendarYearId, scheduleDto.DayOfWeek, scheduleDto.ScheduleTime))
-            {
-                return BadRequest(this.localizer["SchedulExist"].Value);
-            }
-
             var scheduleToCreate = this.mapper.Map<Schedule>(scheduleDto);
             scheduleToCreate.CreationUserId = id;
             scheduleToCreate.UpdateUserId = id;

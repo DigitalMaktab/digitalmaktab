@@ -35,6 +35,15 @@ namespace digitalmaktabapi.Data
             return student;
         }
 
+        public async Task<Class> GetStudentClass(Guid id, Guid calendarYearId)
+        {
+            var classToReturn = await this.context.Classes
+                .Include(a => a.Enrollments)
+                .FirstOrDefaultAsync(a => a.Enrollments.Any(a => a.StudentId == id && a.CalendarYearId == calendarYearId));
+
+            return classToReturn;
+        }
+
         public async Task<int> GetStudentCount(Guid schoolId)
         {
             int count = await this.context.Students.Where(a => a.SchoolId == schoolId).CountAsync();
