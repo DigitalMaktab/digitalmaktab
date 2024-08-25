@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using digitalmaktabapi.Data;
 
@@ -11,9 +12,11 @@ using digitalmaktabapi.Data;
 namespace digitalmaktabapi.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20240824122130_EnrollmentIdRemovedFromGrade")]
+    partial class EnrollmentIdRemovedFromGrade
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -67,7 +70,7 @@ namespace digitalmaktabapi.Migrations
 
                     b.HasIndex("StudentId");
 
-                    b.ToTable("Attendance", (string)null);
+                    b.ToTable("Attendance");
                 });
 
             modelBuilder.Entity("digitalmaktabapi.Models.Book", b =>
@@ -116,7 +119,7 @@ namespace digitalmaktabapi.Migrations
                     b.HasIndex("SubjectId")
                         .IsUnique();
 
-                    b.ToTable("Book", (string)null);
+                    b.ToTable("Book");
                 });
 
             modelBuilder.Entity("digitalmaktabapi.Models.Branch", b =>
@@ -155,7 +158,7 @@ namespace digitalmaktabapi.Migrations
 
                     b.HasIndex("SchoolId");
 
-                    b.ToTable("Branch", (string)null);
+                    b.ToTable("Branch");
                 });
 
             modelBuilder.Entity("digitalmaktabapi.Models.CalendarYear", b =>
@@ -192,7 +195,7 @@ namespace digitalmaktabapi.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("CalendarYear", (string)null);
+                    b.ToTable("CalendarYear");
                 });
 
             modelBuilder.Entity("digitalmaktabapi.Models.City", b =>
@@ -235,7 +238,7 @@ namespace digitalmaktabapi.Migrations
 
                     b.HasIndex("CountryId");
 
-                    b.ToTable("City", (string)null);
+                    b.ToTable("City");
                 });
 
             modelBuilder.Entity("digitalmaktabapi.Models.Class", b =>
@@ -294,7 +297,7 @@ namespace digitalmaktabapi.Migrations
 
                     b.HasIndex("TeacherId");
 
-                    b.ToTable("Class", (string)null);
+                    b.ToTable("Class");
                 });
 
             modelBuilder.Entity("digitalmaktabapi.Models.ClassSubject", b =>
@@ -334,7 +337,7 @@ namespace digitalmaktabapi.Migrations
 
                     b.HasIndex("SubjectId");
 
-                    b.ToTable("ClassSubject", (string)null);
+                    b.ToTable("ClassSubject");
                 });
 
             modelBuilder.Entity("digitalmaktabapi.Models.Country", b =>
@@ -376,7 +379,7 @@ namespace digitalmaktabapi.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Country", (string)null);
+                    b.ToTable("Country");
                 });
 
             modelBuilder.Entity("digitalmaktabapi.Models.District", b =>
@@ -415,7 +418,7 @@ namespace digitalmaktabapi.Migrations
 
                     b.HasIndex("CityId");
 
-                    b.ToTable("District", (string)null);
+                    b.ToTable("District");
                 });
 
             modelBuilder.Entity("digitalmaktabapi.Models.Enrollment", b =>
@@ -460,7 +463,7 @@ namespace digitalmaktabapi.Migrations
 
                     b.HasIndex("StudentId");
 
-                    b.ToTable("Enrollment", (string)null);
+                    b.ToTable("Enrollment");
                 });
 
             modelBuilder.Entity("digitalmaktabapi.Models.Fee", b =>
@@ -506,7 +509,7 @@ namespace digitalmaktabapi.Migrations
 
                     b.HasIndex("StudentId");
 
-                    b.ToTable("Fee", (string)null);
+                    b.ToTable("Fee");
                 });
 
             modelBuilder.Entity("digitalmaktabapi.Models.Grade", b =>
@@ -547,7 +550,7 @@ namespace digitalmaktabapi.Migrations
 
                     b.HasIndex("ClassSubjectId");
 
-                    b.ToTable("Grade", (string)null);
+                    b.ToTable("Grade");
                 });
 
             modelBuilder.Entity("digitalmaktabapi.Models.Schedule", b =>
@@ -598,7 +601,7 @@ namespace digitalmaktabapi.Migrations
 
                     b.HasIndex("TeacherId");
 
-                    b.ToTable("Schedule", (string)null);
+                    b.ToTable("Schedule");
                 });
 
             modelBuilder.Entity("digitalmaktabapi.Models.School", b =>
@@ -655,7 +658,7 @@ namespace digitalmaktabapi.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("School", (string)null);
+                    b.ToTable("School");
                 });
 
             modelBuilder.Entity("digitalmaktabapi.Models.Student", b =>
@@ -791,7 +794,7 @@ namespace digitalmaktabapi.Migrations
 
                     b.HasIndex("SchoolId");
 
-                    b.ToTable("Student", (string)null);
+                    b.ToTable("Student");
                 });
 
             modelBuilder.Entity("digitalmaktabapi.Models.Subject", b =>
@@ -828,7 +831,7 @@ namespace digitalmaktabapi.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Subject", (string)null);
+                    b.ToTable("Subject");
                 });
 
             modelBuilder.Entity("digitalmaktabapi.Models.Teacher", b =>
@@ -892,7 +895,7 @@ namespace digitalmaktabapi.Migrations
 
                     b.HasIndex("SchoolId");
 
-                    b.ToTable("Teacher", (string)null);
+                    b.ToTable("Teacher");
                 });
 
             modelBuilder.Entity("digitalmaktabapi.Models.User", b =>
@@ -947,7 +950,7 @@ namespace digitalmaktabapi.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("User", (string)null);
+                    b.ToTable("User");
                 });
 
             modelBuilder.Entity("digitalmaktabapi.Models.Attendance", b =>
@@ -1153,7 +1156,7 @@ namespace digitalmaktabapi.Migrations
 
             modelBuilder.Entity("digitalmaktabapi.Models.School", b =>
                 {
-                    b.OwnsOne("digitalmaktabapi.Models.School.Address#digitalmaktabapi.Models.Address", "Address", b1 =>
+                    b.OwnsOne("digitalmaktabapi.Models.Address", "Address", b1 =>
                         {
                             b1.Property<Guid>("SchoolId")
                                 .HasColumnType("char(36)");
@@ -1180,7 +1183,7 @@ namespace digitalmaktabapi.Migrations
 
                             b1.HasIndex("DistrictId");
 
-                            b1.ToTable("School", (string)null);
+                            b1.ToTable("School");
 
                             b1.HasOne("digitalmaktabapi.Models.District", "District")
                                 .WithMany()
@@ -1192,7 +1195,7 @@ namespace digitalmaktabapi.Migrations
                             b1.Navigation("District");
                         });
 
-                    b.OwnsOne("digitalmaktabapi.Models.School.PhoneNumber#digitalmaktabapi.Models.PhoneNumber", "PhoneNumber", b1 =>
+                    b.OwnsOne("digitalmaktabapi.Models.PhoneNumber", "PhoneNumber", b1 =>
                         {
                             b1.Property<Guid>("SchoolId")
                                 .HasColumnType("char(36)");
@@ -1208,7 +1211,7 @@ namespace digitalmaktabapi.Migrations
 
                             b1.HasIndex("CountryId");
 
-                            b1.ToTable("School", (string)null);
+                            b1.ToTable("School");
 
                             b1.HasOne("digitalmaktabapi.Models.Country", "Country")
                                 .WithMany()
@@ -1249,7 +1252,7 @@ namespace digitalmaktabapi.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.OwnsOne("digitalmaktabapi.Models.Student.NationalId#digitalmaktabapi.Models.NationalId", "NationalId", b1 =>
+                    b.OwnsOne("digitalmaktabapi.Models.NationalId", "NationalId", b1 =>
                         {
                             b1.Property<Guid>("StudentId")
                                 .HasColumnType("char(36)");
@@ -1272,13 +1275,13 @@ namespace digitalmaktabapi.Migrations
 
                             b1.HasKey("StudentId");
 
-                            b1.ToTable("Student", (string)null);
+                            b1.ToTable("Student");
 
                             b1.WithOwner()
                                 .HasForeignKey("StudentId");
                         });
 
-                    b.OwnsOne("digitalmaktabapi.Models.Student.PhoneNumber#digitalmaktabapi.Models.PhoneNumber", "PhoneNumber", b1 =>
+                    b.OwnsOne("digitalmaktabapi.Models.PhoneNumber", "PhoneNumber", b1 =>
                         {
                             b1.Property<Guid>("StudentId")
                                 .HasColumnType("char(36)");
@@ -1294,7 +1297,7 @@ namespace digitalmaktabapi.Migrations
 
                             b1.HasIndex("CountryId");
 
-                            b1.ToTable("Student", (string)null);
+                            b1.ToTable("Student");
 
                             b1.HasOne("digitalmaktabapi.Models.Country", "Country")
                                 .WithMany()
@@ -1308,7 +1311,7 @@ namespace digitalmaktabapi.Migrations
                             b1.Navigation("Country");
                         });
 
-                    b.OwnsOne("digitalmaktabapi.Models.Student.PrimaryAddress#digitalmaktabapi.Models.Address", "PrimaryAddress", b1 =>
+                    b.OwnsOne("digitalmaktabapi.Models.Address", "PrimaryAddress", b1 =>
                         {
                             b1.Property<Guid>("StudentId")
                                 .HasColumnType("char(36)");
@@ -1335,7 +1338,7 @@ namespace digitalmaktabapi.Migrations
 
                             b1.HasIndex("DistrictId");
 
-                            b1.ToTable("Student", (string)null);
+                            b1.ToTable("Student");
 
                             b1.HasOne("digitalmaktabapi.Models.District", "District")
                                 .WithMany()
@@ -1347,7 +1350,7 @@ namespace digitalmaktabapi.Migrations
                             b1.Navigation("District");
                         });
 
-                    b.OwnsOne("digitalmaktabapi.Models.Student.SecondaryAddress#digitalmaktabapi.Models.Address", "SecondaryAddress", b1 =>
+                    b.OwnsOne("digitalmaktabapi.Models.Address", "SecondaryAddress", b1 =>
                         {
                             b1.Property<Guid>("StudentId")
                                 .HasColumnType("char(36)");
@@ -1374,7 +1377,7 @@ namespace digitalmaktabapi.Migrations
 
                             b1.HasIndex("DistrictId");
 
-                            b1.ToTable("Student", (string)null);
+                            b1.ToTable("Student");
 
                             b1.HasOne("digitalmaktabapi.Models.District", "District")
                                 .WithMany()
@@ -1411,7 +1414,7 @@ namespace digitalmaktabapi.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.OwnsOne("digitalmaktabapi.Models.Teacher.PhoneNumber#digitalmaktabapi.Models.PhoneNumber", "PhoneNumber", b1 =>
+                    b.OwnsOne("digitalmaktabapi.Models.PhoneNumber", "PhoneNumber", b1 =>
                         {
                             b1.Property<Guid>("TeacherId")
                                 .HasColumnType("char(36)");
@@ -1427,7 +1430,7 @@ namespace digitalmaktabapi.Migrations
 
                             b1.HasIndex("CountryId");
 
-                            b1.ToTable("Teacher", (string)null);
+                            b1.ToTable("Teacher");
 
                             b1.HasOne("digitalmaktabapi.Models.Country", "Country")
                                 .WithMany()
@@ -1441,7 +1444,7 @@ namespace digitalmaktabapi.Migrations
                             b1.Navigation("Country");
                         });
 
-                    b.OwnsOne("digitalmaktabapi.Models.Teacher.PrimaryAddress#digitalmaktabapi.Models.Address", "PrimaryAddress", b1 =>
+                    b.OwnsOne("digitalmaktabapi.Models.Address", "PrimaryAddress", b1 =>
                         {
                             b1.Property<Guid>("TeacherId")
                                 .HasColumnType("char(36)");
@@ -1468,7 +1471,7 @@ namespace digitalmaktabapi.Migrations
 
                             b1.HasIndex("DistrictId");
 
-                            b1.ToTable("Teacher", (string)null);
+                            b1.ToTable("Teacher");
 
                             b1.HasOne("digitalmaktabapi.Models.District", "District")
                                 .WithMany()

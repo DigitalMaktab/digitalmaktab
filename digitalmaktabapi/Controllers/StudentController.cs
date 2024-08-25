@@ -19,10 +19,12 @@ namespace digitalmaktabapi.Controllers
     public class StudentController(
         IStudentRepository studentRepository,
         ISchoolRepository schoolRepository,
+        ITeacherRepository teacherRepository,
         IMapper mapper) : ControllerBase
     {
         private readonly IStudentRepository studentRepository = studentRepository;
         private readonly ISchoolRepository schoolRepository = schoolRepository;
+        private readonly ITeacherRepository teacherRepository = teacherRepository;
         private readonly IMapper mapper = mapper;
 
 
@@ -60,6 +62,30 @@ namespace digitalmaktabapi.Controllers
             var schedulesToReturn = this.mapper.Map<ICollection<ScheduleDto>>(schedules);
             Response.AddPagintaion(schedules.CurrentPage, schedules.PageSize, schedules.TotalCount, schedules.TotalPages);
             return Ok(schedulesToReturn);
+        }
+
+        [HttpGet("grades")]
+        public async Task<IActionResult> GetClassGrades([FromQuery] GradeParams attendanceParams)
+        {
+            var calendarYearId = Extensions.GetSessionDetails(this).CalendarYearId;
+            var headerParams = this.mapper.Map<UserParams>(attendanceParams);
+            headerParams.CalendarYearId = calendarYearId;
+            var grades = await this.teacherRepository.GetGrades(headerParams);
+            var gradesToReturn = this.mapper.Map<ICollection<GradeDto>>(grades);
+            Response.AddPagintaion(grades.CurrentPage, grades.PageSize, grades.TotalCount, grades.TotalPages);
+            return Ok(gradesToReturn);
+        }
+
+        [HttpGet("attendance")]
+        public async Task<IActionResult> GetAttendances([FromQuery] AttendanceParams attendanceParams)
+        {
+            var calendarYearId = Extensions.GetSessionDetails(this).CalendarYearId;
+            var headerParams = this.mapper.Map<UserParams>(attendanceParams);
+            headerParams.CalendarYearId = calendarYearId;
+            var attendances = await this.teacherRepository.GetAttendances(headerParams);
+            var attendancesToReturn = this.mapper.Map<ICollection<AttendanceDto>>(attendances);
+            Response.AddPagintaion(attendances.CurrentPage, attendances.PageSize, attendances.TotalCount, attendances.TotalPages);
+            return Ok(attendancesToReturn);
         }
     }
 }

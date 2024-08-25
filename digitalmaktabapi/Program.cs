@@ -117,6 +117,9 @@ builder.Services.AddScoped<IValidator<AddSubjectDto>, AddSubjectDtoValidator>();
 builder.Services.AddScoped<IValidator<AddClassSubjectDto>, AddClassSubjectDtoValidator>();
 builder.Services.AddScoped<IValidator<AddScheduleDto>, AddScheduleDtoValidator>();
 builder.Services.AddScoped<IValidator<AddAttendanceDto>, AddAttendanceDtoValidator>();
+builder.Services.AddScoped<IValidator<AttendanceAddDto>, AttendanceAddDtoValidator>();
+builder.Services.AddScoped<IValidator<AddGradeDto>, AddGradeDtoValidator>();
+builder.Services.AddScoped<IValidator<GradeAddDto>, GradeAddDtoValidator>();
 
 // Add Data Seeder
 // Add Seeds

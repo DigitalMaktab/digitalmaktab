@@ -64,15 +64,23 @@ namespace digitalmaktabapi.Data
             throw new NotImplementedException();
         }
 
-        public async Task<bool> IsAttendanceExists(Guid enrollmentId, DateTime dateTime)
+        public async Task<Attendance> GetAttendance(Guid enrollmentId, DateTime dateTime)
         {
-            return await this.context.Attendances.AnyAsync(a => a.EnrollmentId == enrollmentId && a.DateTime.Date == dateTime.Date);
+            return await this.context.Attendances.FirstOrDefaultAsync(a => a.EnrollmentId == enrollmentId && a.DateTime.Date == dateTime.Date);
         }
 
         public async Task<PagedList<Attendance>> GetAttendances(UserParams userParams)
         {
+            // Check if none of the parameters are provided
+            if (!userParams.ClassId.HasValue && !userParams.DateTime.HasValue && !userParams.StudentId.HasValue)
+            {
+                // Return an empty PagedList if no parameters are provided
+                return new PagedList<Attendance>([], 0, userParams.PageNumber, userParams.PageSize);
+            }
+
             var attendances = this.context.Attendances
                 .Include(a => a.Enrollment).ThenInclude(a => a.Student)
+                .Where(a => a.Enrollment.CalendarYearId == userParams.CalendarYearId)
                 .AsQueryable();
 
             if (userParams.ClassId.HasValue)
@@ -85,7 +93,50 @@ namespace digitalmaktabapi.Data
                 attendances = attendances.Where(a => a.DateTime.Date == userParams.DateTime.Value.Date);
             }
 
+            if (userParams.StudentId.HasValue)
+            {
+                attendances = attendances.Where(a => a.Enrollment.StudentId == userParams.StudentId);
+            }
+
             return await PagedList<Attendance>.CreateAsync(attendances, userParams.PageNumber, userParams.PageSize);
+        }
+
+        public async Task<Grade> GetGrade(Guid enrollmentId, Guid classSubjectId, ExamType examType)
+        {
+            return await this.context.Grades.FirstOrDefaultAsync(
+                a => a.EnrollmentId == enrollmentId &&
+                a.ClassSubjectId == classSubjectId &&
+                a.ExamType == examType
+            );
+        }
+
+        public async Task<PagedList<Grade>> GetGrades(UserParams userParams)
+        {
+            // Check if none of the parameters are provided
+            if (!userParams.ClassId.HasValue && !userParams.StudentId.HasValue)
+            {
+                // Return an empty PagedList if no parameters are provided
+                return new PagedList<Grade>([], 0, userParams.PageNumber, userParams.PageSize);
+            }
+
+            var grades = this.context.Grades
+                .Include(a => a.Enrollment).ThenInclude(a => a.Student)
+                .Include(a => a.ClassSubject).ThenInclude(a => a.Class)
+                .Where(a => a.Enrollment.CalendarYearId == userParams.CalendarYearId)
+                .AsQueryable();
+
+            if (userParams.ClassId.HasValue)
+            {
+                grades = grades.Where(a => a.Enrollment.ClassId == userParams.ClassId);
+            }
+
+            if (userParams.StudentId.HasValue)
+            {
+                grades = grades.Where(a => a.Enrollment.StudentId == userParams.StudentId);
+            }
+
+            return await PagedList<Grade>.CreateAsync(grades, userParams.PageNumber, userParams.PageSize);
+
         }
     }
 }

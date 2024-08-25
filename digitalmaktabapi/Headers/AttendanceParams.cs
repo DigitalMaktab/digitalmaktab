@@ -7,7 +7,8 @@ namespace digitalmaktabapi.Headers
 {
     public class AttendanceParams
     {
-        public required Guid ClassId { get; set; }
+        public Guid? ClassId { get; set; }
+        public Guid? StudentId { get; set; }
         public required DateTime DateTime { get; set; }
     }
 }

@@ -17,6 +17,7 @@ namespace digitalmaktabapi.Helpers.Mappers
             CreateMap<GeneralParams, UserParams>();
             CreateMap<StudentParams, UserParams>();
             CreateMap<AttendanceParams, UserParams>();
+            CreateMap<GradeParams, UserParams>();
         }
     }
 }

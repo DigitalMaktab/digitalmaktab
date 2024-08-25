@@ -12,8 +12,6 @@ namespace digitalmaktabapi.Dtos
         public required EnrollmentDto Enrollment { get; set; }
         public required Guid ClassSubjectId { get; set; }
         public required ClassSubjectDto ClassSubject { get; set; }
-        public required Guid CalendarYearId { get; set; }
-        public required CalendarYearDto CalendarYear { get; set; }
         public required ExamType ExamType { get; set; }
         public required decimal Score { get; set; }
     }

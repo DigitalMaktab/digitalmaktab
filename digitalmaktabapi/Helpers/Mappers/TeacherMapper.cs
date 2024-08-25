@@ -12,10 +12,12 @@ namespace digitalmaktabapi.Helpers.Mappers
     {
         public TeacherMapper()
         {
-            CreateMap<AddAttendanceDto, Attendance>();
+            CreateMap<AttendanceAddDto, Attendance>();
+            CreateMap<GradeAddDto, Grade>();
             MappingHepler.ApplyMappingConvention(this, typeof(Base), typeof(BaseDto),
                 (typeof(Teacher), typeof(TeacherDto)),
-                (typeof(Attendance), typeof(AttendanceDto))
+                (typeof(Attendance), typeof(AttendanceDto)),
+                (typeof(Grade), typeof(GradeDto))
             );
         }
     }
