@@ -1,11 +1,13 @@
 using System.Globalization;
 using System.Net;
 using System.Text;
+using digitalmaktabapi.Controllers;
 using digitalmaktabapi.Data;
 using digitalmaktabapi.Data.Seed;
 using digitalmaktabapi.Dtos;
 using digitalmaktabapi.Helpers;
 using digitalmaktabapi.Models;
+using digitalmaktabapi.Services;
 using digitalmaktabapi.Services.Auth;
 using digitalmaktabapi.Services.DMCryptography;
 using digitalmaktabapi.Services.Mail;
@@ -51,6 +53,7 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
     options.SupportedCultures = supportedCultures;
     options.SupportedUICultures = supportedCultures;
 });
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(a =>
@@ -162,8 +165,12 @@ builder.Services.AddScoped<ITeacherRepository, TeacherRepository>();
 builder.Services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new PdfTools()));
 var app = builder.Build();
 
+// Configure Localizer Service Provider
+ServiceLocator.ServiceProvider = app.Services;
+
 // Configure Localization
 app.UseRequestLocalization(app.Services.GetRequiredService<IOptions<RequestLocalizationOptions>>().Value);
+
 
 app.Use(async (context, next) =>
 {
