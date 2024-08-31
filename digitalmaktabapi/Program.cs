@@ -1,6 +1,7 @@
 using System.Globalization;
 using System.Net;
 using System.Text;
+using AspNetCoreRateLimit;
 using digitalmaktabapi.Controllers;
 using digitalmaktabapi.Data;
 using digitalmaktabapi.Data.Seed;
@@ -161,7 +162,18 @@ builder.Services.AddScoped<ISchoolRepository, SchoolRepository>();
 builder.Services.AddScoped<IStudentRepository, StudentRepository>();
 builder.Services.AddScoped<ITeacherRepository, TeacherRepository>();
 
+// Add CSRF Protection
+builder.Services.AddAntiforgery(options => options.HeaderName = "X-CSRF-TOKEN");
+// Register IMemoryCache
+builder.Services.AddMemoryCache();
+// Add rate limiting
+builder.Services.AddInMemoryRateLimiting();
+builder.Services.Configure<IpRateLimitOptions>(builder.Configuration.GetSection("IpRateLimiting"));
+// Add Rate limiters
+builder.Services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
 
+// Add Logging information
+builder.Services.AddSingleton<ILoggerFactory, LoggerFactory>();
 
 builder.Services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new PdfTools()));
 var app = builder.Build();
@@ -236,7 +248,16 @@ else
     });
 }
 
+// Add Cross-Site Scripting (XSS) Prevention
+app.Use(async (context, next) =>
+{
+    context.Response.Headers.Append("Content-Security-Policy", "default-src 'self'; script-src 'self' https://trusted.cdn.com; style-src 'self'");
+    await next();
+});
+
 Seeder.SeedCountries(app);
+
+app.UseIpRateLimiting();
 
 app.UseHttpsRedirection();
 app.UseAuthentication();

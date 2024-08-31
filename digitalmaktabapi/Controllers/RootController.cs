@@ -53,6 +53,22 @@ namespace digitalmaktabapi.Controllers
             return NoContent();
         }
 
+        [HttpGet("calendarYears")]
+        public async Task<IActionResult> GetCalendarYears([FromQuery] UserParams userParams)
+        {
+            var calendarYears = await this.rootRepository.GetCalendarYears(userParams);
+            var calendarYearsToReturn = this.mapper.Map<ICollection<CalendarYearDto>>(calendarYears);
+            return Ok(calendarYearsToReturn);
+        }
+
+        [HttpGet("activeCalendarYear")]
+        public async Task<IActionResult> GetActiveCalendarYear()
+        {
+            var calendarYear = await this.rootRepository.GetActiveCalendarYear();
+            var calendarYearToReturn = this.mapper.Map<CalendarYearDto>(calendarYear);
+            return Ok(calendarYearToReturn);
+        }
+
         /// <summary>
         /// Add a book
         /// </summary>

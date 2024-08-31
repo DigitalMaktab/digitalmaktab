@@ -30,6 +30,12 @@ namespace digitalmaktabapi.Data
             return await this.context.Users.AnyAsync(a => a.Email.ToLower().Equals(prop.ToLower()));
         }
 
+        public async Task<CalendarYear> GetActiveCalendarYear()
+        {
+            var entity = await this.context.CalendarYears.FirstOrDefaultAsync(a => a.Status == true);
+            return entity;
+        }
+
         public async Task<Book> GetBook(Guid bookId)
         {
             var entity = await this.context.Books.FirstOrDefaultAsync(a => a.Id == bookId);

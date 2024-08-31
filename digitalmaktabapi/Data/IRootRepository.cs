@@ -19,5 +19,8 @@ namespace digitalmaktabapi.Data
         Task<Book> GetBook(Guid bookId);
         Task<PagedList<CalendarYear>> GetCalendarYears(UserParams userParams);
         Task<CalendarYear> GetCalendarYear(Guid calendarYearId);
+
+
+        Task<CalendarYear> GetActiveCalendarYear();
     }
 }

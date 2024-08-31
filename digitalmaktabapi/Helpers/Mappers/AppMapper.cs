@@ -40,7 +40,8 @@ namespace digitalmaktabapi.Helpers.Mappers
                 (typeof(Subject), typeof(SubjectForClassDto)),
                 (typeof(Book), typeof(BookDto)),
                 (typeof(Book), typeof(BookForClassDto)),
-                (typeof(User), typeof(UserDto))
+                (typeof(User), typeof(UserDto)),
+                (typeof(CalendarYear), typeof(CalendarYearDto))
             );
         }
     }
