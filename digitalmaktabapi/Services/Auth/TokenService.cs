@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using digitalmaktabapi.Data;
 using digitalmaktabapi.Helpers;
 using digitalmaktabapi.Models;
-using DotCommon.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 

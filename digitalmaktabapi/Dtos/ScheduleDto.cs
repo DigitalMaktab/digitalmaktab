@@ -12,7 +12,7 @@ namespace digitalmaktabapi.Dtos
         public required ClassSubjectDto ClassSubject { get; set; }
         public required Guid TeacherId { get; set; }
         public required TeacherDto Teacher { get; set; }
-        public required Models.DayOfWeek DayOfWeek { get; set; }
+        public required string DayOfWeek { get; set; }
         public required ScheduleTime ScheduleTime { get; set; }
     }
 }

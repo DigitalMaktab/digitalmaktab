@@ -12,7 +12,7 @@ namespace digitalmaktabapi.Dtos
         public required StudentDto Student { get; set; }
         public required Guid CalendarYearId { get; set; }
         public required CalendarYearDto CalendarYear { get; set; }
-        public required Month Month { get; set; }
+        public required string Month { get; set; }
         public required decimal Amount { get; set; }
     }
 }

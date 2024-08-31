@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using digitalmaktabapi.Headers;
+using digitalmaktabapi.Helpers;
 using digitalmaktabapi.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -26,7 +27,7 @@ namespace digitalmaktabapi.Data
 
         public async Task<bool> Exists(string prop)
         {
-            return await this.context.Students.AnyAsync(a => a.Email.Equals(prop));
+            return await this.context.Students.AnyAsync(a => a.Email.ToLower().Equals(prop.ToLower()));
         }
 
         public async Task<Student> GetStudent(Guid id)
@@ -82,9 +83,12 @@ namespace digitalmaktabapi.Data
             return student;
         }
 
-        public Task<bool> UpdatePassword(Student entity, string password)
+        public async Task<bool> UpdatePassword(Student student, string password)
         {
-            throw new NotImplementedException();
+            Extensions.CreatePasswordHash(password, out byte[] passwordHash, out byte[] passwordSalt);
+            student.PasswordHash = passwordHash;
+            student.PasswordSalt = passwordSalt;
+            return await this.context.SaveChangesAsync() > 0;
         }
     }
 }

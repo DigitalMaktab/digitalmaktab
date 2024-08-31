@@ -11,22 +11,27 @@ using digitalmaktabapi.Models;
 using digitalmaktabapi.Services.Upload;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 
 namespace digitalmaktabapi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    // [Authorize(Policy = "RootUserPolicy")]
-    [Authorize(Policy = "AdminPolicy")]
-    //TODO: Replace to RootUserPolicy when root user is ready, now it is used only for adding.
+    [Authorize(Policy = "RootUserPolicy")]
     public class RootController(
         IRootRepository rootRepository,
         ISchoolRepository schoolRepository,
+        IStringLocalizer<RootController> localizer,
+        IStringLocalizer<MainController> mainLocalizer,
         IMapper mapper) : ControllerBase
     {
         private readonly ISchoolRepository schoolRepository = schoolRepository;
         private readonly IRootRepository rootRepository = rootRepository;
+
+        private readonly IStringLocalizer<RootController> localizer = localizer;
+        private readonly IStringLocalizer<MainController> mainLocalizer = mainLocalizer;
         private readonly IMapper mapper = mapper;
+
 
         [HttpGet("schools")]
         public async Task<IActionResult> GetSchools([FromQuery] UserParams userParams)
@@ -48,6 +53,11 @@ namespace digitalmaktabapi.Controllers
             return NoContent();
         }
 
+        /// <summary>
+        /// Add a book
+        /// </summary>
+        /// <body name="addRootBookDto">Get the book dto in body of the request</body>
+        /// <returns>Returns a no content if it was added otherwise a bad request</returns>
         [HttpPost("addBook")]
         public async Task<IActionResult> AddBook([FromForm] AddRootBookDto addRootBookDto)
         {
@@ -77,6 +87,35 @@ namespace digitalmaktabapi.Controllers
             subjectToCreate.UpdateUserId = id;
             this.rootRepository.Add(subjectToCreate);
             await this.rootRepository.SaveAll();
+            return NoContent();
+        }
+
+        [AllowAnonymous]
+        [HttpPost]
+        public async Task<ActionResult> RegisterRootUser(AddRootUserDto rootUserDto)
+        {
+            rootUserDto.Email = rootUserDto.Email.ToLower();
+            if (await this.rootRepository.Exists(rootUserDto.Email))
+            {
+                return BadRequest(this.localizer["UserExists"].Value);
+            }
+            var userToCreate = this.mapper.Map<User>(rootUserDto);
+            await this.rootRepository.Register(userToCreate, rootUserDto.Password);
+            return StatusCode(201);
+        }
+
+
+        [HttpPut("updatePassword")]
+        public async Task<IActionResult> UpdatePassword(UpdatePasswordDto updatePasswordDto)
+        {
+            string email = Extensions.GetSessionDetails(this).Email;
+            User user = await this.rootRepository.Authenticate(email, updatePasswordDto.CurrentPassword);
+
+            if (user == null)
+            {
+                return BadRequest(mainLocalizer["InvalidCurrentPassword"].Value);
+            }
+            await this.rootRepository.UpdatePassword(user, updatePasswordDto.NewPassword);
             return NoContent();
         }
     }

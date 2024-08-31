@@ -15,12 +15,14 @@ namespace digitalmaktabapi.Services.Auth
         ISchoolRepository schoolRepository,
         IStudentRepository studentRepository,
         ITeacherRepository teacherRepository,
+        IRootRepository rootRepository,
         TokenService tokenService
     ) : IAuthService
     {
         private readonly ISchoolRepository schoolRepository = schoolRepository;
         private readonly IStudentRepository studentRepository = studentRepository;
         private readonly ITeacherRepository teacherRepository = teacherRepository;
+        private readonly IRootRepository rootRepository = rootRepository;
         private readonly TokenService tokenService = tokenService;
 
 
@@ -73,7 +75,19 @@ namespace digitalmaktabapi.Services.Auth
                 };
             }
 
-            // Eventually Authenticate Root User 
+            var user = await this.rootRepository.Authenticate(email.ToLower(), password);
+            if (user != null)
+            {
+                session.Email = user.Email;
+                session.UserRole = user.UserRole;
+                session.Id = user.Id;
+                session.SchoolId = Guid.Empty;
+                return new AuthUser
+                {
+                    Token = this.tokenService.GenerateToken(session).Result,
+                    Entity = user
+                };
+            }
 
             return null;
         }

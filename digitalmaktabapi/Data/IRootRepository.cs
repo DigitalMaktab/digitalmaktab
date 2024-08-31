@@ -7,7 +7,7 @@ using digitalmaktabapi.Models;
 
 namespace digitalmaktabapi.Data
 {
-    public interface IRootRepository : IBaseRepository
+    public interface IRootRepository : IBaseRepository, IAuthRepository<User>
     {
         Task<PagedList<Country>> GetCountries(UserParams userParams);
         Task<Country> GetCountry(Guid countryId);

@@ -16,7 +16,7 @@ namespace digitalmaktabapi.Dtos
         public required string FirstName { get; set; }
         public required string LastName { get; set; }
         public required DateOnly DateOfBirth { get; set; }
-        public required Gender Gender { get; set; }
+        public required string Gender { get; set; }
         public required AddressDto PrimaryAddress { get; set; }
         public required PhoneNumberDto PhoneNumber { get; set; }
         public required string Email { get; set; }

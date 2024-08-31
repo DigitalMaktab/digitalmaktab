@@ -28,7 +28,7 @@ namespace digitalmaktabapi.Data
 
         public async Task<bool> Exists(string prop)
         {
-            return await this.context.Schools.AnyAsync(a => a.Email == prop);
+            return await this.context.Schools.AnyAsync(a => a.Email.ToLower().Equals(prop.ToLower()));
         }
 
         public async Task<Branch> GetBranch(Guid branchId)

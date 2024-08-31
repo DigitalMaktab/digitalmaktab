@@ -436,4 +436,8 @@
         <value>Friday</value>
         <comment/>
     </data>
+    <data name="InvalidCurrentPassword" xml:space="preserve">
+        <value>Your current password is invalid</value>
+        <comment/>
+    </data>
 </root>

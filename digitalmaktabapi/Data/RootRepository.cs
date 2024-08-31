@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using digitalmaktabapi.Headers;
+using digitalmaktabapi.Helpers;
 using digitalmaktabapi.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,6 +12,23 @@ namespace digitalmaktabapi.Data
     public class RootRepository(DataContext context) : BaseRepository(context), IRootRepository
     {
         private readonly DataContext context = context;
+
+        public async Task<User> Authenticate(string email, string password)
+        {
+            var user = await this.context.Users.FirstOrDefaultAsync(a => a.Email == email && a.Status == true);
+            if (user == null) return null;
+
+            if (!Extensions.VerifyPasswordHash(password, user.PasswordHash, user.PasswordSalt))
+            {
+                return null;
+            }
+            return user;
+        }
+
+        public async Task<bool> Exists(string prop)
+        {
+            return await this.context.Users.AnyAsync(a => a.Email.ToLower().Equals(prop.ToLower()));
+        }
 
         public async Task<Book> GetBook(Guid bookId)
         {
@@ -83,6 +101,25 @@ namespace digitalmaktabapi.Data
         {
             var entities = this.context.Districts.Where(a => a.CityId == cityId).AsQueryable();
             return await PagedList<District>.CreateAsync(entities, userParams.PageNumber, userParams.PageSize);
+        }
+
+        public async Task<User> Register(User user, string password)
+        {
+            Extensions.CreatePasswordHash(password, out byte[] passwordHash, out byte[] passwordSalt);
+            user.PasswordHash = passwordHash;
+            user.PasswordSalt = passwordSalt;
+
+            await this.context.Users.AddAsync(user);
+            await this.context.SaveChangesAsync();
+            return user;
+        }
+
+        public async Task<bool> UpdatePassword(User user, string password)
+        {
+            Extensions.CreatePasswordHash(password, out byte[] passwordHash, out byte[] passwordSalt);
+            user.PasswordHash = passwordHash;
+            user.PasswordSalt = passwordSalt;
+            return await this.context.SaveChangesAsync() > 0;
         }
     }
 }

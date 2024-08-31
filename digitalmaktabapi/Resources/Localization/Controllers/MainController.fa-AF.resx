@@ -436,4 +436,8 @@
         <value>جمعه</value>
         <comment/>
     </data>
+    <data name="InvalidCurrentPassword" xml:space="preserve">
+        <value>رمز وردو فعلی شما درست نمیباشد.</value>
+        <comment/>
+    </data>
 </root>

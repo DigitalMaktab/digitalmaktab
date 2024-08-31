@@ -10,6 +10,7 @@ using digitalmaktabapi.Helpers;
 using digitalmaktabapi.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 
 namespace digitalmaktabapi.Controllers
 {
@@ -20,11 +21,14 @@ namespace digitalmaktabapi.Controllers
         IStudentRepository studentRepository,
         ISchoolRepository schoolRepository,
         ITeacherRepository teacherRepository,
+        IStringLocalizer<MainController> mainLocalizer,
         IMapper mapper) : ControllerBase
     {
         private readonly IStudentRepository studentRepository = studentRepository;
         private readonly ISchoolRepository schoolRepository = schoolRepository;
         private readonly ITeacherRepository teacherRepository = teacherRepository;
+
+        private readonly IStringLocalizer<MainController> mainLocalizer = mainLocalizer;
         private readonly IMapper mapper = mapper;
 
 
@@ -86,6 +90,21 @@ namespace digitalmaktabapi.Controllers
             var attendancesToReturn = this.mapper.Map<ICollection<AttendanceDto>>(attendances);
             Response.AddPagintaion(attendances.CurrentPage, attendances.PageSize, attendances.TotalCount, attendances.TotalPages);
             return Ok(attendancesToReturn);
+        }
+
+
+        [HttpPut("updatePassword")]
+        public async Task<IActionResult> UpdatePassword(UpdatePasswordDto updatePasswordDto)
+        {
+            string email = Extensions.GetSessionDetails(this).Email;
+            Student student = await this.studentRepository.Authenticate(email, updatePasswordDto.CurrentPassword);
+
+            if (student == null)
+            {
+                return BadRequest(mainLocalizer["InvalidCurrentPassword"].Value);
+            }
+            await this.studentRepository.UpdatePassword(student, updatePasswordDto.NewPassword);
+            return NoContent();
         }
     }
 }

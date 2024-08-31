@@ -123,6 +123,7 @@ builder.Services.AddScoped<IValidator<AddAttendanceDto>, AddAttendanceDtoValidat
 builder.Services.AddScoped<IValidator<AttendanceAddDto>, AttendanceAddDtoValidator>();
 builder.Services.AddScoped<IValidator<AddGradeDto>, AddGradeDtoValidator>();
 builder.Services.AddScoped<IValidator<GradeAddDto>, GradeAddDtoValidator>();
+builder.Services.AddScoped<IValidator<AddRootUserDto>, AddRootUserDtoValidator>();
 
 // Add Data Seeder
 // Add Seeds

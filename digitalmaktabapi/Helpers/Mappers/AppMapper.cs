@@ -30,6 +30,7 @@ namespace digitalmaktabapi.Helpers.Mappers
             CreateMap<NationalId, NationalIdDto>();
             CreateMap<AddRootBookDto, Book>();
             CreateMap<AddSubjectDto, Subject>();
+            CreateMap<AddRootUserDto, User>();
 
             MappingHelper.ApplyMappingConvention(this, typeof(Base), typeof(BaseDto), localizer,
                 (typeof(Country), typeof(CountryDto)),
@@ -38,7 +39,8 @@ namespace digitalmaktabapi.Helpers.Mappers
                 (typeof(Subject), typeof(SubjectDto)),
                 (typeof(Subject), typeof(SubjectForClassDto)),
                 (typeof(Book), typeof(BookDto)),
-                (typeof(Book), typeof(BookForClassDto))
+                (typeof(Book), typeof(BookForClassDto)),
+                (typeof(User), typeof(UserDto))
             );
         }
     }

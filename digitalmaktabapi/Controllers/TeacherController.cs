@@ -23,13 +23,15 @@ namespace digitalmaktabapi.Controllers
         ISchoolRepository schoolRepository,
         IStudentRepository studentRepository,
         IMapper mapper,
-        IStringLocalizer<TeacherController> localizer) : ControllerBase
+        IStringLocalizer<TeacherController> localizer,
+        IStringLocalizer<MainController> mainLocalizer) : ControllerBase
     {
         private readonly ITeacherRepository repository = repository;
         private readonly ISchoolRepository schoolRepository = schoolRepository;
         private readonly IStudentRepository studentRepository = studentRepository;
         private readonly IMapper mapper = mapper;
         private readonly IStringLocalizer<TeacherController> localizer = localizer;
+        private readonly IStringLocalizer<MainController> mainLocalizer = mainLocalizer;
 
 
         [HttpGet]
@@ -149,6 +151,21 @@ namespace digitalmaktabapi.Controllers
             var gradesToReturn = this.mapper.Map<ICollection<GradeDto>>(grades);
             Response.AddPagintaion(grades.CurrentPage, grades.PageSize, grades.TotalCount, grades.TotalPages);
             return Ok(gradesToReturn);
+        }
+
+
+        [HttpPut("updatePassword")]
+        public async Task<IActionResult> UpdatePassword(UpdatePasswordDto updatePasswordDto)
+        {
+            string email = Extensions.GetSessionDetails(this).Email;
+            Teacher teacher = await this.repository.Authenticate(email, updatePasswordDto.CurrentPassword);
+
+            if (teacher == null)
+            {
+                return BadRequest(mainLocalizer["InvalidCurrentPassword"].Value);
+            }
+            await this.repository.UpdatePassword(teacher, updatePasswordDto.NewPassword);
+            return NoContent();
         }
     }
 }

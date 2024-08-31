@@ -56,5 +56,9 @@ namespace digitalmaktabapi.Data.Seed
                 Console.WriteLine(ex.Message);
             }
         }
+
+        // Seed the root user.
+
+
     }
 }
