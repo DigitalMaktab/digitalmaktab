@@ -2,9 +2,10 @@ import axios from "axios";
 
 import { getCurrentLanguage, getUser } from "../helper/helper";
 import { User } from "../models/User";
+import settings from "../config/settings";
 
 let apiClient = axios.create({
-  baseURL: "",
+  baseURL: settings.dev.apiUrl,
   timeout: 60000,
   headers: {
     "Content-Type": "application/json",
