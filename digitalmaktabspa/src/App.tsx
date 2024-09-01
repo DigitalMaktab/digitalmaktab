@@ -1,6 +1,7 @@
 import React from "react";
 import logo from "./logo.svg";
 import "./App.css";
+import AppButton from "./components/AppButton";
 
 function App() {
   return (
@@ -57,14 +58,7 @@ function App() {
                       <a className="link-two" href="forget-password.html">
                         Forgot password?
                       </a>
-                      <div className="text-end mt-3">
-                        <a
-                          className="btn btn-primary btn-block w-100 text-white"
-                          href="index.html"
-                        >
-                          Sign in{" "}
-                        </a>
-                      </div>
+                      <AppButton label="Login" type="submit" disabled={false} />
                     </div>
                     <div className="login-social-title">
                       <h6>Or Sign in with </h6>
