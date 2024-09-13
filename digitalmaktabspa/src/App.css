@@ -4650,7 +4650,8 @@ textarea.form-control-lg {
   float: left;
   padding-right: var(--bs-breadcrumb-item-padding-x);
   color: var(--bs-breadcrumb-divider-color);
-  content: var(--bs-breadcrumb-divider, "https://admin.pixelstrap.net/") /* rtl: var(--bs-breadcrumb-divider, "/") */;
+  content: var(--bs-breadcrumb-divider, "/") 
+  /* rtl: var(--bs-breadcrumb-divider, "/") */;
 }
 .breadcrumb-item.active {
   color: var(--bs-breadcrumb-item-active-color);
@@ -20109,7 +20110,7 @@ ul li {
 
 .social-profile {
   text-align: center;
-  background-image: url(../src/resources/images/alert/profile-bg.png);
+  background-image: url(../public/assets/images/alert/profile-bg.png);
   background-repeat: no-repeat;
   background-size: cover;
 }
@@ -22787,7 +22788,7 @@ ol.line h5, ol.line .h5 {
 
 .balance-box {
   text-align: center;
-  background-image: url(../src/resources/images/alert/bg-balance.png);
+  background-image: url(../public/assets/images/alert/bg-balance.png);
   background-position: right;
   background-size: cover;
 }
@@ -28588,10 +28589,10 @@ div.ninotree .collapsed {
 }
 
 .default-square .form-switch .form-check-input {
-  background-image: url(../src/resources/images/switch/square-gray.png);
+  background-image: url(../public/assets/images/switch/square-gray.png);
 }
 .default-square .form-switch .form-check-input:checked {
-  background-image: url(https://admin.pixelstrap.net/edmin/asse../src/resources/images/switch/square.svg);
+  background-image: url(https://admin.pixelstrap.net/edmin/asse../public/assets/images/switch/square.svg);
 }
 
 /**=====================
@@ -29089,12 +29090,12 @@ td.highlight {
 }
 
 td.details-control {
-  background: url("../src/resources/images/details_open.png") no-repeat center center;
+  background: url("../public/assets/images/details_open.png") no-repeat center center;
   cursor: pointer;
 }
 
 tr.shown td.details-control {
-  background: url("../src/resources/images/details_close.png") no-repeat center center;
+  background: url("../public/assets/images/details_close.png") no-repeat center center;
 }
 
 .dataTables_scroll ~ .dataTables_paginate {
@@ -31189,7 +31190,7 @@ input[type=number] {
   border-color: var(--body-color);
 }
 .avatar-upload div:first-child .avatar-preview > div {
-  background-image: url("../src/resources/images/forms/user.png");
+  background-image: url("../public/assets/images/forms/user.png");
   width: 100%;
   height: 100%;
   border-radius: 100%;
@@ -32137,7 +32138,7 @@ section.pswp__scroll-wrap {
 }
 
 .default-dashboard .profile-greeting .card-body {
-  background-image: url(../src/resources/images/dashboard1/bg.png);
+  background-image: url(../public/assets/images/dashboard1/bg.png);
   background-repeat: no-repeat;
   background-position: center right;
   display: block;
@@ -32287,7 +32288,7 @@ section.pswp__scroll-wrap {
   background: -o-linear-gradient(transparent, transparent);
   -webkit-background-clip: text;
   background-clip: text;
-  background-image: -webkit-linear-gradient(transparent, transparent), url(../src/resources/images/dashboard1/1.gif);
+  background-image: -webkit-linear-gradient(transparent, transparent), url(../public/assets/images/dashboard1/1.gif);
   background-position: left;
   background-size: 130%;
   filter: opacity(86%);
@@ -33810,7 +33811,7 @@ section.pswp__scroll-wrap {
   }
 }
 .ecommerce-dashboard .track-order .card-body {
-  background-image: url(../src/resources/images/dashboard2/delivery.png);
+  background-image: url(../public/assets/images/dashboard2/delivery.png);
   background-repeat: no-repeat;
   background-position: 96% 86%;
   display: block;
@@ -35720,7 +35721,7 @@ section.pswp__scroll-wrap {
   }
 }
 .user-profile .hovercard .cardheader {
-  background-image: url(../src/resources/images/other-images/bg-profile.png);
+  background-image: url(../public/assets/images/other-images/bg-profile.png);
   background-size: cover;
   background-position: 10%;
   height: 470px;
@@ -41510,7 +41511,7 @@ html[data-theme=dark-sidebar] .page-sidebar {
   background-color: var(--card-color);
 }
 .error-wrapper.maintenance-bg {
-  background-image: url(../src/resources/images/other-images/maintenance-bg.jpg);
+  background-image: url(../public/assets/images/other-images/maintenance-bg.jpg);
   background-color: rgba(255, 255, 255, 0.6);
   background-blend-mode: overlay;
 }
@@ -41646,19 +41647,19 @@ html[data-theme=dark-sidebar] .page-sidebar {
     25. Authentication CSS Start
 ==========================**/
 .login_one_image {
-  background-image: url(../src/resources/images/login/2.jpg);
+  background-image: url(../public/assets/images/login/2.jpg);
   background-size: cover;
   background-position: center center;
 }
 
 .login_two_image {
-  background-image: url(../src/resources/images/login/3.jpg);
+  background-image: url(../public/assets/images/login/3.jpg);
   background-size: cover;
   background-position: center center;
 }
 
 .login_bs_validation {
-  background-image: url(../src/resources/images/login/1.jpg);
+  background-image: url(../public/assets/images/login/1.jpg);
   background-size: cover;
   background-position: center center;
 }
@@ -41669,7 +41670,7 @@ html[data-theme=dark-sidebar] .page-sidebar {
   align-items: center;
   justify-content: center;
   margin: 0 auto;
-  background: url("../src/resources/images/login/login_bg.jpg");
+  background: url("../public/assets/images/login/login_bg.jpg");
   background-position: center;
   padding: 30px 12px;
 }
@@ -41950,7 +41951,7 @@ html[data-theme=dark-sidebar] .page-sidebar {
     3.7 Comingsoon CSS Start
 ==========================**/
 .comingsoon-bgimg {
-  background: url(../src/resources/images/other-images/coming-soon-bg.jpg);
+  background: url(../public/assets/images/other-images/coming-soon-bg.jpg);
   background-position: bottom;
   background-size: cover;
 }
@@ -42582,7 +42583,7 @@ html[data-theme=dark-sidebar] .page-sidebar {
 }
 
 .left-msg .msg-img {
-  background-image: url(../src/resources/images/avatar/1.jpg);
+  background-image: url(../public/assets/images/avatar/1.jpg);
   width: 33px;
   height: 33px;
 }
@@ -42613,7 +42614,7 @@ html[data-theme=dark-sidebar] .page-sidebar {
 }
 .right-msg .msg-img {
   margin: 0 0 0 10px;
-  background-image: url(../src/resources/images/avatar/2.jpg);
+  background-image: url(../public/assets/images/avatar/2.jpg);
   width: 33px;
   height: 33px;
 }
@@ -49357,7 +49358,7 @@ rect {
   }
 }
 .landing-page .landing-home {
-  background-image: url(../src/resources/images/landing/homebg.png);
+  background-image: url(../public/assets/images/landing/homebg.png);
   background-position: bottom;
   background-repeat: no-repeat;
   height: calc(100vh - 92.5px);
@@ -52893,7 +52894,7 @@ footer p .footer-icon {
 }
 
 .iti--allow-dropdown .iti__flag {
-  background-image: url("../src/resources/images/forms/flags.png");
+  background-image: url("../public/assets/images/forms/flags.png");
 }
 
 /* Search-box */
@@ -53307,7 +53308,7 @@ body.modal-open .select2-container--open .select2-dropdown {
   5.9 Box-layout CSS start
 ==========================**/
 .box-layout {
-  background-image: url(../src/resources/images/other-images/boxbg.jpg);
+  background-image: url(../public/assets/images/other-images/boxbg.jpg);
   background-blend-mode: overlay;
   background-color: rgba(255, 255, 255, 0.5);
 }
