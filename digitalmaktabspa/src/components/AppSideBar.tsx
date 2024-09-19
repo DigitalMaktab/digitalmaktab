@@ -1,10 +1,14 @@
 import React from "react";
+import { AppSideBarProps } from "./properties/ToggleSideBarProps";
 
-const AppSideBar = () => {
+const AppSideBar: React.FC<AppSideBarProps> = ({ isOpen }) => {
   return (
     <>
       <div className="overlay"></div>
-      <aside className="page-sidebar" data-sidebar-layout="stroke-svg">
+      <aside
+        className={`sidebar ${!isOpen ? "sidebar-close" : ""} page-sidebar`}
+        data-sidebar-layout="stroke-svg"
+      >
         <div className="left-arrow" id="left-arrow">
           <svg className="feather">
             <use href="https://admin.pixelstrap.net/edmin/assets/svg/feather-icons/dist/feather-sprite.svg#arrow-left"></use>
