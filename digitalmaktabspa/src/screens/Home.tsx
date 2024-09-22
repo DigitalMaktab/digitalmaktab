@@ -38,7 +38,6 @@ const Home = () => {
           <AppSideBar isOpen={isSidebarOpen} />
           <div className="page-body">
             <AppBreadCrumb />
-            <AppTestContent />
           </div>
           <AppFooter />
         </div>

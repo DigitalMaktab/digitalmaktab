@@ -1,13 +1,12 @@
 import React from "react";
 import AppButton from "../../components/AppButton";
+import FeatherIcon from "feather-icons-react";
 
 const Login = () => {
   return (
     <div className="App">
       <div className="tap-top">
-        <svg className="feather">
-          <use href="https://admin.pixelstrap.net/edmin/assets/svg/feather-icons/dist/feather-sprite.svg#arrow-up"></use>
-        </svg>
+        <FeatherIcon icon="arrow-right" />
       </div>
       <div className="container-fluid p-0">
         <div className="row m-0">

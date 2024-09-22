@@ -1,3 +1,4 @@
+import FeatherIcon from "feather-icons-react";
 import React from "react";
 import { ReactSVG } from "react-svg";
 
@@ -12,10 +13,7 @@ const AppBreadCrumb = () => {
           <nav>
             <ol className="breadcrumb justify-content-sm-end align-items-center">
               <li className="breadcrumb-item">
-                <ReactSVG
-                  className="svg-color"
-                  src="https://admin.pixelstrap.net/edmin/assets/svg/iconly-sprite.svg#Home"
-                />
+                <FeatherIcon icon="home" className="svg-color" />
               </li>
               <li className="breadcrumb-item">Dashboard</li>
               <li className="breadcrumb-item active">Default</li>
