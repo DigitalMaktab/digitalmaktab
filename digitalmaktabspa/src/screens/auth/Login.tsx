@@ -1,6 +1,7 @@
 import React from "react";
 import AppButton from "../../components/AppButton";
 import FeatherIcon from "feather-icons-react";
+import { Link } from "react-router-dom";
 
 const Login = () => {
   return (
@@ -57,38 +58,11 @@ const Login = () => {
                       </a>
                       <AppButton label="Login" type="submit" disabled={false} />
                     </div>
-                    <div className="login-social-title">
-                      <h6>Or Sign in with </h6>
-                    </div>
-                    <div className="form-group">
-                      <ul className="login-social">
-                        <li>
-                          <a href="https://www.linkedin.com/" target="_blank">
-                            <i className="icon-linkedin"></i>
-                          </a>
-                        </li>
-                        <li>
-                          <a href="https://twitter.com/" target="_blank">
-                            <i className="icon-twitter"></i>
-                          </a>
-                        </li>
-                        <li>
-                          <a href="https://www.facebook.com/" target="_blank">
-                            <i className="icon-facebook"></i>
-                          </a>
-                        </li>
-                        <li>
-                          <a href="https://www.instagram.com/" target="_blank">
-                            <i className="icon-instagram"></i>
-                          </a>
-                        </li>
-                      </ul>
-                    </div>
                     <p className="mt-4 mb-0 text-center">
                       Don't have account?
-                      <a className="ms-2" href="sign-up.html">
+                      <Link className="ms-2" to="/signup">
                         Create Account
-                      </a>
+                      </Link>
                     </p>
                   </form>
                 </div>

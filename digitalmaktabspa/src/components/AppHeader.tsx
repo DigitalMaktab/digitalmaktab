@@ -52,8 +52,8 @@ const AppHeader: React.FC<AppHeaderProps> = ({ onSidebarToggle }) => {
           />
           <AppImg
             className="for-dark"
-            style={{ width: 100, height: 50 }}
-            src={`${process.env.PUBLIC_URL}/assets/images/logo/logo1.png`}
+            style={{ width: 130, height: 55 }}
+            src={`${process.env.PUBLIC_URL}/assets/images/logo/logo-no-background.svg`}
           />
         </a>
         <a
