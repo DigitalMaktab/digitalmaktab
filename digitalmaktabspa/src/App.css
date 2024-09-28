@@ -56302,3 +56302,19 @@ html[dir=rtl] .job-cards-view .radio-primary {
 .setting-sidebar .customizer-footer .btn svg {
   transition: color 0.3s;
 }
+
+
+.menu-linear-layout {
+  display: flex;
+  flex-direction: column; /* Items are arranged in a linear/column way */
+  list-style-type: none; /* Removes default bullet points */
+  padding: 0;
+}
+
+.menu-grid-layout {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); /* Adjust columns */
+  gap: 10px; /* Adds space between items */
+  list-style-type: none; /* Removes default bullet points */
+  padding: 0;
+}

@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { AppSideBarProps } from "./properties/ToggleSideBarProps";
 
-import AppMenuMainTitle from "./Menu/AppMenuMainTitle";
-import AppMenuItem from "./Menu/AppMenuItem";
+import AppMenuMainTitle from "./menu/AppMenuMainTitle";
+import AppMenuItem from "./menu/AppMenuItem";
 import FeatherIcon from "feather-icons-react";
 import * as AIIcons from "react-icons/ai";
 import { MenuSection } from "./properties/MenuItemProps";

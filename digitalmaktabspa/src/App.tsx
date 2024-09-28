@@ -9,6 +9,8 @@ import StudentDashboard from "./screens/student/StudentDashboard";
 import AdminDashboard from "./screens/school/AdminDashboard";
 import TeacherDashboard from "./screens/teacher/TeacherDashboard";
 import Dashboard from "./screens/root/Dashboard";
+import "./locale/i18n";
+import Auth from "./screens/auth/Auth";
 
 function App() {
   return (
@@ -23,8 +25,22 @@ function App() {
               <Route path="/teacher-dashboard" element={<TeacherDashboard />} />
               <Route path="/dashboard" element={<Dashboard />} />
             </Route>
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
+            <Route
+              path="/login"
+              element={
+                <Auth>
+                  <Login />
+                </Auth>
+              }
+            />
+            <Route
+              path="/signup"
+              element={
+                <Auth>
+                  <Signup />
+                </Auth>
+              }
+            />
           </Routes>
         </AuthProvider>
       </Router>

@@ -3,9 +3,10 @@ import FeatherIcon from "feather-icons-react";
 import AppImg from "./AppImg";
 import { AppHeaderProps } from "./properties/ToggleSideBarProps";
 import { useDropdowns } from "../hooks/useDropdown";
-import AppDropdownItem from "./AppDropdownItem";
+import AppDropdownItem from "./dropdown/AppDropdownItem";
 import AppProfileDropdown from "./AppProfileDropdown";
 import { DropDownItem } from "../helper/object/DropDownItem";
+import AppLocalizer from "./dropdown/AppLocalizer";
 
 const AppHeader: React.FC<AppHeaderProps> = ({ onSidebarToggle }) => {
   const { dropdownState, toggleDropdown, dropdownRefs } = useDropdowns();
@@ -15,7 +16,7 @@ const AppHeader: React.FC<AppHeaderProps> = ({ onSidebarToggle }) => {
       {
         key: "language",
         icon: "globe",
-        content: "Bookmark Dropdown Content",
+        content: <AppLocalizer />,
       },
       {
         key: "profile",

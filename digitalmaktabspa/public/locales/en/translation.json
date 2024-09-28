@@ -1,0 +1,14 @@
+{
+    "appName": "Digital Maktab",
+    "languages": {
+        "en": "English",
+        "fa": "Dari",
+        "ps": "Pashto"
+    },
+    "auth": {
+        "signup": {
+            "createAccount": "Sign up to account",
+            "specifications": "Provide the following details to register"
+        }
+    }
+}

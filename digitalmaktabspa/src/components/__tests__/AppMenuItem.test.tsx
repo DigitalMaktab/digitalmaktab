@@ -1,6 +1,6 @@
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
-import AppMenuItem from "../Menu/AppMenuItem";
+import AppMenuItem from "../menu/AppMenuItem";
 import { BrowserRouter } from "react-router-dom";
 
 describe("AppMenuItem", () => {

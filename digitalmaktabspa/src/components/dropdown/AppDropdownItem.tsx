@@ -1,5 +1,5 @@
 import React from "react";
-import { DropdownItemProps } from "./properties/DropdownItemProps";
+import { DropdownItemProps } from "../properties/DropdownItemProps";
 import FeatherIcon from "feather-icons-react";
 
 const AppDropdownItem: React.FC<DropdownItemProps> = ({
