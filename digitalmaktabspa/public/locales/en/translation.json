@@ -1,14 +1,115 @@
 {
     "appName": "Digital Maktab",
+    "logo": "Logo",
+    "controls": {
+        "fileInput": {
+            "button": "Choose File",
+            "placeholder": "No file is selected"
+        },
+        "passwordInput": {
+            "show": "Show",
+            "hide": "Hide"
+        }
+    },
     "languages": {
         "en": "English",
         "fa": "Dari",
         "ps": "Pashto"
     },
     "auth": {
+        "email": {
+            "label": "Email Address",
+            "placeholder": "info@email.com",
+            "validation": {
+                "required": "Email is required",
+                "invalid": "Email is invalid"
+            }
+        },
+        "password": {
+            "label": "Password",
+            "placeholder": "*******",
+            "validation": {
+                "required": "Password is required"
+            }
+        },
+        "login": {
+            "login": "Login",
+            "headerText": "Sign in to account",
+            "headerLabel": "Enter your email &amp; password to login",
+            "rememberPassword": "Remember password",
+            "forgotPassword": "Forgot password?",
+            "dontHaveAccount": "Don't have account",
+            "createAccount": "Create Account"
+        },
         "signup": {
             "createAccount": "Sign up to account",
-            "specifications": "Provide the following details to register"
+            "specifications": "Provide the following details to register",
+            "about": "About",
+            "personalDetails": "Add personal Details",
+            "schoolName": {
+                "label": "School Name",
+                "placeholder": "Sobh e Omid School",
+                "validation": {
+                    "required": "School name is required"
+                }
+            },
+            "logo": {
+                "label": "Logo",
+                "placeholder": "Select logo"
+            }
         }
+    },
+    "header": {
+        "search": {
+            "placeholder": "Search anything..."
+        },
+        "user": {
+            "name": "Wade Warren",
+            "role": "UI Designer",
+            "actions": {
+                "account": "Account",
+                "logout": "Logout"
+            }
+        }
+    },
+    "sidebar": {
+        "general": {
+            "label": "General",
+            "menues": {
+                "dashboard": "Dashboard",
+                "library": {
+                    "label": "Library",
+                    "list": "Books List",
+                    "add": "Add Book"
+                },
+                "classes": {
+                    "label": "Classes",
+                    "list": "Class List",
+                    "add": "Add Class"
+                },
+                "timeTable": {
+                    "label": "Time Table",
+                    "list": "Schedule",
+                    "add": "Add Schedule"
+                }
+            }
+        },
+        "teachers": {
+            "label": "Teachers",
+            "menues": {
+                "list": "Teacher List",
+                "register": "Register Teacher"
+            }
+        },
+        "students": {
+            "label": "Students",
+            "menues": {
+                "list": "Student List",
+                "register": "Register Student"
+            }
+        }
+    },
+    "breadcrumb": {
+        "title": "Default Dashboard"
     }
 }

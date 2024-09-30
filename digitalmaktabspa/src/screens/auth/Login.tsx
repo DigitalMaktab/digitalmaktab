@@ -2,8 +2,30 @@ import React from "react";
 import AppButton from "../../components/AppButton";
 import FeatherIcon from "feather-icons-react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import AppForm from "../../components/form/AppForm";
+import * as Yup from "yup";
+import AppFormInput from "../../components/form/AppFormInput";
 
 const Login = () => {
+  const { t } = useTranslation();
+
+  const initialValues = {
+    email: "",
+    password: "",
+  };
+
+  const validationSchema = Yup.object().shape({
+    email: Yup.string()
+      .required(t("auth.email.validation.required"))
+      .email(t("auth.email.validation.invalid")),
+    password: Yup.string().required(t("auth.password.validation.required")),
+  });
+
+  const onSubmit = (values: typeof initialValues) => {
+    console.log(values);
+  };
+
   return (
     <div className="App">
       <div className="tap-top">
@@ -15,33 +37,27 @@ const Login = () => {
             <div className="login-card login-dark">
               <div>
                 <div className="login-main">
-                  <form className="theme-form">
-                    <h2 className="text-center">Sign in to account</h2>
-                    <p className="text-center">
-                      Enter your email &amp; password to login
-                    </p>
-                    <div className="form-group">
-                      <label className="col-form-label">Email Address</label>
-                      <input
-                        className="form-control"
-                        type="email"
-                        placeholder="Test@gmail.com"
-                      />
-                    </div>
-                    <div className="form-group">
-                      <label className="col-form-label">Password</label>
-                      <div className="form-input position-relative">
-                        <input
-                          className="form-control"
-                          type="password"
-                          name="login[password]"
-                          placeholder="*********"
-                        />
-                        <div className="show-hide">
-                          <span className="show"> </span>
-                        </div>
-                      </div>
-                    </div>
+                  <AppForm
+                    initialValues={initialValues}
+                    validationSchema={validationSchema}
+                    onSubmit={onSubmit}
+                  >
+                    <h2 className="text-center">
+                      {t("auth.login.headerText")}
+                    </h2>
+                    <p className="text-center">{t("auth.login.headerLabel")}</p>
+                    <AppFormInput
+                      name="email"
+                      label={t("auth.email.label")}
+                      placeholder={t("auth.email.placeholder")}
+                    />
+
+                    <AppFormInput
+                      name="password"
+                      type="password"
+                      label={t("auth.password.label")}
+                      placeholder={t("auth.password.placeholder")}
+                    />
                     <div className="form-group mb-0 checkbox-checked">
                       <div className="form-check checkbox-solid-info">
                         <input
@@ -50,21 +66,25 @@ const Login = () => {
                           type="checkbox"
                         />
                         <label className="form-check-label">
-                          Remember password
+                          {t("auth.login.rememberPassword")}
                         </label>
                       </div>
                       <a className="link-two" href="forget-password.html">
-                        Forgot password?
+                        {t("auth.login.forgotPassword")}
                       </a>
-                      <AppButton label="Login" type="submit" disabled={false} />
+                      <AppButton
+                        label={t("auth.login.login")}
+                        type="submit"
+                        disabled={false}
+                      />
                     </div>
                     <p className="mt-4 mb-0 text-center">
-                      Don't have account?
+                      {t("auth.login.dontHaveAccount")}
                       <Link className="ms-2" to="/signup">
-                        Create Account
+                        {t("auth.login.createAccount")}
                       </Link>
                     </p>
-                  </form>
+                  </AppForm>
                 </div>
               </div>
             </div>

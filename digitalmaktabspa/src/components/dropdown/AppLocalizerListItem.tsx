@@ -15,7 +15,7 @@ const styles = {
     outline: "none", // Removes default focus outline for a custom one
   } as React.CSSProperties,
   containerHoverFocus: {
-    backgroundColor: "#f0f0f0", // Light hover effect
+    backgroundColor: "#198754", // Light hover effect
     transform: "scale(1.02)", // Slight scale effect on hover/focus
   } as React.CSSProperties,
   flag: {

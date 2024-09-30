@@ -1,14 +1,115 @@
 {
     "appName": "مکتب دیجیتالی",
+    "logo": "لوگو",
+    "controls": {
+        "fileInput": {
+            "button": "انتخاب فایل",
+            "placeholder": "فایلی انتخاب نشده است"
+        },
+        "passwordInput": {
+            "show": "نمایش رمز",
+            "hide": "پنهان کردن"
+        }
+    },
     "languages": {
         "en": "انگلیسی",
         "fa": "دری",
         "ps": "پشتو"
     },
     "auth": {
+        "email": {
+            "label": "آدرس ایمیل",
+            "placeholder": "info@email.com",
+            "validation": {
+                "required": "ایمیل ضروری میباشد",
+                "invalid": "قالب ایمیل درست نمیباشد."
+            }
+        },
+        "password": {
+            "label": "رمز ورود",
+            "placeholder": "*******",
+            "validation": {
+                "required": "پسورد ضروری میباشد."
+            }
+        },
+        "login": {
+            "login": "وردو به سیستم",
+            "headerText": "به حساب تان وارد شوید",
+            "headerLabel": "آدرس ایمیل و رمز خود را ارایه بدارید",
+            "rememberPassword": "به یاد داشته باش",
+            "forgotPassword": "رمز تان را فراموش کرده اید؟",
+            "dontHaveAccount": "حساب ندارید؟",
+            "createAccount": "ایجاد حساب"
+        },
         "signup": {
             "createAccount": "ایجاد حساب",
-            "specifications": "برای ثبت حساب معلومات زیر را وارد نمایید."
+            "specifications": "برای ثبت حساب معلومات زیر را وارد نمایید.",
+            "about": "مشخصات",
+            "personalDetails": "مشخصات مکتب",
+            "schoolName": {
+                "label": "اسم مکتب",
+                "placeholder": "خصوصی صبح امید",
+                "validation": {
+                    "required": "اسم مکتب ضروری میباشد."
+                }
+            },
+            "logo": {
+                "label": "لوگو",
+                "placeholder": "انتخاب لوگو"
+            }
         }
+    },
+    "header": {
+        "search": {
+            "placeholder": "جستجو ..."
+        },
+        "user": {
+            "name": "محمد نعیم داهی",
+            "role": "ادمین",
+            "actions": {
+                "account": "حساب",
+                "logout": "خروج"
+            }
+        }
+    },
+    "sidebar": {
+        "general": {
+            "label": "عمومیات",
+            "menues": {
+                "dashboard": "داشبورد",
+                "library": {
+                    "label": "کتابخانه",
+                    "list": "لیست کتاب",
+                    "add": "اضافه نمودن کتاب"
+                },
+                "classes": {
+                    "label": "صنوف",
+                    "list": "لیست صنف ها",
+                    "add": "اضافه نمودن صنف"
+                },
+                "timeTable": {
+                    "label": "جدول زمانی",
+                    "list": "تقسیم اوقات",
+                    "add": "اضافه نمودن تقسیم اوقات"
+                }
+            }
+        },
+        "teachers": {
+            "label": "معلمین",
+            "menues": {
+                "list": "لیست استادان",
+                "register": "ثبت معلم"
+            }
+        },
+        "students": {
+            "label": "شاگردان",
+            "menues": {
+                "list": "لیست شاگرد ها",
+                "register": "ثبت شاگرد"
+            }
+        }
+    },
+    "breadcrumb": {
+        "title": "داشبورد پیش فرض"
     }
 }

@@ -1,5 +1,8 @@
+import { Properties } from "./Properties";
+import { FormProps } from "./FormProps";
 export interface WizardProps {
   steps: Step[];
+  formProps: FormProps;
 }
 
 export interface ProgressCircleProps {

@@ -1,5 +1,5 @@
 import React, { memo, useCallback } from "react";
-import AppInput from "../AppInput";
+import AppInput from "../input/AppInput";
 import { FormInputProps } from "../properties/FormInputProps";
 import AppErrorMessage from "../AppErrorMessage";
 import { useField } from "formik";
@@ -45,7 +45,6 @@ const AppFormInput: React.FC<FormInputProps> = memo(
           aria-invalid={!!error}
           aria-describedby={error ? `${name}-error` : undefined}
         />
-        <label className="form-control-placeholder">{label}</label>
         {error && <AppErrorMessage error={error} visible={true} />}
       </>
     );

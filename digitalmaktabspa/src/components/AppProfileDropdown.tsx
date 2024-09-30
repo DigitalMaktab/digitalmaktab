@@ -1,5 +1,6 @@
 import React from "react";
 import { DropdownItemProps } from "./properties/DropdownItemProps";
+import { useTranslation } from "react-i18next";
 
 const AppProfileDropdown: React.FC<DropdownItemProps> = ({
   dropdownKey,
@@ -11,6 +12,7 @@ const AppProfileDropdown: React.FC<DropdownItemProps> = ({
   className,
   style,
 }) => {
+  const { t } = useTranslation();
   return (
     <li
       className={`custom-dropdown ${className}`}
@@ -28,8 +30,8 @@ const AppProfileDropdown: React.FC<DropdownItemProps> = ({
       >
         <img src="../assets/images/profile.png" alt="" />
         <div className="flex-grow-1">
-          <h5>Wade Warren</h5>
-          <span>UI Designer</span>
+          <h5>{t("header.user.name")}</h5>
+          <span>{t("header.user.role")}</span>
         </div>
       </div>
       <div className={`custom-menu overflow-hidden ${isOpen ? "show" : ""}`}>

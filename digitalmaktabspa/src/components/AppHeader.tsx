@@ -7,8 +7,11 @@ import AppDropdownItem from "./dropdown/AppDropdownItem";
 import AppProfileDropdown from "./AppProfileDropdown";
 import { DropDownItem } from "../helper/object/DropDownItem";
 import AppLocalizer from "./dropdown/AppLocalizer";
+import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
 
 const AppHeader: React.FC<AppHeaderProps> = ({ onSidebarToggle }) => {
+  const { t } = useTranslation();
   const { dropdownState, toggleDropdown, dropdownRefs } = useDropdowns();
 
   const dropdownItems: DropDownItem[] = useMemo(
@@ -26,15 +29,15 @@ const AppHeader: React.FC<AppHeaderProps> = ({ onSidebarToggle }) => {
           <ul>
             <li className="d-flex">
               <FeatherIcon icon="home" />
-              <a className="ms-2" href="user-profile.html">
-                Account
-              </a>
+              <Link className="ms-2" to="/user-profile">
+                {t("header.user.actions.account")}
+              </Link>
             </li>
             <li className="d-flex">
               <FeatherIcon icon="lock" />
-              <a className="ms-2" href="user-profile.html">
-                Logout
-              </a>
+              <Link className="ms-2" to="/logout">
+                {t("header.user.actions.logout")}
+              </Link>
             </li>
           </ul>
         ),
@@ -82,7 +85,7 @@ const AppHeader: React.FC<AppHeaderProps> = ({ onSidebarToggle }) => {
               <input
                 className="form-control"
                 type="text"
-                placeholder="Search anything..."
+                placeholder={t("header.search.placeholder")}
               />
             </div>
           </form>

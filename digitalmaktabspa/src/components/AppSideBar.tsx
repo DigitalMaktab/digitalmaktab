@@ -5,9 +5,14 @@ import AppMenuMainTitle from "./menu/AppMenuMainTitle";
 import AppMenuItem from "./menu/AppMenuItem";
 import FeatherIcon from "feather-icons-react";
 import * as AIIcons from "react-icons/ai";
+import * as PIIcons from "react-icons/pi";
+import * as LiaIcons from "react-icons/lia";
+import * as SIIcons from "react-icons/si";
 import { MenuSection } from "./properties/MenuItemProps";
+import { useTranslation } from "react-i18next";
 
 const AppSideBar: React.FC<AppSideBarProps> = ({ isOpen }) => {
+  const { t } = useTranslation();
   const [activeItem, setActiveItem] = useState<string | null>(null);
   const [activeSubMenuItem, setActiveSubMenuItem] = useState<string | null>(
     null
@@ -23,34 +28,84 @@ const AppSideBar: React.FC<AppSideBarProps> = ({ isOpen }) => {
 
   const menuItems: MenuSection[] = [
     {
-      title: "General",
+      title: t("sidebar.general.label"),
       items: [
         {
-          label: "Dashboard",
+          label: t("sidebar.general.menues.dashboard"),
           icon: <AIIcons.AiOutlineHome className="stroke-icon" />,
           link: "/admin-dashboard",
         },
         {
-          label: "Widgets",
-          icon: <AIIcons.AiOutlineWindows className="stroke-icon" />,
-          badge: "40",
+          label: t("sidebar.general.menues.library.label"),
+          icon: <AIIcons.AiOutlineBook className="stroke-icon" />,
           subMenu: [
-            { label: "General", link: "general-widget.html" },
-            { label: "Chart", link: "chart-widget.html" },
+            {
+              label: t("sidebar.general.menues.library.list"),
+              link: "general-widget.html",
+            },
+            {
+              label: t("sidebar.general.menues.library.add"),
+              link: "chart-widget.html",
+            },
+          ],
+        },
+        {
+          label: t("sidebar.general.menues.classes.label"),
+          icon: <SIIcons.SiGoogleclassroom className="stroke-icon" />,
+          subMenu: [
+            {
+              label: t("sidebar.general.menues.classes.list"),
+              link: "general-widget.html",
+            },
+            {
+              label: t("sidebar.general.menues.classes.add"),
+              link: "chart-widget.html",
+            },
+          ],
+        },
+        {
+          label: t("sidebar.general.menues.timeTable.label"),
+          icon: <AIIcons.AiOutlineSchedule className="stroke-icon" />,
+          subMenu: [
+            {
+              label: t("sidebar.general.menues.timeTable.list"),
+              link: "general-widget.html",
+            },
+            {
+              label: t("sidebar.general.menues.timeTable.add"),
+              link: "chart-widget.html",
+            },
           ],
         },
       ],
     },
     {
-      title: "Applications",
+      title: t("sidebar.teachers.label"),
       items: [
         {
-          label: "Project",
-          icon: <AIIcons.AiOutlineProject className="stroke-icon" />,
-          subMenu: [
-            { label: "Project List", link: "project-list.html" },
-            { label: "Create New", link: "projectcreate.html" },
-          ],
+          label: t("sidebar.teachers.menues.list"),
+          icon: <LiaIcons.LiaChalkboardTeacherSolid className="stroke-icon" />,
+          link: "/admin-dashboard",
+        },
+        {
+          label: t("sidebar.teachers.menues.register"),
+          icon: <AIIcons.AiOutlineUserAdd className="stroke-icon" />,
+          link: "/admin-dashboard",
+        },
+      ],
+    },
+    {
+      title: t("sidebar.students.label"),
+      items: [
+        {
+          label: t("sidebar.students.menues.list"),
+          icon: <PIIcons.PiStudent className="stroke-icon" />,
+          link: "/admin-dashboard",
+        },
+        {
+          label: t("sidebar.students.menues.register"),
+          icon: <AIIcons.AiOutlineUserAdd className="stroke-icon" />,
+          link: "/admin-dashboard",
         },
       ],
     },

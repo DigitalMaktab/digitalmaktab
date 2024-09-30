@@ -5,8 +5,10 @@ import AppImg from "../AppImg";
 import AppWizardProgressCircle from "./AppWizardProgressCircle";
 import AppWizardFormSection from "./AppWizardFormSection";
 import AppWizardNavigation from "./AppWizardNavigation";
+import { Link } from "react-router-dom";
+import AppForm from "../form/AppForm";
 
-const AppWizard: React.FC<WizardProps> = ({ steps }) => {
+const AppWizard: React.FC<WizardProps> = ({ steps, formProps }) => {
   const { t } = useTranslation();
 
   const [formState, setFormState] = useState<number>(0);
@@ -26,17 +28,13 @@ const AppWizard: React.FC<WizardProps> = ({ steps }) => {
         <div className="col-lg-3 col-md-4 position-relative">
           <ul className="anchor">
             <li>
-              <a className="logo text-start ps-0" href="index.html">
-                <img
-                  className="img-fluid for-light"
-                  src="../../resources/assets/dark-logo.svg"
-                  alt="login page"
-                />
+              <Link className="logo text-start ps-0" to="/login">
                 <AppImg
                   className="for-dark"
                   src={`${process.env.PUBLIC_URL}/assets/images/logo/logo-no-background.svg`}
+                  alt={t("logo")}
                 />
-              </a>
+              </Link>
             </li>
             <li>
               <AppWizardProgressCircle formState={formState} steps={steps} />
@@ -60,7 +58,11 @@ const AppWizard: React.FC<WizardProps> = ({ steps }) => {
                     style={{ width: `${progressPercentage}%` }}
                   ></div>
                 </div>
-                <form className="theme-form">
+                <AppForm
+                  initialValues={formProps.initialValues}
+                  validationSchema={formProps.validationSchema}
+                  onSubmit={formProps.onSubmit}
+                >
                   <AppWizardFormSection formState={formState} steps={steps} />
                   <AppWizardNavigation
                     formState={formState}
@@ -68,7 +70,12 @@ const AppWizard: React.FC<WizardProps> = ({ steps }) => {
                     handleNext={handleNext}
                     totalSteps={steps.length}
                   />
-                </form>
+                  <p className="mt-4 mb-0 text-center">
+                    <Link className="ms-2" to="/login">
+                      {t("auth.login.login")}
+                    </Link>
+                  </p>
+                </AppForm>
               </div>
             </div>
           </div>
