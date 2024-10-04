@@ -30,6 +30,11 @@ const AppWizard: React.FC<WizardProps> = ({ steps, formProps }) => {
             <li>
               <Link className="logo text-start ps-0" to="/login">
                 <AppImg
+                  className="for-light"
+                  src={`${process.env.PUBLIC_URL}/assets/images/logo/logo-no-background-dark.svg`}
+                  alt={t("logo")}
+                />
+                <AppImg
                   className="for-dark"
                   src={`${process.env.PUBLIC_URL}/assets/images/logo/logo-no-background.svg`}
                   alt={t("logo")}

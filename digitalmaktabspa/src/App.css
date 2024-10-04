@@ -13867,7 +13867,7 @@ html[data-theme=dark-sidebar] .page-sidebar {
      typography css start
 ==========================**/
 body {
-  font-family: Vazirmatn, "Outfit", sans-serif;
+  font-family: Vazirmatn, Vazirmatn, "Outfit", sans-serif;
   font-size: 14px;
   background-color: var(--body-color);
   color: var(--body-font-color);
@@ -19658,7 +19658,7 @@ ul li {
 
 .badge {
   padding: 0.44em 0.7em;
-  font-family: "Outfit", sans-serif, sans-serif;
+  font-family: Vazirmatn, Vazirmatn, "Outfit", sans-serif, sans-serif;
   font-weight: 500;
 }
 .badge + .badge {
@@ -21011,7 +21011,7 @@ ul li {
   border: 1px solid var(--light-color);
 }
 .apexcharts-canvas .apexcharts-tooltip .apexcharts-tooltip-text {
-  font-family: "Outfit", sans-serif !important;
+  font-family: Vazirmatn, Vazirmatn, "Outfit", sans-serif ;
 }
 [data-theme=dark] .apexcharts-canvas .apexcharts-tooltip .apexcharts-tooltip-text {
   color: var(--body-font-color);
@@ -21020,7 +21020,7 @@ ul li {
   background-color: var(--card-color);
 }
 .apexcharts-canvas .apexcharts-tooltip.apexcharts-theme-light .apexcharts-tooltip-text {
-  font-family: "Outfit", sans-serif !important;
+  font-family: Vazirmatn, Vazirmatn, "Outfit", sans-serif ;
 }
 [data-theme=dark] .apexcharts-canvas .apexcharts-tooltip.apexcharts-theme-light .apexcharts-tooltip-text {
   color: var(--body-font-color);
@@ -21030,7 +21030,7 @@ ul li {
   background-color: var(--card-color);
 }
 .apexcharts-canvas .apexcharts-text tspan {
-  font-family: "Outfit", sans-serif;
+  font-family: Vazirmatn, Vazirmatn, "Outfit", sans-serif;
   font-size: 13px;
   font-weight: 500;
   fill: var(--body-font-color);
@@ -21041,7 +21041,7 @@ ul li {
 .apexcharts-canvas .apexcharts-yaxis-title text,
 .apexcharts-canvas .apexcharts-legend-text,
 .apexcharts-canvas .apexcharts-title-text {
-  font-family: "Outfit", sans-serif !important;
+  font-family: Vazirmatn, Vazirmatn, "Outfit", sans-serif ;
   font-weight: 500 !important;
 }
 
@@ -21685,7 +21685,7 @@ label {
   border: none;
   color: var(--dark-gray);
   border-radius: 5px;
-  font-family: "Outfit", sans-serif;
+  font-family: Vazirmatn, Vazirmatn, "Outfit", sans-serif;
   font-size: 14px;
 }
 [data-theme=dark] .theme-form .form-control,
@@ -22063,7 +22063,7 @@ label {
 }
 .icon-event .d-flex h6, .icon-event .d-flex .h6 {
   font-size: 15px;
-  font-family: "Outfit", sans-serif;
+  font-family: Vazirmatn, Vazirmatn, "Outfit", sans-serif;
   color: var(--light-font);
 }
 [data-theme=dark] .icon-event .d-flex h6, [data-theme=dark] .icon-event .d-flex .h6 {
@@ -29683,7 +29683,7 @@ table.dataTable.display tbody tr:hover > .sorting_1 {
   position: relative;
 }
 .bootstrap-touchspin .input-group {
-  font-family: "Outfit", sans-serif, sans-serif;
+  font-family: Vazirmatn, Vazirmatn, "Outfit", sans-serif, sans-serif;
 }
 .bootstrap-touchspin .input-group .btn {
   border-radius: 0 !important;
@@ -30513,7 +30513,7 @@ input[type=number] {
   border-color: var(--solid-border);
 }
 .basic-wizard .stepper-horizontal .step.done .step-circle:before {
-  font-family: "FontAwesome";
+  font-family: Vazirmatn, "FontAwesome";
   font-weight: 100;
   content: "\f00c";
 }
@@ -32103,7 +32103,7 @@ section.pswp__scroll-wrap {
   background-color: var(--theme-default);
   border-color: var(--theme-default);
   color: var(--white);
-  font-family: "Font Awesome 5 Free";
+  font-family:  "Font Awesome 5 Free";
   font-weight: 900;
   content: "\f00c";
   text-align: center;
@@ -33347,7 +33347,7 @@ section.pswp__scroll-wrap {
   }
 }
 .default-dashboard .monthly-overview {
-  font-family: "Outfit", sans-serif;
+  font-family: Vazirmatn, Vazirmatn, "Outfit", sans-serif;
 }
 @media (min-width: 1200px) and (max-width: 1880px) {
   .default-dashboard .course-table table tr th:nth-child(3) {
@@ -35297,7 +35297,7 @@ section.pswp__scroll-wrap {
 .project-dashboard .calendar {
   padding: 10px;
   width: 100%;
-  font-family: "Outfit", sans-serif;
+  font-family: Vazirmatn, Vazirmatn, "Outfit", sans-serif;
   color: var(--body-font-color);
   line-height: 1.2;
   text-align: center;
@@ -35479,7 +35479,7 @@ section.pswp__scroll-wrap {
 .project-dashboard .calendar__table-col-header {
   padding: 12px 0;
   font-size: 14px !important;
-  font-family: "Outfit", sans-serif !important;
+  font-family: Vazirmatn, Vazirmatn, "Outfit", sans-serif ;
   color: var(--body-font-color) !important;
   letter-spacing: 0.1em;
   font-weight: 700 !important;
@@ -35865,7 +35865,7 @@ section.pswp__scroll-wrap {
 .user-profile .follow .follow-num {
   font-size: 20px;
   color: var(--body-font-color);
-  font-family: "Outfit", sans-serif, sans-serif;
+  font-family: Vazirmatn, Vazirmatn, "Outfit", sans-serif, sans-serif;
   font-weight: 500;
 }
 [data-theme=dark] .user-profile .follow .follow-num {
@@ -35914,7 +35914,7 @@ section.pswp__scroll-wrap {
   color: #C42A02;
 }
 .user-profile .like-comment span {
-  font-family: "Outfit", sans-serif, sans-serif;
+  font-family: Vazirmatn, Vazirmatn, "Outfit", sans-serif, sans-serif;
 }
 @media (max-width: 575.98px) {
   .user-profile .like-comment span {
@@ -38613,7 +38613,7 @@ section.pswp__scroll-wrap {
   margin-bottom: 0;
   margin-top: 5px;
   font-size: 20px;
-  font-family: "Outfit", sans-serif;
+  font-family: Vazirmatn, Vazirmatn, "Outfit", sans-serif;
 }
 .product-box .product-details h6, .product-box .product-details .h6 {
   color: #2F2F3B;
@@ -39390,7 +39390,7 @@ html[data-theme=dark-sidebar] .page-sidebar {
   width: 100%;
   text-align: left;
   letter-spacing: 0.7px;
-  font-family: "Outfit", sans-serif;
+  font-family: Vazirmatn, Vazirmatn, "Outfit", sans-serif;
   color: var(--body-font-color);
   border: 1px solid var(--light-semi-gray);
   border-radius: 0;
@@ -39453,7 +39453,7 @@ html[data-theme=dark-sidebar] .page-sidebar {
   background-color: var(--body-color);
 }
 .dropdown-menu .dropdown-item {
-  font-family: "Outfit", sans-serif;
+  font-family: Vazirmatn, Vazirmatn, "Outfit", sans-serif;
   color: #2b2b2b;
   opacity: 1.6;
   font-size: 13px;
@@ -40394,7 +40394,7 @@ html[data-theme=dark-sidebar] .page-sidebar {
 }
 .navs-icon li a {
   color: var(--body-font-color);
-  font-family: "Outfit", sans-serif;
+  font-family: Vazirmatn, Vazirmatn, "Outfit", sans-serif;
 }
 .navs-icon li a:hover {
   color: var(--theme-default);
@@ -41328,7 +41328,7 @@ html[data-theme=dark-sidebar] .page-sidebar {
 
 /**==invioce1==**/
 .invoice-1 body {
-  font-family: "Outfit", sans-serif;
+  font-family: Vazirmatn, "Outfit", sans-serif;
   display: block;
   color: #000248;
 }
@@ -43652,7 +43652,7 @@ html[data-theme=dark-sidebar] .page-sidebar {
 }
 
 .list-persons p {
-  font-family: "Outfit", sans-serif;
+  font-family: Vazirmatn, "Outfit", sans-serif;
 }
 .list-persons .profile-mail {
   padding: 30px 0;
@@ -45175,7 +45175,7 @@ html[data-theme=dark-sidebar] .page-sidebar {
   border-top-right-radius: 0;
   padding-top: 30px;
   text-align: center;
-  font-family: "Outfit", sans-serif;
+  font-family: Vazirmatn, "Outfit", sans-serif;
   color: var(--body-font-color);
 }
 
@@ -49158,7 +49158,7 @@ rect {
 }
 .landing-page .main-title {
   color: var(--body-font-color);
-  font-family: "Outfit", sans-serif;
+  font-family: Vazirmatn, "Outfit", sans-serif;
   font-size: calc(24px + 16 * (100vw - 300px) / 1620);
   font-weight: 600;
   line-height: 0.8;
@@ -49166,7 +49166,7 @@ rect {
 }
 .landing-page .description-title {
   color: var(--light-font);
-  font-family: "Outfit", sans-serif;
+  font-family: Vazirmatn, "Outfit", sans-serif;
   font-size: calc(14px + 3 * (100vw - 300px) / 1620);
   font-style: normal;
   font-weight: 400;
@@ -49252,7 +49252,7 @@ rect {
 .landing-page .landing-header ul.landing-menu li.nav-item a.nav-link {
   font-size: 16px;
   font-weight: 500;
-  font-family: "Outfit", sans-serif;
+  font-family: Vazirmatn, "Outfit", sans-serif;
   color: var(--body-font-color);
   padding: 10px 30px;
   text-transform: uppercase;
@@ -49421,7 +49421,7 @@ rect {
 .landing-page .landing-home .home-left .landing-title .sub-title {
   display: flex;
   align-items: center;
-  font-family: "Outfit", sans-serif;
+  font-family: Vazirmatn, "Outfit", sans-serif;
   font-size: calc(14px + 4 * (100vw - 320px) / 1600);
   font-weight: 400;
   padding-bottom: 10px;
@@ -49445,7 +49445,7 @@ rect {
 }
 .landing-page .landing-home .home-left .landing-title .header-title {
   color: var(--body-font-color);
-  font-family: "Outfit", sans-serif;
+  font-family: Vazirmatn, "Outfit", sans-serif;
   font-size: calc(18px + 33 * (100vw - 320px) / 1600);
   font-weight: 600;
   line-height: 1.2;
@@ -49459,7 +49459,7 @@ rect {
 }
 .landing-page .landing-home .home-left .landing-title p {
   color: var(--light-font);
-  font-family: "Outfit", sans-serif;
+  font-family: Vazirmatn, "Outfit", sans-serif;
   font-size: calc(14px + 2 * (100vw - 320px) / 1600);
   font-weight: 400;
   line-height: 1.4;
@@ -49486,7 +49486,7 @@ rect {
 }
 .landing-page .landing-home .home-left .landing-title .html-btn {
   padding: 10px 14px !important;
-  font-family: "Outfit", sans-serif;
+  font-family: Vazirmatn, "Outfit", sans-serif;
   background-color: var(--landing-btn) !important;
   border-color: var(--landing-btn) !important;
 }
@@ -49806,7 +49806,7 @@ rect {
   left: 11%;
 }
 .landing-page .landing-home .home-right .landing-image .animate-img .sub-title span {
-  font-family: "Caveat", cursive;
+  font-family: Vazirmatnt, "Caveat", cursive;
   color: #FD7E40;
   text-align: center;
   font-size: calc(14px + 29 * (100vw - 320px) / 1600);
@@ -49904,7 +49904,7 @@ rect {
   -webkit-text-fill-color: transparent;
   color: var(--landing-outline-text);
   text-transform: uppercase;
-  font-family: "Roboto", sans-serif;
+  font-family: Vazirmatn, "Roboto", sans-serif;
   font-weight: 700;
   font-size: 120px;
 }
@@ -50029,7 +50029,7 @@ rect {
   animation: swing 2s ease infinite;
 }
 .landing-page .framework-section .framworks-list li h5, .landing-page .framework-section .framworks-list li .h5 {
-  font-family: "Outfit", sans-serif;
+  font-family: Vazirmatn, "Outfit", sans-serif;
   color: var(--body-font-color);
 }
 .landing-page .application-section {
@@ -50155,7 +50155,7 @@ rect {
 }
 .landing-page .features-section .feature-content .feature-box h4, .landing-page .features-section .feature-content .feature-box .h4 {
   color: var(--body-font-color);
-  font-family: "Outfit", sans-serif;
+  font-family: Vazirmatn, "Outfit", sans-serif;
   font-size: 18px;
   font-weight: 500;
 }
@@ -50241,13 +50241,13 @@ rect {
   }
 }
 .landing-page .support-section .landing-title .sub-title {
-  font-family: "Caveat", cursive;
+  font-family: Vazirmatn, "Caveat", cursive;
   font-size: 40px;
   font-size: calc(22px + 17 * (100vw - 300px) / 1620);
   font-weight: 700;
 }
 .landing-page .support-section .landing-title h2, .landing-page .support-section .landing-title .h2 {
-  font-family: "Outfit", sans-serif;
+  font-family: Vazirmatn, "Outfit", sans-serif;
   color: var(--body-font-color);
   font-size: calc(22px + 17 * (100vw - 300px) / 1620);
   font-weight: 600;
@@ -50255,7 +50255,7 @@ rect {
 }
 .landing-page .support-section .landing-title p {
   color: var(--light-font);
-  font-family: "Outfit", sans-serif;
+  font-family: Vazirmatn, "Outfit", sans-serif;
   font-size: calc(14px + 2 * (100vw - 300px) / 1620);
   font-weight: 400;
   line-height: 1.4;
@@ -50553,7 +50553,7 @@ rect {
 .landing-page .landing-footer h2, .landing-page .landing-footer .h2 {
   color: #ffffff;
   text-align: center;
-  font-family: "Outfit", sans-serif;
+  font-family: Vazirmatn, "Outfit", sans-serif;
   font-size: calc(18px + 13 * (100vw - 320px) / 1600);
   font-weight: 500;
   line-height: 1.2;

@@ -40,6 +40,10 @@ const AppSideBar: React.FC<AppSideBarProps> = ({ isOpen }) => {
           icon: <AIIcons.AiOutlineBook className="stroke-icon" />,
           subMenu: [
             {
+              label: t("sidebar.general.menues.library.onlineLibrary"),
+              link: "general-widget.html",
+            },
+            {
               label: t("sidebar.general.menues.library.list"),
               link: "general-widget.html",
             },

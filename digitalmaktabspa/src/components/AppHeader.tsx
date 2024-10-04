@@ -49,17 +49,18 @@ const AppHeader: React.FC<AppHeaderProps> = ({ onSidebarToggle }) => {
   return (
     <header className="page-header row">
       <div className="logo-wrapper d-flex align-items-center col-auto">
-        <a href="index.html">
+        <Link to="/admin-dashboard">
           <AppImg
             className="for-light"
-            src={`${process.env.PUBLIC_URL}/assets/images/logo/logo.png`}
+            style={{ width: 130, height: 55 }}
+            src={`${process.env.PUBLIC_URL}/assets/images/logo/logo-no-background-dark.svg`}
           />
           <AppImg
             className="for-dark"
             style={{ width: 130, height: 55 }}
             src={`${process.env.PUBLIC_URL}/assets/images/logo/logo-no-background.svg`}
           />
-        </a>
+        </Link>
         <a
           className="close-btn"
           href="/admin-dashboard"

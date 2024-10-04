@@ -1,6 +1,12 @@
 {
     "appName": "Digital Maktab",
     "logo": "Logo",
+    "slogan": {
+        "label": "Learn, Create, Change",
+        "learn": "Learn",
+        "create": "Create",
+        "change": "Change"
+    },
     "controls": {
         "fileInput": {
             "button": "Choose File",
@@ -79,6 +85,7 @@
                 "dashboard": "Dashboard",
                 "library": {
                     "label": "Library",
+                    "onlineLibrary": "Online Library",
                     "list": "Books List",
                     "add": "Add Book"
                 },
@@ -111,5 +118,29 @@
     },
     "breadcrumb": {
         "title": "Default Dashboard"
+    },
+    "public": {
+        "header": {
+            "createAccount": {
+                "label": "Create Account"
+            },
+            "home": {
+                "label": "Home"
+            },
+            "features": {
+                "label": "Features"
+            }
+        },
+        "home": {
+            "kickStart": "Kick-start your school management journey!",
+            "details": "Efficiently manage your school, enhance communication, and empower students and staff—all in one powerful system. Simplify your school management today!"
+        },
+        "support": {
+            "title": "Support",
+            "description": "Fast issue resolution, and dedicated experts for a seamless experience"
+        },
+        "footer": {
+            "label": "Digital Maktab, a trusted partner for your school."
+        }
     }
 }
