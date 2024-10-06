@@ -135,9 +135,48 @@
             "kickStart": "Kick-start your school management journey!",
             "details": "Efficiently manage your school, enhance communication, and empower students and staff—all in one powerful system. Simplify your school management today!"
         },
+        "features": {
+            "description": "The system offers complete management of educational processes, covering administrative, academic, and library-related tasks",
+            "features": {
+                "schoolRegistry": {
+                    "title": "School Registry",
+                    "description": "The School Registry manages essential information about the school, including its structure, staff, and administrative details."
+                },
+                "teacherRegistry": {
+                    "title": "Teacher Registry",
+                    "description": "The Teachers Registry manages teacher profiles, qualifications, and assignments, ensuring proper organization of staff information."
+                },
+                "studentRegistry": {
+                    "title": "Student Registry",
+                    "description": "The Student Registry efficiently manages student information, including enrollment, personal details, academic records, and attendance."
+                },
+                "classRegistry": {
+                    "title": "Class Registry",
+                    "description": "The Classes Registry organizes and manages information about class schedules, subjects, and student assignments."
+                },
+                "subjects": {
+                    "title": "Subjects",
+                    "description": "The Subjects module manages information related to academic subjects, including course details, curriculum, and assigned teachers."
+                },
+                "grades": {
+                    "title": "Grades",
+                    "description": "The Grades module manages the recording and tracking of student performance and exam results across all subjects."
+                },
+                "attendance": {
+                    "title": "Attendance",
+                    "description": "The Attendance module tracks and manages student attendance, providing insights into their presence and absences."
+                },
+                "library": {
+                    "title": "Library",
+                    "description": "The Library module manages the catalog of books and resources, including Afghanistan MOE books, and facilitates borrowing and tracking."
+                }
+            }
+        },
         "support": {
             "title": "Support",
-            "description": "Fast issue resolution, and dedicated experts for a seamless experience"
+            "description": "Fast issue resolution, and dedicated experts for a seamless experience",
+            "details": "We give it as we think that excellent support is needed",
+            "more": "Check our reviews for fast and accurate support to ensure support. we offer premium assistance around-the-clock for any bugs you encounter. and we’ll do best to help you out with any future updates for free."
         },
         "footer": {
             "label": "Digital Maktab, a trusted partner for your school."
