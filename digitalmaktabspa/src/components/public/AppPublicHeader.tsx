@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import { Link } from "react-router-dom";
 import AppImg from "../AppImg";
 import { useTranslation } from "react-i18next";
@@ -10,6 +10,12 @@ import FeatherIcon from "feather-icons-react";
 const AppPublicHeader = () => {
   const { dropdownState, toggleDropdown, dropdownRefs } = useDropdowns();
   const { t } = useTranslation();
+  const menuRef = useRef<HTMLUListElement | null>(null);
+  const handleToggleMenu = () => {
+    if (menuRef.current) {
+      menuRef.current.classList.toggle("open");
+    }
+  };
   return (
     <header className="landing-header">
       <div className="container-fluid fluid-space">
@@ -23,22 +29,21 @@ const AppPublicHeader = () => {
                   src={`${process.env.PUBLIC_URL}/assets/images/logo/logo-no-background-dark.svg`}
                 />
               </Link>
-              <ul className="landing-menu nav nav-pills">
-                <li className="nav-item menu-back">
-                  back<i className="fa fa-angle-right"></i>
+              <ul className="landing-menu nav nav-pills" ref={menuRef}>
+                <li className="nav-item menu-back" onClick={handleToggleMenu}>
+                  {t("public.header.back")} <FeatherIcon icon="chevron-right" />
                 </li>
                 <li className="nav-item">
                   <a className="nav-link" href="#home">
-                    {t("public.header.home.label")}
+                    <FeatherIcon icon="home" /> {t("public.header.home.label")}
                   </a>
                 </li>
                 <li className="nav-item">
                   <a className="nav-link" href="#feature">
+                    <FeatherIcon icon="shopping-bag" />{" "}
                     {t("public.header.features.label")}
                   </a>
                 </li>
-              </ul>
-              <ul className="landing-menu nav nav-pills">
                 <li className="nav-item">
                   <Link className="nav-link" to="/signup">
                     <FeatherIcon icon="user-plus" />{" "}
@@ -59,13 +64,13 @@ const AppPublicHeader = () => {
                   toggleDropdown={toggleDropdown}
                   dropdownRefs={dropdownRefs}
                   className="nav-item"
-                  style={{ marginTop: 10 }}
+                  style={{ marginTop: 10, marginLeft: 20, marginRight: 20 }}
                 >
                   {<AppLocalizer />}
                 </AppDropdownItem>
               </ul>
               <div className="buy-block">
-                <div className="toggle-menu">
+                <div className="toggle-menu" onClick={handleToggleMenu}>
                   <FeatherIcon icon="align-justify" />
                 </div>
               </div>

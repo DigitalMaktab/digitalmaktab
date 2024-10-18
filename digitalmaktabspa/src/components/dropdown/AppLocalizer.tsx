@@ -21,7 +21,8 @@ const AppLocalizer: React.FC<LocalizerProps> = ({ isLinear = true }) => {
 
   useEffect(() => {
     document.documentElement.setAttribute("dir", language.direction);
-  }, [language.direction]);
+    document.title = t("appName");
+  }, [t, language.direction]);
 
   const changeLanguage = (lang: SupportedLanguageProps) => {
     i18n.changeLanguage(lang.language);

@@ -121,6 +121,7 @@
     },
     "public": {
         "header": {
+            "back": "Back",
             "createAccount": {
                 "label": "Create Account"
             },

@@ -49281,6 +49281,12 @@ rect {
   .landing-page .landing-header ul.landing-menu li.nav-item a.nav-link {
     text-align: left;
   }
+  html[dir="ltr"] .landing-page .landing-header ul.landing-menu li.nav-item a.nav-link {
+    text-align: left;
+  }
+  html[dir="rtl"] .landing-page .landing-header ul.landing-menu li.nav-item a.nav-link {
+    text-align: right;
+  }
 }
 .landing-page .landing-header ul.landing-menu li.nav-item a.nav-link:after {
   background-color: var(--theme-default);
@@ -54587,6 +54593,7 @@ html[dir=rtl] .icons-accordion .accordion-item .accordion-header .accordion-butt
 html[dir=rtl] .nav-tabs .nav-item .nav-link svg.svg-color {
   margin-right: unset;
   margin-left: 4px;
+  text-align: right;
 }
 html[dir=rtl] .list-group .list-group-item svg {
   margin-left: 10px;

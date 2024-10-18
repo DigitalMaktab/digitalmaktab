@@ -121,6 +121,7 @@
     },
     "public": {
         "header": {
+            "back": "بستن",
             "createAccount": {
                 "label": "ایجاد حساب"
             },
