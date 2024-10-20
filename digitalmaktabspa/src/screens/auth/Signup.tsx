@@ -13,8 +13,8 @@ const Signup = () => {
   const { t } = useTranslation();
   const steps: Step[] = [
     {
-      title: t("auth.signup.about"),
-      description: t("auth.signup.personalDetails"),
+      title: t("auth.signup.about.label"),
+      description: t("auth.signup.about.description"),
       icon: "user",
       formContent: (
         <>
@@ -29,6 +29,18 @@ const Signup = () => {
             placeholder={t("auth.email.placeholder")}
           />
           <AppFormInput
+            label={t("auth.signup.code.label")}
+            name="code"
+            placeholder={t("auth.signup.code.placeholder")}
+          />
+
+          <AppFormInput
+            label={t("auth.signup.phoneNumber.label")}
+            name="number"
+            placeholder={t("auth.signup.phoneNumber.placeholder")}
+            type="phoneNumber"
+          />
+          <AppFormInput
             label={t("auth.signup.logo.label")}
             name="logo"
             type="file"
@@ -38,8 +50,8 @@ const Signup = () => {
       ),
     },
     {
-      title: "Address",
-      description: "Add additional info",
+      title: t("auth.signup.address.label"),
+      description: t("auth.signup.address.description"),
       icon: "map",
       formContent: (
         <>
@@ -58,8 +70,8 @@ const Signup = () => {
       ),
     },
     {
-      title: "Verify",
-      description: "Complete..!",
+      title: t("auth.signup.verify.label"),
+      description: t("auth.signup.verify.description"),
       icon: "check",
       formContent: (
         <>
@@ -89,6 +101,10 @@ const Signup = () => {
       email: Yup.string()
         .required(t("auth.email.validation.required"))
         .email(t("auth.email.validation.invalid")),
+      code: Yup.string().required(t("auth.signup.code.validation.required")),
+      number: Yup.string().required(
+        t("auth.signup.phoneNumber.validation.required")
+      ),
     }),
     initialValues: initialValues,
     onSubmit: (values: typeof initialValues) => {
@@ -102,20 +118,6 @@ const Signup = () => {
       <AppWizard steps={steps} formProps={formProps} />
     </>
   );
-  // return (
-  //   <AppForm
-  //     initialValues={initialValues}
-  //     onSubmit={handleSubmit}
-  //     validationSchema={validationSchema}
-  //   >
-  //     <AppFormInput
-  //       label="Email"
-  //       name="email"
-  //       type="text"
-  //       placeholder="john.doe@email.com"
-  //     />
-  //   </AppForm>
-  // );
 };
 
 export default Signup;

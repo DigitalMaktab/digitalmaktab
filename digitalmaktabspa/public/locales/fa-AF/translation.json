@@ -15,6 +15,22 @@
         "passwordInput": {
             "show": "نمایش رمز",
             "hide": "پنهان کردن"
+        },
+        "wizard": {
+            "nextButton": {
+                "label": "بعدی"
+            },
+            "previousButton": {
+                "label": "قبلی"
+            },
+            "finishButton": {
+                "label": "ثبت"
+            }
+        },
+        "select2": {
+            "country": {
+                "label": "انتخاب کشور"
+            }
         }
     },
     "languages": {
@@ -50,13 +66,37 @@
         "signup": {
             "createAccount": "ایجاد حساب",
             "specifications": "برای ثبت حساب معلومات زیر را وارد نمایید.",
-            "about": "مشخصات",
-            "personalDetails": "مشخصات مکتب",
+            "about": {
+                "label": "مشخصات",
+                "description": "مشخصات مکتب را وارد کنید"
+            },
+            "address": {
+                "label": "آدرس",
+                "description": "آدرس مکتب را وارد کنید"
+            },
+            "verify": {
+                "label": "تایید",
+                "description": "تایید معلومات"
+            },
             "schoolName": {
                 "label": "اسم مکتب",
                 "placeholder": "خصوصی صبح امید",
                 "validation": {
                     "required": "اسم مکتب ضروری میباشد."
+                }
+            },
+            "code": {
+                "label": "کود مکتب",
+                "placeholder": "۱۲۳۴۵",
+                "validation": {
+                    "required": "کود مکتب ضروری میباشد"
+                }
+            },
+            "phoneNumber": {
+                "label": "شماره تماس",
+                "placeholder": "۷۸۷۴۴۶۰۹۹",
+                "validation": {
+                    "required": "شماره تماس ضروری میباشد"
                 }
             },
             "logo": {

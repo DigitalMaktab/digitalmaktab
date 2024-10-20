@@ -1,5 +1,7 @@
 import React from "react";
 import { AppWizardNavigationProps } from "../properties/WizardProps";
+import { useFormikContext } from "formik";
+import { useTranslation } from "react-i18next";
 
 const AppWizardNavigation: React.FC<AppWizardNavigationProps> = ({
   formState,
@@ -7,6 +9,28 @@ const AppWizardNavigation: React.FC<AppWizardNavigationProps> = ({
   handlePrev,
   totalSteps,
 }) => {
+  const { t } = useTranslation();
+  const { validateForm, setTouched, setErrors } = useFormikContext();
+
+  const handleNextWithValidation = async () => {
+    // Validate the form and get validation errors
+    const errors = await validateForm();
+
+    // Mark all fields as touched to display validation messages
+    if (Object.keys(errors).length === 0) {
+      handleNext(); // Proceed to next step if no errors
+    } else {
+      // Set all fields as touched and set errors so validation messages are shown
+      setTouched(
+        Object.keys(errors).reduce(
+          (acc, field) => ({ ...acc, [field]: true }),
+          {}
+        )
+      );
+      setErrors(errors); // Ensures that errors are set
+    }
+  };
+
   return (
     <div className="mb-3 wizard-navigation">
       <button
@@ -15,19 +39,19 @@ const AppWizardNavigation: React.FC<AppWizardNavigationProps> = ({
         onClick={handlePrev}
         disabled={formState === 0}
       >
-        Previous
+        {t("controls.wizard.previousButton.label")}
       </button>
       {formState < totalSteps - 1 ? (
         <button
           type="button"
           className="btn m-1 btn-primary btn-lg"
-          onClick={handleNext}
+          onClick={handleNextWithValidation}
         >
-          Next
+          {t("controls.wizard.nextButton.label")}
         </button>
       ) : (
         <button className="btn btn-primary btn-lg" type="button">
-          Finish
+          {t("controls.wizard.finishButton.label")}
         </button>
       )}
     </div>

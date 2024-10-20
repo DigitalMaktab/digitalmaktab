@@ -28,7 +28,13 @@ namespace digitalmaktabapi.Helpers.Mappers
             CreateMap<AddClassSubjectDto, ClassSubject>();
             CreateMap<AddEnrollmentDto, Enrollment>();
             CreateMap<AddScheduleDto, Schedule>();
-            MappingHelper.ApplyMappingConvention(this, typeof(Base), typeof(BaseDto), localizer,
+
+            var customResolvers = new Dictionary<(Type Source, string SourceField), IMemberValueResolver<object, object, string, string>>
+            {
+
+            };
+
+            MappingHelper.ApplyMappingConvention(this, typeof(Base), typeof(BaseDto), localizer, customResolvers,
                 (typeof(School), typeof(SchoolDto)),
                 (typeof(CalendarYear), typeof(CalendarYearDto)),
                 (typeof(Branch), typeof(BranchDto)),

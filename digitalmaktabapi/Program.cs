@@ -176,6 +176,18 @@ builder.Services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>()
 builder.Services.AddSingleton<ILoggerFactory, LoggerFactory>();
 
 builder.Services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new PdfTools()));
+
+
+// Add Cors Service
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowLocalhost",
+        builder => builder
+            .WithOrigins("http://localhost:3000")
+            .AllowAnyHeader()
+            .AllowAnyMethod());
+});
+
 var app = builder.Build();
 
 // Configure Localizer Service Provider
@@ -256,6 +268,9 @@ app.Use(async (context, next) =>
 });
 
 Seeder.SeedCountries(app);
+
+// Enable CORS
+app.UseCors("AllowLocalhost");
 
 app.UseIpRateLimiting();
 

@@ -11,7 +11,9 @@ const AppLocalizer: React.FC<LocalizerProps> = ({ isLinear = true }) => {
   const initialLanguage: SupportedLanguageProps = useMemo(() => {
     const currentLanguage = i18n.language;
     const direction =
-      currentLanguage === "fa" || currentLanguage === "ps" ? "rtl" : "ltr";
+      currentLanguage === "fa-AF" || currentLanguage === "ps-AF"
+        ? "rtl"
+        : "ltr";
 
     return { language: currentLanguage, direction };
   }, [i18n.language]);
@@ -34,17 +36,17 @@ const AppLocalizer: React.FC<LocalizerProps> = ({ isLinear = true }) => {
       <AppLocalizerListItem
         language={t("languages.fa")}
         flag="af"
-        onSelect={() => changeLanguage({ language: "fa", direction: "rtl" })}
+        onSelect={() => changeLanguage({ language: "fa-AF", direction: "rtl" })}
       />
       <AppLocalizerListItem
         language={t("languages.ps")}
         flag="af"
-        onSelect={() => changeLanguage({ language: "ps", direction: "rtl" })}
+        onSelect={() => changeLanguage({ language: "ps-AF", direction: "rtl" })}
       />
       <AppLocalizerListItem
         language={t("languages.en")}
         flag="us"
-        onSelect={() => changeLanguage({ language: "en", direction: "ltr" })}
+        onSelect={() => changeLanguage({ language: "en-US", direction: "ltr" })}
       />
     </ul>
   );

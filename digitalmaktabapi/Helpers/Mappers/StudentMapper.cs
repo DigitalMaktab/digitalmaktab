@@ -18,7 +18,12 @@ namespace digitalmaktabapi.Helpers.Mappers
         {
             this.localizer = ServiceLocator.ServiceProvider!.GetService<IStringLocalizer<MainController>>()!;
 
-            MappingHelper.ApplyMappingConvention(this, typeof(Base), typeof(BaseDto), localizer,
+            var customResolvers = new Dictionary<(Type Source, string SourceField), IMemberValueResolver<object, object, string, string>>
+            {
+
+            };
+
+            MappingHelper.ApplyMappingConvention(this, typeof(Base), typeof(BaseDto), localizer, customResolvers,
                 (typeof(Student), typeof(StudentDto))
             );
         }

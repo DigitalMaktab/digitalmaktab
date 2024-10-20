@@ -15,6 +15,22 @@
         "passwordInput": {
             "show": "Show",
             "hide": "Hide"
+        },
+        "wizard": {
+            "nextButton": {
+                "label": "Next"
+            },
+            "previousButton": {
+                "label": "Previous"
+            },
+            "finishButton": {
+                "label": "Finish"
+            }
+        },
+        "select2": {
+            "country": {
+                "label": "Select Country"
+            }
         }
     },
     "languages": {
@@ -50,13 +66,37 @@
         "signup": {
             "createAccount": "Sign up to account",
             "specifications": "Provide the following details to register",
-            "about": "About",
-            "personalDetails": "Add personal Details",
+            "about": {
+                "label": "About",
+                "description": "Add School Details"
+            },
+            "address": {
+                "label": "Address",
+                "description": "Add Address Details"
+            },
+            "verify": {
+                "label": "Verify",
+                "description": "Verify the Details"
+            },
             "schoolName": {
                 "label": "School Name",
                 "placeholder": "Sobh e Omid School",
                 "validation": {
                     "required": "School name is required"
+                }
+            },
+            "code": {
+                "label": "Code",
+                "placeholder": "12345",
+                "validation": {
+                    "required": "School Code is required"
+                }
+            },
+            "phoneNumber": {
+                "label": "Contact Number",
+                "placeholder": "787446099",
+                "validation": {
+                    "required": "Contact Number is required"
                 }
             },
             "logo": {

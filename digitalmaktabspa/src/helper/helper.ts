@@ -32,12 +32,9 @@ const removeUser = () => {
   localStorage.removeItem(USER);
 };
 
-const getCurrentLanguage = () => {
-  const language = localStorage.getItem("i18nextLng");
-  if (language != null) {
-    return language;
-  }
-  return "en-US";
+const getCurrentLanguage = (): string => {
+  const language = localStorage.getItem("i18nextLng")?.trim();
+  return language ?? "en-US";
 };
 
 const saveOpenMenu = (open: string) => {

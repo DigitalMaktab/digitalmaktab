@@ -38,7 +38,7 @@ namespace digitalmaktabapi.Controllers
             return Ok(countreisToReturn);
         }
 
-
+        [AllowAnonymous]
         [HttpGet("countries")]
         public async Task<IActionResult> GetCountries([FromQuery] UserParams userParams)
         {
@@ -48,6 +48,7 @@ namespace digitalmaktabapi.Controllers
             return Ok(countreisToReturn);
         }
 
+        [AllowAnonymous]
         [HttpGet("country/{countryId}")]
         public async Task<IActionResult> GetCountry(Guid countryId)
         {
@@ -55,7 +56,6 @@ namespace digitalmaktabapi.Controllers
             var countryToReturn = this.mapper.Map<CountryDto>(country);
             return Ok(countryToReturn);
         }
-
 
         [HttpGet("cities/{countryId}")]
         public async Task<IActionResult> GetCities(Guid countryId, [FromQuery] UserParams userParams)

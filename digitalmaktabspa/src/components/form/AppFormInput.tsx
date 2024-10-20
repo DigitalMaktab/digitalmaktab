@@ -33,8 +33,8 @@ const AppFormInput: React.FC<FormInputProps> = memo(
       <>
         <AppInput
           label={label}
-          name={name}
           type={type}
+          {...field}
           placeholder={placeholder}
           value={field.value || ""}
           minLength={minLength ?? undefined}
@@ -44,8 +44,13 @@ const AppFormInput: React.FC<FormInputProps> = memo(
           onChange={handleChange}
           aria-invalid={!!error}
           aria-describedby={error ? `${name}-error` : undefined}
+          className={`form-control ${
+            meta.touched && meta.error ? "is-invalid" : ""
+          }`}
         />
-        {error && <AppErrorMessage error={error} visible={true} />}
+        {meta.touched && error && (
+          <AppErrorMessage error={error} visible={true} />
+        )}
       </>
     );
   }

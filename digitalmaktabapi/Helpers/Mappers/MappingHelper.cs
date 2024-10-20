@@ -10,7 +10,12 @@ namespace digitalmaktabapi.Helpers.Mappers
 {
     public static class MappingHelper
     {
-        public static void ApplyMappingConvention(Profile profile, Type baseSourceType, Type baseDestinationType, IStringLocalizer<MainController> localizer, params (Type Source, Type Destination)[] mapTypes)
+        public static void ApplyMappingConvention(Profile profile,
+                                                  Type baseSourceType,
+                                                  Type baseDestinationType,
+                                                  IStringLocalizer<MainController> localizer,
+                                                  Dictionary<(Type Source, string SourceField), IMemberValueResolver<object, object, string, string>> customResolvers,
+                                                  params (Type Source, Type Destination)[] mapTypes)
         {
             foreach (var (Source, Destination) in mapTypes)
             {
@@ -35,16 +40,29 @@ namespace digitalmaktabapi.Helpers.Mappers
                         {
                             map.ForMember(destinationProperty.Name, opt => opt.MapFrom((src, dest) =>
                             {
-                                // Get the value of the source property
                                 var value = sourceProperty.GetValue(src);
-
-                                // Return null if the value is null
                                 if (value == null) return null;
 
-                                // Cast the value to Enum and get the localized string
                                 var enumValue = (Enum)value;
                                 return localizer[enumValue.ToString()];
                             }));
+                        }
+                    }
+
+                    // Check for custom resolver mappings
+                    if (customResolvers.TryGetValue((Source, sourceProperty.Name), out var resolver))
+                    {
+                        var destinationProperty = destinationProperties
+                            .FirstOrDefault(dp => dp.Name == sourceProperty.Name);
+
+                        if (destinationProperty != null)
+                        {
+                            map.ForMember(destinationProperty.Name,
+                                opt => opt.MapFrom((src, dest, _, context) =>
+                                {
+                                    var sourceValue = sourceProperty.GetValue(src);
+                                    return resolver.Resolve(src, dest, sourceValue as string, destinationProperty.Name, context);
+                                }));
                         }
                     }
                 }
