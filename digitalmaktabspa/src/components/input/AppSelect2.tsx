@@ -1,7 +1,8 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import $ from "jquery";
 import "select2/dist/js/select2";
 import { Select2Props } from "../properties/InputProps";
+import { useSelect2 } from "../../hooks/useSelect2";
 
 const AppSelect2: React.FC<Select2Props> = ({
   data,
@@ -9,31 +10,20 @@ const AppSelect2: React.FC<Select2Props> = ({
   onChange,
   label,
   name,
+  loading = false,
+  loadingError = false,
 }) => {
   const selectRef = useRef<HTMLSelectElement>(null);
 
-  useEffect(() => {
-    if (selectRef.current) {
-      const $select = $(selectRef.current);
+  // Memoize the options to prevent unnecessary recalculations
+  const options = useMemo(
+    () => data.map((item) => ({ id: item.id, text: item.text })),
+    [data]
+  );
+  // Use the custom hook for Select2 initialization and event handling
+  useSelect2(selectRef, options, loading, loadingError, label, onChange);
 
-      // Initialize Select2 for country selection
-      $select.select2({
-        data: data.map((item) => ({ id: item.id, text: item.text })),
-      });
-
-      // Handle change event for the Select2 component
-      $select.on("change", (e: JQuery.TriggeredEvent) => {
-        const selectedValue = (e.currentTarget as HTMLSelectElement).value;
-        onChange(selectedValue);
-      });
-
-      // Clean up on component unmount
-      return () => {
-        $select.select2("destroy");
-      };
-    }
-  }, [data, onChange]);
-
+  // Ensure that the value is updated when it changes
   useEffect(() => {
     if (selectRef.current && value) {
       $(selectRef.current).val(value).trigger("change");
@@ -42,9 +32,11 @@ const AppSelect2: React.FC<Select2Props> = ({
 
   return (
     <select ref={selectRef} className="form-control" name={name}>
-      <option value="" disabled>
-        {label}
-      </option>
+      {!loading && (
+        <option value="" disabled>
+          {label}
+        </option>
+      )}
     </select>
   );
 };

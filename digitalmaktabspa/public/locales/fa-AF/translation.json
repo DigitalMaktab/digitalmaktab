@@ -28,6 +28,14 @@
             }
         },
         "select2": {
+            "loading": "... در حال بارگزاری",
+            "errorLoading": "بارگذاری اطلاعات با خطا مواجه شد",
+            "inputTooLong": "لطفاً {input} کاراکتر حذف کنید",
+            "inputTooShort": "لطفاً {remainingChars} یا تعداد بیشتری کاراکتر وارد کنید",
+            "loadingMore": "بارگذاری اطلاعات بیشتر...",
+            "maximumSelected": "شما تنها می‌توانید {maximum} مورد را انتخاب کنید",
+            "noResults": "نتیجه‌ای یافت نشد",
+            "searching": "در حال جستجو...",
             "country": {
                 "label": "انتخاب کشور"
             }
@@ -51,7 +59,8 @@
             "label": "رمز ورود",
             "placeholder": "*******",
             "validation": {
-                "required": "پسورد ضروری میباشد."
+                "required": "پسورد ضروری میباشد.",
+                "atLeast8Chars": "رمز ورود حد اقل باید ۸ کاراکتر باشد"
             }
         },
         "login": {
@@ -97,6 +106,13 @@
                 "placeholder": "۷۸۷۴۴۶۰۹۹",
                 "validation": {
                     "required": "شماره تماس ضروری میباشد"
+                }
+            },
+            "countryId": {
+                "label": "کشور",
+                "placeholder": "AF",
+                "validation": {
+                    "required": "انتخاب کشور ضروری میباشد"
                 }
             },
             "logo": {
@@ -221,6 +237,36 @@
         },
         "footer": {
             "label": "مکتب دیجیتالیء شریک قابل اعتماد برای مکتب شما"
+        }
+    },
+    "addressForm": {
+        "street": {
+            "label": "سرک",
+            "placeholder": "سرک دوازدهم",
+            "validation": {
+                "required": "سرک ضروری میباشد"
+            }
+        },
+        "village": {
+            "label": "قریه",
+            "placeholder": "قریه",
+            "validation": {
+                "required": "قریه ضروری میباشد"
+            }
+        },
+        "region": {
+            "label": "ناحیه",
+            "placeholder": "ناحیه ۱۱",
+            "validation": {
+                "required": "ناحیه ضروری میباشد"
+            }
+        },
+        "postalCode": {
+            "label": "آدرس پوستی",
+            "placeholder": "۴۰۴۰",
+            "validation": {
+                "required": "آدرس پوستی ضروری میباشد"
+            }
         }
     }
 }

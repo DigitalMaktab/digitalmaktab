@@ -28,6 +28,14 @@
             }
         },
         "select2": {
+            "loading": "Loading...",
+            "errorLoading": "Error loading the results",
+            "inputTooLong": "Please delete {input} characters",
+            "inputTooShort": "Please enter {remainingChars} or more characters",
+            "loadingMore": "Loading more results...",
+            "maximumSelected": "You can only select {maximum} item(s)",
+            "noResults": "No results found",
+            "searching": "Searching...",
             "country": {
                 "label": "Select Country"
             }
@@ -51,7 +59,8 @@
             "label": "Password",
             "placeholder": "*******",
             "validation": {
-                "required": "Password is required"
+                "required": "Password is required",
+                "atLeast8Chars": "Password must be at least 8 characters"
             }
         },
         "login": {
@@ -97,6 +106,13 @@
                 "placeholder": "787446099",
                 "validation": {
                     "required": "Contact Number is required"
+                }
+            },
+            "countryId": {
+                "label": "Country",
+                "placeholder": "AF",
+                "validation": {
+                    "required": "Country is required"
                 }
             },
             "logo": {
@@ -221,6 +237,36 @@
         },
         "footer": {
             "label": "Digital Maktab, a trusted partner for your school."
+        }
+    },
+    "addressForm": {
+        "street": {
+            "label": "Street",
+            "placeholder": "12th Street",
+            "validation": {
+                "required": "Street is required"
+            }
+        },
+        "village": {
+            "label": "Address 2",
+            "placeholder": "Optional",
+            "validation": {
+                "required": "Address 2 is required"
+            }
+        },
+        "region": {
+            "label": "Region",
+            "placeholder": "Region",
+            "validation": {
+                "required": "Region is required"
+            }
+        },
+        "postalCode": {
+            "label": "Postal Code",
+            "placeholder": "4040",
+            "validation": {
+                "required": "Postal Code is required"
+            }
         }
     }
 }

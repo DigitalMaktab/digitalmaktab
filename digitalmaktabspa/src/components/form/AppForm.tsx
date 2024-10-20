@@ -19,7 +19,7 @@ const AppForm: React.FC<FormProps> = ({
       {({ isSubmitting }) => (
         <Form className="theme-form">
           {children}
-          <button type="submit" disabled={isSubmitting}>
+          <button type="submit">
             {isSubmitting ? "Submitting..." : "Submit"}
           </button>
         </Form>

@@ -2,7 +2,7 @@ import React, { memo, useCallback } from "react";
 import AppInput from "../input/AppInput";
 import { FormInputProps } from "../properties/FormInputProps";
 import AppErrorMessage from "../AppErrorMessage";
-import { useField } from "formik";
+import { useField, useFormikContext } from "formik";
 
 const AppFormInput: React.FC<FormInputProps> = memo(
   ({
@@ -13,21 +13,20 @@ const AppFormInput: React.FC<FormInputProps> = memo(
     minLength,
     maxLength,
     required = false,
+    ...props
   }) => {
     const [field, meta] = useField(name);
+    const { setFieldValue } = useFormikContext();
     // Get error message if exists
     const error = meta.error && meta.touched ? meta.error : null;
     // Memoize the blur and change handlers to prevent unnecessary re-renders
-    const handleBlur = useCallback(
-      () => field.onBlur(name),
-      [field.onBlur, name]
-    );
+    const handleBlur = useCallback(() => field.onBlur(name), [field, name]);
     const handleChange = useCallback(
       (e: React.ChangeEvent<HTMLInputElement>) => {
         // Ensure the event is passed correctly to Formik
         field.onChange(e);
       },
-      [field.onChange]
+      [field]
     );
     return (
       <>
@@ -36,6 +35,7 @@ const AppFormInput: React.FC<FormInputProps> = memo(
           type={type}
           {...field}
           placeholder={placeholder}
+          setFieldValue={setFieldValue}
           value={field.value || ""}
           minLength={minLength ?? undefined}
           maxLength={maxLength ?? undefined}
@@ -47,10 +47,9 @@ const AppFormInput: React.FC<FormInputProps> = memo(
           className={`form-control ${
             meta.touched && meta.error ? "is-invalid" : ""
           }`}
+          {...props}
         />
-        {meta.touched && error && (
-          <AppErrorMessage error={error} visible={true} />
-        )}
+        {error && <AppErrorMessage error={error} visible={meta.touched} />}
       </>
     );
   }

@@ -6,19 +6,30 @@ import AppPhoneNumberInput from "./AppPhoneNumberInput";
 
 const AppInput: React.FC<
   InputProps & React.InputHTMLAttributes<HTMLInputElement>
-> = ({ label, name, type = "text", placeholder, value, ...rest }) => {
+> = ({
+  label,
+  name,
+  type = "text",
+  placeholder,
+  value,
+  required = false,
+  setFieldValue,
+  ...rest
+}) => {
   const [phoneInput, setPhoneInput] = useState({
-    countryCode: "", // Default country code, adjust as needed
-    phoneNumber: "", // Default phone number
+    countryId: "",
+    number: "",
   });
 
-  const handleInputChange = (
-    newValue: PhoneNumberValue = {
-      countryCode: "",
-      phoneNumber: "",
-    }
+  // Handle phone number input changes
+  const handlePhoneNumberChange = (
+    newValue: PhoneNumberValue = { countryId: "", number: "" }
   ) => {
-    setPhoneInput(newValue); // Update the state with the new values
+    setPhoneInput(newValue); // Update local state for display
+    // Use Formik's setFieldValue to set the composite value
+    if (setFieldValue) {
+      setFieldValue("phoneNumber", newValue); // Update the form field with both countryId and phoneNumber
+    }
   };
 
   if (type === "file") {
@@ -28,6 +39,7 @@ const AppInput: React.FC<
       <AppPasswordInput
         name={name}
         label={label}
+        required={required}
         placeholder={placeholder}
         value={value}
         rest={rest}
@@ -36,12 +48,13 @@ const AppInput: React.FC<
   } else if (type === "phoneNumber") {
     return (
       <AppPhoneNumberInput
-        onChange={handleInputChange}
+        onChange={handlePhoneNumberChange}
         name={name}
         label={label}
+        required={required}
         placeholder={placeholder}
         phonenumbervalue={phoneInput}
-        countryCodeName="countryId"
+        countryIdName="phoneNumber.countryId"
       />
     );
   }
@@ -49,7 +62,7 @@ const AppInput: React.FC<
   return (
     <div className="form-group">
       <label className="col-form-label" htmlFor={name}>
-        {label}
+        {label} {required && "*"}
       </label>
       <input
         className="form-control"

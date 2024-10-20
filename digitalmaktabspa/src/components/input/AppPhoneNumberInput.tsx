@@ -10,7 +10,8 @@ const AppPhoneNumberInput: React.FC<PhoneNumberInputProps> = ({
   label,
   name,
   phonenumbervalue,
-  countryCodeName,
+  countryIdName,
+  required = false,
   ...rest
 }) => {
   const { t } = useTranslation();
@@ -22,31 +23,34 @@ const AppPhoneNumberInput: React.FC<PhoneNumberInputProps> = ({
   // Handle phone number input change
   const handlePhoneNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newPhoneNumber = e.target.value.replace(/\D/g, "");
+
     onChange({
-      ...phonenumbervalue, // Keep the other values unchanged
-      phoneNumber: newPhoneNumber,
+      countryId: phonenumbervalue.countryId, // Keep the existing countryId
+      number: newPhoneNumber, // Update the phone number directly
     });
   };
 
   // Handle country code change
-  const handleCountryChange = (newCountryCode: string) => {
+  const handleCountryChange = (newCountryId: string) => {
     onChange({
-      ...phonenumbervalue, // Keep the other values unchanged
-      countryCode: newCountryCode,
+      countryId: newCountryId, // Update the countryId directly
+      number: phonenumbervalue.number, // Keep the existing number
     });
   };
 
   return (
     <div className="form-group">
       <label className="col-form-label" htmlFor={name}>
-        {label}
+        {label} {required && "*"}
       </label>
       <div className="d-flex" style={{ width: "100%", height: "48px" }}>
         <AppSelect2
-          name={countryCodeName}
+          name={countryIdName}
           data={countryOptions}
-          value={phonenumbervalue.countryCode}
+          value={phonenumbervalue.countryId}
           onChange={handleCountryChange}
+          loading={loading}
+          loadingError={!!error}
           label={t("controls.select2.country.label")}
         />
         <input
@@ -54,7 +58,7 @@ const AppPhoneNumberInput: React.FC<PhoneNumberInputProps> = ({
           type="text"
           className="form-control"
           style={{ width: "200%" }}
-          value={phonenumbervalue.phoneNumber || ""}
+          value={phonenumbervalue.number || ""}
           onChange={handlePhoneNumberChange}
           {...rest}
           inputMode="numeric" // Show numeric keyboard on mobile devices

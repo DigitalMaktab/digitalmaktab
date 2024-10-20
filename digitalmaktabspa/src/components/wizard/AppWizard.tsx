@@ -11,6 +11,8 @@ import AppForm from "../form/AppForm";
 const AppWizard: React.FC<WizardProps> = ({ steps, formProps }) => {
   const { t } = useTranslation();
 
+  console.log(formProps);
+
   const [formState, setFormState] = useState<number>(0);
 
   const handleNext = () => {

@@ -7,6 +7,7 @@ const AppPasswordInput: React.FC<PasswordInputProps> = ({
   label,
   placeholder,
   value,
+  required = true,
   rest,
 }) => {
   const { t } = useTranslation();
@@ -18,7 +19,7 @@ const AppPasswordInput: React.FC<PasswordInputProps> = ({
   return (
     <div className="form-group">
       <label className="col-form-label" htmlFor={name}>
-        {label}
+        {label} {required && "*"}
       </label>
       <div className="form-input position-relative">
         <input

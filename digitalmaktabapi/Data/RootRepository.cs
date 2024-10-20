@@ -87,7 +87,12 @@ namespace digitalmaktabapi.Data
 
         public async Task<PagedList<Country>> GetCountries(UserParams userParams)
         {
-            var entities = this.context.Countries.OrderBy(a => a.CountryName).AsQueryable();
+            // The supported countries needs to be properly created later with a separate table of it self.
+            var supportedCountries = new[] { "AF" };
+            var entities = this.context.Countries
+                .Where(a => supportedCountries.Contains(a.CountryCode))
+                .OrderBy(a => a.CountryName)
+                .AsQueryable();
             return await PagedList<Country>.CreateAsync(entities, userParams.PageNumber, userParams.PageSize);
         }
 

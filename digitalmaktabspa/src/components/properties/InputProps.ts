@@ -1,3 +1,5 @@
+import { FormikHelpers } from "formik";
+
 type PlaceHolder = string;
 
 export interface InputProps {
@@ -6,6 +8,8 @@ export interface InputProps {
   type?: string;
   placeholder?: PlaceHolder;
   value?: string;
+  required?: boolean;
+  setFieldValue?: FormikHelpers<any>["setFieldValue"];
 }
 
 export interface FileInputProps extends InputProps {
@@ -20,18 +24,20 @@ export interface PhoneNumberInputProps extends InputProps {
   rest?: React.InputHTMLAttributes<HTMLSelectElement>;
   onChange: (value: PhoneNumberValue) => void;
   phonenumbervalue: PhoneNumberValue;
-  countryCodeName: string;
+  countryIdName: string;
 }
 
 export interface PhoneNumberValue {
-  countryCode: string;
-  phoneNumber: string;
+  countryId: string;
+  number: string;
 }
 
 export interface Select2Props extends InputProps {
   data: { id: string; text: string }[];
   value: string;
   onChange: (value: string) => void;
+  loading?: boolean;
+  loadingError?: boolean;
 }
 
 export interface PhoneNumberProps extends InputProps {
