@@ -1,4 +1,4 @@
-import React, { memo, useCallback } from "react";
+import React, { memo } from "react";
 import AppInput from "../input/AppInput";
 import { FormInputProps } from "../properties/FormInputProps";
 import AppErrorMessage from "../AppErrorMessage";
@@ -17,17 +17,9 @@ const AppFormInput: React.FC<FormInputProps> = memo(
   }) => {
     const [field, meta] = useField(name);
     const { setFieldValue } = useFormikContext();
+
     // Get error message if exists
     const error = meta.error && meta.touched ? meta.error : null;
-    // Memoize the blur and change handlers to prevent unnecessary re-renders
-    const handleBlur = useCallback(() => field.onBlur(name), [field, name]);
-    const handleChange = useCallback(
-      (e: React.ChangeEvent<HTMLInputElement>) => {
-        // Ensure the event is passed correctly to Formik
-        field.onChange(e);
-      },
-      [field]
-    );
     return (
       <>
         <AppInput
@@ -40,8 +32,8 @@ const AppFormInput: React.FC<FormInputProps> = memo(
           minLength={minLength ?? undefined}
           maxLength={maxLength ?? undefined}
           required={required}
-          onBlur={handleBlur}
-          onChange={handleChange}
+          onBlur={field.onBlur}
+          onChange={field.onChange}
           aria-invalid={!!error}
           aria-describedby={error ? `${name}-error` : undefined}
           className={`form-control ${

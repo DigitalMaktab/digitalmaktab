@@ -11,8 +11,6 @@ import AppForm from "../form/AppForm";
 const AppWizard: React.FC<WizardProps> = ({ steps, formProps }) => {
   const { t } = useTranslation();
 
-  console.log(formProps);
-
   const [formState, setFormState] = useState<number>(0);
 
   const handleNext = () => {
@@ -67,7 +65,7 @@ const AppWizard: React.FC<WizardProps> = ({ steps, formProps }) => {
                 </div>
                 <AppForm
                   initialValues={formProps.initialValues}
-                  validationSchema={formProps.validationSchema}
+                  validationSchema={formProps.validationSchemas![formState]}
                   onSubmit={formProps.onSubmit}
                 >
                   <AppWizardFormSection formState={formState} steps={steps} />
@@ -76,6 +74,7 @@ const AppWizard: React.FC<WizardProps> = ({ steps, formProps }) => {
                     handlePrev={handlePrev}
                     handleNext={handleNext}
                     totalSteps={steps.length}
+                    validationSchema={formProps.validationSchemas![formState]}
                   />
                   <p className="mt-4 mb-0 text-center">
                     <Link className="ms-2" to="/login">

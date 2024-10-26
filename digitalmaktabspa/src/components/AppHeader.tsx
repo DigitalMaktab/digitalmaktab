@@ -8,11 +8,18 @@ import AppProfileDropdown from "./AppProfileDropdown";
 import { DropDownItem } from "../helper/object/DropDownItem";
 import AppLocalizer from "./dropdown/AppLocalizer";
 import { useTranslation } from "react-i18next";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { removeUser } from "../helper/helper";
 
 const AppHeader: React.FC<AppHeaderProps> = ({ onSidebarToggle }) => {
   const { t } = useTranslation();
   const { dropdownState, toggleDropdown, dropdownRefs } = useDropdowns();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    removeUser();
+    navigate("/login");
+  };
 
   const dropdownItems: DropDownItem[] = useMemo(
     () => [
@@ -35,7 +42,7 @@ const AppHeader: React.FC<AppHeaderProps> = ({ onSidebarToggle }) => {
             </li>
             <li className="d-flex">
               <FeatherIcon icon="lock" />
-              <Link className="ms-2" to="/logout">
+              <Link className="ms-2" to="/login" onClick={handleLogout}>
                 {t("header.user.actions.logout")}
               </Link>
             </li>

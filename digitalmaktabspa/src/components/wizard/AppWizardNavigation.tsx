@@ -2,32 +2,46 @@ import React from "react";
 import { AppWizardNavigationProps } from "../properties/WizardProps";
 import { useFormikContext } from "formik";
 import { useTranslation } from "react-i18next";
+import * as Yup from "yup";
+import { set } from "lodash";
 
 const AppWizardNavigation: React.FC<AppWizardNavigationProps> = ({
   formState,
   handleNext,
   handlePrev,
   totalSteps,
+  validationSchema,
 }) => {
   const { t } = useTranslation();
-  const { validateForm, setTouched, setErrors } = useFormikContext();
+  const { values, setTouched, setErrors, handleSubmit } = useFormikContext();
 
   const handleNextWithValidation = async () => {
-    // Validate the form and get validation errors
-    const errors = await validateForm();
+    try {
+      // Validate the current step's schema (including nested fields)
+      await validationSchema!.validate(values, { abortEarly: false });
 
-    // Mark all fields as touched to display validation messages
-    if (Object.keys(errors).length === 0) {
-      handleNext(); // Proceed to next step if no errors
-    } else {
-      // Set all fields as touched and set errors so validation messages are shown
-      setTouched(
-        Object.keys(errors).reduce(
-          (acc, field) => ({ ...acc, [field]: true }),
-          {}
-        )
-      );
-      setErrors(errors); // Ensures that errors are set
+      // Proceed to the next step if there are no errors
+      handleNext();
+    } catch (err) {
+      const validationErrors = err as Yup.ValidationError;
+
+      // Structure errors for Formik
+      const errors = validationErrors.inner.reduce((acc: any, error) => {
+        if (error.path) {
+          set(acc, error.path, error.message);
+        }
+        return acc;
+      }, {});
+
+      const touchedFields = validationErrors.inner.reduce((acc: any, error) => {
+        if (error.path) {
+          set(acc, error.path, true);
+        }
+        return acc;
+      }, {});
+
+      setTouched(touchedFields);
+      setErrors(errors);
     }
   };
 
@@ -50,7 +64,11 @@ const AppWizardNavigation: React.FC<AppWizardNavigationProps> = ({
           {t("controls.wizard.nextButton.label")}
         </button>
       ) : (
-        <button className="btn btn-primary btn-lg" type="button">
+        <button
+          className="btn btn-primary btn-lg"
+          type="button"
+          onClick={() => handleSubmit()}
+        >
           {t("controls.wizard.finishButton.label")}
         </button>
       )}

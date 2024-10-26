@@ -16,14 +16,7 @@ const AppForm: React.FC<FormProps> = ({
       onSubmit={onSubmit}
       validationSchema={validationSchema}
     >
-      {({ isSubmitting }) => (
-        <Form className="theme-form">
-          {children}
-          <button type="submit">
-            {isSubmitting ? "Submitting..." : "Submit"}
-          </button>
-        </Form>
-      )}
+      {({ isSubmitting }) => <Form className="theme-form">{children}</Form>}
     </Formik>
   );
 };

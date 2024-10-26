@@ -1,6 +1,14 @@
 {
     "appName": "Digital Maktab",
     "logo": "Logo",
+    "apiResponse": {
+        "error": "An error occured",
+        "requestSent": "Request is alreay sent",
+        "unkownError": "Unknown error occured"
+    },
+    "close": {
+        "label": "Close"
+    },
     "slogan": {
         "label": "Learn, Create, Change",
         "learn": "Learn",
@@ -70,7 +78,8 @@
             "rememberPassword": "Remember password",
             "forgotPassword": "Forgot password?",
             "dontHaveAccount": "Don't have account",
-            "createAccount": "Create Account"
+            "createAccount": "Create Account",
+            "unauthorized": "Unauthorized Result, Wrong email, password combination"
         },
         "signup": {
             "createAccount": "Sign up to account",

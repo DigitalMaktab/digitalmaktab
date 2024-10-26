@@ -1,8 +1,8 @@
-import { Properties } from "./Properties";
-import { FormProps } from "./FormProps";
+import { WizardFormProps } from "./FormProps";
+import * as Yup from "yup";
 export interface WizardProps {
   steps: Step[];
-  formProps: FormProps;
+  formProps: WizardFormProps;
 }
 
 export interface ProgressCircleProps {
@@ -20,6 +20,7 @@ export interface AppWizardNavigationProps {
   handlePrev: () => void;
   handleNext: () => void;
   totalSteps: number;
+  validationSchema?: Yup.ObjectSchema<any>;
 }
 
 export interface Step {

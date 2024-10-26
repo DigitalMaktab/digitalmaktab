@@ -11,10 +11,11 @@ import TeacherDashboard from "./screens/teacher/TeacherDashboard";
 import Dashboard from "./screens/root/Dashboard";
 import "./locale/i18n";
 import Auth from "./screens/auth/Auth";
+import { LoaderProvider } from "./contexts/LoaderContext";
 
 function App() {
   return (
-    <>
+    <LoaderProvider>
       <Router>
         <AuthProvider>
           <Routes>
@@ -44,7 +45,7 @@ function App() {
           </Routes>
         </AuthProvider>
       </Router>
-    </>
+    </LoaderProvider>
   );
 }
 

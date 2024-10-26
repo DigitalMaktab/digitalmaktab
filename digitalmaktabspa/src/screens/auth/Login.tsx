@@ -1,14 +1,20 @@
 import React from "react";
 import AppButton from "../../components/AppButton";
 import FeatherIcon from "feather-icons-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import AppForm from "../../components/form/AppForm";
 import * as Yup from "yup";
 import AppFormInput from "../../components/form/AppFormInput";
+import useAuth from "../../hooks/useAuth";
+import { ResponseResult } from "../../dtos/ResultEnum";
+import { saveUser } from "../../helper/helper";
 
 const Login = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
+
+  const { login } = useAuth();
 
   const initialValues = {
     email: "",
@@ -22,8 +28,14 @@ const Login = () => {
     password: Yup.string().required(t("auth.password.validation.required")),
   });
 
-  const onSubmit = (values: typeof initialValues) => {
-    console.log(values);
+  const onSubmit = async (values: typeof initialValues) => {
+    const result = await login(values.email, values.password);
+    if (result.status === ResponseResult.SUCCESS) {
+      if (result.data != null) {
+        navigate("/admin-dashboard");
+        saveUser(result.data);
+      }
+    }
   };
 
   return (

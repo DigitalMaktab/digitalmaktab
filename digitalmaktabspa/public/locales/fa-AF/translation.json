@@ -1,6 +1,14 @@
 {
     "appName": "مکتب دیجیتالی",
     "logo": "لوگو",
+    "apiResponse": {
+        "error": "خطایی رخ داد",
+        "requestSent": "درخواست شما ارسال گردیده است",
+        "unkownError": "خطایی نا معلوم رخ داد"
+    },
+    "close": {
+        "label": "بستن"
+    },
     "slogan": {
         "label": "یاد بگیرید، خلق کنید، تغییر دهید",
         "learn": "یاد بگیرید",
@@ -70,7 +78,8 @@
             "rememberPassword": "به یاد داشته باش",
             "forgotPassword": "رمز تان را فراموش کرده اید؟",
             "dontHaveAccount": "حساب ندارید؟",
-            "createAccount": "ایجاد حساب"
+            "createAccount": "ایجاد حساب",
+            "unauthorized": "نتیجه غیر مجاز، ترکیب ایمیل و رمز عبور نادرست است."
         },
         "signup": {
             "createAccount": "ایجاد حساب",

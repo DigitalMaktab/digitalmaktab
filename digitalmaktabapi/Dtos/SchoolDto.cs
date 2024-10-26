@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using digitalmaktabapi.Models;
 
 namespace digitalmaktabapi.Dtos
 {
@@ -13,6 +14,7 @@ namespace digitalmaktabapi.Dtos
         public required string Email { get; set; }
         public required string Logo { get; set; }
         public required int Code { get; set; }
+        public required UserRole UserRole { get; set; }
         public ICollection<StudentDto> Students { get; set; } = [];
     }
 }

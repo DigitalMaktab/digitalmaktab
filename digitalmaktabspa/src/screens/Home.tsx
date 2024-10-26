@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState } from "react";
-import AppLoader from "../components/AppLoader";
 import AppScrollToTop from "../components/AppScrollToTop";
 import AppHeader from "../components/AppHeader";
 import AppSideBar from "../components/AppSideBar";
@@ -26,7 +25,6 @@ const Home = () => {
   return (
     <>
       <AppScrollToTop />
-      <AppLoader />
       <main
         className={`page-wrapper compact-wrapper ${
           !isSidebarOpen ? "sidebar-close" : ""

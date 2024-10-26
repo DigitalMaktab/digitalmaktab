@@ -179,14 +179,32 @@ builder.Services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new 
 
 
 // Add Cors Service
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowLocalhost",
-        builder => builder
-            .WithOrigins("http://localhost:3000")
-            .AllowAnyHeader()
-            .AllowAnyMethod());
-});
+// builder.Services.AddCors(options =>
+// {
+//     options.AddPolicy("AllowLocalhost",
+//         builder => builder
+//             .WithOrigins("http://localhost:3000")
+//             .AllowAnyHeader()
+//             .AllowAnyMethod());
+
+//     options.AddPolicy("AllowNgrok",
+//         builder => builder
+//             .WithOrigins("https://113c-2001-4bb8-2c0-56cb-acd1-2e70-a9ed-fb6e.ngrok-free.app")
+//             .AllowAnyHeader()
+//             .AllowAnyMethod());
+// });
+
+// builder.Services.AddCors(options =>
+// {
+//     options.AddPolicy("AllowAll", policy =>
+//     {
+//         policy.AllowAnyOrigin()
+//               .AllowAnyHeader()
+//               .AllowAnyMethod();
+//     });
+// });
+
+builder.Services.AddCors();
 
 var app = builder.Build();
 
@@ -270,7 +288,11 @@ app.Use(async (context, next) =>
 Seeder.SeedCountries(app);
 
 // Enable CORS
-app.UseCors("AllowLocalhost");
+// app.UseCors("AllowLocalhost");
+// app.UseCors("AllowNgrok");
+
+// app.UseCors("AllowAll");
+app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 
 app.UseIpRateLimiting();
 

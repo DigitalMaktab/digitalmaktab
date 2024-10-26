@@ -1,7 +1,7 @@
 import apiClient from "./client";
 
 const login = (email: string, password: string) =>
-  apiClient.post("", { email, password });
+  apiClient.post("/auth", { email, password });
 
 const auth = {
   login,

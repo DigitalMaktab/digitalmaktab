@@ -33,7 +33,14 @@ const AppInput: React.FC<
   };
 
   if (type === "file") {
-    return <AppFileInput name={name} label={label} rest={rest} />;
+    return (
+      <AppFileInput
+        name={name}
+        label={label}
+        setFieldValue={setFieldValue}
+        rest={rest}
+      />
+    );
   } else if (type === "password") {
     return (
       <AppPasswordInput

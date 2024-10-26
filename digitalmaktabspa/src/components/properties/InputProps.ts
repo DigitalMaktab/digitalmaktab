@@ -9,7 +9,8 @@ export interface InputProps {
   placeholder?: PlaceHolder;
   value?: string;
   required?: boolean;
-  setFieldValue?: FormikHelpers<any>["setFieldValue"];
+  // setFieldValue?: FormikHelpers<any>["setFieldValue"];
+  setFieldValue?: (field: string, value: any) => void;
 }
 
 export interface FileInputProps extends InputProps {

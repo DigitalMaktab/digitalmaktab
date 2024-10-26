@@ -1,12 +1,12 @@
 const settings = {
   dev: {
-    apiUrl: "http://localhost:5239/api",
+    apiUrl: "http://192.168.8.123:5000/api",
   },
   staging: {
-    apiUrl: "http://localhost:5239/api",
+    apiUrl: "http://192.168.8.123:5000/api",
   },
   prod: {
-    apiUrl: "http://localhost:5239/api",
+    apiUrl: "http://192.168.8.123:5000/api",
   },
 };
 
