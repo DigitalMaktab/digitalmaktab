@@ -12,6 +12,7 @@ import Dashboard from "./screens/root/Dashboard";
 import "./locale/i18n";
 import Auth from "./screens/auth/Auth";
 import { LoaderProvider } from "./contexts/LoaderContext";
+import PublicScreen from "./screens/public/PublicScreen";
 
 function App() {
   return (
@@ -19,13 +20,14 @@ function App() {
       <Router>
         <AuthProvider>
           <Routes>
-            <Route path="/admin-dashboard" element={<AdminDashboard />} />
-            <Route path="/" element={<AuthRoute />}>
-              <Route path="/student-dashboard" element={<StudentDashboard />} />
-              <Route path="/admin-dashboard" element={<AdminDashboard />} />
-              <Route path="/teacher-dashboard" element={<TeacherDashboard />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-            </Route>
+            <Route
+              path="/"
+              element={
+                <Auth>
+                  <PublicScreen />
+                </Auth>
+              }
+            />
             <Route
               path="/login"
               element={
@@ -42,6 +44,12 @@ function App() {
                 </Auth>
               }
             />
+            <Route element={<AuthRoute />}>
+              <Route path="/student-dashboard" element={<StudentDashboard />} />
+              <Route path="/admin-dashboard" element={<AdminDashboard />} />
+              <Route path="/teacher-dashboard" element={<TeacherDashboard />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+            </Route>
           </Routes>
         </AuthProvider>
       </Router>

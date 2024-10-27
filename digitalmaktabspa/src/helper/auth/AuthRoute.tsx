@@ -1,8 +1,7 @@
 import React, { useContext, useEffect } from "react";
 import { AuthContext } from "./AuthProvider";
-import { useNavigate } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import { UserRole } from "../../models/UserRole";
-import PublicScreen from "../../screens/public/PublicScreen";
 
 const AuthRoute = ({ component: Component, ...rest }: any) => {
   const { isAuthenticated, userRole } = useContext(AuthContext)!;
@@ -12,7 +11,7 @@ const AuthRoute = ({ component: Component, ...rest }: any) => {
   useEffect(() => {
     if (!isAuthenticated) {
       navigate("/");
-    } else {
+    } else if (userRole !== undefined && userRole !== null) {
       switch (userRole) {
         case UserRole.STUDENT:
           navigate("/student-dashboard");
@@ -28,10 +27,11 @@ const AuthRoute = ({ component: Component, ...rest }: any) => {
           break;
         default:
           navigate("/error");
+          break;
       }
     }
   }, [isAuthenticated, userRole, navigate]);
-  return <PublicScreen />;
+  return <Outlet />;
 };
 
 export default AuthRoute;

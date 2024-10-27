@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useContext, useMemo } from "react";
 import FeatherIcon from "feather-icons-react";
 import AppImg from "./AppImg";
 import { AppHeaderProps } from "./properties/ToggleSideBarProps";
@@ -9,15 +9,17 @@ import { DropDownItem } from "../helper/object/DropDownItem";
 import AppLocalizer from "./dropdown/AppLocalizer";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router-dom";
-import { removeUser } from "../helper/helper";
+import { AuthContext } from "../helper/auth/AuthProvider";
 
 const AppHeader: React.FC<AppHeaderProps> = ({ onSidebarToggle }) => {
   const { t } = useTranslation();
   const { dropdownState, toggleDropdown, dropdownRefs } = useDropdowns();
   const navigate = useNavigate();
 
+  const { logout } = useContext(AuthContext)!;
+
   const handleLogout = () => {
-    removeUser();
+    logout();
     navigate("/login");
   };
 

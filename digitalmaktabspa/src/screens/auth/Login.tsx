@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import AppButton from "../../components/AppButton";
 import FeatherIcon from "feather-icons-react";
 import { Link, useNavigate } from "react-router-dom";
@@ -8,11 +8,14 @@ import * as Yup from "yup";
 import AppFormInput from "../../components/form/AppFormInput";
 import useAuth from "../../hooks/useAuth";
 import { ResponseResult } from "../../dtos/ResultEnum";
-import { saveUser } from "../../helper/helper";
+import { AuthContext } from "../../helper/auth/AuthProvider";
+import { UserRole } from "../../models/UserRole";
 
 const Login = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+
+  const { login: authContextLogin } = useContext(AuthContext)!;
 
   const { login } = useAuth();
 
@@ -32,8 +35,24 @@ const Login = () => {
     const result = await login(values.email, values.password);
     if (result.status === ResponseResult.SUCCESS) {
       if (result.data != null) {
-        navigate("/admin-dashboard");
-        saveUser(result.data);
+        authContextLogin(result.data);
+        const role: UserRole = result.data.user.userRole;
+        switch (role) {
+          case UserRole.STUDENT:
+            navigate("/student-dashboard");
+            break;
+          case UserRole.ADMIN:
+            navigate("/admin-dashboard");
+            break;
+          case UserRole.TEACHER:
+            navigate("/teacher-dashboard");
+            break;
+          case UserRole.ROOT_USER:
+            navigate("/dashboard");
+            break;
+          default:
+            navigate("/error");
+        }
       }
     }
   };

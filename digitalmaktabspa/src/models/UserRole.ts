@@ -1,9 +1,9 @@
 export enum UserRole {
-  ADMIN,
-  PRINCIPAL,
-  HEAD_MASTER,
-  TEACHER,
-  STUDENT,
-  ROOT_USER,
-  UNKNOWN,
+  ADMIN = 0,
+  PRINCIPAL = 1,
+  HEAD_MASTER = 2,
+  TEACHER = 3,
+  STUDENT = 4,
+  ROOT_USER = 5,
+  UNKNOWN = 6,
 }

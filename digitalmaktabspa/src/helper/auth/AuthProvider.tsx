@@ -21,32 +21,31 @@ const initialValue = {
 const AuthContext = createContext<AuthContextType>(initialValue);
 
 const AuthProvider: React.FC<Properties> = ({ children }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(
-    authenticated()
-  );
-  const [userRole, setUserRole] = useState<UserRole | null>(null);
+  const storedUser = getUser();
 
-  const [user, setUser] = useState<User | null>(getUser());
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(!!storedUser);
+  const [userRole, setUserRole] = useState<UserRole | null>(
+    storedUser ? storedUser.user.userRole : UserRole.UNKNOWN
+  );
 
   const login = (user: User) => {
     setIsAuthenticated(true);
     saveUser(user);
-    setUser(user);
+    setUserRole(user.user.userRole as UserRole); // Set role on login
   };
 
   const logout = () => {
     removeUser();
     setIsAuthenticated(false);
+    setUserRole(UserRole.UNKNOWN);
   };
 
   useEffect(() => {
-    if (isAuthenticated) {
-      const role = user?.user.userRole;
-      setUserRole(role || null);
-    } else {
-      setUserRole(null);
+    if (storedUser) {
+      setIsAuthenticated(true);
+      setUserRole(storedUser.user.userRole);
     }
-  }, [isAuthenticated, user?.user.userRole]);
+  }, []);
 
   return (
     <AuthContext.Provider value={{ isAuthenticated, login, logout, userRole }}>

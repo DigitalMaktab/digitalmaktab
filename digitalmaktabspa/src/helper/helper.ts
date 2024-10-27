@@ -25,7 +25,7 @@ const getUser = (): User | null => {
 };
 
 const authenticated = (): boolean => {
-  return getUser() == null ? false : true;
+  return getUser() === null ? false : true;
 };
 
 const removeUser = () => {

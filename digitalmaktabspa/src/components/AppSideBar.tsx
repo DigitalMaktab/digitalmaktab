@@ -41,15 +41,15 @@ const AppSideBar: React.FC<AppSideBarProps> = ({ isOpen }) => {
           subMenu: [
             {
               label: t("sidebar.general.menues.library.onlineLibrary"),
-              link: "general-widget.html",
+              link: "/online-library",
             },
             {
               label: t("sidebar.general.menues.library.list"),
-              link: "general-widget.html",
+              link: "/libray",
             },
             {
               label: t("sidebar.general.menues.library.add"),
-              link: "chart-widget.html",
+              link: "/add-book",
             },
           ],
         },
@@ -59,11 +59,11 @@ const AppSideBar: React.FC<AppSideBarProps> = ({ isOpen }) => {
           subMenu: [
             {
               label: t("sidebar.general.menues.classes.list"),
-              link: "general-widget.html",
+              link: "/class-list",
             },
             {
               label: t("sidebar.general.menues.classes.add"),
-              link: "chart-widget.html",
+              link: "add-class",
             },
           ],
         },
@@ -73,11 +73,11 @@ const AppSideBar: React.FC<AppSideBarProps> = ({ isOpen }) => {
           subMenu: [
             {
               label: t("sidebar.general.menues.timeTable.list"),
-              link: "general-widget.html",
+              link: "timetable",
             },
             {
               label: t("sidebar.general.menues.timeTable.add"),
-              link: "chart-widget.html",
+              link: "add-timetable",
             },
           ],
         },
