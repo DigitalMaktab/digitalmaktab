@@ -33,7 +33,7 @@ const AppSideBar: React.FC<AppSideBarProps> = ({ isOpen }) => {
         {
           label: t("sidebar.general.menues.dashboard"),
           icon: <AIIcons.AiOutlineHome className="stroke-icon" />,
-          link: "/admin-dashboard",
+          link: "/home",
         },
         {
           label: t("sidebar.general.menues.library.label"),
@@ -59,7 +59,7 @@ const AppSideBar: React.FC<AppSideBarProps> = ({ isOpen }) => {
           subMenu: [
             {
               label: t("sidebar.general.menues.classes.list"),
-              link: "/class-list",
+              link: "/home/class-list",
             },
             {
               label: t("sidebar.general.menues.classes.add"),
@@ -89,12 +89,12 @@ const AppSideBar: React.FC<AppSideBarProps> = ({ isOpen }) => {
         {
           label: t("sidebar.teachers.menues.list"),
           icon: <LiaIcons.LiaChalkboardTeacherSolid className="stroke-icon" />,
-          link: "/admin-dashboard",
+          link: "/home",
         },
         {
           label: t("sidebar.teachers.menues.register"),
           icon: <AIIcons.AiOutlineUserAdd className="stroke-icon" />,
-          link: "/admin-dashboard",
+          link: "/home",
         },
       ],
     },
@@ -104,12 +104,12 @@ const AppSideBar: React.FC<AppSideBarProps> = ({ isOpen }) => {
         {
           label: t("sidebar.students.menues.list"),
           icon: <PIIcons.PiStudent className="stroke-icon" />,
-          link: "/admin-dashboard",
+          link: "/home",
         },
         {
           label: t("sidebar.students.menues.register"),
           icon: <AIIcons.AiOutlineUserAdd className="stroke-icon" />,
-          link: "/admin-dashboard",
+          link: "/home",
         },
       ],
     },

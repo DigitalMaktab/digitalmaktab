@@ -47,6 +47,9 @@
             "country": {
                 "label": "انتخاب کشور"
             }
+        },
+        "saveButton": {
+            "label": "ثبت"
         }
     },
     "languages": {
@@ -249,6 +252,7 @@
         }
     },
     "addressForm": {
+        "title": "آدرس",
         "street": {
             "label": "سرک",
             "placeholder": "سرک دوازدهم",
@@ -277,5 +281,29 @@
                 "required": "آدرس پوستی ضروری میباشد"
             }
         }
+    },
+    "profile": {
+        "label": "حساب",
+        "editProfile": {
+            "label": "ویرایش حساب"
+        }
+    },
+    "footer": {
+        "label": "ساخته شده با عشق و هنر",
+        "copyright": "کپی رایت ۲۰۲۴ © دیجیتال مکتب"
+    },
+    "userRole": {
+        "ADMIN": "مکتب"
+    },
+    "classList": {
+        "title": "لیست صنوف",
+        "className": "صنف",
+        "classType": "نوعیت صنف"
+    },
+    "shift": {
+        "label": "شیفت"
+    },
+    "teacher": {
+        "teacherName": "اسم استاد"
     }
 }

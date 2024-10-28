@@ -1,11 +1,13 @@
 import React from "react";
 import AppFormInput from "./AppFormInput";
 import { useTranslation } from "react-i18next";
+import { AddressFormProps } from "./properties/AddressFormProps";
 
-const AppAddressForm = () => {
+const AppAddressForm: React.FC<AddressFormProps> = () => {
   const { t } = useTranslation();
   return (
-    <div>
+    <div className="address-form-container">
+      <h4>{t("addressForm.title")}</h4>
       <div className="row">
         <div className="col-md-6">
           <AppFormInput

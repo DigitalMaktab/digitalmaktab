@@ -14,11 +14,12 @@ const AppInput: React.FC<
   value,
   required = false,
   setFieldValue,
+  phoneNumber,
   ...rest
 }) => {
   const [phoneInput, setPhoneInput] = useState({
-    countryId: "",
-    number: "",
+    countryId: phoneNumber?.countryId || "",
+    number: phoneNumber?.number || "",
   });
 
   // Handle phone number input changes
@@ -68,7 +69,7 @@ const AppInput: React.FC<
 
   return (
     <div className="form-group">
-      <label className="col-form-label" htmlFor={name}>
+      <label className="form-label" htmlFor={name}>
         {label} {required && "*"}
       </label>
       <input

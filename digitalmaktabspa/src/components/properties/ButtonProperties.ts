@@ -7,4 +7,5 @@ export interface ButtonProperties {
   inRow?: boolean;
   icon?: string;
   disabled: boolean | undefined;
+  className?: string;
 }

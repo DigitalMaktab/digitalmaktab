@@ -1,10 +1,15 @@
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import school from "../api/school";
 import useApiRequests from "./useApiRequests";
 import { School } from "../models/School";
+import { Class } from "../models/Class";
 
 const useSchoolOperations = () => {
-  const { data, status, execute: executeSchoolApi } = useApiRequests<School>();
+  const {
+    data,
+    status,
+    execute: executeSchoolApi,
+  } = useApiRequests<School | Class[]>();
 
   // Register a school
   const registerSchool = useCallback(
@@ -14,6 +19,10 @@ const useSchoolOperations = () => {
     [executeSchoolApi]
   );
 
+  const classList = useCallback(() => {
+    return executeSchoolApi<Class[]>(() => school.classList());
+  }, [executeSchoolApi]);
+
   // Get school details
   //   const getSchool = useCallback(
   //     (schoolId: number) => {
@@ -22,13 +31,15 @@ const useSchoolOperations = () => {
   //     [executeSchoolApi]
   //   );
 
-  return {
-    data,
-    status,
-    registerSchool,
-
-    // getSchool,
-  };
+  return useMemo(
+    () => ({
+      data,
+      status,
+      registerSchool,
+      classList,
+    }),
+    [data, status, registerSchool, classList]
+  );
 };
 
 export default useSchoolOperations;

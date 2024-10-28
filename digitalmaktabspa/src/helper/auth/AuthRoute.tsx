@@ -1,23 +1,24 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { AuthContext } from "./AuthProvider";
 import { Outlet, useNavigate } from "react-router-dom";
 import { UserRole } from "../../models/UserRole";
 
 const AuthRoute = ({ component: Component, ...rest }: any) => {
   const { isAuthenticated, userRole } = useContext(AuthContext)!;
+  const [hasNavigated, setHasNavigated] = useState(false);
 
   const navigate = useNavigate();
 
   useEffect(() => {
     if (!isAuthenticated) {
       navigate("/");
-    } else if (userRole !== undefined && userRole !== null) {
+    } else if (!hasNavigated && userRole !== undefined && userRole !== null) {
       switch (userRole) {
         case UserRole.STUDENT:
           navigate("/student-dashboard");
           break;
         case UserRole.ADMIN:
-          navigate("/admin-dashboard");
+          navigate("/home");
           break;
         case UserRole.TEACHER:
           navigate("/teacher-dashboard");
@@ -29,8 +30,9 @@ const AuthRoute = ({ component: Component, ...rest }: any) => {
           navigate("/error");
           break;
       }
+      setHasNavigated(true);
     }
-  }, [isAuthenticated, userRole, navigate]);
+  }, [isAuthenticated, userRole, navigate, hasNavigated]);
   return <Outlet />;
 };
 

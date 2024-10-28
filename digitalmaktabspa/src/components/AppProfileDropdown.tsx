@@ -1,6 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import { DropdownItemProps } from "./properties/DropdownItemProps";
 import { useTranslation } from "react-i18next";
+import { User } from "../models/User";
+import { getUser } from "../helper/helper";
+import AppImg from "./AppImg";
+import { UserRole } from "../models/UserRole";
 
 const AppProfileDropdown: React.FC<DropdownItemProps> = ({
   dropdownKey,
@@ -13,6 +17,14 @@ const AppProfileDropdown: React.FC<DropdownItemProps> = ({
   style,
 }) => {
   const { t } = useTranslation();
+  const [user, setUser] = useState<User | null>(getUser());
+
+  const roleMap = {
+    [UserRole.ADMIN]: "admin",
+    [UserRole.PRINCIPAL]: "principal",
+    [UserRole.HEAD_MASTER]: "head_master",
+    // Add other mappings as needed
+  };
   return (
     <li
       className={`custom-dropdown ${className}`}
@@ -28,10 +40,26 @@ const AppProfileDropdown: React.FC<DropdownItemProps> = ({
           toggleDropdown(dropdownKey);
         }}
       >
-        <img src="../assets/images/profile.png" alt="" />
+        {user && user.user.logo && (
+          <AppImg
+            className="img-50 rounded-circle"
+            alt={user.user.schoolName}
+            src={`http://0.0.0.0:5000/${user.user.logo}`}
+          />
+        )}
+
+        {!user && (
+          <AppImg
+            className="img-50 rounded-circle"
+            alt=""
+            src="../assets/images/profile.png"
+          />
+        )}
+
+        <img alt="" />
         <div className="flex-grow-1">
-          <h5>{t("header.user.name")}</h5>
-          <span>{t("header.user.role")}</span>
+          <h5>{user?.user.schoolName}</h5>
+          <span>{user && t(`userRole.${UserRole[user.user.userRole]}`)}</span>
         </div>
       </div>
       <div className={`custom-menu overflow-hidden ${isOpen ? "show" : ""}`}>

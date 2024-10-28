@@ -13,6 +13,9 @@ import "./locale/i18n";
 import Auth from "./screens/auth/Auth";
 import { LoaderProvider } from "./contexts/LoaderContext";
 import PublicScreen from "./screens/public/PublicScreen";
+import SchoolProfile from "./screens/school/SchoolProfile";
+import Home from "./screens/Home";
+import ClassList from "./screens/school/ClassList";
 
 function App() {
   return (
@@ -45,11 +48,18 @@ function App() {
               }
             />
             <Route element={<AuthRoute />}>
-              <Route path="/student-dashboard" element={<StudentDashboard />} />
-              <Route path="/admin-dashboard" element={<AdminDashboard />} />
-              <Route path="/teacher-dashboard" element={<TeacherDashboard />} />
-              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="home" element={<AdminDashboard />}>
+                <Route path="profile" element={<SchoolProfile />} />
+                <Route path="class-list" element={<ClassList />} />
+              </Route>
+              <Route path="student-dashboard" element={<StudentDashboard />} />
+              <Route path="teacher-dashboard" element={<TeacherDashboard />} />
+              <Route path="dashboard" element={<Dashboard />} />
+              <Route />
             </Route>
+            <Route path="student-dashboard" element={<StudentDashboard />} />
+            <Route path="teacher-dashboard" element={<TeacherDashboard />} />
+            <Route path="dashboard" element={<Dashboard />} />
           </Routes>
         </AuthProvider>
       </Router>

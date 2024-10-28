@@ -1,4 +1,10 @@
-import React, { useContext, useMemo } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import FeatherIcon from "feather-icons-react";
 import AppImg from "./AppImg";
 import { AppHeaderProps } from "./properties/ToggleSideBarProps";
@@ -18,10 +24,23 @@ const AppHeader: React.FC<AppHeaderProps> = ({ onSidebarToggle }) => {
 
   const { logout } = useContext(AuthContext)!;
 
-  const handleLogout = () => {
+  const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
+
+  const handleLogout = useCallback(() => {
     logout();
     navigate("/login");
-  };
+  }, [logout, navigate]);
+
+  const toggleTheme = useCallback(() => {
+    const newTheme = theme === "light" ? "dark" : "light";
+    setTheme(newTheme);
+    document.documentElement.setAttribute("data-theme", newTheme);
+    localStorage.setItem("theme", newTheme);
+  }, [theme]);
+
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+  }, [theme]);
 
   const dropdownItems: DropDownItem[] = useMemo(
     () => [
@@ -31,6 +50,11 @@ const AppHeader: React.FC<AppHeaderProps> = ({ onSidebarToggle }) => {
         content: <AppLocalizer />,
       },
       {
+        key: "theme",
+        icon: "moon",
+        content: <></>,
+      },
+      {
         key: "profile",
         icon: "profile",
         badge: "3",
@@ -38,7 +62,7 @@ const AppHeader: React.FC<AppHeaderProps> = ({ onSidebarToggle }) => {
           <ul>
             <li className="d-flex">
               <FeatherIcon icon="home" />
-              <Link className="ms-2" to="/user-profile">
+              <Link className="ms-2" to="/home/profile">
                 {t("header.user.actions.account")}
               </Link>
             </li>
@@ -52,13 +76,13 @@ const AppHeader: React.FC<AppHeaderProps> = ({ onSidebarToggle }) => {
         ),
       },
     ],
-    []
+    [handleLogout, t]
   );
 
   return (
     <header className="page-header row">
       <div className="logo-wrapper d-flex align-items-center col-auto">
-        <Link to="/admin-dashboard">
+        <Link to="/home">
           <AppImg
             className="for-light"
             style={{ width: 130, height: 55 }}
@@ -72,7 +96,7 @@ const AppHeader: React.FC<AppHeaderProps> = ({ onSidebarToggle }) => {
         </Link>
         <a
           className="close-btn"
-          href="/admin-dashboard"
+          href="/home"
           onClick={(e) => {
             e.preventDefault();
             onSidebarToggle();
@@ -117,6 +141,10 @@ const AppHeader: React.FC<AppHeaderProps> = ({ onSidebarToggle }) => {
                 >
                   {item.content}
                 </AppProfileDropdown>
+              ) : item.key === "theme" ? (
+                <li key={item.key} onClick={toggleTheme} className="nav-item">
+                  <FeatherIcon icon={item.icon} />
+                </li>
               ) : (
                 <AppDropdownItem
                   key={item.key}
@@ -127,6 +155,7 @@ const AppHeader: React.FC<AppHeaderProps> = ({ onSidebarToggle }) => {
                   isOpen={dropdownState[item.key] || false}
                   toggleDropdown={toggleDropdown}
                   dropdownRefs={dropdownRefs}
+                  className="nav-item"
                 >
                   {item.content}
                 </AppDropdownItem>

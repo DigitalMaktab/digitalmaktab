@@ -7,8 +7,11 @@ const registerSchool = (school: FormData) =>
     },
   });
 
+const classList = () => apiClient.get("/school/classes");
+
 const school = {
   registerSchool,
+  classList,
 };
 
 export default school;

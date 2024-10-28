@@ -47,6 +47,9 @@
             "country": {
                 "label": "Select Country"
             }
+        },
+        "saveButton": {
+            "label": "Save"
         }
     },
     "languages": {
@@ -249,6 +252,7 @@
         }
     },
     "addressForm": {
+        "title": "Address",
         "street": {
             "label": "Street",
             "placeholder": "12th Street",
@@ -277,5 +281,29 @@
                 "required": "Postal Code is required"
             }
         }
+    },
+    "profile": {
+        "label": "Profile",
+        "editProfile": {
+            "label": "Edit Profile"
+        }
+    },
+    "footer": {
+        "label": "Hand crafted &amp; made with",
+        "copyright": "Copyright 2024 © Digital Maktab"
+    },
+    "userRole": {
+        "ADMIN": "School"
+    },
+    "classList": {
+        "title": "Class List",
+        "className": "Class Name",
+        "classType": "Class Type"
+    },
+    "shift": {
+        "label": "Shift"
+    },
+    "teacher": {
+        "teacherName": "Teacher Name"
     }
 }

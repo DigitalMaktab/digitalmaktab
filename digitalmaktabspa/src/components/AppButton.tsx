@@ -7,11 +7,12 @@ const AppButton: React.FC<ButtonProperties> = ({
   onButtonClick,
   icon,
   disabled,
+  className,
 }) => {
   return (
-    <div className="text-end mt-3">
+    <>
       <button
-        className="btn btn-primary btn-block w-100 text-white"
+        className={`btn btn-primary btn-block ${className}`}
         disabled={disabled}
         type={type}
         onClick={onButtonClick}
@@ -19,7 +20,7 @@ const AppButton: React.FC<ButtonProperties> = ({
         <i aria-hidden="true" className={icon}></i>
         {label}
       </button>
-    </div>
+    </>
   );
 };
 

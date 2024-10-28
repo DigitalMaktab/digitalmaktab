@@ -6,6 +6,7 @@ import AppBreadCrumb from "../components/AppBreadCrumb";
 import AppTestContent from "../components/AppTestContent";
 import AppFooter from "../components/AppFooter";
 import useWindowWidth from "../hooks/useWindowWidth";
+import { Outlet } from "react-router-dom";
 
 const Home = () => {
   const windowWidth = useWindowWidth();
@@ -36,6 +37,7 @@ const Home = () => {
           <AppSideBar isOpen={isSidebarOpen} />
           <div className="page-body">
             <AppBreadCrumb />
+            <Outlet />
           </div>
           <AppFooter />
         </div>

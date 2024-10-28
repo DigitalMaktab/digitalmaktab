@@ -1,5 +1,3 @@
-import { FormikHelpers } from "formik";
-
 type PlaceHolder = string;
 
 export interface InputProps {
@@ -11,6 +9,7 @@ export interface InputProps {
   required?: boolean;
   // setFieldValue?: FormikHelpers<any>["setFieldValue"];
   setFieldValue?: (field: string, value: any) => void;
+  phoneNumber?: PhoneNumberValue;
 }
 
 export interface FileInputProps extends InputProps {

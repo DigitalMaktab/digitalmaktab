@@ -1,13 +1,10 @@
 import React, { useEffect } from "react";
-import { useTranslation } from "react-i18next";
-import AppImg from "../../components/AppImg";
 import AppPublicHeader from "../../components/public/AppPublicHeader";
 
 import SupportSection from "../../components/public/SupportSection";
 import AppPublicFooter from "../../components/public/AppPublicFooter";
 import HomeSection from "../../components/public/HomeSection";
 import FeaturesSection from "../../components/public/FeaturesSection";
-import AppLoader from "../../components/AppLoader";
 
 const PublicScreen = () => {
   useEffect(() => {
@@ -16,7 +13,6 @@ const PublicScreen = () => {
   return (
     <div className="page-wrapper">
       <AppPublicHeader />
-      <AppLoader />
       <HomeSection />
       <FeaturesSection />
       <SupportSection />

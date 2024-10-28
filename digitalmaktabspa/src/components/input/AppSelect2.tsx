@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import $ from "jquery";
 import "select2/dist/js/select2";
 import { Select2Props } from "../properties/InputProps";
@@ -14,6 +14,7 @@ const AppSelect2: React.FC<Select2Props> = ({
   loadingError = false,
 }) => {
   const selectRef = useRef<HTMLSelectElement>(null);
+  const [initialized, setInitialized] = useState(false);
 
   // Memoize the options to prevent unnecessary recalculations
   const options = useMemo(
@@ -25,10 +26,11 @@ const AppSelect2: React.FC<Select2Props> = ({
 
   // Ensure that the value is updated when it changes
   useEffect(() => {
-    if (selectRef.current && value) {
+    if (!initialized && selectRef.current && value && data.length > 0) {
       $(selectRef.current).val(value).trigger("change");
+      setInitialized(true); // Prevent further updates
     }
-  }, [value]);
+  }, [value, data, initialized]);
 
   return (
     <select ref={selectRef} className="form-control" name={name}>
