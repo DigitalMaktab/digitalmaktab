@@ -27,18 +27,19 @@ namespace digitalmaktabapi.Helpers.Mappers
 
                 foreach (var sourceProperty in sourceProperties)
                 {
-                    // Check if the source property is an enum or a nullable enum
+
+                    // Map the localized version to the additional field (e.g., classTypeValue)
                     bool isEnum = sourceProperty.PropertyType.IsEnum ||
                                   (Nullable.GetUnderlyingType(sourceProperty.PropertyType)?.IsEnum ?? false);
 
                     if (isEnum)
                     {
-                        var destinationProperty = destinationProperties
-                            .FirstOrDefault(dp => dp.Name == sourceProperty.Name && dp.PropertyType == typeof(string));
+                        var localizedDestinationProperty = destinationProperties
+                            .FirstOrDefault(dp => dp.Name == sourceProperty.Name + "Value" && dp.PropertyType == typeof(string));
 
-                        if (destinationProperty != null)
+                        if (localizedDestinationProperty != null)
                         {
-                            map.ForMember(destinationProperty.Name, opt => opt.MapFrom((src, dest) =>
+                            map.ForMember(localizedDestinationProperty.Name, opt => opt.MapFrom((src, dest) =>
                             {
                                 var value = sourceProperty.GetValue(src);
                                 if (value == null) return null;

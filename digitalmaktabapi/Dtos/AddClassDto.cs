@@ -13,7 +13,6 @@ namespace digitalmaktabapi.Dtos
     {
         public required ClassName ClassName { get; set; }
         public required Guid BranchId { get; set; }
-        public required Guid CalendarYearId { get; set; }
         public required ClassType ClassType { get; set; }
         public required Shift Shift { get; set; }
         public required Guid TeacherId { get; set; }
@@ -24,10 +23,6 @@ namespace digitalmaktabapi.Dtos
         public AddClassDtoValidator()
         {
             RuleFor(a => a.BranchId)
-                .NotNull()
-                .NotEmpty()
-                .Must(a => a != Guid.Empty);
-            RuleFor(a => a.CalendarYearId)
                 .NotNull()
                 .NotEmpty()
                 .Must(a => a != Guid.Empty);

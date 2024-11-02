@@ -7,6 +7,7 @@ using digitalmaktabapi.Controllers;
 using digitalmaktabapi.Dtos;
 using digitalmaktabapi.Models;
 using digitalmaktabapi.Services;
+using DotCommon.Extensions;
 using Microsoft.Extensions.Localization;
 
 namespace digitalmaktabapi.Helpers.Mappers

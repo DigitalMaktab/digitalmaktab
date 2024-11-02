@@ -10,14 +10,17 @@ namespace digitalmaktabapi.Dtos
     {
         public required Guid SchoolId { get; set; }
         public required SchoolDto School { get; set; }
-        public required string ClassName { get; set; }
+        public required string ClassNameValue { get; set; }
+        public required ClassName ClassName { get; set; }
         public required Guid BranchId { get; set; }
         public required BranchDto Branch { get; set; }
 
         public required Guid CalendarYearId { get; set; }
         public required CalendarYearDto CalendarYear { get; set; }
-        public required string ClassType { get; set; }
-        public required string Shift { get; set; }
+        public required string ClassTypeValue { get; set; }
+        public required ClassType ClassType { get; set; }
+        public required string ShiftValue { get; set; }
+        public required Shift Shift { get; set; }
         public required Guid TeacherId { get; set; }
         public required TeacherDto Teacher { get; set; }
         public required ICollection<ClassSubjectForClassDto> ClassSubjects { get; set; } = [];

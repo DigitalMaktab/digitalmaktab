@@ -46,6 +46,15 @@
             "searching": "Searching...",
             "country": {
                 "label": "Select Country"
+            },
+            "branch": {
+                "label": "Select Branch"
+            },
+            "classType": {
+                "label": "Select Class Type"
+            },
+            "shift": {
+                "label": "Select Shift"
             }
         },
         "saveButton": {
@@ -295,15 +304,124 @@
     "userRole": {
         "ADMIN": "School"
     },
-    "classList": {
-        "title": "Class List",
-        "className": "Class Name",
-        "classType": "Class Type"
+    "class": {
+        "classList": {
+            "label": "Class List"
+        },
+        "addClass": {
+            "label": "Add Class"
+        },
+        "title": "Class",
+        "className": {
+            "label": "Class Name",
+            "validation": {
+                "required": "Class Name is required"
+            }
+        },
+        "classType": {
+            "label": "Class Type",
+            "validation": {
+                "required": "Class Type is required"
+            }
+        }
+    },
+    "branch": {
+        "branchName": {
+            "label": "Branch Name",
+            "validation": {
+                "required": "Branch Name is required"
+            }
+        }
     },
     "shift": {
         "label": "Shift"
     },
+    "gender": {
+        "label": "Gender"
+    },
     "teacher": {
-        "teacherName": "Teacher Name"
+        "teacherName": "Supervisor Teacher",
+        "teacherList": {
+            "label": "Teacher List"
+        },
+        "registerTeacher": {
+            "label": "Register Teacher"
+        },
+        "firstName": {
+            "label": "First Name"
+        },
+        "lastName": {
+            "label": "Last Name"
+        }
+    },
+    "student": {
+        "label": "Student",
+        "studentList": {
+            "label": "Student List"
+        },
+        "registerStudent": {
+            "label": "Register Student"
+        },
+        "firstNameNative": {
+            "label": "First Name"
+        },
+        "lastNameNative": {
+            "label": "Last Name"
+        },
+        "fatherNameNative": {
+            "label": "Father Name"
+        },
+        "grandFatherNameNative": {
+            "label": "Grand Father Name"
+        },
+        "firstNameEnglish": {
+            "label": "First Name English"
+        },
+        "lastNameEnglish": {
+            "label": "Last Name English"
+        },
+        "fatherNameEnglish": {
+            "label": "Father Name English"
+        },
+        "grandFatherNameEnglish": {
+            "label": "Grand Father Name English"
+        },
+        "asasNumber": {
+            "label": "Asas Number"
+        }
+    },
+    "calendarYear": {
+        "label": "Calendar Year",
+        "year": {
+            "label": "Year"
+        },
+        "nativeYear": {
+            "label": "Native Year"
+        }
+    },
+    "enrollment": {
+        "label": "Enrollment",
+        "enrolled": {
+            "label": "Enrolled"
+        }
+    },
+    "pagination": {
+        "next": "Next",
+        "previous": "Previous"
+    },
+    "filters": {
+        "button": {
+            "label": "Search",
+            "reset": "Reset Filters"
+        },
+        "show": {
+            "label": "Show filters"
+        },
+        "hide": {
+            "label": "Hide filters"
+        },
+        "implementation": {
+            "required": "Implementation of ({{value}}) is required"
+        }
     }
 }

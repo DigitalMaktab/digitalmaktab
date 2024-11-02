@@ -46,6 +46,15 @@
             "searching": "در حال جستجو...",
             "country": {
                 "label": "انتخاب کشور"
+            },
+            "branch": {
+                "label": "انتخاب شاخه صنف"
+            },
+            "classType": {
+                "label": "انتخاب نوع صنف"
+            },
+            "shift": {
+                "label": "انتخاب شیفت"
             }
         },
         "saveButton": {
@@ -295,15 +304,124 @@
     "userRole": {
         "ADMIN": "مکتب"
     },
-    "classList": {
-        "title": "لیست صنوف",
-        "className": "صنف",
-        "classType": "نوعیت صنف"
+    "class": {
+        "classList": {
+            "label": "لیست صنوف"
+        },
+        "addClass": {
+            "label": "اضافه نمودن صنف"
+        },
+        "title": "صنف",
+        "className": {
+            "label": "اسم صنف",
+            "validation": {
+                "required": "اسم صنف ضروری میباشد"
+            }
+        },
+        "classType": {
+            "label": "نوعیت صنف",
+            "validation": {
+                "required": "نوعیت صنف ضروری میباشد"
+            }
+        }
+    },
+    "branch": {
+        "branchName": {
+            "label": "شاخه صنف",
+            "validation": {
+                "required": "شاخه صنف ضروری میباشد"
+            }
+        }
     },
     "shift": {
         "label": "شیفت"
     },
+    "gender": {
+        "label": "جنسیت"
+    },
     "teacher": {
-        "teacherName": "اسم استاد"
+        "teacherName": "نگران صنف",
+        "teacherList": {
+            "label": "لست معلمین"
+        },
+        "registerTeacher": {
+            "label": "ثبت معلم"
+        },
+        "firstName": {
+            "label": "اسم"
+        },
+        "lastName": {
+            "label": "تخلص"
+        }
+    },
+    "student": {
+        "label": "شاگرد",
+        "studentList": {
+            "label": "لست شاگردان"
+        },
+        "registerStudent": {
+            "label": "ثبت شاگرد"
+        },
+        "firstNameNative": {
+            "label": "اسم"
+        },
+        "lastNameNative": {
+            "label": "تخلص"
+        },
+        "fatherNameNative": {
+            "label": "اسم پدر"
+        },
+        "grandFatherNameNative": {
+            "label": "اسم پدر کلان"
+        },
+        "firstNameEnglish": {
+            "label": "اسم انگلیسی"
+        },
+        "lastNameEnglish": {
+            "label": "تخلص انگلیسی"
+        },
+        "fatherNameEnglish": {
+            "label": "اسم پدر انگلیسی"
+        },
+        "grandFatherNameEnglish": {
+            "label": "اسم پدر کلان انگلیسی"
+        },
+        "asasNumber": {
+            "label": "نمبر اساس"
+        }
+    },
+    "calendarYear": {
+        "label": "سال تعلیمی",
+        "year": {
+            "label": "میلادی"
+        },
+        "nativeYear": {
+            "label": "هجری قمری"
+        }
+    },
+    "enrollment": {
+        "label": "شمولیت",
+        "enrolled": {
+            "label": "تعداد شمولیت"
+        }
+    },
+    "pagination": {
+        "next": "بعدی",
+        "previous": "قبلی"
+    },
+    "filters": {
+        "button": {
+            "label": "جستجو",
+            "reset": "تنظیم مجدد فلتر ها "
+        },
+        "show": {
+            "label": "نمایش فلتر ها"
+        },
+        "hide": {
+            "label": "پنهان نمودن فلتر ها"
+        },
+        "implementation": {
+            "required": "پیاده سازی ({{value}}) لازم است"
+        }
     }
 }

@@ -3,6 +3,7 @@ import { PhoneNumberInputProps } from "../properties/InputProps";
 import AppSelect2 from "./AppSelect2";
 import useCountries from "../../hooks/useCountries";
 import { useTranslation } from "react-i18next";
+import AppCountrySelect from "../select/AppCountrySelect";
 
 const AppPhoneNumberInput: React.FC<PhoneNumberInputProps> = ({
   onChange,
@@ -15,10 +16,6 @@ const AppPhoneNumberInput: React.FC<PhoneNumberInputProps> = ({
   ...rest
 }) => {
   const { t } = useTranslation();
-  const { select2Countries, loading, error } = useCountries();
-  const countryOptions = useMemo(() => {
-    return select2Countries.map((item) => ({ id: item.id, text: item.text }));
-  }, [select2Countries]);
 
   // Handle phone number input change
   const handlePhoneNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -43,15 +40,16 @@ const AppPhoneNumberInput: React.FC<PhoneNumberInputProps> = ({
       <label className="col-form-label" htmlFor={name}>
         {label} {required && "*"}
       </label>
-      <div className="d-flex" style={{ width: "100%", height: "48px" }}>
-        <AppSelect2
+      <div
+        className="d-flex"
+        style={{ width: "100%", height: "calc(2.25rem + 2px)" }}
+      >
+        <AppCountrySelect
           name={countryIdName}
-          data={countryOptions}
+          showSelect2Lable={false}
           value={phonenumbervalue.countryId}
           onChange={handleCountryChange}
-          loading={loading}
-          loadingError={!!error}
-          label={t("controls.select2.country.label")}
+          required={required}
         />
         <input
           name={name}

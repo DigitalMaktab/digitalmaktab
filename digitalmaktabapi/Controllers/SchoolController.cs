@@ -234,11 +234,13 @@ namespace digitalmaktabapi.Controllers
         {
             Guid id = Extensions.GetSessionDetails(this).Id;
             Guid schoolId = Extensions.GetSessionDetails(this).SchoolId;
+            Guid calendarYearId = Extensions.GetSessionDetails(this).CalendarYearId;
 
             var classToCreate = this.mapper.Map<Class>(classDto);
             classToCreate.CreationUserId = id;
             classToCreate.UpdateUserId = id;
             classToCreate.SchoolId = schoolId;
+            classToCreate.CalendarYearId = calendarYearId;
             this.schoolRepository.Add(classToCreate);
             await this.schoolRepository.SaveAll();
             return NoContent();

@@ -63,7 +63,7 @@ const AppSideBar: React.FC<AppSideBarProps> = ({ isOpen }) => {
             },
             {
               label: t("sidebar.general.menues.classes.add"),
-              link: "add-class",
+              link: "/home/class-editor/new",
             },
           ],
         },
@@ -89,12 +89,12 @@ const AppSideBar: React.FC<AppSideBarProps> = ({ isOpen }) => {
         {
           label: t("sidebar.teachers.menues.list"),
           icon: <LiaIcons.LiaChalkboardTeacherSolid className="stroke-icon" />,
-          link: "/home",
+          link: "/home/teacher-list",
         },
         {
           label: t("sidebar.teachers.menues.register"),
           icon: <AIIcons.AiOutlineUserAdd className="stroke-icon" />,
-          link: "/home",
+          link: "/home/teacher-editor/new",
         },
       ],
     },
@@ -104,12 +104,12 @@ const AppSideBar: React.FC<AppSideBarProps> = ({ isOpen }) => {
         {
           label: t("sidebar.students.menues.list"),
           icon: <PIIcons.PiStudent className="stroke-icon" />,
-          link: "/home",
+          link: "/home/student-list",
         },
         {
           label: t("sidebar.students.menues.register"),
           icon: <AIIcons.AiOutlineUserAdd className="stroke-icon" />,
-          link: "/home",
+          link: "/home/student-editor/new",
         },
       ],
     },
@@ -141,6 +141,7 @@ const AppSideBar: React.FC<AppSideBarProps> = ({ isOpen }) => {
                     icon={item.icon}
                     badge={item.badge}
                     subMenu={item.subMenu}
+                    link={item.link}
                     isActive={activeItem === item.label}
                     onMenuClick={() => handleMenuClick(item.label)}
                     onSubMenuClick={handleSubMenuClick}

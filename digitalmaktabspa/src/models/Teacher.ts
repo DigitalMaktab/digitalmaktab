@@ -1,6 +1,11 @@
+import { Base } from "./Base";
+import { Gender } from "./Gender";
 import { UserRole } from "./UserRole";
 
-export interface Teacher {
+export interface Teacher extends Base {
   userRole: UserRole;
-  teacherName: string;
+  firstName: string;
+  lastName: string;
+  genderValue: string;
+  gender: Gender;
 }

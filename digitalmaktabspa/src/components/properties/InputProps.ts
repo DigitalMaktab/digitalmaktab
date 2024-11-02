@@ -33,14 +33,21 @@ export interface PhoneNumberValue {
 }
 
 export interface Select2Props extends InputProps {
-  data: { id: string; text: string }[];
+  data: Select2Option[];
   value: string;
   onChange: (value: string) => void;
   loading?: boolean;
   loadingError?: boolean;
+  labelVisible?: boolean;
+  showLable?: boolean;
 }
 
 export interface PhoneNumberProps extends InputProps {
   rest?: React.InputHTMLAttributes<HTMLSelectElement>;
   onChange: (value: PhoneNumberValue) => void;
+}
+
+export interface Select2Option {
+  id: string;
+  text: string;
 }

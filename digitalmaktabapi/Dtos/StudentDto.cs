@@ -34,13 +34,17 @@ namespace digitalmaktabapi.Dtos
         public string? MCousinName { get; set; }
         public PhoneNumberDto? PhoneNumber { get; set; }
 
-        public string? BloodGroup { get; set; }
-        public required string DisabilityType { get; set; }
-        public required string IsOrphan { get; set; }
+        public string? BloodGroupValue { get; set; }
+        public BloodGroup BloodGroup { get; set; }
+        public required string DisabilityTypeValue { get; set; }
+        public required DisabilityType DisabilityType { get; set; }
+        public required string IsOrphanValue { get; set; }
+        public required IsOrphan IsOrphan { get; set; }
         public required string MotherTongue { get; set; }
 
         public required DateTime DateOfBirth { get; set; }
-        public required string Gender { get; set; }
+        public required string GenderValue { get; set; }
+        public required Gender Gender { get; set; }
         public required string Email { get; set; }
         public required UserRole UserRole { get; set; }
         public decimal? MonthlyFee { get; set; }

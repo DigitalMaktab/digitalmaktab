@@ -55,7 +55,12 @@ namespace digitalmaktabapi.Data
 
         public async Task<PagedList<Class>> GetClasses(Guid schoolId, ClassParams classParams)
         {
-            var entities = this.context.Classes.Where(a => a.SchoolId == schoolId).AsQueryable();
+            var entities = this.context.Classes
+                .Include(a => a.Teacher)
+                .Include(a => a.Branch)
+                .Include(a => a.CalendarYear)
+                .Include(a => a.Enrollments)
+                .Where(a => a.SchoolId == schoolId).AsQueryable();
             if (classParams.BranchId.HasValue)
             {
                 entities = entities.Where(a => a.BranchId == classParams.BranchId);

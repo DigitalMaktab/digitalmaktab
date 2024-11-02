@@ -1,5 +1,5 @@
 import React from "react";
-import { FormProps } from "../properties/FormProps";
+import { FormProps, FormValues } from "../properties/FormProps";
 import { Formik, Form } from "formik";
 
 const AppForm: React.FC<FormProps> = ({
@@ -13,10 +13,23 @@ const AppForm: React.FC<FormProps> = ({
     <Formik
       enableReinitialize
       initialValues={initialValues}
-      onSubmit={onSubmit}
       validationSchema={validationSchema}
+      validateOnBlur
+      validateOnChange
+      validateOnMount
+      onSubmit={(values: FormValues, { setTouched, validateForm }) => {
+        setTouched(
+          Object.keys(values).reduce((acc, key) => {
+            acc[key] = true;
+            return acc;
+          }, {} as Record<string, boolean>)
+        );
+        validateForm();
+
+        onSubmit(values);
+      }}
     >
-      {({ isSubmitting }) => <Form className="theme-form">{children}</Form>}
+      {<Form className="theme-form">{children}</Form>}
     </Formik>
   );
 };

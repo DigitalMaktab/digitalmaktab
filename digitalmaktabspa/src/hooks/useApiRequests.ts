@@ -11,10 +11,11 @@ const useApiRequests = <T>() => {
 
   const execute = useCallback(
     async <R>(
-      apiCall: () => Promise<{ data: R }>
+      apiCall: () => Promise<{ data: R; headers: Record<string, any> }>
     ): Promise<{
       status: ResponseResult;
       data?: R;
+      headers?: Record<string, any>;
       errors?: string[];
     }> => {
       if (status === ResponseResult.LOADING) {
@@ -29,10 +30,14 @@ const useApiRequests = <T>() => {
 
       try {
         const response = await apiCall();
-        setData(response.data as unknown as T); // Cast to ensure state type compatibility
+        setData(response.data as unknown as T);
         setStatus(ResponseResult.SUCCESS);
         hideLoader();
-        return { status: ResponseResult.SUCCESS, data: response.data };
+        return {
+          status: ResponseResult.SUCCESS,
+          data: response.data,
+          headers: response.headers,
+        };
       } catch (err: unknown) {
         setStatus(ResponseResult.ERROR);
         hideLoader();

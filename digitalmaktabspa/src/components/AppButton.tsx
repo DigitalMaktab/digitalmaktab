@@ -1,5 +1,6 @@
 import React from "react";
 import { ButtonProperties } from "./properties/ButtonProperties";
+import FeatherIcon from "feather-icons-react";
 
 const AppButton: React.FC<ButtonProperties> = ({
   label,
@@ -10,17 +11,14 @@ const AppButton: React.FC<ButtonProperties> = ({
   className,
 }) => {
   return (
-    <>
-      <button
-        className={`btn btn-primary btn-block ${className}`}
-        disabled={disabled}
-        type={type}
-        onClick={onButtonClick}
-      >
-        <i aria-hidden="true" className={icon}></i>
-        {label}
-      </button>
-    </>
+    <button
+      className={`btn btn-primary ${className}`}
+      disabled={disabled}
+      type={type}
+      onClick={onButtonClick}
+    >
+      {icon && <FeatherIcon icon={icon} />} {label}
+    </button>
   );
 };
 

@@ -278,6 +278,12 @@ namespace digitalmaktabapi.Controllers
             return Ok(this.mapper.Map<CalendarYear>(await this.rootRepository.GetCalendarYear(calendarYearId)));
         }
 
+        [HttpGet("activeCalendarYear")]
+        public async Task<IActionResult> GetActiveCalendarYear()
+        {
+            return Ok(this.mapper.Map<CalendarYearDto>(await this.rootRepository.GetActiveCalendarYear()));
+        }
+
         // Helper methods
 
         private List<EnumsDto> GetEnumList<T>() where T : Enum

@@ -14,8 +14,12 @@ import Auth from "./screens/auth/Auth";
 import { LoaderProvider } from "./contexts/LoaderContext";
 import PublicScreen from "./screens/public/PublicScreen";
 import SchoolProfile from "./screens/school/SchoolProfile";
-import Home from "./screens/Home";
-import ClassList from "./screens/school/ClassList";
+import ClassList from "./screens/school/class/ClassList";
+import ClassEditor from "./screens/school/class/ClassEditor";
+import TeacherList from "./screens/school/teacher/TeacherList";
+import TeacherEditor from "./screens/school/teacher/TeacherEditor";
+import StudentList from "./screens/school/student/StudentList";
+import StudentEditor from "./screens/school/student/StudentEditor";
 
 function App() {
   return (
@@ -48,12 +52,27 @@ function App() {
               }
             />
             <Route element={<AuthRoute />}>
+              {/* School */}
               <Route path="home" element={<AdminDashboard />}>
                 <Route path="profile" element={<SchoolProfile />} />
+                {/* Classes */}
                 <Route path="class-list" element={<ClassList />} />
+                <Route path="class-editor/new" element={<ClassEditor />} />
+                <Route path="class-editor/:id" element={<ClassEditor />} />
+                {/* Teachers */}
+                <Route path="teacher-list" element={<TeacherList />} />
+                <Route path="teacher-editor/new" element={<TeacherEditor />} />
+                <Route path="teacher-editor/:id" element={<TeacherEditor />} />
+                {/* Stuents */}
+                <Route path="student-list" element={<StudentList />} />
+                <Route path="student-editor/new" element={<StudentEditor />} />
+                <Route path="student-editor/:id" element={<StudentEditor />} />
               </Route>
+              {/* Student */}
               <Route path="student-dashboard" element={<StudentDashboard />} />
+              {/* Teacher */}
               <Route path="teacher-dashboard" element={<TeacherDashboard />} />
+              {/* Root User */}
               <Route path="dashboard" element={<Dashboard />} />
               <Route />
             </Route>
