@@ -467,7 +467,19 @@
         "totalClasses": "تعداد صنف ها",
         "totalBranches": "تعداد شاخه های صنف"
     },
-    "genderChart": {
+    "studentGenderChart": {
         "label": "توزیع جنسیت شاگردان"
+    },
+    "teacherGenderChart": {
+        "label": "توزیع جنسیت معلمین"
+    },
+    "classBranchChart": {
+        "label": "توزیع صنوف و شاخه های آن"
+    },
+    "phoneNumber": {
+        "label": "شماره تماس",
+        "number": {
+            "label": "شماره"
+        }
     }
 }

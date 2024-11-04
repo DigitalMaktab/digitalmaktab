@@ -16,6 +16,7 @@ namespace digitalmaktabapi.Controllers
     {
         private readonly IAuthService authService = authService;
         private readonly IMapper mapper = mapper;
+
         [HttpPost]
         public async Task<IActionResult> Authenticate(LoginDto loginDto)
         {

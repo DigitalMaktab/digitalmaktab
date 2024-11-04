@@ -1,13 +1,15 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { useTranslation } from "react-i18next";
 import useSchoolOperations from "../../../hooks/useSchoolOperations";
 import { Column } from "../../../components/table/properties/TableProps";
 import { Teacher } from "../../../models/Teacher";
 import AppCard from "../../../components/card/AppCard";
 import AppTable from "../../../components/table/AppTable";
+import { Class } from "../../../models/Class";
+import { PhoneNumber } from "../../../models/PhoneNumber";
+import { useAppLocalizer } from "../../../hooks/useAppLocalizer";
 
 const TeacherList = () => {
-  const { t } = useTranslation();
+  const { t, formatCountryCode } = useAppLocalizer();
   const { teacherList, data, totalPages } = useSchoolOperations();
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -20,6 +22,23 @@ const TeacherList = () => {
       {
         header: "teacher.lastName.label",
         accessor: "lastName",
+      },
+      {
+        header: "auth.email.label",
+        accessor: "email",
+      },
+      // {
+      //   header: "class.className.label",
+      //   accessor: "classes",
+      //   render: (classData: Class[]) => classData.length,
+      // },
+      {
+        header: "phoneNumber.label",
+        accessor: "phoneNumber",
+        render: (phoneNumber: PhoneNumber) =>
+          formatCountryCode(phoneNumber?.country?.countryPhoneCode) +
+          " " +
+          phoneNumber?.number,
       },
       {
         header: "gender.label",

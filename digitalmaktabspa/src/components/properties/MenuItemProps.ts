@@ -1,3 +1,5 @@
+import { UserRole } from "../../models/UserRole";
+
 export interface MenuItemProps {
   label: string;
   icon: React.ReactNode;
@@ -38,6 +40,7 @@ export interface MenuItem {
   badge?: string;
   subMenu?: SubMenuItem[];
   link?: string;
+  roles: UserRole[];
 }
 
 export interface MenuSection {

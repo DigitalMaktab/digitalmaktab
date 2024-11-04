@@ -44,7 +44,13 @@ namespace digitalmaktabapi.Data
 
         public async Task<PagedList<Teacher>> GetTeachers(Guid schoolId, UserParams userParams)
         {
-            var teachers = this.context.Teachers.Where(a => a.SchoolId == schoolId).AsQueryable();
+            var teachers = this.context.Teachers
+                .Include(a => a.Classes)
+                .Include(a => a.PhoneNumber)
+                .ThenInclude(a => a.Country)
+                .Include(a => a.PrimaryAddress)
+                .Include(a => a.Schedules)
+                .Where(a => a.SchoolId == schoolId).AsQueryable();
 
             return await PagedList<Teacher>.CreateAsync(teachers, userParams.PageNumber, userParams.PageSize);
         }

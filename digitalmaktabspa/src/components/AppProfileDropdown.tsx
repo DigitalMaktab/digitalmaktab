@@ -40,7 +40,7 @@ const AppProfileDropdown: React.FC<DropdownItemProps> = ({
           toggleDropdown(dropdownKey);
         }}
       >
-        {user && user.school.logo && (
+        {user && user.school && user.school.logo && (
           <AppImg
             className="img-50 rounded-circle"
             alt={user.school.schoolName}
@@ -58,8 +58,15 @@ const AppProfileDropdown: React.FC<DropdownItemProps> = ({
 
         <img alt="" />
         <div className="flex-grow-1">
-          <h5>{user?.school.schoolName}</h5>
-          <span>{user && t(`userRole.${UserRole[user.school.userRole]}`)}</span>
+          <h5>{user && user.school && user?.school.schoolName}</h5>
+          <span>
+            {user &&
+              t(
+                `userRole.${
+                  user && user.school && UserRole[user.school.userRole]
+                }`
+              )}
+          </span>
         </div>
       </div>
       <div className={`custom-menu overflow-hidden ${isOpen ? "show" : ""}`}>

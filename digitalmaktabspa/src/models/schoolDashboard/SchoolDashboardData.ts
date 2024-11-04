@@ -6,4 +6,5 @@ export interface SchoolDashboardData {
   totalClasses: number;
   totalBranches: number;
   genderChart: GenderChart;
+  teachersGenderChart: GenderChart;
 }

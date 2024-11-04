@@ -467,7 +467,19 @@
         "totalClasses": "Total Classes",
         "totalBranches": "Total Class Branches"
     },
-    "genderChart": {
+    "studentGenderChart": {
         "label": "Gender Distribution"
+    },
+    "teacherGenderChart": {
+        "label": "Gender Distribution"
+    },
+    "classBranchChart": {
+        "label": "Class Branch Distribution"
+    },
+    "phoneNumber": {
+        "label": "Phone Number",
+        "number": {
+            "label": "Number"
+        }
     }
 }

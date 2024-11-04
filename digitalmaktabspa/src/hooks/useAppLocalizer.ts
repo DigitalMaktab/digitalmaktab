@@ -28,5 +28,22 @@ export const useAppLocalizer = () => {
     setLanguage(lang);
   };
 
-  return { language, changeLanguage, t, i18n };
+  const formatNumber = (page: number) => {
+    return new Intl.NumberFormat(i18n.language).format(page);
+  };
+
+  const formatCountryCode = (code: number | string) => {
+    // Convert the code to a number if it’s a string to ensure consistent formatting
+    const codeNumber = typeof code === "string" ? parseInt(code, 10) : code;
+
+    // Format the code using the locale settings
+    const formattedCode = new Intl.NumberFormat(i18n.language).format(
+      codeNumber
+    );
+
+    // Add the "+" prefix
+    return `+${formattedCode}`;
+  };
+
+  return { language, changeLanguage, formatNumber, formatCountryCode, t, i18n };
 };

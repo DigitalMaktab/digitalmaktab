@@ -106,8 +106,16 @@ namespace digitalmaktabapi.Data
 
         public async Task<GenderChartDto> GetGenderChart(Guid id)
         {
-            var totalMaleStudents = await this.context.Students.CountAsync(a => a.Gender == Gender.MALE);
-            var totalFemaleStudents = await this.context.Students.CountAsync(a => a.Gender == Gender.FEMALE);
+            var totalMaleStudents = await this.context.Students.CountAsync(a => a.Gender == Gender.MALE && a.SchoolId == id);
+            var totalFemaleStudents = await this.context.Students.CountAsync(a => a.Gender == Gender.FEMALE && a.SchoolId == id);
+
+            return new GenderChartDto { TotalMale = totalMaleStudents, TotalFemale = totalFemaleStudents };
+        }
+
+        public async Task<GenderChartDto> GetTeachersGenderChart(Guid id)
+        {
+            var totalMaleStudents = await this.context.Teachers.CountAsync(a => a.Gender == Gender.MALE && a.SchoolId == id);
+            var totalFemaleStudents = await this.context.Teachers.CountAsync(a => a.Gender == Gender.FEMALE && a.SchoolId == id);
 
             return new GenderChartDto { TotalMale = totalMaleStudents, TotalFemale = totalFemaleStudents };
         }

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { AppSideBarProps } from "./properties/ToggleSideBarProps";
 
 import AppMenuMainTitle from "./menu/AppMenuMainTitle";
@@ -10,9 +10,12 @@ import * as LiaIcons from "react-icons/lia";
 import * as SIIcons from "react-icons/si";
 import { MenuSection } from "./properties/MenuItemProps";
 import { useTranslation } from "react-i18next";
+import { UserRole } from "../models/UserRole";
+import { AuthContext } from "../helper/auth/AuthProvider";
 
 const AppSideBar: React.FC<AppSideBarProps> = ({ isOpen }) => {
   const { t } = useTranslation();
+  const { userRole } = useContext(AuthContext);
   const [activeItem, setActiveItem] = useState<string | null>(null);
   const [activeSubMenuItem, setActiveSubMenuItem] = useState<string | null>(
     null
@@ -26,7 +29,7 @@ const AppSideBar: React.FC<AppSideBarProps> = ({ isOpen }) => {
     setActiveSubMenuItem((prev) => (prev === label ? null : label));
   };
 
-  const menuItems: MenuSection[] = [
+  const allMenuItems: MenuSection[] = [
     {
       title: t("sidebar.general.label"),
       items: [
@@ -34,6 +37,7 @@ const AppSideBar: React.FC<AppSideBarProps> = ({ isOpen }) => {
           label: t("sidebar.general.menues.dashboard"),
           icon: <AIIcons.AiOutlineHome className="stroke-icon" />,
           link: "/home",
+          roles: [UserRole.ADMIN, UserRole.ROOT_USER],
         },
         {
           label: t("sidebar.general.menues.library.label"),
@@ -45,13 +49,14 @@ const AppSideBar: React.FC<AppSideBarProps> = ({ isOpen }) => {
             },
             {
               label: t("sidebar.general.menues.library.list"),
-              link: "/libray",
+              link: "/library",
             },
             {
               label: t("sidebar.general.menues.library.add"),
               link: "/add-book",
             },
           ],
+          roles: [UserRole.ADMIN, UserRole.ROOT_USER],
         },
         {
           label: t("sidebar.general.menues.classes.label"),
@@ -74,6 +79,7 @@ const AppSideBar: React.FC<AppSideBarProps> = ({ isOpen }) => {
               link: "/class-editor/new",
             },
           ],
+          roles: [UserRole.ADMIN, UserRole.ROOT_USER],
         },
         {
           label: t("sidebar.general.menues.timeTable.label"),
@@ -81,13 +87,14 @@ const AppSideBar: React.FC<AppSideBarProps> = ({ isOpen }) => {
           subMenu: [
             {
               label: t("sidebar.general.menues.timeTable.list"),
-              link: "timetable",
+              link: "/timetable",
             },
             {
               label: t("sidebar.general.menues.timeTable.add"),
-              link: "add-timetable",
+              link: "/add-timetable",
             },
           ],
+          roles: [UserRole.ADMIN, UserRole.ROOT_USER],
         },
       ],
     },
@@ -98,11 +105,13 @@ const AppSideBar: React.FC<AppSideBarProps> = ({ isOpen }) => {
           label: t("sidebar.teachers.menues.list"),
           icon: <LiaIcons.LiaChalkboardTeacherSolid className="stroke-icon" />,
           link: "/teacher-list",
+          roles: [UserRole.ADMIN, UserRole.ROOT_USER],
         },
         {
           label: t("sidebar.teachers.menues.register"),
           icon: <AIIcons.AiOutlineUserAdd className="stroke-icon" />,
           link: "/teacher-editor/new",
+          roles: [UserRole.ADMIN, UserRole.ROOT_USER],
         },
       ],
     },
@@ -113,15 +122,26 @@ const AppSideBar: React.FC<AppSideBarProps> = ({ isOpen }) => {
           label: t("sidebar.students.menues.list"),
           icon: <PIIcons.PiStudent className="stroke-icon" />,
           link: "/student-list",
+          roles: [UserRole.ADMIN, UserRole.ROOT_USER],
         },
         {
           label: t("sidebar.students.menues.register"),
           icon: <AIIcons.AiOutlineUserAdd className="stroke-icon" />,
           link: "/student-editor/new",
+          roles: [UserRole.ADMIN, UserRole.ROOT_USER],
         },
       ],
     },
   ];
+
+  // Filter menu items based on user role
+  const menuItems = allMenuItems
+    .map((section) => ({
+      ...section,
+      items: section.items.filter((item) => item.roles?.includes(userRole!)),
+    }))
+    .filter((section) => section.items.length > 0);
+
   return (
     <>
       <div className="overlay" aria-hidden={!isOpen}></div>

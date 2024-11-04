@@ -56453,3 +56453,16 @@ tspan { white-space:pre }
 .shp17 { fill: #fafafa }
 .shp18 { fill: #ffa8a7 }
 .shp19 { fill: #f28f8f }
+
+
+/* Default styling reset for weekends */
+.react-calendar__month-view__days__day--weekend {
+  color: inherit !important; /* Reset color */
+  font-weight: normal !important; /* Reset weight if bold by default */
+}
+
+/* Highlight Fridays only */
+.friday-off {
+  color: #C42A02 !important;
+  font-weight: bold !important;
+}

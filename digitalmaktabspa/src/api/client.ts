@@ -1,5 +1,4 @@
 import axios from "axios";
-
 import { getCurrentLanguage, getUser } from "../helper/helper";
 import { User } from "../models/User";
 import settings from "../config/settings";
@@ -21,6 +20,11 @@ apiClient.interceptors.request.use(async (config) => {
     config.headers.Authorization = "Bearer ".concat(user.token);
   }
 
+  // Skip cache for requests containing 'login' in the URL
+  if (config.url?.includes("login")) {
+    return config;
+  }
+
   // Create a cache key based on the URL and params
   const cacheKey = config.url + JSON.stringify(config.params);
   const cachedResponse = await getFromCache(cacheKey);
@@ -39,15 +43,22 @@ apiClient.interceptors.request.use(async (config) => {
 // Handle responses to store in cache or fetch from cache in case of errors
 apiClient.interceptors.response.use(
   async (response) => {
-    // Cache the successful network response
-    const cacheKey =
-      response.config.url + JSON.stringify(response.config.params);
-    await saveToCache(cacheKey, response.data);
+    // Skip cache storage for responses with 'login' in the URL
+    if (!response.config.url?.includes("auth")) {
+      const cacheKey =
+        response.config.url + JSON.stringify(response.config.params);
+      await saveToCache(cacheKey, response.data);
+    }
     return response;
   },
   async (error) => {
+    // Skip cache retrieval for errors with 'login' in the URL
+    if (error.config?.url?.includes("auth")) {
+      return Promise.reject(error);
+    }
+
     // Try to retrieve data from the cache if the network request fails
-    const cacheKey = error.config.url + JSON.stringify(error.config.params);
+    const cacheKey = error.config?.url + JSON.stringify(error.config.params);
     const cachedResponse = await getFromCache(cacheKey);
 
     if (cachedResponse) {

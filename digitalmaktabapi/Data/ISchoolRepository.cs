@@ -35,5 +35,6 @@ namespace digitalmaktabapi.Data
         Task<int> TotalClasses(Guid id);
 
         Task<GenderChartDto> GetGenderChart(Guid id);
+        Task<GenderChartDto> GetTeachersGenderChart(Guid id);
     }
 }

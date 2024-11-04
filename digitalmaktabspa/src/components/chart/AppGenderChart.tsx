@@ -8,16 +8,18 @@ import { useAppLocalizer } from "../../hooks/useAppLocalizer";
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 const AppGenderChart: React.FC<GenderChartProps> = ({
+  label,
+  labels,
   totalMale,
   totalFemale,
 }) => {
   const { t } = useAppLocalizer();
 
   const data = {
-    labels: [t("gender.male.label"), t("gender.female.label")],
+    labels: labels,
     datasets: [
       {
-        label: t("genderChart.label"),
+        label: label,
         data: [totalMale, totalFemale],
         backgroundColor: ["#36A2EB", "#FF6384"],
         hoverBackgroundColor: ["#36A2EB", "#FF6384"],
@@ -27,7 +29,7 @@ const AppGenderChart: React.FC<GenderChartProps> = ({
 
   return (
     <div style={{ maxWidth: "400px", margin: "0 auto" }}>
-      <h3>{t("genderChart.label")}</h3>
+      <h3>{label}</h3>
       <Pie data={data} />
     </div>
   );

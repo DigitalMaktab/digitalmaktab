@@ -14,10 +14,11 @@ import * as IoIcons from "react-icons/io";
 import useSchoolOperations from "../../../hooks/useSchoolOperations";
 import { SchoolDashboardData } from "../../../models/schoolDashboard/SchoolDashboardData";
 import AppGenderChart from "../../../components/chart/AppGenderChart";
+import AppCalendar from "../../../components/calendar/AppCalendar";
 
 const SchoolDashboard = () => {
   const [school] = useState<School>(getUser()!.school!);
-  const { t } = useAppLocalizer();
+  const { t, i18n } = useAppLocalizer();
   const { dashboardData, data: apiData } = useSchoolOperations();
   const [dashData, setDashData] = useState<SchoolDashboardData | null>(null);
 
@@ -106,17 +107,39 @@ const SchoolDashboard = () => {
                 </div>
               </AppCard>
             </div>
-          </div>
-          <div className="row">
-            <div className="col-sm-12 col-xl-12">
+            <div className="col-md-4 col-xl-4">
               <AppCard className="client-card card-hover">
                 <AppGenderChart
+                  labels={[t("gender.male.label"), t("gender.female.label")]}
+                  label={t("studentGenderChart.label")}
                   totalMale={dashData.genderChart.totalMale}
                   totalFemale={dashData.genderChart.totalFemale}
                 />
               </AppCard>
             </div>
-            <div className="col-md-6"></div>
+            <div className="col-md-4 col-xl-4">
+              <AppCard className="client-card card-hover">
+                <AppGenderChart
+                  labels={[t("gender.male.label"), t("gender.female.label")]}
+                  label={t("teacherGenderChart.label")}
+                  totalMale={dashData.teachersGenderChart.totalMale}
+                  totalFemale={dashData.teachersGenderChart.totalFemale}
+                />
+              </AppCard>
+            </div>
+            <div className="col-md-4 col-xl-4">
+              <AppCard className="client-card card-hover">
+                <AppGenderChart
+                  labels={[
+                    t("schoolDashboard.totalClasses"),
+                    t("schoolDashboard.totalBranches"),
+                  ]}
+                  label={t("classBranchChart.label")}
+                  totalMale={dashData.totalClasses}
+                  totalFemale={dashData.totalBranches}
+                />
+              </AppCard>
+            </div>
           </div>
         </div>
       )}

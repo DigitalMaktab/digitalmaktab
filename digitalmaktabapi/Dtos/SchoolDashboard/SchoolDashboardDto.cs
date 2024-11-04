@@ -14,5 +14,6 @@ namespace digitalmaktabapi.Dtos
         public int TotalBranches { get; set; }
 
         public GenderChartDto GenderChart { get; set; } = new GenderChartDto();
+        public GenderChartDto TeachersGenderChart { get; set; } = new GenderChartDto();
     }
 }

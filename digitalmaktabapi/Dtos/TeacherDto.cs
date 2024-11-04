@@ -11,7 +11,6 @@ namespace digitalmaktabapi.Dtos
         public required Guid SchoolId { get; set; }
         public required SchoolDto School { get; set; }
 
-        public required Guid ClassId { get; set; }
         public required ClassDto Class { get; set; }
         public required string FirstName { get; set; }
         public required string LastName { get; set; }
@@ -22,5 +21,6 @@ namespace digitalmaktabapi.Dtos
         public required PhoneNumberDto PhoneNumber { get; set; }
         public required string Email { get; set; }
         public required ICollection<ScheduleDto> Schedules { get; set; }
+        public required ICollection<ClassDto> Classes { get; set; }
     }
 }

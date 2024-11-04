@@ -371,6 +371,7 @@ namespace digitalmaktabapi.Controllers
                 TotalClasses = await this.schoolRepository.TotalClasses(schoolId),
                 TotalBranches = await this.schoolRepository.TotalBranches(schoolId),
                 GenderChart = await this.schoolRepository.GetGenderChart(schoolId),
+                TeachersGenderChart = await this.schoolRepository.GetTeachersGenderChart(schoolId),
             };
             return Ok(data);
         }
