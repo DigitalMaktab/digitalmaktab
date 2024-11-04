@@ -11,7 +11,7 @@ import AppFormInput from "../../components/form/AppFormInput";
 import { PhoneNumberValue } from "../../components/properties/InputProps";
 
 const SchoolProfile = () => {
-  const [school, setSchool] = useState<School>(getUser()!.user!);
+  const [school, setSchool] = useState<School>(getUser()!.school!);
   const { t } = useTranslation();
 
   const initialValues: SchoolForUpdateDto = school;

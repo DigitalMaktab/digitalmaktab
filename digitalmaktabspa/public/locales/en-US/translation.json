@@ -166,6 +166,11 @@
                     "list": "Books List",
                     "add": "Add Book"
                 },
+                "branches": {
+                    "label": "Branches",
+                    "list": "Branch List",
+                    "add": "Add Branch"
+                },
                 "classes": {
                     "label": "Classes",
                     "list": "Class List",
@@ -331,13 +336,26 @@
             "validation": {
                 "required": "Branch Name is required"
             }
-        }
+        },
+        "branchList": {
+            "label": "Branch List"
+        },
+        "addBranch": {
+            "label": "Add Branch"
+        },
+        "title": "Branch"
     },
     "shift": {
         "label": "Shift"
     },
     "gender": {
-        "label": "Gender"
+        "label": "Gender",
+        "male": {
+            "label": "Male"
+        },
+        "female": {
+            "label": "Female"
+        }
     },
     "teacher": {
         "teacherName": "Supervisor Teacher",
@@ -423,5 +441,33 @@
         "implementation": {
             "required": "Implementation of ({{value}}) is required"
         }
+    },
+    "unauthorized": {
+        "header": {
+            "label": "Unauthorized Access"
+        },
+        "message": {
+            "label": "You do not have permission to view this page."
+        },
+        "backToHome": {
+            "label": "Back to Home"
+        }
+    },
+    "welcomeCard": {
+        "welcome": {
+            "label": "Welcome ({{value}})"
+        },
+        "text": {
+            "label": "Welcome to the Dashboard! Access tools and resources designed to support learning, teaching, and school management."
+        }
+    },
+    "schoolDashboard": {
+        "totalStudents": "Total Students",
+        "totalTeachers": "Total Teachers",
+        "totalClasses": "Total Classes",
+        "totalBranches": "Total Class Branches"
+    },
+    "genderChart": {
+        "label": "Gender Distribution"
     }
 }

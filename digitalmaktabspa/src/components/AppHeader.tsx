@@ -62,7 +62,7 @@ const AppHeader: React.FC<AppHeaderProps> = ({ onSidebarToggle }) => {
           <ul>
             <li className="d-flex">
               <FeatherIcon icon="home" />
-              <Link className="ms-2" to="/home/profile">
+              <Link className="ms-2" to="/profile">
                 {t("header.user.actions.account")}
               </Link>
             </li>

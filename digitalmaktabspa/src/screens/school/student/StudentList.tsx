@@ -8,7 +8,7 @@ import AppTable from "../../../components/table/AppTable";
 
 const StudentList = () => {
   const { t } = useTranslation();
-  const { studentList, data } = useSchoolOperations();
+  const { studentList, data, totalPages } = useSchoolOperations();
   const [currentPage, setCurrentPage] = useState(1);
 
   const columns: Column<Student>[] = useMemo(
@@ -69,6 +69,7 @@ const StudentList = () => {
           rowLink="/home/student-editor/{id}"
           data={data as Student[]}
           columns={columns}
+          totalPages={totalPages}
           fetchPageData={fetchPageData}
           actions={[
             {

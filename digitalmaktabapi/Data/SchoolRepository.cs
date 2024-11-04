@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using digitalmaktabapi.Dtos.SchoolDashboard;
 using digitalmaktabapi.Headers;
 using digitalmaktabapi.Models;
 using Microsoft.EntityFrameworkCore;
@@ -103,6 +104,14 @@ namespace digitalmaktabapi.Data
             return await PagedList<Enrollment>.CreateAsync(enrollments, userParams.PageNumber, userParams.PageSize);
         }
 
+        public async Task<GenderChartDto> GetGenderChart(Guid id)
+        {
+            var totalMaleStudents = await this.context.Students.CountAsync(a => a.Gender == Gender.MALE);
+            var totalFemaleStudents = await this.context.Students.CountAsync(a => a.Gender == Gender.FEMALE);
+
+            return new GenderChartDto { TotalMale = totalMaleStudents, TotalFemale = totalFemaleStudents };
+        }
+
         public async Task<PagedList<Schedule>> GetSchedules(UserParams userParams)
         {
             var schedules = this.context.Schedules
@@ -182,6 +191,26 @@ namespace digitalmaktabapi.Data
             await this.context.Schools.AddAsync(school);
             await this.context.SaveChangesAsync();
             return school;
+        }
+
+        public async Task<int> TotalBranches(Guid id)
+        {
+            return await this.context.Branches.CountAsync(a => a.SchoolId == id);
+        }
+
+        public async Task<int> TotalClasses(Guid id)
+        {
+            return await this.context.Classes.CountAsync(a => a.SchoolId == id);
+        }
+
+        public async Task<int> TotalStudents(Guid id)
+        {
+            return await this.context.Students.CountAsync(a => a.SchoolId == id);
+        }
+
+        public async Task<int> TotalTeachers(Guid id)
+        {
+            return await this.context.Teachers.CountAsync(a => a.SchoolId == id);
         }
 
         public async Task<bool> UpdatePassword(School school, string password)

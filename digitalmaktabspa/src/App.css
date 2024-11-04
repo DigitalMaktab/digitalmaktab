@@ -56430,3 +56430,26 @@ html[dir=rtl] .job-cards-view .radio-primary {
 [data-theme=dark] .select2-selection__placeholder {
   color: var(--dark-gray) !important;
 }
+
+
+tspan { white-space:pre }
+.shp0 { fill: #e0e0e0 }
+.shp1 { fill: #46476c }
+.shp2 { fill: #43B9B2 }
+.shp3 { opacity: 0.4;mix-blend-mode: soft-light;fill: #ffffff }
+.shp4 { opacity: 0.051;mix-blend-mode: multiply;fill: #000000 }
+.shp5 { opacity: 0.4;fill: #ffffff }
+.shp6 { opacity: 0.2;fill: #000000 }
+.shp7 { opacity: 0.102;fill: #000000 }
+.shp8 { fill: #ffffff }
+.shp9 { opacity: 0.2;fill: #ffffff }
+.shp10 { fill: #000000 }
+.shp11 { opacity: 0.149;fill: #000000 }
+.shp12 { fill: #37474f }
+.shp13 { fill: #263238 }
+.shp14 { opacity: 0.302;fill: #000000 }
+.shp15 { opacity: 0.502;fill: #000000 }
+.shp16 { opacity: 0.702;fill: #000000 }
+.shp17 { fill: #fafafa }
+.shp18 { fill: #ffa8a7 }
+.shp19 { fill: #f28f8f }

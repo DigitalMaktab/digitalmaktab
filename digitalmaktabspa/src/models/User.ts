@@ -8,6 +8,9 @@ import { UserRole } from "./UserRole";
 
 export interface User {
   token: string;
-  user: School;
-  type: UserRole;
+  school: School;
+  teacher: Teacher;
+  student: Student;
+  rootUser: RootUser;
+  role: UserRole;
 }

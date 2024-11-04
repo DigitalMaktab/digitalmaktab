@@ -25,13 +25,13 @@ const AuthProvider: React.FC<Properties> = ({ children }) => {
 
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(!!storedUser);
   const [userRole, setUserRole] = useState<UserRole | null>(
-    storedUser ? storedUser.user.userRole : UserRole.UNKNOWN
+    storedUser ? storedUser.role : UserRole.UNKNOWN
   );
 
   const login = (user: User) => {
     setIsAuthenticated(true);
     saveUser(user);
-    setUserRole(user.user.userRole as UserRole); // Set role on login
+    setUserRole(user.role as UserRole); // Set role on login
   };
 
   const logout = () => {
@@ -43,7 +43,7 @@ const AuthProvider: React.FC<Properties> = ({ children }) => {
   useEffect(() => {
     if (storedUser) {
       setIsAuthenticated(true);
-      setUserRole(storedUser.user.userRole);
+      setUserRole(storedUser.role);
     }
   }, []);
 

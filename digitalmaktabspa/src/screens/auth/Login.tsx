@@ -36,7 +36,7 @@ const Login = () => {
     if (result.status === ResponseResult.SUCCESS) {
       if (result.data != null) {
         authContextLogin(result.data);
-        const role: UserRole = result.data.user.userRole;
+        const role: UserRole = result.data.role;
         switch (role) {
           case UserRole.STUDENT:
             navigate("/student-dashboard");

@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState } from "react";
-import Home from "../Home";
 import { Outlet } from "react-router-dom";
 import AppScrollToTop from "../../components/AppScrollToTop";
 import AppHeader from "../../components/AppHeader";
@@ -8,7 +7,7 @@ import AppFooter from "../../components/AppFooter";
 import useWindowWidth from "../../hooks/useWindowWidth";
 import AppBreadCrumb from "../../components/AppBreadCrumb";
 
-const AdminDashboard = () => {
+const SchoolHome = () => {
   const windowWidth = useWindowWidth();
   // Memoize isMobileView to prevent recalculation on every render
   const isMobileView = useMemo(() => windowWidth <= 1199, [windowWidth]);
@@ -46,4 +45,4 @@ const AdminDashboard = () => {
   );
 };
 
-export default AdminDashboard;
+export default SchoolHome;

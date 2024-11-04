@@ -2,28 +2,20 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import useSchoolOperations from "../../../hooks/useSchoolOperations";
 import { Column } from "../../../components/table/properties/TableProps";
-import { Teacher } from "../../../models/Teacher";
+import { Branch } from "../../../models/Branch";
 import AppCard from "../../../components/card/AppCard";
 import AppTable from "../../../components/table/AppTable";
 
-const TeacherList = () => {
+const BranchList = () => {
   const { t } = useTranslation();
-  const { teacherList, data, totalPages } = useSchoolOperations();
+  const { branchList, data, totalPages } = useSchoolOperations();
   const [currentPage, setCurrentPage] = useState(1);
 
-  const columns: Column<Teacher>[] = useMemo(
+  const columns: Column<Branch>[] = useMemo(
     () => [
       {
-        header: "teacher.firstName.label",
-        accessor: "firstName",
-      },
-      {
-        header: "teacher.lastName.label",
-        accessor: "lastName",
-      },
-      {
-        header: "gender.label",
-        accessor: "genderValue",
+        header: "branch.branchName.label",
+        accessor: "branchName",
       },
     ],
     []
@@ -31,7 +23,7 @@ const TeacherList = () => {
 
   const fetchPageData = useCallback((page: number, filters = {}) => {
     setCurrentPage(page);
-    teacherList(page, filters);
+    branchList(page, filters);
   }, []);
 
   useEffect(() => {
@@ -39,18 +31,18 @@ const TeacherList = () => {
   }, [currentPage, fetchPageData]);
 
   return (
-    <AppCard title={t("teacher.teacherList.label")}>
+    <AppCard title={t("branch.branchList.label")}>
       {data && (
         <AppTable
-          rowLink="/home/teacher-editor/{id}"
-          data={data as Teacher[]}
+          rowLink="/branch-editor/{id}"
+          data={data as Branch[]}
           columns={columns}
-          totalPages={totalPages}
           fetchPageData={fetchPageData}
+          totalPages={totalPages}
           actions={[
             {
-              label: t("teacher.registerTeacher.label"),
-              route: "/home/teacher-editor/new",
+              label: t("branch.addBranch.label"),
+              route: "/branch-editor/new",
               icon: "plus",
             },
           ]}
@@ -60,4 +52,4 @@ const TeacherList = () => {
   );
 };
 
-export default TeacherList;
+export default BranchList;

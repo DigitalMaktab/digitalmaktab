@@ -1,39 +1,27 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect } from "react";
 import { AuthContext } from "./AuthProvider";
 import { Outlet, useNavigate } from "react-router-dom";
 import { UserRole } from "../../models/UserRole";
 
-const AuthRoute = ({ component: Component, ...rest }: any) => {
-  const { isAuthenticated, userRole } = useContext(AuthContext)!;
-  const [hasNavigated, setHasNavigated] = useState(false);
+interface AuthRouteProps {
+  requiredRole?: UserRole;
+}
 
+const AuthRoute: React.FC<AuthRouteProps> = ({ requiredRole }) => {
+  const { isAuthenticated, userRole } = useContext(AuthContext)!;
   const navigate = useNavigate();
 
   useEffect(() => {
     if (!isAuthenticated) {
-      navigate("/");
-    } else if (!hasNavigated && userRole !== undefined && userRole !== null) {
-      switch (userRole) {
-        case UserRole.STUDENT:
-          navigate("/student-dashboard");
-          break;
-        case UserRole.ADMIN:
-          navigate("/home");
-          break;
-        case UserRole.TEACHER:
-          navigate("/teacher-dashboard");
-          break;
-        case UserRole.ROOT_USER:
-          navigate("/dashboard");
-          break;
-        default:
-          navigate("/error");
-          break;
-      }
-      setHasNavigated(true);
+      navigate("/login"); // Redirect to login if not authenticated
+    } else if (requiredRole && userRole !== requiredRole) {
+      navigate("/unauthorized"); // Redirect if the user lacks the required role
     }
-  }, [isAuthenticated, userRole, navigate, hasNavigated]);
-  return <Outlet />;
+  }, [isAuthenticated, userRole, navigate, requiredRole]);
+
+  return isAuthenticated && (!requiredRole || userRole === requiredRole) ? (
+    <Outlet />
+  ) : null;
 };
 
 export default AuthRoute;

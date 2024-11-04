@@ -166,6 +166,11 @@
                     "list": "لیست کتاب",
                     "add": "اضافه نمودن کتاب"
                 },
+                "branches": {
+                    "label": "شاخه های صنوف",
+                    "list": "لیست شاخه صنوف",
+                    "add": "اضافه نمودن شاخه صنف"
+                },
                 "classes": {
                     "label": "صنوف",
                     "list": "لیست صنف ها",
@@ -331,13 +336,26 @@
             "validation": {
                 "required": "شاخه صنف ضروری میباشد"
             }
-        }
+        },
+        "branchList": {
+            "label": "لیست شاخه صنوف"
+        },
+        "addBranch": {
+            "label": "اضافه نمودن شاخه صنف"
+        },
+        "title": "شاخه صنف"
     },
     "shift": {
         "label": "شیفت"
     },
     "gender": {
-        "label": "جنسیت"
+        "label": "جنسیت",
+        "male": {
+            "label": "مذکر"
+        },
+        "female": {
+            "label": "مونث"
+        }
     },
     "teacher": {
         "teacherName": "نگران صنف",
@@ -423,5 +441,33 @@
         "implementation": {
             "required": "پیاده سازی ({{value}}) لازم است"
         }
+    },
+    "unauthorized": {
+        "header": {
+            "label": "دسترسی غیر مجاز"
+        },
+        "message": {
+            "label": "شما اجازه مشاهده این صحفه را ندارید."
+        },
+        "backToHome": {
+            "label": "به صفحه اصلی بروید"
+        }
+    },
+    "welcomeCard": {
+        "welcome": {
+            "label": "خوش آمدید ({{value}})"
+        },
+        "text": {
+            "label": "به داشبورد خوش آمدید! به ابزارها و منابعی دسترسی داشته باشید که برای حمایت از آموزش، تدریس و مدیریت مکتب طراحی شده‌اند."
+        }
+    },
+    "schoolDashboard": {
+        "totalStudents": "تعداد شاگرد ها",
+        "totalTeachers": "تعداد معلمین",
+        "totalClasses": "تعداد صنف ها",
+        "totalBranches": "تعداد شاخه های صنف"
+    },
+    "genderChart": {
+        "label": "توزیع جنسیت شاگردان"
     }
 }

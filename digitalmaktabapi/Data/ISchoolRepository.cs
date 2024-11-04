@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using digitalmaktabapi.Dtos.SchoolDashboard;
 using digitalmaktabapi.Headers;
 using digitalmaktabapi.Models;
 using DayOfWeek = digitalmaktabapi.Models.DayOfWeek;
@@ -26,5 +27,13 @@ namespace digitalmaktabapi.Data
         Task<bool> IsScheduleExist(Guid calendarYearId, Guid classSubjectId, Guid teacherId, DayOfWeek dayOfWeek, ScheduleTime scheduleTime);
         Task<bool> IsClassHasScheduleInDayAndTime(Guid calendarYearId, DayOfWeek dayOfWeek, ScheduleTime scheduleTime);
         Task<PagedList<Schedule>> GetSchedules(UserParams userParams);
+
+        Task<int> TotalStudents(Guid id);
+        Task<int> TotalTeachers(Guid id);
+
+        Task<int> TotalBranches(Guid id);
+        Task<int> TotalClasses(Guid id);
+
+        Task<GenderChartDto> GetGenderChart(Guid id);
     }
 }

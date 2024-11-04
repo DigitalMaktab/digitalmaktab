@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -356,6 +357,22 @@ namespace digitalmaktabapi.Controllers
             var schedulesToReturn = this.mapper.Map<ICollection<ScheduleDto>>(schedules);
             Response.AddPagintaion(schedules.CurrentPage, schedules.PageSize, schedules.TotalCount, schedules.TotalPages);
             return Ok(schedulesToReturn);
+        }
+
+
+        [HttpGet("dashboard")]
+        public async Task<IActionResult> GetDashboardData()
+        {
+            Guid schoolId = Extensions.GetSessionDetails(this).SchoolId;
+            SchoolDashboardDto data = new()
+            {
+                TotalStudents = await this.schoolRepository.TotalStudents(schoolId),
+                TotalTeachers = await this.schoolRepository.TotalTeachers(schoolId),
+                TotalClasses = await this.schoolRepository.TotalClasses(schoolId),
+                TotalBranches = await this.schoolRepository.TotalBranches(schoolId),
+                GenderChart = await this.schoolRepository.GetGenderChart(schoolId),
+            };
+            return Ok(data);
         }
 
         // Helper methods

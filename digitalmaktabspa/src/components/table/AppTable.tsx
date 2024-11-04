@@ -16,15 +16,16 @@ const AppTable = <T extends Base>({
   fetchPageData,
   rowLink,
   actions = [],
+  totalPages,
 }: TableProps<T> & {
   fetchPageData: (page: number, filters: any) => void;
   rowLink?: string;
   actions?: Action[];
+  totalPages: number;
 }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages] = useState(1);
   const [filters, setFilters] = useState<{ [key: string]: any }>({});
   const [showFilters, setShowFilters] = useState(false);
 

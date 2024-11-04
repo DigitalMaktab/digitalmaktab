@@ -11,7 +11,7 @@ import { Enrollment } from "../../../models/Enrollment";
 
 const ClassList = () => {
   const { t } = useTranslation();
-  const { classList, data } = useSchoolOperations();
+  const { classList, data, totalPages } = useSchoolOperations();
   const [currentPage, setCurrentPage] = useState(1);
 
   const columns: Column<Class>[] = useMemo(
@@ -64,14 +64,15 @@ const ClassList = () => {
     <AppCard title={t("class.classList.label")}>
       {data && (
         <AppTable
-          rowLink="/home/class-editor/{id}"
+          rowLink="/class-editor/{id}"
           data={data as Class[]}
           columns={columns}
+          totalPages={totalPages}
           fetchPageData={fetchPageData}
           actions={[
             {
               label: t("class.addClass.label"),
-              route: "/home/class-editor/new",
+              route: "/class-editor/new",
               icon: "plus",
             },
           ]}
