@@ -8,27 +8,28 @@ import {
   ChartOptions,
   TooltipItem,
 } from "chart.js";
-import { GenderChartProps } from "./properties/ChartProps";
 import { useAppLocalizer } from "../../hooks/useAppLocalizer";
+import { PieChartProps } from "./properties/PieChartProps";
 
 // Register necessary Chart.js components
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-const AppGenderChart: React.FC<GenderChartProps> = ({
+const AppPieChart: React.FC<PieChartProps> = ({
   label,
   labels,
-  totalMale,
-  totalFemale,
+  dataValues,
+  backgroundColors = ["#36A2EB", "#FF6384", "#FFCE56", "#4BC0C0"],
 }) => {
   const { formatNumber } = useAppLocalizer();
+
   const data = {
-    labels: labels,
+    labels,
     datasets: [
       {
-        label: label,
-        data: [totalMale, totalFemale],
-        backgroundColor: ["#36A2EB", "#FF6384"],
-        hoverBackgroundColor: ["#36A2EB", "#FF6384"],
+        label,
+        data: dataValues,
+        backgroundColor: backgroundColors,
+        hoverBackgroundColor: backgroundColors,
       },
     ],
   };
@@ -42,12 +43,12 @@ const AppGenderChart: React.FC<GenderChartProps> = ({
             return chart.data.labels!.map((label, index) => {
               const value = chart.data.datasets[0].data[index] as number;
               const localizedValue = formatNumber(value);
-              const backgroundColors = chart.data.datasets[0]
+              const bgColor = chart.data.datasets[0]
                 .backgroundColor as string[];
 
               return {
                 text: `${label}: ${localizedValue}`,
-                fillStyle: backgroundColors[index],
+                fillStyle: bgColor[index],
                 hidden: !chart.isDatasetVisible(0),
               };
             });
@@ -74,4 +75,4 @@ const AppGenderChart: React.FC<GenderChartProps> = ({
   );
 };
 
-export default AppGenderChart;
+export default AppPieChart;

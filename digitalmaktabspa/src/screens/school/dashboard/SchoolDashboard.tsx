@@ -15,10 +15,11 @@ import useSchoolOperations from "../../../hooks/useSchoolOperations";
 import { SchoolDashboardData } from "../../../models/schoolDashboard/SchoolDashboardData";
 import AppGenderChart from "../../../components/chart/AppGenderChart";
 import AppCalendar from "../../../components/calendar/AppCalendar";
+import AppPieChart from "../../../components/chart/AppPieChart";
 
 const SchoolDashboard = () => {
   const [school] = useState<School>(getUser()!.school!);
-  const { t, i18n } = useAppLocalizer();
+  const { t, formatNumber } = useAppLocalizer();
   const { dashboardData, data: apiData } = useSchoolOperations();
   const [dashData, setDashData] = useState<SchoolDashboardData | null>(null);
 
@@ -47,7 +48,9 @@ const SchoolDashboard = () => {
               <AppCard className="client-card card-hover">
                 <div className="row">
                   <div className="col-6 custom-width-1">
-                    <h3 className="font-primary">{dashData.totalStudents}</h3>
+                    <h3 className="font-primary">
+                      {formatNumber(dashData.totalStudents)}
+                    </h3>
                     <h5 className="f-w-600">
                       {t("schoolDashboard.totalStudents")}
                     </h5>
@@ -62,7 +65,9 @@ const SchoolDashboard = () => {
               <AppCard className="client-card card-hover">
                 <div className="row">
                   <div className="col-6 custom-width-1">
-                    <h3 className="font-primary">{dashData.totalTeachers}</h3>
+                    <h3 className="font-primary">
+                      {formatNumber(dashData.totalTeachers)}
+                    </h3>
                     <h5 className="f-w-600">
                       {t("schoolDashboard.totalTeachers")}
                     </h5>
@@ -79,7 +84,9 @@ const SchoolDashboard = () => {
               <AppCard className="client-card card-hover">
                 <div className="row">
                   <div className="col-6 custom-width-1">
-                    <h3 className="font-primary">{dashData.totalClasses}</h3>
+                    <h3 className="font-primary">
+                      {formatNumber(dashData.totalClasses)}
+                    </h3>
                     <h5 className="f-w-600">
                       {t("schoolDashboard.totalClasses")}
                     </h5>
@@ -94,7 +101,9 @@ const SchoolDashboard = () => {
               <AppCard className="client-card card-hover">
                 <div className="row">
                   <div className="col-6 custom-width-1">
-                    <h3 className="font-primary">{dashData.totalBranches}</h3>
+                    <h3 className="font-primary">
+                      {formatNumber(dashData.totalBranches)}
+                    </h3>
                     <h5 className="f-w-600">
                       {t("schoolDashboard.totalBranches")}
                     </h5>
@@ -109,34 +118,43 @@ const SchoolDashboard = () => {
             </div>
             <div className="col-md-4 col-xl-4">
               <AppCard className="client-card card-hover">
-                <AppGenderChart
-                  labels={[t("gender.male.label"), t("gender.female.label")]}
+                <AppPieChart
                   label={t("studentGenderChart.label")}
-                  totalMale={dashData.genderChart.totalMale}
-                  totalFemale={dashData.genderChart.totalFemale}
-                />
-              </AppCard>
-            </div>
-            <div className="col-md-4 col-xl-4">
-              <AppCard className="client-card card-hover">
-                <AppGenderChart
                   labels={[t("gender.male.label"), t("gender.female.label")]}
-                  label={t("teacherGenderChart.label")}
-                  totalMale={dashData.teachersGenderChart.totalMale}
-                  totalFemale={dashData.teachersGenderChart.totalFemale}
+                  dataValues={[
+                    dashData.genderChart.totalMale,
+                    dashData.genderChart.totalFemale,
+                  ]}
                 />
               </AppCard>
             </div>
             <div className="col-md-4 col-xl-4">
               <AppCard className="client-card card-hover">
-                <AppGenderChart
+                <AppPieChart
+                  label={t("teacherGenderChart.label")}
+                  labels={[t("gender.male.label"), t("gender.female.label")]}
+                  dataValues={[
+                    dashData.teachersGenderChart.totalMale,
+                    dashData.teachersGenderChart.totalFemale,
+                  ]}
+                />
+              </AppCard>
+            </div>
+            <div className="col-md-4 col-xl-4">
+              <AppCard className="client-card card-hover">
+                <AppPieChart
+                  label={t("classBranchChart.label")}
                   labels={[
                     t("schoolDashboard.totalClasses"),
                     t("schoolDashboard.totalBranches"),
+                    t("schoolDashboard.totalTeachers"),
                   ]}
-                  label={t("classBranchChart.label")}
-                  totalMale={dashData.totalClasses}
-                  totalFemale={dashData.totalBranches}
+                  dataValues={[
+                    dashData.totalClasses,
+                    dashData.totalBranches,
+                    dashData.totalTeachers,
+                  ]}
+                  backgroundColors={["#43B9B2", "#3A8C85", "#A2DED0"]}
                 />
               </AppCard>
             </div>
