@@ -8,5 +8,9 @@ namespace digitalmaktabapi.Services.Mail
     public interface IMailService
     {
         Task<bool> SendMail(MailData mailData);
+
+        Task<bool> SendGrid(MailData mailData);
+
+
     }
 }

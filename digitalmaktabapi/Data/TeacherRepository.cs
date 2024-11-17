@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using digitalmaktabapi.Headers;
 using digitalmaktabapi.Helpers;
 using digitalmaktabapi.Models;
+using DotCommon.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace digitalmaktabapi.Data
@@ -46,11 +47,30 @@ namespace digitalmaktabapi.Data
         {
             var teachers = this.context.Teachers
                 .Include(a => a.Classes)
+                .ThenInclude(a => a.Branch)
                 .Include(a => a.PhoneNumber)
                 .ThenInclude(a => a.Country)
                 .Include(a => a.PrimaryAddress)
                 .Include(a => a.Schedules)
                 .Where(a => a.SchoolId == schoolId).AsQueryable();
+
+            if (userParams.TeacherId.HasValue)
+            {
+                teachers = teachers.Where(a => a.Id == userParams.TeacherId);
+            }
+
+            if (!userParams.SearchTerm.IsEmpty() && userParams.SearchTerm != null)
+            {
+                teachers = teachers.Where(
+                                a => a.FirstName.Contains(userParams.SearchTerm, StringComparison.CurrentCultureIgnoreCase) ||
+                                a.LastName.Contains(userParams.SearchTerm, StringComparison.CurrentCultureIgnoreCase)
+                            );
+            }
+
+            if (!userParams.Email.IsEmpty() && userParams.Email != null)
+            {
+                teachers = teachers.Where(a => a.Email.Contains(userParams.Email, StringComparison.CurrentCultureIgnoreCase));
+            }
 
             return await PagedList<Teacher>.CreateAsync(teachers, userParams.PageNumber, userParams.PageSize);
         }

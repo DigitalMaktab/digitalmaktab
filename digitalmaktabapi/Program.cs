@@ -92,7 +92,8 @@ builder.Services.AddSwaggerGen(a =>
 // builder.Services.AddDbContext<DataContext>(x => x.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")).EnableSensitiveDataLogging());
 var connectionString = builder.Configuration.GetConnectionString("MySqlConnection");
 builder.Services.AddDbContext<DataContext>(options =>
-    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString))
+    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString),
+    options => options.EnableStringComparisonTranslations())
 );
 
 // Adding Cross Origin Resrouce Sharing Policy

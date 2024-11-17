@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { borrow, download, searchBooks } from "../../api/library/libApi";
+import { searchBooks } from "../../api/library/libApi";
 import AppCard from "../../components/card/AppCard";
 import { useAppLocalizer } from "../../hooks/useAppLocalizer";
 import AppForm from "../../components/form/AppForm";
@@ -10,6 +10,7 @@ import { OpenLibrary, OpenLibraryBook } from "../../models/Book";
 import AppPagination from "../../components/table/AppPagination";
 import AppSelect2 from "../../components/input/AppSelect2";
 import { Select2Option } from "../../components/properties/InputProps";
+import { Link } from "react-router-dom";
 
 const OnlineLibrary = () => {
   const { t, formatNumber } = useAppLocalizer();
@@ -102,6 +103,20 @@ const OnlineLibrary = () => {
           </div>
         </div>
       </AppForm>
+      <div className="row">
+        <div className="col-md-12">
+          <p className="txt-warning">
+            {t("library.onlineLibrary.note.label")}{" "}
+            <Link
+              to="https://openlibrary.org/account/create"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {t("auth.login.createAccount")}
+            </Link>
+          </p>
+        </div>
+      </div>
 
       <div className="row" style={{ margin: 10, padding: 10 }}>
         {loading
@@ -132,8 +147,8 @@ const OnlineLibrary = () => {
             openLibraryData.docs.map((book) => (
               <div className="col-md-3 mb-3" key={book.key}>
                 <AppCard
-                  className="p-3"
-                  styles={{ minHeight: 180 }}
+                  className="p-3 position-relative"
+                  styles={{ minHeight: 250 }}
                   onClick={() => {
                     handleBookDetails(book.key);
                   }}
@@ -168,6 +183,19 @@ const OnlineLibrary = () => {
                         </p>
                       </div>
                     </div>
+                  </div>
+                  <div className="mt-auto text-center">
+                    {book.ia && book.ia.length > 0 && (
+                      <AppButton
+                        label={t("library.readButton.label")}
+                        className="btn-xs card-read-button"
+                        type="button"
+                        onButtonClick={(e: any) => {
+                          e.stopPropagation(); // Prevent card click event
+                          handleBookDetails(book.key);
+                        }}
+                      />
+                    )}
                   </div>
                 </AppCard>
               </div>

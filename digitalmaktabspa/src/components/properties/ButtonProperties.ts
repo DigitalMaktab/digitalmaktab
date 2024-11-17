@@ -8,4 +8,5 @@ export interface ButtonProperties {
   icon?: string;
   disabled?: boolean | undefined;
   className?: string;
+  style?: any;
 }

@@ -152,4 +152,12 @@
         <value>This Schedule is already added for this class.</value>
         <comment/>
     </data>
+    <data name="FailedToCreateAccountDueToEmailSendingFailure" xml:space="preserve">
+        <value>Can not connect to email server to send the Account Specifications.</value>
+        <comment/>
+    </data>
+    <data name="EmailFooter" xml:space="preserve">
+        <value>&lt;div class='email-footer'&gt;&amp;copy; 2024 Digital Maktab. All rights reserved.&lt;br&gt;If you have any questions, feel free to &lt;a href='mailto:support@digitalmaktab.com'&gt;Contact Us&lt;/a&gt;.&lt;/div&gt;</value>
+        <comment/>
+    </data>
 </root>

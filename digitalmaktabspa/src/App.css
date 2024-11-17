@@ -56498,3 +56498,19 @@ div[id*="react-select"] .css-bg3whk-option:hover {
   background-color: var(--dark-gray); /* Adjust background color for dark theme */
   color: var(--light-gray); /* Adjust text color for dark theme */
 }
+
+
+.card-read-button {
+  position: absolute;
+  bottom: 10px;
+}
+
+[dir="ltr"] .card-read-button {
+  right: 10px;
+  left: unset;
+}
+
+[dir="rtl"] .card-read-button {
+  left: 10px;
+  right: unset;
+}

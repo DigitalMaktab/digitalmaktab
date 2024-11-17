@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using digitalmaktabapi.Data;
 using digitalmaktabapi.Dtos;
+using digitalmaktabapi.Dtos.SchoolDashboard;
 using digitalmaktabapi.Headers;
 using digitalmaktabapi.Helpers;
 using digitalmaktabapi.Models;
@@ -26,6 +27,7 @@ namespace digitalmaktabapi.Controllers
         ITeacherRepository teacherRepository,
         IMapper mapper,
         IStringLocalizer<SchoolController> localizer,
+        IStringLocalizer<MainController> mainLocalizer,
         IMailService mailService
         ) : ControllerBase
     {
@@ -34,6 +36,7 @@ namespace digitalmaktabapi.Controllers
         private readonly ITeacherRepository teacherRepository = teacherRepository;
         private readonly IMapper mapper = mapper;
         private readonly IStringLocalizer<SchoolController> localizer = localizer;
+        private readonly IStringLocalizer<MainController> mainLocalizer = mainLocalizer;
         private readonly IMailService mailService = mailService;
 
         [HttpGet]
@@ -111,7 +114,8 @@ namespace digitalmaktabapi.Controllers
                 EmailToId = studentDto.Email,
                 EmailToName = studentName,
                 EmailSubject = this.localizer["AccountAccessSubject"],
-                EmailBody = this.localizer["AccountDetails", studentName, studentDto.Email, studentPassword]
+                EmailBody = this.localizer["AccountDetails", studentName, "<p>" + studentDto.Email + "</p>", "<p>" + studentPassword + "</p>"],
+                EmailFooter = this.localizer["EmailFooter"]
             };
 
             if (await this.mailService.SendMail(mailData))
@@ -197,19 +201,20 @@ namespace digitalmaktabapi.Controllers
                 EmailToId = teacherDto.Email,
                 EmailToName = teacherName,
                 EmailSubject = this.localizer["AccountAccessSubject"],
-                EmailBody = this.localizer["AccountDetails", teacherName, teacherDto.Email, teacherPassword]
+                EmailBody = this.localizer["AccountDetails", teacherName, "<p>" + teacherDto.Email + "</p>", "<p>" + teacherPassword + "</p>"],
+                EmailFooter = this.localizer["EmailFooter"]
             };
 
-            if (await this.mailService.SendMail(mailData))
+            if (await this.mailService.SendGrid(mailData))
             {
                 var teacherToCreate = this.mapper.Map<Teacher>(teacherDto);
                 teacherToCreate.SchoolId = schoolId;
                 teacherToCreate.CreationUserId = schoolId;
                 teacherToCreate.UpdateUserId = schoolId;
                 await this.teacherRepository.Register(teacherToCreate, teacherPassword);
+                return StatusCode(201);
             }
-
-            return StatusCode(201);
+            return BadRequest(this.localizer["FailedToCreateAccountDueToEmailSendingFailure"].Value);
         }
 
         [HttpGet("teachers")]
@@ -356,14 +361,63 @@ namespace digitalmaktabapi.Controllers
             var schedules = await this.schoolRepository.GetSchedules(headerParams);
             var schedulesToReturn = this.mapper.Map<ICollection<ScheduleDto>>(schedules);
             Response.AddPagintaion(schedules.CurrentPage, schedules.PageSize, schedules.TotalCount, schedules.TotalPages);
-            return Ok(schedulesToReturn);
+            // return Ok(schedulesToReturn);
+            var flattenedSchedules = FlattenSchedules(schedulesToReturn);
+            return Ok(flattenedSchedules);
         }
+
+
+        [NonAction]
+        public List<FlattenedScheduleDto> FlattenSchedules(IEnumerable<ScheduleDto> schedules)
+        {
+            var flattenedSchedules = new List<FlattenedScheduleDto>();
+
+            // Get all days of the week
+            var allDaysOfWeek = Enum.GetValues(typeof(Models.DayOfWeek)).Cast<Models.DayOfWeek>();
+
+            // Group schedules by DayOfWeek
+            var groupedByDay = schedules.GroupBy(s => s.DayOfWeek).ToDictionary(g => g.Key, g => g.ToList());
+
+            foreach (var day in allDaysOfWeek)
+            {
+                // Create a new FlattenedScheduleDto for the current day with additional null checks
+                var flattenedData = new FlattenedScheduleDto
+                {
+                    Day = this.mainLocalizer[day.ToString()].Value,
+                    Hour1 = groupedByDay.ContainsKey(day) ? GetSubjectName(groupedByDay[day].FirstOrDefault(s => s.ScheduleTime == ScheduleTime.FIRST)) : string.Empty,
+                    Hour2 = groupedByDay.ContainsKey(day) ? GetSubjectName(groupedByDay[day].FirstOrDefault(s => s.ScheduleTime == ScheduleTime.SECOND)) : string.Empty,
+                    Hour3 = groupedByDay.ContainsKey(day) ? GetSubjectName(groupedByDay[day].FirstOrDefault(s => s.ScheduleTime == ScheduleTime.THIRD)) : string.Empty,
+                    Hour4 = groupedByDay.ContainsKey(day) ? GetSubjectName(groupedByDay[day].FirstOrDefault(s => s.ScheduleTime == ScheduleTime.FOURTH)) : string.Empty,
+                    Hour5 = groupedByDay.ContainsKey(day) ? GetSubjectName(groupedByDay[day].FirstOrDefault(s => s.ScheduleTime == ScheduleTime.FIFTH)) : string.Empty,
+                    Hour6 = groupedByDay.ContainsKey(day) ? GetSubjectName(groupedByDay[day].FirstOrDefault(s => s.ScheduleTime == ScheduleTime.SIXTH)) : string.Empty,
+                    Hour7 = groupedByDay.ContainsKey(day) ? GetSubjectName(groupedByDay[day].FirstOrDefault(s => s.ScheduleTime == ScheduleTime.SEVENTH)) : string.Empty,
+                    Hour8 = groupedByDay.ContainsKey(day) ? GetSubjectName(groupedByDay[day].FirstOrDefault(s => s.ScheduleTime == ScheduleTime.EIGHTTH)) : string.Empty
+                };
+
+                flattenedSchedules.Add(flattenedData);
+            }
+
+            return flattenedSchedules;
+        }
+
+        // Helper method to safely get the subject name with null checks
+        private static string GetSubjectName(ScheduleDto schedule)
+        {
+            return schedule?.ClassSubject?.Subject?.SubjectName ?? string.Empty;
+        }
+
+
 
 
         [HttpGet("dashboard")]
         public async Task<IActionResult> GetDashboardData()
         {
             Guid schoolId = Extensions.GetSessionDetails(this).SchoolId;
+
+            var classEnrollments = await this.schoolRepository.GetClassEnrollmentChart(schoolId);
+
+            var classEnrollmentChartDtos = this.mapper.Map<List<ClassEnrollmentChartDto>>(classEnrollments);
+
             SchoolDashboardDto data = new()
             {
                 TotalStudents = await this.schoolRepository.TotalStudents(schoolId),
@@ -372,6 +426,7 @@ namespace digitalmaktabapi.Controllers
                 TotalBranches = await this.schoolRepository.TotalBranches(schoolId),
                 GenderChart = await this.schoolRepository.GetGenderChart(schoolId),
                 TeachersGenderChart = await this.schoolRepository.GetTeachersGenderChart(schoolId),
+                ClassEnrollmentChart = classEnrollmentChartDtos
             };
             return Ok(data);
         }

@@ -152,4 +152,12 @@
         <value>این برنامه درسی قبلاً برای این صنف اضافه شده است.</value>
         <comment/>
     </data>
+    <data name="FailedToCreateAccountDueToEmailSendingFailure" xml:space="preserve">
+        <value>نمی‌توان به سرور ایمیل وصل شد تا مشخصات حساب را ارسال کند.</value>
+        <comment/>
+    </data>
+    <data name="EmailFooter" xml:space="preserve">
+        <value>&lt;div class='email-footer'&gt;&amp;copy; ۲۰۲۴ مکتب دیجیتال. کلیه حقوق محفوظ است.&lt;br&gt;اگر سوالی دارید، با ما به تماس شوید &lt;a href='mailto:support@digitalmaktab.com'&gt;تماس با ما&lt;/a&gt;.&lt;/div&gt;</value>
+        <comment/>
+    </data>
 </root>

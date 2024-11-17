@@ -13,5 +13,6 @@ namespace digitalmaktabapi.Headers
         public Guid? BranchId { get; set; }
         public DateTime? DateTime { get; set; }
         public Guid? StudentId { get; set; }
+        public string? Email { get; set; }
     }
 }

@@ -9,9 +9,11 @@ const AppButton: React.FC<ButtonProperties> = ({
   icon,
   disabled,
   className,
+  ...rest
 }) => {
   return (
     <button
+      {...rest}
       className={`btn btn-primary ${className}`}
       disabled={disabled}
       type={type}

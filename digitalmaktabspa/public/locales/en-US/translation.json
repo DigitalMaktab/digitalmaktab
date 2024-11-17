@@ -558,6 +558,9 @@
             "label": "Online Library",
             "unkownAuthor": {
                 "label": "Unknown"
+            },
+            "note": {
+                "label": "Note: You need to create an account to be able to read the full version of books on Open Library website."
             }
         },
         "search": {
@@ -566,6 +569,9 @@
         },
         "noResultsFound": {
             "label": "No result found"
+        },
+        "readButton": {
+            "label": "Read"
         }
     },
     "book": {

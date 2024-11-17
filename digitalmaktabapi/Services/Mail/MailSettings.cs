@@ -13,5 +13,7 @@ namespace digitalmaktabapi.Services.Mail
         public required string SenderEmail { get; set; }
         public required string UserName { get; set; }
         public required string Password { get; set; }
+
+        public required string SendGridApiKey { get; set; }
     }
 }

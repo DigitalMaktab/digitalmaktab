@@ -15,5 +15,7 @@ namespace digitalmaktabapi.Headers
             get { return pageSize; }
             set { pageSize = (value > MaxPageSize) ? MaxPageSize : value; }
         }
+
+        public string? SearchTerm { get; set; }
     }
 }

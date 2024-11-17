@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using digitalmaktabapi.domain.SchoolDashboard;
+using digitalmaktabapi.Dtos;
 using digitalmaktabapi.Dtos.SchoolDashboard;
 using digitalmaktabapi.Headers;
 using digitalmaktabapi.Models;
@@ -124,6 +126,8 @@ namespace digitalmaktabapi.Data
         {
             var schedules = this.context.Schedules
             .Include(a => a.ClassSubject)
+            .ThenInclude(a => a.Subject)
+            .Include(a => a.ClassSubject)
             .ThenInclude(a => a.Class)
             .AsQueryable();
 
@@ -229,6 +233,22 @@ namespace digitalmaktabapi.Data
 
             int changes = await this.context.SaveChangesAsync();
             return changes > 0;
+        }
+
+        public async Task<ICollection<ClassEnrollmentChartDomain>> GetClassEnrollmentChart(Guid id)
+        {
+            var classEnrollmentCounts = await this.context.Classes
+                .Include(a => a.Branch)
+                .Where(a => a.SchoolId == id)
+                .Select(a => new ClassEnrollmentChartDomain
+                {
+                    ClassName = a.ClassName,
+                    BranchName = a.Branch.BranchName,
+                    EnrollmentCount = a.Enrollments.Count()
+                })
+                .ToListAsync();
+
+            return classEnrollmentCounts;
         }
     }
 }

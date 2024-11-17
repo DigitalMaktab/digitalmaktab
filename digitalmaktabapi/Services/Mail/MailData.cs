@@ -11,5 +11,6 @@ namespace digitalmaktabapi.Services.Mail
         public required string EmailToName { get; set; }
         public required string EmailSubject { get; set; }
         public required string EmailBody { get; set; }
+        public required string EmailFooter { get; set; }
     }
 }

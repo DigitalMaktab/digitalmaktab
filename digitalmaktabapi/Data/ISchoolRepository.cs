@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using digitalmaktabapi.domain.SchoolDashboard;
 using digitalmaktabapi.Dtos.SchoolDashboard;
 using digitalmaktabapi.Headers;
 using digitalmaktabapi.Models;
@@ -36,5 +37,6 @@ namespace digitalmaktabapi.Data
 
         Task<GenderChartDto> GetGenderChart(Guid id);
         Task<GenderChartDto> GetTeachersGenderChart(Guid id);
+        Task<ICollection<ClassEnrollmentChartDomain>> GetClassEnrollmentChart(Guid id);
     }
 }

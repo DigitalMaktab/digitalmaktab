@@ -4,7 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using digitalmaktabapi.Controllers;
+using digitalmaktabapi.domain.SchoolDashboard;
 using digitalmaktabapi.Dtos;
+using digitalmaktabapi.Dtos.SchoolDashboard;
 using digitalmaktabapi.Models;
 using digitalmaktabapi.Services;
 using DotCommon.Extensions;
@@ -29,6 +31,11 @@ namespace digitalmaktabapi.Helpers.Mappers
             CreateMap<AddClassSubjectDto, ClassSubject>();
             CreateMap<AddEnrollmentDto, Enrollment>();
             CreateMap<AddScheduleDto, Schedule>();
+
+
+
+            CreateMap<ClassEnrollmentChartDomain, ClassEnrollmentChartDto>()
+                .ForMember(dest => dest.ClassNameAndBranch, opt => opt.MapFrom(src => localizer[src.ClassName.ToString()].Value + " " + src.BranchName));
 
             var customResolvers = new Dictionary<(Type Source, string SourceField), IMemberValueResolver<object, object, string, string>>
             {
