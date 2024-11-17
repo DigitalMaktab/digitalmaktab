@@ -56466,3 +56466,35 @@ tspan { white-space:pre }
   color: #C42A02 !important;
   font-weight: bold !important;
 }
+
+div[id*="react-select"] .css-bg3whk-option {
+  background-color: white !important;
+  color: black !important;
+}
+
+/* Background for selected option */
+div[id*="react-select"] .css-bg3whk-option[aria-selected="true"] {
+  background-color: #2684FF !important; /* Blue for selected */
+  color: white !important;
+}
+
+/* Background for focused option */
+div[id*="react-select"] .css-bg3whk-option:hover {
+  background-color: #E0E0E0 !important; /* Light gray for hovered */
+  color: black !important;
+}
+
+.placeholder-image {
+  height: 150px;
+  width: 100%;
+  background-color: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #333; /* Default light theme color */
+}
+
+[data-theme="dark"] .placeholder-image {
+  background-color: var(--dark-gray); /* Adjust background color for dark theme */
+  color: var(--light-gray); /* Adjust text color for dark theme */
+}

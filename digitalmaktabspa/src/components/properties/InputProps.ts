@@ -1,3 +1,5 @@
+import { GroupBase, OptionsOrGroups, SingleValue } from "react-select";
+
 type PlaceHolder = string;
 
 export interface InputProps {
@@ -40,6 +42,7 @@ export interface Select2Props extends InputProps {
   loadingError?: boolean;
   labelVisible?: boolean;
   showLable?: boolean;
+  searchHandler?: (value: string) => void;
 }
 
 export interface PhoneNumberProps extends InputProps {
@@ -50,4 +53,19 @@ export interface PhoneNumberProps extends InputProps {
 export interface Select2Option {
   id: string;
   text: string;
+}
+
+export interface AsyncSelectOption {
+  id: string;
+  label: string;
+}
+
+export interface AsyncSelectProps extends InputProps {
+  loadOptions: (
+    inputValue: string
+  ) => Promise<
+    OptionsOrGroups<AsyncSelectOption, GroupBase<AsyncSelectOption>>
+  >;
+  onChange: (selectedOption: SingleValue<AsyncSelectOption>) => void;
+  showLable?: boolean;
 }

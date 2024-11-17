@@ -1,0 +1,1 @@
+export const GLOBAL_DEBOUNCE_DELAY = 500;

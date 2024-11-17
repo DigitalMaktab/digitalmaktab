@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Column } from "./properties/TableProps";
 import AppInput from "../input/AppInput";
@@ -9,6 +9,9 @@ import AppButton from "../AppButton";
 import AppClassTypeSelect from "../select/AppClassTypeSelect";
 import AppShiftSelect from "../select/AppShiftSelect";
 import AppHorizontalSpacer from "../spacer/AppHorizontalSpacer";
+import AppTeacherSelect from "../select/AppTeacherSelect";
+import { debounce } from "lodash";
+import { GLOBAL_DEBOUNCE_DELAY } from "../../config/config";
 
 // Mapping for specific accessors to their corresponding filter components
 const filterComponentMapping: { [key: string]: React.FC<any> } = {
@@ -16,6 +19,8 @@ const filterComponentMapping: { [key: string]: React.FC<any> } = {
   branch: AppBranchSelect,
   classTypeValue: AppClassTypeSelect,
   shiftValue: AppShiftSelect,
+  "teacher.firstName": AppTeacherSelect,
+  // "student.firstName": AppStudentSelect,
 };
 
 // Mapping for display accessors to their filter accessors
@@ -24,6 +29,8 @@ const filterAccessorMapping: { [key: string]: string } = {
   country: "countryId",
   classTypeValue: "classType",
   shiftValue: "shift",
+  "teacher.firstName": "teacherId",
+  "student.firstName": "studentId",
 };
 
 const AppTableFilters = <T,>({
@@ -33,6 +40,11 @@ const AppTableFilters = <T,>({
   onApplyFilters,
 }: TableFiltersProps<T>) => {
   const { t } = useTranslation();
+
+  // Debounced function for handling input changes in AppInput
+  const debouncedFilterChange = debounce((key: string, value: any) => {
+    onFilterChange(key, value);
+  }, GLOBAL_DEBOUNCE_DELAY);
 
   // Reset all filters to their default values (empty)
   const resetFilters = () => {
@@ -52,13 +64,12 @@ const AppTableFilters = <T,>({
   const renderFilterInput = (column: Column<T>) => {
     if (!column.filter) return null;
 
-    // Determine if the column accessor should map to a different filter accessor
-    const filterAccessor: string =
-      filterAccessorMapping[column.accessor as string] ||
-      (column.accessor as string);
-    const Component = filterComponentMapping[column.accessor as string];
+    const accessor = column.entity
+      ? `${column.entity}.${String(column.accessor)}`
+      : String(column.accessor);
+    const filterAccessor = filterAccessorMapping[accessor] || accessor;
+    const Component = filterComponentMapping[accessor];
 
-    // Render dropdown components based on mapped accessor
     if (Component) {
       return (
         <Component
@@ -72,7 +83,7 @@ const AppTableFilters = <T,>({
       );
     }
 
-    // Render text input for text-based filters
+    // Default handling for text filters
     if (column.filter.type === "text") {
       return (
         <AppInput
@@ -81,12 +92,13 @@ const AppTableFilters = <T,>({
           label={t(column.header)}
           placeholder={t(column.header)}
           value={filters[filterAccessor] || ""}
-          onChange={(e) => onFilterChange(filterAccessor, e.target.value)}
+          onChange={(e) =>
+            debouncedFilterChange(filterAccessor, e.target.value)
+          }
         />
       );
     }
 
-    // Render fallback message for unsupported filters
     return (
       <p className="txt-danger">
         {t("filters.implementation.required", { value: t(column.header) })}

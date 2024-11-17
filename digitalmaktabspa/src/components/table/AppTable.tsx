@@ -1,7 +1,7 @@
 import React, { ReactNode, useEffect, useState } from "react";
 import { TableProps } from "./properties/TableProps";
 import { useTranslation } from "react-i18next";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import AppPagination from "./AppPagination";
 import AppButton from "../AppButton";
 import AppTableFilters from "./AppTableFilter";
@@ -37,6 +37,8 @@ const AppTable = <T extends Base>({
 
   const handleFilterChange = (key: string, value: any) => {
     setFilters((prevFilters) => ({ ...prevFilters, [key]: value }));
+    // Only reset currentPage without affecting filters
+    setCurrentPage((prevPage) => (prevPage !== 1 ? 1 : prevPage));
   };
 
   const applyFilters = () => {

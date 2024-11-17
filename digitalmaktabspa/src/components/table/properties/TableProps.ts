@@ -1,6 +1,7 @@
 export interface Column<T> {
   header: string;
   accessor: keyof T;
+  entity?: string;
   render?: (value: any, row: T) => React.ReactNode;
   filter?: {
     type: "text" | "dropdown";

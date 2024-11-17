@@ -10,15 +10,16 @@ import AppFormCard from "../../../components/card/AppFormCard";
 import AppFormSelect from "../../../components/form/AppFormSelect";
 import AppClassTypeSelect from "../../../components/select/AppClassTypeSelect";
 import AppShiftSelect from "../../../components/select/AppShiftSelect";
+import { EditorProps } from "../properties/EditorProps";
 
-const ClassEditor: React.FC<ClassEditorProps> = ({ initialData }) => {
+const ClassEditor: React.FC<EditorProps> = ({ initialData }) => {
   const { id } = useParams<{ id: string }>();
   const location = useLocation();
   const navigate = useNavigate();
   const { t } = useTranslation();
   const dataFromState = location.state?.initialData as Class;
   const [formData, setFormData] = useState<Class>(
-    initialData || dataFromState || {}
+    (initialData as Class) || dataFromState || {}
   );
 
   const validationSchema: Yup.AnyObjectSchema = Yup.object().shape({

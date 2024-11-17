@@ -13,6 +13,7 @@ const AppFormInput: React.FC<FormInputProps> = memo(
     minLength,
     maxLength,
     required = false,
+    phoneNumber,
     ...props
   }) => {
     const [field, meta] = useField(name);
@@ -34,6 +35,7 @@ const AppFormInput: React.FC<FormInputProps> = memo(
           required={required}
           onBlur={field.onBlur}
           onChange={field.onChange}
+          phoneNumber={phoneNumber}
           aria-invalid={!!error}
           aria-describedby={error ? `${name}-error` : undefined}
           className={`form-control ${

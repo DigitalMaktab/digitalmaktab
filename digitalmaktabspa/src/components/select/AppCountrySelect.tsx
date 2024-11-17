@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import useMainOperations from "../../hooks/useMainOperations";
-import { CountrySelectProps } from "./properties/CountrySelectProps";
+import { SelectProps } from "./properties/SelectProps";
 import { Select2Option } from "../properties/InputProps";
 import AppSelect2 from "../input/AppSelect2";
 import { useTranslation } from "react-i18next";
 import { Country } from "../../models/Country";
-const AppCountrySelect: React.FC<CountrySelectProps> = ({
+const AppCountrySelect: React.FC<SelectProps> = ({
   value,
   onChange,
   name,

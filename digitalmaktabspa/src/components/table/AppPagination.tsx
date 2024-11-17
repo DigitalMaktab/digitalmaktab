@@ -8,6 +8,7 @@ const AppPagination: React.FC<PaginationProps> = ({
   onPageChange,
 }) => {
   const { t, i18n } = useTranslation();
+
   const handlePrevious = () => {
     if (currentPage > 1) {
       onPageChange(currentPage - 1);
@@ -30,6 +31,44 @@ const AppPagination: React.FC<PaginationProps> = ({
     return new Intl.NumberFormat(i18n.language).format(page);
   };
 
+  const getPaginationRange = () => {
+    const range: (number | "dots")[] = [];
+    const maxVisible = 5; // Max visible buttons (excluding first, last, and ellipses)
+    const halfVisible = Math.floor(maxVisible / 2);
+
+    if (totalPages <= maxVisible + 2) {
+      // Show all pages if total pages are small
+      for (let i = 1; i <= totalPages; i++) {
+        range.push(i);
+      }
+    } else {
+      // Add the first page
+      range.push(1);
+
+      if (currentPage > halfVisible + 2) {
+        range.push("dots"); // Add leading dots
+      }
+
+      const start = Math.max(2, currentPage - halfVisible);
+      const end = Math.min(totalPages - 1, currentPage + halfVisible);
+
+      for (let i = start; i <= end; i++) {
+        range.push(i);
+      }
+
+      if (currentPage < totalPages - halfVisible - 1) {
+        range.push("dots"); // Add trailing dots
+      }
+
+      // Add the last page
+      range.push(totalPages);
+    }
+
+    return range;
+  };
+
+  const paginationRange = getPaginationRange();
+
   return (
     <div
       style={{ display: "flex", justifyContent: "center", marginTop: "20px" }}
@@ -45,22 +84,26 @@ const AppPagination: React.FC<PaginationProps> = ({
               {t("pagination.previous")}
             </button>
           </li>
-          {[...Array(totalPages)].map((_, index) => (
-            <li
-              key={index}
-              className={`page-item ${
-                currentPage === index + 1 ? "active" : ""
-              }`}
-            >
-              <button
-                className="page-link"
-                onClick={() => handlePageChange(index + 1)}
-                disabled={currentPage === index + 1}
+          {paginationRange.map((page, index) =>
+            page === "dots" ? (
+              <li key={index} className="page-item disabled">
+                <span className="page-link">...</span>
+              </li>
+            ) : (
+              <li
+                key={index}
+                className={`page-item ${currentPage === page ? "active" : ""}`}
               >
-                {formatPageNumber(index + 1)}
-              </button>
-            </li>
-          ))}
+                <button
+                  className="page-link"
+                  onClick={() => handlePageChange(page as number)}
+                  disabled={currentPage === page}
+                >
+                  {formatPageNumber(page as number)}
+                </button>
+              </li>
+            )
+          )}
           <li
             className={`page-item ${
               currentPage === totalPages ? "disabled" : ""

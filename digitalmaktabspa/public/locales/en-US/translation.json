@@ -4,7 +4,7 @@
     "apiResponse": {
         "error": "An error occured",
         "requestSent": "Request is alreay sent",
-        "unkownError": "Unknown error occured"
+        "unknownError": "Unknown error occured"
     },
     "close": {
         "label": "Close"
@@ -370,6 +370,20 @@
         },
         "lastName": {
             "label": "Last Name"
+        },
+        "teacherEditor": {
+            "label": "Teacher Editor",
+            "tabs": {
+                "profile": {
+                    "label": "Profile"
+                },
+                "classes": {
+                    "label": "Classes"
+                },
+                "schedules": {
+                    "lable": "Schedules"
+                }
+            }
         }
     },
     "student": {
@@ -476,10 +490,86 @@
     "classBranchChart": {
         "label": "Class Branch Distribution"
     },
+    "classEnrollmentChart": {
+        "label": "Class Enrollment",
+        "classes": {
+            "label": "Classes"
+        },
+        "enrollment": {
+            "label": "Enrollment Count"
+        }
+    },
     "phoneNumber": {
         "label": "Phone Number",
         "number": {
             "label": "Number"
         }
+    },
+    "timetable": {
+        "label": "Time Table",
+        "dayOfWeek": {
+            "label": "Day of Week"
+        },
+        "hour1": {
+            "label": "Hour 1"
+        },
+        "hour2": {
+            "label": "Hour 2"
+        },
+        "hour3": {
+            "label": "Hour 3"
+        },
+        "hour4": {
+            "label": "Hour 4"
+        },
+        "hour5": {
+            "label": "Hour 5"
+        },
+        "hour6": {
+            "label": "Hour 6"
+        },
+        "hour7": {
+            "label": "Hour 7"
+        },
+        "hour8": {
+            "label": "Hour 8"
+        }
+    },
+    "validation": {
+        "required": "Field ({{value}}) is required",
+        "invalidEmail": "Email is invalid",
+        "invalidPhoneNumber": "Invalid Phone Number"
+    },
+    "asyncSelect": {
+        "noOptionsMessage": {
+            "label": "No options found"
+        },
+        "loading": {
+            "label": "Loading..."
+        }
+    },
+    "library": {
+        "label": "Library",
+        "noImageAvailable": "No Image",
+        "booksPerPage": {
+            "label": "{{value}} books per page"
+        },
+        "onlineLibrary": {
+            "label": "Online Library",
+            "unkownAuthor": {
+                "label": "Unknown"
+            }
+        },
+        "search": {
+            "placeholder": "Search Books",
+            "label": "Search"
+        },
+        "noResultsFound": {
+            "label": "No result found"
+        }
+    },
+    "book": {
+        "label": "Book",
+        "author": "Author"
     }
 }

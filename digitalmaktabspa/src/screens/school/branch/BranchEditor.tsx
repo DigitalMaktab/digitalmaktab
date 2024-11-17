@@ -19,7 +19,7 @@ const ClassEditor: React.FC<BranchEditorProps> = ({ initialData }) => {
     initialData || dataFromState || {}
   );
 
-  const { addBranch, data } = useSchoolOperations();
+  const { addBranch } = useSchoolOperations();
 
   const validationSchema: Yup.AnyObjectSchema = Yup.object().shape({
     branchName: Yup.string().required(

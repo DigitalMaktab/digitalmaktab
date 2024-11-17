@@ -7,7 +7,6 @@ const AppFormSelect: React.FC<FormSelectProps> = ({
   label,
   name,
   type = "text",
-
   placeholder = "",
   minLength,
   maxLength,

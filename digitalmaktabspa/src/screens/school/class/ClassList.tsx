@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { useTranslation } from "react-i18next";
 import useSchoolOperations from "../../../hooks/useSchoolOperations";
 import { Column } from "../../../components/table/properties/TableProps";
 import { Class } from "../../../models/Class";
@@ -8,9 +7,10 @@ import { Teacher } from "../../../models/Teacher";
 import AppCard from "../../../components/card/AppCard";
 import AppTable from "../../../components/table/AppTable";
 import { Enrollment } from "../../../models/Enrollment";
+import { useAppLocalizer } from "../../../hooks/useAppLocalizer";
 
 const ClassList = () => {
-  const { t } = useTranslation();
+  const { t, formatNumber } = useAppLocalizer();
   const { classList, data, totalPages } = useSchoolOperations();
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -45,7 +45,7 @@ const ClassList = () => {
       {
         header: "enrollment.enrolled.label",
         accessor: "enrollments",
-        render: (enrollments: Enrollment[]) => enrollments.length,
+        render: (enrollments: Enrollment[]) => formatNumber(enrollments.length),
       },
     ],
     []

@@ -5,4 +5,5 @@ export interface TableFiltersProps<T> {
   filters: { [key: string]: any };
   onFilterChange: (key: string, value: any) => void;
   onApplyFilters: () => void;
+  context?: string;
 }

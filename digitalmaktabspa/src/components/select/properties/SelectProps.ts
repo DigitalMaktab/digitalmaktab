@@ -1,4 +1,4 @@
-export interface CountrySelectProps {
+export interface SelectProps {
   value: string;
   onChange: (value: string) => void;
   name: string;

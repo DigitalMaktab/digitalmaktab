@@ -3,8 +3,9 @@ import AppFormInput from "./AppFormInput";
 import { useTranslation } from "react-i18next";
 import { AddressFormProps } from "./properties/AddressFormProps";
 
-const AppAddressForm: React.FC<AddressFormProps> = () => {
+const AppAddressForm: React.FC<AddressFormProps> = ({ prefix = "address" }) => {
   const { t } = useTranslation();
+  const getName = (field: string) => `${prefix}.${field}`;
   return (
     <div className="address-form-container">
       <h4>{t("addressForm.title")}</h4>
@@ -12,7 +13,7 @@ const AppAddressForm: React.FC<AddressFormProps> = () => {
         <div className="col-md-6">
           <AppFormInput
             label={t("addressForm.region.label")}
-            name="address.region"
+            name={getName("region")}
             required={true}
             placeholder={t("addressForm.region.placeholder")}
           />
@@ -20,7 +21,7 @@ const AppAddressForm: React.FC<AddressFormProps> = () => {
         <div className="col-md-6">
           <AppFormInput
             label={t("addressForm.village.label")}
-            name="address.village"
+            name={getName("village")}
             placeholder={t("addressForm.village.placeholder")}
           />
         </div>
@@ -29,14 +30,14 @@ const AppAddressForm: React.FC<AddressFormProps> = () => {
         <div className="col-md-6">
           <AppFormInput
             label={t("addressForm.street.label")}
-            name="address.street"
+            name={getName("street")}
             placeholder={t("addressForm.street.placeholder")}
           />
         </div>
         <div className="col-md-6">
           <AppFormInput
             label={t("addressForm.postalCode.label")}
-            name="address.postalCode"
+            name={getName("postalCode")}
             placeholder={t("addressForm.postalCode.placeholder")}
           />
         </div>

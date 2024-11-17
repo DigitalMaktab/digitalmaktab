@@ -1,15 +1,11 @@
 import { useEffect, useState } from "react";
 import useMainOperations from "../../hooks/useMainOperations";
-import { CountrySelectProps } from "./properties/CountrySelectProps";
+import { SelectProps } from "./properties/SelectProps";
 import { Select2Option } from "../properties/InputProps";
 import AppSelect2 from "../input/AppSelect2";
 import { useTranslation } from "react-i18next";
 
-const AppClassSelect: React.FC<CountrySelectProps> = ({
-  value,
-  onChange,
-  name,
-}) => {
+const AppClassSelect: React.FC<SelectProps> = ({ value, onChange, name }) => {
   const { t } = useTranslation();
   const { fetchClasses, data } = useMainOperations();
   const [options, setOptions] = useState<Select2Option[]>([]);
@@ -19,9 +15,14 @@ const AppClassSelect: React.FC<CountrySelectProps> = ({
   }, [fetchClasses]);
 
   useEffect(() => {
-    setOptions(
-      data.map((classType) => ({ id: classType.id, text: classType.className }))
-    );
+    if (data) {
+      setOptions(
+        data.map((classType) => ({
+          id: classType.id,
+          text: classType.className,
+        }))
+      );
+    }
   }, [data]);
 
   return (

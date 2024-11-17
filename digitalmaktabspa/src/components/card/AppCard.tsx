@@ -8,10 +8,11 @@ const AppCard: React.FC<CardProps> = ({
   footerChildren,
   children,
   className,
+  onClick,
 }) => {
   const { t } = useTranslation();
   return (
-    <div className={`card ${className}`}>
+    <div className={`card ${className}`} onClick={onClick}>
       {title && (
         <div className="card-header">
           <h4 className="card-title mb-0">{title}</h4>

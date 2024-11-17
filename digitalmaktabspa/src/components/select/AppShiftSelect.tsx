@@ -1,14 +1,10 @@
 import { useEffect, useState } from "react";
 import useMainOperations from "../../hooks/useMainOperations";
-import { CountrySelectProps } from "./properties/CountrySelectProps";
+import { SelectProps } from "./properties/SelectProps";
 import { Select2Option } from "../properties/InputProps";
 import AppSelect2 from "../input/AppSelect2";
 import { useTranslation } from "react-i18next";
-const AppShiftSelect: React.FC<CountrySelectProps> = ({
-  value,
-  onChange,
-  name,
-}) => {
+const AppShiftSelect: React.FC<SelectProps> = ({ value, onChange, name }) => {
   const { t } = useTranslation();
   const { fetchShifts, data } = useMainOperations();
   const [options, setOptions] = useState<Select2Option[]>([]);

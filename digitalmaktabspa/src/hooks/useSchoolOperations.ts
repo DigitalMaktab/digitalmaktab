@@ -8,6 +8,7 @@ import { Branch } from "../models/Branch";
 import { Teacher } from "../models/Teacher";
 import { Student } from "../models/Student";
 import { SchoolDashboardData } from "../models/schoolDashboard/SchoolDashboardData";
+import { ScheduleData } from "../models/ScheduleData";
 
 const useSchoolOperations = () => {
   const {
@@ -15,7 +16,13 @@ const useSchoolOperations = () => {
     status,
     execute: executeSchoolApi,
   } = useApiRequests<
-    School | Class[] | Branch[] | Teacher[] | Student[] | SchoolDashboardData
+    | School
+    | Class[]
+    | Branch[]
+    | Teacher[]
+    | Student[]
+    | SchoolDashboardData
+    | ScheduleData[]
   >();
 
   const [totalPages, setTotalPages] = useState(1);
@@ -86,6 +93,18 @@ const useSchoolOperations = () => {
     [executeSchoolApi]
   );
 
+  const scheduleList = useCallback(
+    (page: number, filters: any) =>
+      fetchPaginatedData(school.scheduleList, page, filters),
+    [fetchPaginatedData]
+  );
+
+  const registerTeacher = useCallback(
+    (teacher: Teacher) =>
+      executeSchoolApi(() => school.registerTeacher(teacher)),
+    [executeSchoolApi]
+  );
+
   return useMemo(
     () => ({
       data,
@@ -98,6 +117,8 @@ const useSchoolOperations = () => {
       studentList,
       dashboardData,
       addBranch,
+      scheduleList,
+      registerTeacher,
     }),
     [
       data,
@@ -110,6 +131,8 @@ const useSchoolOperations = () => {
       studentList,
       dashboardData,
       addBranch,
+      scheduleList,
+      registerTeacher,
     ]
   );
 };

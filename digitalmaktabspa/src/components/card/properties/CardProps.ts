@@ -7,6 +7,7 @@ export interface CardProps extends Properties {
   onRefresh?: () => void;
   showFooter?: boolean;
   className?: string;
+  onClick?: () => void;
 }
 
 export interface FormCardProps extends FormProps, CardProps {}

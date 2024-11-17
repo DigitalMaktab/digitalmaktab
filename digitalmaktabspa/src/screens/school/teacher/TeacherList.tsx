@@ -4,7 +4,6 @@ import { Column } from "../../../components/table/properties/TableProps";
 import { Teacher } from "../../../models/Teacher";
 import AppCard from "../../../components/card/AppCard";
 import AppTable from "../../../components/table/AppTable";
-import { Class } from "../../../models/Class";
 import { PhoneNumber } from "../../../models/PhoneNumber";
 import { useAppLocalizer } from "../../../hooks/useAppLocalizer";
 
@@ -18,6 +17,8 @@ const TeacherList = () => {
       {
         header: "teacher.firstName.label",
         accessor: "firstName",
+        entity: "teacher",
+        filter: { type: "dropdown" },
       },
       {
         header: "teacher.lastName.label",
@@ -26,12 +27,8 @@ const TeacherList = () => {
       {
         header: "auth.email.label",
         accessor: "email",
+        filter: { type: "text" },
       },
-      // {
-      //   header: "class.className.label",
-      //   accessor: "classes",
-      //   render: (classData: Class[]) => classData.length,
-      // },
       {
         header: "phoneNumber.label",
         accessor: "phoneNumber",
@@ -45,7 +42,7 @@ const TeacherList = () => {
         accessor: "genderValue",
       },
     ],
-    []
+    [formatCountryCode]
   );
 
   const fetchPageData = useCallback((page: number, filters = {}) => {
@@ -61,7 +58,7 @@ const TeacherList = () => {
     <AppCard title={t("teacher.teacherList.label")}>
       {data && (
         <AppTable
-          rowLink="/home/teacher-editor/{id}"
+          rowLink="/teacher-editor/{id}"
           data={data as Teacher[]}
           columns={columns}
           totalPages={totalPages}
@@ -69,7 +66,7 @@ const TeacherList = () => {
           actions={[
             {
               label: t("teacher.registerTeacher.label"),
-              route: "/home/teacher-editor/new",
+              route: "/teacher-editor/new",
               icon: "plus",
             },
           ]}

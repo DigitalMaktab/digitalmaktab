@@ -13,9 +13,8 @@ import * as FAIcons from "react-icons/fa";
 import * as IoIcons from "react-icons/io";
 import useSchoolOperations from "../../../hooks/useSchoolOperations";
 import { SchoolDashboardData } from "../../../models/schoolDashboard/SchoolDashboardData";
-import AppGenderChart from "../../../components/chart/AppGenderChart";
-import AppCalendar from "../../../components/calendar/AppCalendar";
 import AppPieChart from "../../../components/chart/AppPieChart";
+import AppBarChart from "../../../components/chart/AppBarChart";
 
 const SchoolDashboard = () => {
   const [school] = useState<School>(getUser()!.school!);
@@ -155,6 +154,24 @@ const SchoolDashboard = () => {
                     dashData.totalTeachers,
                   ]}
                   backgroundColors={["#43B9B2", "#3A8C85", "#A2DED0"]}
+                />
+              </AppCard>
+            </div>
+          </div>
+          <div className="row">
+            <div className="col-md-12">
+              <AppCard className="client-card card-hover">
+                <AppBarChart
+                  displayLegends={false}
+                  label={t("classEnrollmentChart.label")}
+                  labels={dashData.classEnrollmentChart.map(
+                    (item) => item.classNameAndBranch
+                  )}
+                  dataValues={dashData.classEnrollmentChart.map(
+                    (item) => item.enrollmentCount
+                  )}
+                  xAxisLabel={t("classEnrollmentChart.classes.label")}
+                  yAxisLabel={t("classEnrollmentChart.enrollment.label")}
                 />
               </AppCard>
             </div>

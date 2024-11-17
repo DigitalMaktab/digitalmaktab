@@ -1,8 +1,5 @@
 import React, { useMemo } from "react";
 import { PhoneNumberInputProps } from "../properties/InputProps";
-import AppSelect2 from "./AppSelect2";
-import useCountries from "../../hooks/useCountries";
-import { useTranslation } from "react-i18next";
 import AppCountrySelect from "../select/AppCountrySelect";
 
 const AppPhoneNumberInput: React.FC<PhoneNumberInputProps> = ({
@@ -15,8 +12,6 @@ const AppPhoneNumberInput: React.FC<PhoneNumberInputProps> = ({
   required = false,
   ...rest
 }) => {
-  const { t } = useTranslation();
-
   // Handle phone number input change
   const handlePhoneNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newPhoneNumber = e.target.value.replace(/\D/g, "");
@@ -47,7 +42,7 @@ const AppPhoneNumberInput: React.FC<PhoneNumberInputProps> = ({
         <AppCountrySelect
           name={countryIdName}
           showSelect2Lable={false}
-          value={phonenumbervalue.countryId}
+          value={phonenumbervalue.countryId || ""}
           onChange={handleCountryChange}
           required={required}
         />

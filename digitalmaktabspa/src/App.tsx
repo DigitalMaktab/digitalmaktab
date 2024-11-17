@@ -25,6 +25,11 @@ import SchoolHome from "./screens/school/SchoolHome";
 import SchoolDashboard from "./screens/school/dashboard/SchoolDashboard";
 import BranchList from "./screens/school/branch/BranchList";
 import BranchEditor from "./screens/school/branch/BranchEditor";
+import ScheduleList from "./screens/school/schedule/ScheduleList";
+import LibraryHome from "./screens/library/LibraryHome";
+import OnlineLibrary from "./screens/library/OnlineLibrary";
+import Library from "./screens/library/Library";
+import LibraryEditor from "./screens/library/LibraryEditor";
 
 function App() {
   return (
@@ -44,6 +49,12 @@ function App() {
 
             {/* Protected Routes */}
             <Route element={<AuthRoute requiredRole={UserRole.ADMIN} />}>
+              <Route path="/" element={<LibraryHome />}>
+                <Route path="online-library" element={<OnlineLibrary />} />
+                <Route path="library" element={<Library />} />
+                <Route path="library-editor/new" element={<LibraryEditor />} />
+                <Route path="library-editor/:id" element={<LibraryEditor />} />
+              </Route>
               <Route path="/" element={<SchoolHome />}>
                 <Route path="home" element={<SchoolDashboard />} />
                 <Route path="profile" element={<SchoolProfile />} />
@@ -59,6 +70,8 @@ function App() {
                 <Route path="student-list" element={<StudentList />} />
                 <Route path="student-editor/new" element={<StudentEditor />} />
                 <Route path="student-editor/:id" element={<StudentEditor />} />
+
+                <Route path="timetable" element={<ScheduleList />} />
               </Route>
             </Route>
 

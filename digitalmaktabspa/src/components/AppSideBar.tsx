@@ -53,10 +53,15 @@ const AppSideBar: React.FC<AppSideBarProps> = ({ isOpen }) => {
             },
             {
               label: t("sidebar.general.menues.library.add"),
-              link: "/add-book",
+              link: "/library-editor/new",
             },
           ],
-          roles: [UserRole.ADMIN, UserRole.ROOT_USER],
+          roles: [
+            UserRole.ADMIN,
+            UserRole.ROOT_USER,
+            UserRole.TEACHER,
+            UserRole.STUDENT,
+          ],
         },
         {
           label: t("sidebar.general.menues.classes.label"),

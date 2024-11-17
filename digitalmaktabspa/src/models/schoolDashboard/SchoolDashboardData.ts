@@ -1,3 +1,4 @@
+import { ClassEnrollmentChart } from "./ClassEnrollmentChart";
 import { GenderChart } from "./GenderChart";
 
 export interface SchoolDashboardData {
@@ -7,4 +8,5 @@ export interface SchoolDashboardData {
   totalBranches: number;
   genderChart: GenderChart;
   teachersGenderChart: GenderChart;
+  classEnrollmentChart: ClassEnrollmentChart[];
 }

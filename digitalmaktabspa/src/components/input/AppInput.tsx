@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { InputProps, PhoneNumberValue } from "../properties/InputProps";
 import AppFileInput from "./AppFileInput";
 import AppPasswordInput from "./AppPasswordInput";
@@ -17,10 +17,19 @@ const AppInput: React.FC<
   phoneNumber,
   ...rest
 }) => {
-  const [phoneInput, setPhoneInput] = useState({
+  const [phoneInput, setPhoneInput] = useState<PhoneNumberValue>({
     countryId: phoneNumber?.countryId || "",
     number: phoneNumber?.number || "",
   });
+
+  useEffect(() => {
+    if (phoneNumber) {
+      setPhoneInput({
+        countryId: phoneNumber.countryId,
+        number: phoneNumber.number,
+      });
+    }
+  }, [phoneNumber]);
 
   // Handle phone number input changes
   const handlePhoneNumberChange = (

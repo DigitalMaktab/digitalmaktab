@@ -1,26 +1,14 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React from "react";
 import { Outlet } from "react-router-dom";
 import AppScrollToTop from "../../components/AppScrollToTop";
 import AppHeader from "../../components/AppHeader";
 import AppSideBar from "../../components/AppSideBar";
 import AppFooter from "../../components/AppFooter";
-import useWindowWidth from "../../hooks/useWindowWidth";
 import AppBreadCrumb from "../../components/AppBreadCrumb";
+import useHome from "../../hooks/useHome";
 
 const SchoolHome = () => {
-  const windowWidth = useWindowWidth();
-  // Memoize isMobileView to prevent recalculation on every render
-  const isMobileView = useMemo(() => windowWidth <= 1199, [windowWidth]);
-  const [isSidebarOpen, setSidebarOpen] = useState<boolean>(true);
-
-  const handleSidebarToggle = () => {
-    setSidebarOpen((prev) => !prev);
-  };
-
-  // Update sidebar state on window resize
-  useEffect(() => {
-    setSidebarOpen(!isMobileView);
-  }, [isMobileView]);
+  const { isSidebarOpen, handleSidebarToggle } = useHome();
 
   return (
     <>

@@ -4,7 +4,7 @@
     "apiResponse": {
         "error": "خطایی رخ داد",
         "requestSent": "درخواست شما ارسال گردیده است",
-        "unkownError": "خطایی نا معلوم رخ داد"
+        "unknownError": "خطایی نا معلوم رخ داد"
     },
     "close": {
         "label": "بستن"
@@ -370,6 +370,20 @@
         },
         "lastName": {
             "label": "تخلص"
+        },
+        "teacherEditor": {
+            "label": "مشخصات معلم",
+            "tabs": {
+                "profile": {
+                    "label": "مشخصات"
+                },
+                "classes": {
+                    "label": "صنوف"
+                },
+                "schedules": {
+                    "label": "تقسیم اوقات"
+                }
+            }
         }
     },
     "student": {
@@ -476,10 +490,86 @@
     "classBranchChart": {
         "label": "توزیع صنوف و شاخه های آن"
     },
+    "classEnrollmentChart": {
+        "label": "چارت شمولیت صنوف",
+        "classes": {
+            "label": "صنوف"
+        },
+        "enrollment": {
+            "label": "تعداد شاگردان"
+        }
+    },
     "phoneNumber": {
         "label": "شماره تماس",
         "number": {
             "label": "شماره"
         }
+    },
+    "timetable": {
+        "label": "تقسیم اوقات",
+        "dayOfWeek": {
+            "label": "روز هفته"
+        },
+        "hour1": {
+            "label": "ساعت اول"
+        },
+        "hour2": {
+            "label": "ساعت دوم"
+        },
+        "hour3": {
+            "label": "ساعت سوم"
+        },
+        "hour4": {
+            "label": "ساعت چهارم"
+        },
+        "hour5": {
+            "label": "ساعت پنجم"
+        },
+        "hour6": {
+            "label": "ساعت ششم"
+        },
+        "hour7": {
+            "label": "ساعت هفتم"
+        },
+        "hour8": {
+            "label": "ساعت هشتم"
+        }
+    },
+    "validation": {
+        "required": "مشخصه ({{value}}) ضروری است",
+        "invalidEmail": "ایمیل قالب درست ندارد.",
+        "invalidPhoneNumber": "شماره تماس غیر مجاز"
+    },
+    "asyncSelect": {
+        "noOptionsMessage": {
+            "label": "کدام گزینه‌ای یافت نشد"
+        },
+        "loading": {
+            "label": "در حال بارگیری..."
+        }
+    },
+    "library": {
+        "label": "کتابخانه",
+        "noImageAvailable": "بدون عکس",
+        "booksPerPage": {
+            "label": "{{value}} کتاب بر صفحه"
+        },
+        "onlineLibrary": {
+            "label": "کتابخانه آنلاین",
+            "unknownAuthor": {
+                "label": "نامعلوم"
+            }
+        },
+        "search": {
+            "placeholder": "جستجوی کتاب....",
+            "label": "جستجو"
+        },
+        "noResultsFound": {
+            "label": "نتیجه ای یافت نشد"
+        }
+    },
+    "book": {
+        "label": "کتاب",
+        "author": "نویسنده"
     }
 }
