@@ -43,35 +43,53 @@ namespace digitalmaktabapi.Helpers
 
         public static Session GetSessionDetails(ControllerBase controller)
         {
-            Guid id = Guid.Parse(controller.User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-            string userRoleString = controller.User.FindFirst(ClaimTypes.Role)!.Value;
-            string email = controller.User.FindFirst(ClaimTypes.Email)!.Value;
-            Guid schoolId = Guid.Parse(controller.User.FindFirst(ClaimTypes.Sid)!.Value);
+            // Ensure `controller.User` is not null
+            if (controller?.User == null || !controller.User.Identity?.IsAuthenticated == true)
+            {
+                throw new UnauthorizedAccessException("User is not authenticated.");
+            }
 
-            Claim? calendarYearIdClaim = controller.User.FindFirst(AppClaimTypes.CalendaryYearId);
+            // Extract claims safely
+            Guid id = ParseGuidClaim(controller.User.FindFirst(ClaimTypes.NameIdentifier), "NameIdentifier");
+            string userRoleString = controller.User.FindFirst(ClaimTypes.Role)?.Value ?? string.Empty;
+            string email = controller.User.FindFirst(ClaimTypes.Email)?.Value ?? string.Empty;
+            Guid schoolId = ParseGuidClaim(controller.User.FindFirst(ClaimTypes.Sid), "Sid");
+
+            // Optional claim for CalendarYearId
             Guid? calendarYearId = null;
-
+            Claim? calendarYearIdClaim = controller.User.FindFirst(AppClaimTypes.CalendaryYearId);
             if (calendarYearIdClaim != null && Guid.TryParse(calendarYearIdClaim.Value, out Guid parsedGuid))
             {
                 calendarYearId = parsedGuid;
             }
 
-
+            // Parse user role safely
             if (!Enum.TryParse(userRoleString, out UserRole userRole))
             {
                 userRole = UserRole.UNKNOWN;
             }
 
-            session = new Session
+            // Create and return the session object
+            return new Session
             {
                 Id = id,
                 Email = email,
                 UserRole = userRole,
                 SchoolId = schoolId,
-                CalendarYearId = (Guid)(calendarYearId == null || !calendarYearId.HasValue ? Guid.Empty : calendarYearId)
+                CalendarYearId = calendarYearId ?? Guid.Empty
             };
-            return session;
         }
+
+        // Helper method for parsing GUID claims
+        private static Guid ParseGuidClaim(Claim? claim, string claimType)
+        {
+            if (claim == null || !Guid.TryParse(claim.Value, out Guid guid))
+            {
+                throw new UnauthorizedAccessException($"Required claim '{claimType}' is missing or invalid.");
+            }
+            return guid;
+        }
+
 
         public static bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt)
         {

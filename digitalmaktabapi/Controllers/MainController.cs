@@ -18,21 +18,16 @@ namespace digitalmaktabapi.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
-    public class MainController(
-        IRootRepository rootRepository,
-        IMapper mapper,
-        IStringLocalizer<MainController> localizer) : ControllerBase
+    public class MainController(IRootRepository rootRepository,
+    IMapper mapper,
+    IStringLocalizer<MainController> localizer) : BaseController(mapper, localizer)
     {
         private readonly IRootRepository rootRepository = rootRepository;
-        private readonly IMapper mapper = mapper;
-        private readonly IStringLocalizer<MainController> localizer = localizer;
-
 
         [HttpGet("books")]
         public async Task<IActionResult> GetBooks([FromQuery] UserParams userParams)
         {
-            Guid schoolId = Extensions.GetSessionDetails(this).SchoolId;
-            var books = await this.rootRepository.GetBooks(schoolId, userParams);
+            var books = await this.rootRepository.GetBooks(this.SchoolId, userParams);
             var booksToReturn = this.mapper.Map<ICollection<BookDto>>(books);
             Response.AddPagintaion(books.CurrentPage, books.PageSize, books.TotalCount, books.TotalPages);
             return Ok(booksToReturn);

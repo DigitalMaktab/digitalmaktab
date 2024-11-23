@@ -9,8 +9,9 @@ const useJsPdfExportToPdf = <T>() => {
   const { t, dir } = useAppLocalizer();
   const cachedLogo = useRef<string | null>(null);
 
+  // Helper function to fetch and cache image as Base64
   const fetchImageBase64 = async (path: string): Promise<string> => {
-    if (cachedLogo.current) return cachedLogo.current; // Use cached Base64 if available
+    if (cachedLogo.current) return cachedLogo.current;
     try {
       const response = await fetch(path);
       if (!response.ok)
@@ -19,7 +20,7 @@ const useJsPdfExportToPdf = <T>() => {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.onloadend = () => {
-          cachedLogo.current = reader.result as string; // Cache the result
+          cachedLogo.current = reader.result as string;
           resolve(reader.result as string);
         };
         reader.onerror = (error) => reject(error);
@@ -31,15 +32,16 @@ const useJsPdfExportToPdf = <T>() => {
     }
   };
 
+  // Main function to export data to PDF
   const exportToPDF = useCallback(
     async (
       columns: Column<T>[],
       data: T[],
       title: string = t("report.title.label"),
-      logoPath: string = `${process.env.PUBLIC_URL}/assets/images/MOELOGO.png`, // Default logo path
-      leftText: string = t("report.header.leftText.label"), // Left/Right text
-      centerTextTop: string = t("report.header.centerTextTop.label"), // Center top text
-      centerTextBottom: string = t("report.header.centerTextBottom.label") // Center bottom text
+      logoPath: string = `${process.env.PUBLIC_URL}/assets/images/MOELOGO.png`,
+      leftText: string = t("report.header.leftText.label"),
+      centerTextTop: string = t("report.header.centerTextTop.label"),
+      centerTextBottom: string = t("report.header.centerTextBottom.label")
     ) => {
       try {
         const doc = new jsPDF({
@@ -48,74 +50,76 @@ const useJsPdfExportToPdf = <T>() => {
           format: "a4",
         });
 
-        // Load the font
+        // Load and set the font
         doc.addFileToVFS("VazirMatn-Regular.ttf", VazirMatnBase64);
         doc.addFont("VazirMatn-Regular.ttf", "VazirMatn", "normal");
         doc.setFont("VazirMatn");
 
-        // Fetch and convert logo to Base64
+        // Fetch and cache logo
         const logoBase64 = await fetchImageBase64(logoPath);
 
-        // Determine alignment for RTL or LTR
-        const isRTL = dir === "rtl";
+        // Header rendering
+        const renderHeader = () => {
+          const isRTL = dir === "rtl";
+          const pageWidth = doc.internal.pageSize.getWidth();
+          const logoX = isRTL ? pageWidth - 100 : 20;
 
-        // Add header logo
-        const logoX = isRTL ? doc.internal.pageSize.getWidth() - 100 : 20;
-        const logoY = 20;
-        doc.addImage(logoBase64, "PNG", logoX, logoY, 50, 50);
+          doc.addImage(logoBase64, "PNG", logoX, 20, 50, 50);
+          doc.setFontSize(12);
+          doc.text(centerTextTop, pageWidth / 2, 30, { align: "center" });
+          doc.setFontSize(10);
+          doc.text(centerTextBottom, pageWidth / 2, 45, { align: "center" });
+          const sideTextX = isRTL ? 20 : pageWidth - 60;
+          doc.text(leftText, sideTextX, 45, {
+            align: isRTL ? "left" : "right",
+          });
+        };
 
-        // Add center text
-        doc.setFontSize(12);
-        doc.text(centerTextTop, doc.internal.pageSize.getWidth() / 2, 30, {
-          align: "center",
-        });
-        doc.setFontSize(10);
-        doc.text(centerTextBottom, doc.internal.pageSize.getWidth() / 2, 45, {
-          align: "center",
-        });
+        // Table rendering
+        const renderTable = () => {
+          const isRTL = dir === "rtl";
+          const headers = columns.map((col) => t(col.header));
+          const body = data.map((row) =>
+            columns.map((col) =>
+              col.render
+                ? col.render(row[col.accessor], row)?.toString() || ""
+                : row[col.accessor]?.toString() || ""
+            )
+          );
 
-        // Add left or right text
-        const sideTextX = isRTL ? 20 : doc.internal.pageSize.getWidth() - 60;
-        doc.setFontSize(10);
-        doc.text(leftText, sideTextX, 45, { align: isRTL ? "left" : "right" });
+          if (isRTL) {
+            headers.reverse();
+            body.forEach((row) => row.reverse());
+          }
 
-        // Add title
-        doc.setFontSize(16);
-        doc.text(title, doc.internal.pageSize.getWidth() / 2, 80, {
-          align: "center",
-        });
+          doc.autoTable({
+            head: [headers],
+            body,
+            startY: 100,
+            styles: {
+              font: "VazirMatn",
+              fontSize: 10,
+              halign: isRTL ? "right" : "left",
+            },
+            margin: { left: 20, right: 20 },
+            tableWidth: "auto",
+          });
+        };
 
-        // Prepare headers and body with render function support
-        const headers = columns.map((col) => t(col.header));
-        const body = data.map((row) =>
-          columns.map((col) =>
-            col.render
-              ? col.render(row[col.accessor], row)?.toString() || ""
-              : row[col.accessor]?.toString() || ""
-          )
-        );
+        // Title rendering
+        const renderTitle = () => {
+          doc.setFontSize(16);
+          doc.text(title, doc.internal.pageSize.getWidth() / 2, 80, {
+            align: "center",
+          });
+        };
 
-        // Reverse for RTL
-        if (isRTL) {
-          headers.reverse();
-          body.forEach((row) => row.reverse());
-        }
+        // Render all components
+        renderHeader();
+        renderTitle();
+        renderTable();
 
-        // Add table
-        doc.autoTable({
-          head: [headers],
-          body: body,
-          startY: 100,
-          styles: {
-            font: "VazirMatn",
-            fontSize: 10,
-            halign: isRTL ? "right" : "left",
-          },
-          margin: { left: 20, right: 20 },
-          tableWidth: "auto",
-        });
-
-        // Open PDF in a new browser tab
+        // Open PDF in new tab
         doc.output("dataurlnewwindow");
       } catch (error) {
         console.error("Error generating PDF:", error);

@@ -9,7 +9,7 @@ namespace digitalmaktabapi.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class ReportController(ReportService pdfService) : ControllerBase
+    public class ReportController(ReportService pdfService) : BaseController()
     {
         private readonly ReportService _pdfService = pdfService;
 

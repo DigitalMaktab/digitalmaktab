@@ -23,14 +23,12 @@ namespace digitalmaktabapi.Controllers
         ISchoolRepository schoolRepository,
         IStringLocalizer<RootController> localizer,
         IStringLocalizer<MainController> mainLocalizer,
-        IMapper mapper) : ControllerBase
+        IMapper mapper) : BaseController(mapper, localizer)
     {
         private readonly ISchoolRepository schoolRepository = schoolRepository;
         private readonly IRootRepository rootRepository = rootRepository;
 
-        private readonly IStringLocalizer<RootController> localizer = localizer;
         private readonly IStringLocalizer<MainController> mainLocalizer = mainLocalizer;
-        private readonly IMapper mapper = mapper;
 
 
         [HttpGet("schools")]
@@ -44,10 +42,10 @@ namespace digitalmaktabapi.Controllers
         [HttpPost("addCalendarYear")]
         public async Task<IActionResult> AddCalendaryYear(AddCalendarYearDto calendarYearDto)
         {
-            Guid id = Extensions.GetSessionDetails(this).Id;
+
             var calendarYearToCreate = this.mapper.Map<CalendarYear>(calendarYearDto);
-            calendarYearToCreate.CreationUserId = id;
-            calendarYearToCreate.UpdateUserId = id;
+            calendarYearToCreate.CreationUserId = this.Id;
+            calendarYearToCreate.UpdateUserId = this.Id;
             this.rootRepository.Add(calendarYearToCreate);
             await this.rootRepository.SaveAll();
             return NoContent();
@@ -80,10 +78,9 @@ namespace digitalmaktabapi.Controllers
             UploadResponse uploadResponse = await UploadService.Upload(addRootBookDto.File, "books");
             if (uploadResponse.Status == Status.SUCCESS)
             {
-                Guid id = Extensions.GetSessionDetails(this).Id;
                 var bookToCreate = this.mapper.Map<Book>(addRootBookDto);
-                bookToCreate.CreationUserId = id;
-                bookToCreate.UpdateUserId = id;
+                bookToCreate.CreationUserId = this.Id;
+                bookToCreate.UpdateUserId = this.Id;
                 bookToCreate.BookPath = uploadResponse.Path!;
                 this.rootRepository.Add(bookToCreate);
                 await this.rootRepository.SaveAll();
@@ -96,11 +93,9 @@ namespace digitalmaktabapi.Controllers
         [HttpPost("addSubject")]
         public async Task<IActionResult> AddSubject(AddSubjectDto subjectDto)
         {
-            Guid id = Extensions.GetSessionDetails(this).Id;
-
             var subjectToCreate = this.mapper.Map<Subject>(subjectDto);
-            subjectToCreate.CreationUserId = id;
-            subjectToCreate.UpdateUserId = id;
+            subjectToCreate.CreationUserId = this.Id;
+            subjectToCreate.UpdateUserId = this.Id;
             this.rootRepository.Add(subjectToCreate);
             await this.rootRepository.SaveAll();
             return NoContent();
@@ -124,8 +119,7 @@ namespace digitalmaktabapi.Controllers
         [HttpPut("updatePassword")]
         public async Task<IActionResult> UpdatePassword(UpdatePasswordDto updatePasswordDto)
         {
-            string email = Extensions.GetSessionDetails(this).Email;
-            User user = await this.rootRepository.Authenticate(email, updatePasswordDto.CurrentPassword);
+            User user = await this.rootRepository.Authenticate(this.Email, updatePasswordDto.CurrentPassword);
 
             if (user == null)
             {

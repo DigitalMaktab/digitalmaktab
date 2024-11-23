@@ -29,22 +29,19 @@ namespace digitalmaktabapi.Controllers
         IStringLocalizer<SchoolController> localizer,
         IStringLocalizer<MainController> mainLocalizer,
         IMailService mailService
-        ) : ControllerBase
+        ) : BaseController(mapper, localizer)
     {
         private readonly ISchoolRepository schoolRepository = schoolRepository;
         private readonly IStudentRepository studentRepository = studentRepository;
         private readonly ITeacherRepository teacherRepository = teacherRepository;
-        private readonly IMapper mapper = mapper;
-        private readonly IStringLocalizer<SchoolController> localizer = localizer;
         private readonly IStringLocalizer<MainController> mainLocalizer = mainLocalizer;
         private readonly IMailService mailService = mailService;
 
         [HttpGet]
         public async Task<IActionResult> GetSchool()
         {
-            Guid schoolId = Extensions.GetSessionDetails(this).SchoolId;
-            var school = await schoolRepository.GetSchool(schoolId);
-            var schoolToReturn = this.mapper.Map<SchoolDto>(school);
+            var school = await schoolRepository.GetSchool(this.SchoolId);
+            var schoolToReturn = this.mapper!.Map<SchoolDto>(school);
             return Ok(schoolToReturn);
         }
 
@@ -55,7 +52,7 @@ namespace digitalmaktabapi.Controllers
             schoolForAddDto.Email = schoolForAddDto.Email.ToLower();
             if (await this.schoolRepository.Exists(schoolForAddDto.Email))
             {
-                return BadRequest(this.localizer["SchoolExists"].Value);
+                return BadRequest(this.localizer!["SchoolExists"].Value);
             }
             var schoolToCreate = await PrepareSchoolEntity(schoolForAddDto);
             await this.schoolRepository.Register(schoolToCreate, schoolForAddDto.Password);
@@ -68,7 +65,7 @@ namespace digitalmaktabapi.Controllers
             // If root user, the school Id should be passed, otherwise which is admin, it should get it from session.
             if (schoolId == null || schoolId == Guid.Empty)
             {
-                schoolId = Extensions.GetSessionDetails(this).SchoolId;
+                schoolId = this.SchoolId;
             }
 
             var school = await this.schoolRepository.GetSchool(schoolId.Value);
@@ -80,12 +77,12 @@ namespace digitalmaktabapi.Controllers
         [HttpPut("updatePassword")]
         public async Task<IActionResult> UpdatePassword(UpdatePasswordDto updatePasswordDto)
         {
-            string email = Extensions.GetSessionDetails(this).Email;
-            School school = await this.schoolRepository.Authenticate(email, updatePasswordDto.CurrentPassword);
+
+            School school = await this.schoolRepository.Authenticate(this.Email, updatePasswordDto.CurrentPassword);
 
             if (school == null)
             {
-                return BadRequest(localizer["InvalidCurrentPassword"].Value);
+                return BadRequest(this.localizer!["InvalidCurrentPassword"].Value);
             }
             await this.schoolRepository.UpdatePassword(school, updatePasswordDto.NewPassword);
             return NoContent();
@@ -94,11 +91,10 @@ namespace digitalmaktabapi.Controllers
         [HttpPost("registerStudent")]
         public async Task<IActionResult> RegisterStudent(AddStudentDto studentDto)
         {
-            Guid schoolId = Extensions.GetSessionDetails(this).SchoolId;
             studentDto.Email = studentDto.Email.ToLower();
             if (await this.studentRepository.Exists(studentDto.Email))
             {
-                return BadRequest(this.localizer["StudentExists"].Value);
+                return BadRequest(this.localizer!["StudentExists"].Value);
             }
 
             string studentPassword = Extensions.GeneratePassword(12);
@@ -113,17 +109,17 @@ namespace digitalmaktabapi.Controllers
             {
                 EmailToId = studentDto.Email,
                 EmailToName = studentName,
-                EmailSubject = this.localizer["AccountAccessSubject"],
-                EmailBody = this.localizer["AccountDetails", studentName, "<p>" + studentDto.Email + "</p>", "<p>" + studentPassword + "</p>"],
-                EmailFooter = this.localizer["EmailFooter"]
+                EmailSubject = this.localizer!["AccountAccessSubject"],
+                EmailBody = this.localizer!["AccountDetails", studentName, "<p>" + studentDto.Email + "</p>", "<p>" + studentPassword + "</p>"],
+                EmailFooter = this.localizer!["EmailFooter"]
             };
 
             if (await this.mailService.SendMail(mailData))
             {
-                var studentToCreate = this.mapper.Map<Student>(studentDto);
-                studentToCreate.SchoolId = schoolId;
-                studentToCreate.CreationUserId = schoolId;
-                studentToCreate.UpdateUserId = schoolId;
+                var studentToCreate = this.mapper!.Map<Student>(studentDto);
+                studentToCreate.SchoolId = this.SchoolId;
+                studentToCreate.CreationUserId = this.SchoolId;
+                studentToCreate.UpdateUserId = this.SchoolId;
                 await this.studentRepository.Register(studentToCreate, studentPassword);
             }
 
@@ -133,9 +129,8 @@ namespace digitalmaktabapi.Controllers
         [HttpGet("students")]
         public async Task<IActionResult> GetStudents([FromQuery] UserParams userParams)
         {
-            var schoolId = Extensions.GetSessionDetails(this).SchoolId;
-            var students = await this.studentRepository.GetStudents(schoolId, userParams);
-            var studentsToReturn = this.mapper.Map<ICollection<StudentDto>>(students);
+            var students = await this.studentRepository.GetStudents(this.SchoolId, userParams);
+            var studentsToReturn = this.mapper!.Map<ICollection<StudentDto>>(students);
             Response.AddPagintaion(students.CurrentPage, students.PageSize, students.TotalCount, students.TotalPages);
             return Ok(studentsToReturn);
         }
@@ -145,7 +140,7 @@ namespace digitalmaktabapi.Controllers
         public async Task<IActionResult> GetStudent(Guid studentId)
         {
             var student = await this.studentRepository.GetStudent(studentId);
-            var studentsToReturn = this.mapper.Map<StudentDto>(student);
+            var studentsToReturn = this.mapper!.Map<StudentDto>(student);
             return Ok(studentsToReturn);
         }
 
@@ -153,13 +148,11 @@ namespace digitalmaktabapi.Controllers
         [HttpPost("addBranch")]
         public async Task<IActionResult> AddBranch(AddBranchDto branchDto)
         {
-            Guid id = Extensions.GetSessionDetails(this).Id;
-            Guid schoolId = Extensions.GetSessionDetails(this).SchoolId;
 
-            var branchToCreate = this.mapper.Map<Branch>(branchDto);
-            branchToCreate.CreationUserId = id;
-            branchToCreate.UpdateUserId = id;
-            branchToCreate.SchoolId = schoolId;
+            var branchToCreate = this.mapper!.Map<Branch>(branchDto);
+            branchToCreate.CreationUserId = this.Id;
+            branchToCreate.UpdateUserId = this.Id;
+            branchToCreate.SchoolId = this.SchoolId;
             this.schoolRepository.Add(branchToCreate);
             await this.schoolRepository.SaveAll();
             return NoContent();
@@ -169,16 +162,15 @@ namespace digitalmaktabapi.Controllers
         public async Task<IActionResult> GetBranch(Guid branchId)
         {
             var branch = await this.schoolRepository.GetBranch(branchId);
-            var branchToReturn = this.mapper.Map<BranchDto>(branch);
+            var branchToReturn = this.mapper!.Map<BranchDto>(branch);
             return Ok(branchToReturn);
         }
 
         [HttpGet("branches")]
         public async Task<IActionResult> GetBranches([FromQuery] UserParams userParams)
         {
-            var schoolId = Extensions.GetSessionDetails(this).SchoolId;
-            var branches = await this.schoolRepository.GetBranches(schoolId, userParams);
-            var branchesToReturn = this.mapper.Map<ICollection<BranchDto>>(branches);
+            var branches = await this.schoolRepository.GetBranches(this.SchoolId, userParams);
+            var branchesToReturn = this.mapper!.Map<ICollection<BranchDto>>(branches);
             Response.AddPagintaion(branches.CurrentPage, branches.PageSize, branches.TotalCount, branches.TotalPages);
             return Ok(branchesToReturn);
         }
@@ -186,11 +178,10 @@ namespace digitalmaktabapi.Controllers
         [HttpPost("registerTeacher")]
         public async Task<IActionResult> RegisterTeacher(AddTeacherDto teacherDto)
         {
-            Guid schoolId = Extensions.GetSessionDetails(this).SchoolId;
             teacherDto.Email = teacherDto.Email.ToLower();
             if (await this.teacherRepository.Exists(teacherDto.Email))
             {
-                return BadRequest(this.localizer["TeacherExists"].Value);
+                return BadRequest(this.localizer!["TeacherExists"].Value);
             }
 
             string teacherPassword = Extensions.GeneratePassword(12);
@@ -200,29 +191,28 @@ namespace digitalmaktabapi.Controllers
             {
                 EmailToId = teacherDto.Email,
                 EmailToName = teacherName,
-                EmailSubject = this.localizer["AccountAccessSubject"],
-                EmailBody = this.localizer["AccountDetails", teacherName, "<p>" + teacherDto.Email + "</p>", "<p>" + teacherPassword + "</p>"],
-                EmailFooter = this.localizer["EmailFooter"]
+                EmailSubject = this.localizer!["AccountAccessSubject"],
+                EmailBody = this.localizer!["AccountDetails", teacherName, "<p>" + teacherDto.Email + "</p>", "<p>" + teacherPassword + "</p>"],
+                EmailFooter = this.localizer!["EmailFooter"]
             };
 
             if (await this.mailService.SendGrid(mailData))
             {
-                var teacherToCreate = this.mapper.Map<Teacher>(teacherDto);
-                teacherToCreate.SchoolId = schoolId;
-                teacherToCreate.CreationUserId = schoolId;
-                teacherToCreate.UpdateUserId = schoolId;
+                var teacherToCreate = this.mapper!.Map<Teacher>(teacherDto);
+                teacherToCreate.SchoolId = this.SchoolId;
+                teacherToCreate.CreationUserId = this.SchoolId;
+                teacherToCreate.UpdateUserId = this.SchoolId;
                 await this.teacherRepository.Register(teacherToCreate, teacherPassword);
                 return StatusCode(201);
             }
-            return BadRequest(this.localizer["FailedToCreateAccountDueToEmailSendingFailure"].Value);
+            return BadRequest(this.localizer!["FailedToCreateAccountDueToEmailSendingFailure"].Value);
         }
 
         [HttpGet("teachers")]
         public async Task<IActionResult> GetTeachers([FromQuery] UserParams userParams)
         {
-            var schoolId = Extensions.GetSessionDetails(this).SchoolId;
-            var teachers = await this.teacherRepository.GetTeachers(schoolId, userParams);
-            var teachersToReturn = this.mapper.Map<ICollection<TeacherDto>>(teachers);
+            var teachers = await this.teacherRepository.GetTeachers(this.SchoolId, userParams);
+            var teachersToReturn = this.mapper!.Map<ICollection<TeacherDto>>(teachers);
             Response.AddPagintaion(teachers.CurrentPage, teachers.PageSize, teachers.TotalCount, teachers.TotalPages);
             return Ok(teachersToReturn);
         }
@@ -231,22 +221,19 @@ namespace digitalmaktabapi.Controllers
         public async Task<IActionResult> GetTeacher(Guid teacherId)
         {
             var teacher = await this.teacherRepository.GetTeacher(teacherId);
-            var teacherToReturn = this.mapper.Map<TeacherDto>(teacher);
+            var teacherToReturn = this.mapper!.Map<TeacherDto>(teacher);
             return Ok(teacherToReturn);
         }
 
         [HttpPost("addClass")]
         public async Task<IActionResult> AddClass(AddClassDto classDto)
         {
-            Guid id = Extensions.GetSessionDetails(this).Id;
-            Guid schoolId = Extensions.GetSessionDetails(this).SchoolId;
-            Guid calendarYearId = Extensions.GetSessionDetails(this).CalendarYearId;
 
-            var classToCreate = this.mapper.Map<Class>(classDto);
-            classToCreate.CreationUserId = id;
-            classToCreate.UpdateUserId = id;
-            classToCreate.SchoolId = schoolId;
-            classToCreate.CalendarYearId = calendarYearId;
+            var classToCreate = this.mapper!.Map<Class>(classDto);
+            classToCreate.CreationUserId = this.Id;
+            classToCreate.UpdateUserId = this.Id;
+            classToCreate.SchoolId = this.SchoolId;
+            classToCreate.CalendarYearId = this.CalendarYearId;
             this.schoolRepository.Add(classToCreate);
             await this.schoolRepository.SaveAll();
             return NoContent();
@@ -255,9 +242,8 @@ namespace digitalmaktabapi.Controllers
         [HttpGet("classes")]
         public async Task<IActionResult> GetClasses([FromQuery] ClassParams classParams)
         {
-            var schoolId = Extensions.GetSessionDetails(this).SchoolId;
-            var classes = await this.schoolRepository.GetClasses(schoolId, classParams);
-            var classesToReturn = this.mapper.Map<ICollection<ClassDto>>(classes);
+            var classes = await this.schoolRepository.GetClasses(this.SchoolId, classParams);
+            var classesToReturn = this.mapper!.Map<ICollection<ClassDto>>(classes);
             Response.AddPagintaion(classes.CurrentPage, classes.PageSize, classes.TotalCount, classes.TotalPages);
             return Ok(classesToReturn);
         }
@@ -266,7 +252,7 @@ namespace digitalmaktabapi.Controllers
         public async Task<IActionResult> GetClass(Guid classId)
         {
             var classFromRepo = await this.schoolRepository.GetClass(classId);
-            var classToReturn = this.mapper.Map<ClassDto>(classFromRepo);
+            var classToReturn = this.mapper!.Map<ClassDto>(classFromRepo);
             return Ok(classToReturn);
         }
 
@@ -274,11 +260,10 @@ namespace digitalmaktabapi.Controllers
         [HttpPost("addClassSubject")]
         public async Task<IActionResult> AddClassSubject(AddClassSubjectDto classSubjectDto)
         {
-            Guid id = Extensions.GetSessionDetails(this).Id;
 
-            var classSubjectToCreate = this.mapper.Map<ClassSubject>(classSubjectDto);
-            classSubjectToCreate.CreationUserId = id;
-            classSubjectToCreate.UpdateUserId = id;
+            var classSubjectToCreate = this.mapper!.Map<ClassSubject>(classSubjectDto);
+            classSubjectToCreate.CreationUserId = this.Id;
+            classSubjectToCreate.UpdateUserId = this.Id;
 
             this.schoolRepository.Add(classSubjectToCreate);
             await this.schoolRepository.SaveAll();
@@ -288,15 +273,14 @@ namespace digitalmaktabapi.Controllers
         [HttpPost("enroll")]
         public async Task<IActionResult> Enroll(AddEnrollmentDto enrollmentDto)
         {
-            Guid id = Extensions.GetSessionDetails(this).Id;
             if (await this.schoolRepository.IsSudentEnrolled(enrollmentDto.StudentId, enrollmentDto.CalendarYearId, enrollmentDto.ClassId))
             {
-                return BadRequest(this.localizer["StudentIsEnrolled"].Value);
+                return BadRequest(this.localizer!["StudentIsEnrolled"].Value);
             }
 
-            var enrollmentToCreate = this.mapper.Map<Enrollment>(enrollmentDto);
-            enrollmentToCreate.CreationUserId = id;
-            enrollmentToCreate.UpdateUserId = id;
+            var enrollmentToCreate = this.mapper!.Map<Enrollment>(enrollmentDto);
+            enrollmentToCreate.CreationUserId = this.Id;
+            enrollmentToCreate.UpdateUserId = this.Id;
 
             this.schoolRepository.Add(enrollmentToCreate);
             await this.schoolRepository.SaveAll();
@@ -307,7 +291,7 @@ namespace digitalmaktabapi.Controllers
         public async Task<IActionResult> GetClassStuddents(Guid classId, Guid calendarYearId, [FromQuery] UserParams userParams)
         {
             var enrollments = await this.schoolRepository.GetEnrollments(classId, calendarYearId, userParams);
-            var enrollmentsToReturn = this.mapper.Map<ICollection<EnrollmentDto>>(enrollments);
+            var enrollmentsToReturn = this.mapper!.Map<ICollection<EnrollmentDto>>(enrollments);
             Response.AddPagintaion(enrollments.CurrentPage, enrollments.PageSize, enrollments.TotalCount, enrollments.TotalPages);
             return Ok(enrollmentsToReturn);
         }
@@ -316,7 +300,7 @@ namespace digitalmaktabapi.Controllers
         public async Task<IActionResult> GetClassStuddent(Guid enrollmentId)
         {
             var enrollment = await this.schoolRepository.GetEnrollment(enrollmentId);
-            var enrollmentToReturn = this.mapper.Map<EnrollmentDto>(enrollment);
+            var enrollmentToReturn = this.mapper!.Map<EnrollmentDto>(enrollment);
             return Ok(enrollmentToReturn);
         }
 
@@ -336,16 +320,14 @@ namespace digitalmaktabapi.Controllers
         [HttpPost("addSchedule")]
         public async Task<IActionResult> AddSchedule(AddScheduleDto scheduleDto)
         {
-            Guid id = Extensions.GetSessionDetails(this).Id;
-            Guid calendarYearId = Extensions.GetSessionDetails(this).CalendarYearId;
-            if (await this.schoolRepository.IsScheduleExist(calendarYearId, scheduleDto.ClassSubjectId, scheduleDto.TeacherId, scheduleDto.DayOfWeek, scheduleDto.ScheduleTime))
+            if (await this.schoolRepository.IsScheduleExist(this.CalendarYearId, scheduleDto.ClassSubjectId, scheduleDto.TeacherId, scheduleDto.DayOfWeek, scheduleDto.ScheduleTime))
             {
-                return BadRequest(this.localizer["SchedulExist"].Value);
+                return BadRequest(this.localizer!["SchedulExist"].Value);
             }
 
-            var scheduleToCreate = this.mapper.Map<Schedule>(scheduleDto);
-            scheduleToCreate.CreationUserId = id;
-            scheduleToCreate.UpdateUserId = id;
+            var scheduleToCreate = this.mapper!.Map<Schedule>(scheduleDto);
+            scheduleToCreate.CreationUserId = this.Id;
+            scheduleToCreate.UpdateUserId = this.Id;
 
             this.schoolRepository.Add(scheduleToCreate);
             await this.schoolRepository.SaveAll();
@@ -355,11 +337,10 @@ namespace digitalmaktabapi.Controllers
         [HttpGet("schedules")]
         public async Task<IActionResult> GetSchedules([FromQuery] ScheduleParams scheduleParams)
         {
-            Guid calendarYearId = Extensions.GetSessionDetails(this).CalendarYearId;
-            var headerParams = this.mapper.Map<UserParams>(scheduleParams);
-            headerParams.CalendarYearId = calendarYearId;
+            var headerParams = this.mapper!.Map<UserParams>(scheduleParams);
+            headerParams.CalendarYearId = this.CalendarYearId;
             var schedules = await this.schoolRepository.GetSchedules(headerParams);
-            var schedulesToReturn = this.mapper.Map<ICollection<ScheduleDto>>(schedules);
+            var schedulesToReturn = this.mapper!.Map<ICollection<ScheduleDto>>(schedules);
             Response.AddPagintaion(schedules.CurrentPage, schedules.PageSize, schedules.TotalCount, schedules.TotalPages);
             var flattenedSchedules = FlattenSchedules(schedulesToReturn);
             return Ok(flattenedSchedules);
@@ -411,20 +392,19 @@ namespace digitalmaktabapi.Controllers
         [HttpGet("dashboard")]
         public async Task<IActionResult> GetDashboardData()
         {
-            Guid schoolId = Extensions.GetSessionDetails(this).SchoolId;
 
-            var classEnrollments = await this.schoolRepository.GetClassEnrollmentChart(schoolId);
+            var classEnrollments = await this.schoolRepository.GetClassEnrollmentChart(this.SchoolId);
 
-            var classEnrollmentChartDtos = this.mapper.Map<List<ClassEnrollmentChartDto>>(classEnrollments);
+            var classEnrollmentChartDtos = this.mapper!.Map<List<ClassEnrollmentChartDto>>(classEnrollments);
 
             SchoolDashboardDto data = new()
             {
-                TotalStudents = await this.schoolRepository.TotalStudents(schoolId),
-                TotalTeachers = await this.schoolRepository.TotalTeachers(schoolId),
-                TotalClasses = await this.schoolRepository.TotalClasses(schoolId),
-                TotalBranches = await this.schoolRepository.TotalBranches(schoolId),
-                GenderChart = await this.schoolRepository.GetGenderChart(schoolId),
-                TeachersGenderChart = await this.schoolRepository.GetTeachersGenderChart(schoolId),
+                TotalStudents = await this.schoolRepository.TotalStudents(this.SchoolId),
+                TotalTeachers = await this.schoolRepository.TotalTeachers(this.SchoolId),
+                TotalClasses = await this.schoolRepository.TotalClasses(this.SchoolId),
+                TotalBranches = await this.schoolRepository.TotalBranches(this.SchoolId),
+                GenderChart = await this.schoolRepository.GetGenderChart(this.SchoolId),
+                TeachersGenderChart = await this.schoolRepository.GetTeachersGenderChart(this.SchoolId),
                 ClassEnrollmentChart = classEnrollmentChartDtos
             };
             return Ok(data);
@@ -434,7 +414,7 @@ namespace digitalmaktabapi.Controllers
 
         private async Task<School> PrepareSchoolEntity(SchoolForAddDto schoolForAddDto)
         {
-            var school = this.mapper.Map<School>(schoolForAddDto);
+            var school = this.mapper!.Map<School>(schoolForAddDto);
             UploadResponse uploadResponse = await UploadLogo(schoolForAddDto.Logo, schoolForAddDto.Code);
 
             if (uploadResponse.Status == Status.SUCCESS)
@@ -447,7 +427,7 @@ namespace digitalmaktabapi.Controllers
 
         private async Task UpdateSchoolEntity(School school, SchoolForAddDto schoolForAddDto)
         {
-            this.mapper.Map(schoolForAddDto, school);
+            this.mapper!.Map(schoolForAddDto, school);
             UploadResponse uploadResponse = await UploadLogo(schoolForAddDto.Logo, schoolForAddDto.Code);
 
             if (uploadResponse.Status == Status.SUCCESS)

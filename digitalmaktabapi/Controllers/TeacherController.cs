@@ -24,36 +24,31 @@ namespace digitalmaktabapi.Controllers
         IStudentRepository studentRepository,
         IMapper mapper,
         IStringLocalizer<TeacherController> localizer,
-        IStringLocalizer<MainController> mainLocalizer) : ControllerBase
+        IStringLocalizer<MainController> mainLocalizer) : BaseController(mapper, localizer)
     {
         private readonly ITeacherRepository repository = repository;
         private readonly ISchoolRepository schoolRepository = schoolRepository;
         private readonly IStudentRepository studentRepository = studentRepository;
-        private readonly IMapper mapper = mapper;
-        private readonly IStringLocalizer<TeacherController> localizer = localizer;
         private readonly IStringLocalizer<MainController> mainLocalizer = mainLocalizer;
 
 
         [HttpGet]
         public async Task<IActionResult> GetTeacher()
         {
-            var id = Extensions.GetSessionDetails(this).Id;
-            var teacher = await this.repository.GetTeacher(id);
-            var teacherToReturn = this.mapper.Map<TeacherDto>(teacher);
+            var teacher = await this.repository.GetTeacher(this.Id);
+            var teacherToReturn = this.mapper!.Map<TeacherDto>(teacher);
             return Ok(teacherToReturn);
         }
 
         [HttpGet("schedules")]
         public async Task<IActionResult> GetSchedules([FromQuery] GeneralParams generalParams)
         {
-            var id = Extensions.GetSessionDetails(this).Id;
-            var calendarYearId = Extensions.GetSessionDetails(this).CalendarYearId;
-            var headerParams = this.mapper.Map<UserParams>(generalParams);
-            headerParams.CalendarYearId = calendarYearId;
-            headerParams.TeacherId = id;
+            var headerParams = this.mapper!.Map<UserParams>(generalParams);
+            headerParams.CalendarYearId = this.CalendarYearId;
+            headerParams.TeacherId = this.Id;
 
             var schedules = await this.schoolRepository.GetSchedules(headerParams);
-            var schedulesToReturn = this.mapper.Map<ICollection<ScheduleDto>>(schedules);
+            var schedulesToReturn = this.mapper!.Map<ICollection<ScheduleDto>>(schedules);
             Response.AddPagintaion(schedules.CurrentPage, schedules.PageSize, schedules.TotalCount, schedules.TotalPages);
             return Ok(schedulesToReturn);
         }
@@ -61,13 +56,11 @@ namespace digitalmaktabapi.Controllers
         [HttpGet("students")]
         public async Task<IActionResult> GetClassStudents([FromQuery] StudentParams studentParams)
         {
-            var calendarYearId = Extensions.GetSessionDetails(this).CalendarYearId;
-            var schoolId = Extensions.GetSessionDetails(this).SchoolId;
-            var headerParams = this.mapper.Map<UserParams>(studentParams);
-            headerParams.CalendarYearId = calendarYearId;
+            var headerParams = this.mapper!.Map<UserParams>(studentParams);
+            headerParams.CalendarYearId = this.CalendarYearId;
 
-            var students = await this.studentRepository.GetStudents(schoolId, headerParams);
-            var studentsToReturn = this.mapper.Map<ICollection<StudentDto>>(students);
+            var students = await this.studentRepository.GetStudents(this.SchoolId, headerParams);
+            var studentsToReturn = this.mapper!.Map<ICollection<StudentDto>>(students);
             Response.AddPagintaion(students.CurrentPage, students.PageSize, students.TotalCount, students.TotalPages);
             return Ok(studentsToReturn);
         }
@@ -75,7 +68,6 @@ namespace digitalmaktabapi.Controllers
         [HttpPost("addAttendance")]
         public async Task<IActionResult> AddAttendance(AddAttendanceDto addAttendancesDto)
         {
-            Guid id = Extensions.GetSessionDetails(this).Id;
 
             foreach (AttendanceAddDto addAttendanceDto in addAttendancesDto.Attendances)
             {
@@ -83,9 +75,9 @@ namespace digitalmaktabapi.Controllers
                 var attendance = await this.repository.GetAttendance(addAttendanceDto.EnrollmentId, dateTime);
                 if (attendance == null)
                 {
-                    var attendanceToCreate = this.mapper.Map<Attendance>(addAttendanceDto);
-                    attendanceToCreate.CreationUserId = id;
-                    attendanceToCreate.UpdateUserId = id;
+                    var attendanceToCreate = this.mapper!.Map<Attendance>(addAttendanceDto);
+                    attendanceToCreate.CreationUserId = this.Id;
+                    attendanceToCreate.UpdateUserId = this.Id;
                     attendanceToCreate.DateTime = dateTime;
 
                     this.repository.Add(attendanceToCreate);
@@ -94,7 +86,7 @@ namespace digitalmaktabapi.Controllers
                 else
                 {
                     attendance.Status = addAttendanceDto.Status;
-                    attendance.UpdateUserId = id;
+                    attendance.UpdateUserId = this.Id;
                     attendance.DateTime = dateTime;
                 }
             }
@@ -105,11 +97,10 @@ namespace digitalmaktabapi.Controllers
         [HttpGet("attendance")]
         public async Task<IActionResult> GetAttendances([FromQuery] AttendanceParams attendanceParams)
         {
-            var calendarYearId = Extensions.GetSessionDetails(this).CalendarYearId;
-            var headerParams = this.mapper.Map<UserParams>(attendanceParams);
-            headerParams.CalendarYearId = calendarYearId;
+            var headerParams = this.mapper!.Map<UserParams>(attendanceParams);
+            headerParams.CalendarYearId = this.CalendarYearId;
             var attendances = await this.repository.GetAttendances(headerParams);
-            var attendancesToReturn = this.mapper.Map<ICollection<AttendanceDto>>(attendances);
+            var attendancesToReturn = this.mapper!.Map<ICollection<AttendanceDto>>(attendances);
             Response.AddPagintaion(attendances.CurrentPage, attendances.PageSize, attendances.TotalCount, attendances.TotalPages);
             return Ok(attendancesToReturn);
         }
@@ -117,23 +108,22 @@ namespace digitalmaktabapi.Controllers
         [HttpPost("addGrades")]
         public async Task<IActionResult> AddGrades(AddGradeDto addGradeDtos)
         {
-            Guid id = Extensions.GetSessionDetails(this).Id;
 
             foreach (GradeAddDto gradeDto in addGradeDtos.Grades)
             {
                 var grade = await this.repository.GetGrade(gradeDto.EnrollmentId, gradeDto.ClassSubjectId, gradeDto.ExamType);
                 if (grade == null)
                 {
-                    var attendanceToCreate = this.mapper.Map<Grade>(gradeDto);
-                    attendanceToCreate.CreationUserId = id;
-                    attendanceToCreate.UpdateUserId = id;
+                    var attendanceToCreate = this.mapper!.Map<Grade>(gradeDto);
+                    attendanceToCreate.CreationUserId = this.Id;
+                    attendanceToCreate.UpdateUserId = this.Id;
 
                     this.repository.Add(attendanceToCreate);
                 }
                 else
                 {
                     grade.Score = gradeDto.Score;
-                    grade.UpdateUserId = id;
+                    grade.UpdateUserId = this.Id;
                 }
             }
             await this.repository.SaveAll();
@@ -144,11 +134,10 @@ namespace digitalmaktabapi.Controllers
         [HttpGet("grades")]
         public async Task<IActionResult> GetClassGrades([FromQuery] GradeParams attendanceParams)
         {
-            var calendarYearId = Extensions.GetSessionDetails(this).CalendarYearId;
-            var headerParams = this.mapper.Map<UserParams>(attendanceParams);
-            headerParams.CalendarYearId = calendarYearId;
+            var headerParams = this.mapper!.Map<UserParams>(attendanceParams);
+            headerParams.CalendarYearId = this.CalendarYearId;
             var grades = await this.repository.GetGrades(headerParams);
-            var gradesToReturn = this.mapper.Map<ICollection<GradeDto>>(grades);
+            var gradesToReturn = this.mapper!.Map<ICollection<GradeDto>>(grades);
             Response.AddPagintaion(grades.CurrentPage, grades.PageSize, grades.TotalCount, grades.TotalPages);
             return Ok(gradesToReturn);
         }
@@ -157,12 +146,12 @@ namespace digitalmaktabapi.Controllers
         [HttpPut("updatePassword")]
         public async Task<IActionResult> UpdatePassword(UpdatePasswordDto updatePasswordDto)
         {
-            string email = Extensions.GetSessionDetails(this).Email;
-            Teacher teacher = await this.repository.Authenticate(email, updatePasswordDto.CurrentPassword);
+
+            Teacher teacher = await this.repository.Authenticate(this.Email, updatePasswordDto.CurrentPassword);
 
             if (teacher == null)
             {
-                return BadRequest(mainLocalizer["InvalidCurrentPassword"].Value);
+                return BadRequest(this.mainLocalizer["InvalidCurrentPassword"].Value);
             }
             await this.repository.UpdatePassword(teacher, updatePasswordDto.NewPassword);
             return NoContent();
