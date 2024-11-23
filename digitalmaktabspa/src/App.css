@@ -2,6 +2,7 @@
 @import "../node_modules/vazirmatn/Vazirmatn-Variable-font-face.css";
 @import "../node_modules/vazirmatn/Vazirmatn-font-face.css";
 @import "../node_modules/select2/dist/css/select2.min.css";
+@import "react-pdf/dist/esm/Page/AnnotationLayer.css";
 /*! -----------------------------------------------------------------------------------
     Template Name: Digital Maktab
     Description: This is Admin Template

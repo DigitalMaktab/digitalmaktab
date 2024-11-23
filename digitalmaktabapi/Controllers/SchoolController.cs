@@ -361,7 +361,6 @@ namespace digitalmaktabapi.Controllers
             var schedules = await this.schoolRepository.GetSchedules(headerParams);
             var schedulesToReturn = this.mapper.Map<ICollection<ScheduleDto>>(schedules);
             Response.AddPagintaion(schedules.CurrentPage, schedules.PageSize, schedules.TotalCount, schedules.TotalPages);
-            // return Ok(schedulesToReturn);
             var flattenedSchedules = FlattenSchedules(schedulesToReturn);
             return Ok(flattenedSchedules);
         }

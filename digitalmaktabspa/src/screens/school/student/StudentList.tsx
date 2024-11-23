@@ -66,7 +66,7 @@ const StudentList = () => {
     <AppCard title={t("student.studentList.label")}>
       {data && (
         <AppTable
-          rowLink="/home/student-editor/{id}"
+          rowLink="/student-editor/{id}"
           data={data as Student[]}
           columns={columns}
           totalPages={totalPages}
@@ -74,7 +74,7 @@ const StudentList = () => {
           actions={[
             {
               label: t("student.registerStudent.label"),
-              route: "/home/student-editor/new",
+              route: "/student-editor/new",
               icon: "plus",
             },
           ]}

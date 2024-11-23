@@ -38,5 +38,13 @@ export const useAppLocalizer = () => {
     };
   }, [i18n.language]);
 
-  return { language, changeLanguage, formatNumber, formatCountryCode, t, i18n };
+  return {
+    language,
+    changeLanguage,
+    formatNumber,
+    formatCountryCode,
+    t,
+    i18n,
+    dir: language.direction,
+  };
 };

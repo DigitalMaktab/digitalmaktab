@@ -1,38 +1,49 @@
-import { useEffect, useState } from "react";
-import useMainOperations from "../../hooks/useMainOperations";
+import React from "react";
 import { SelectProps } from "./properties/SelectProps";
-import { Select2Option } from "../properties/InputProps";
-import AppSelect2 from "../input/AppSelect2";
-import { useTranslation } from "react-i18next";
+import { AsyncSelectOption } from "../properties/InputProps";
+import { useAppLocalizer } from "../../hooks/useAppLocalizer";
+import useSchoolOperations from "../../hooks/useSchoolOperations";
+import { Class } from "../../models/Class";
+import AppAsyncSelect from "../input/AppAsyncSelect";
 
 const AppClassSelect: React.FC<SelectProps> = ({ value, onChange, name }) => {
-  const { t } = useTranslation();
-  const { fetchClasses, data } = useMainOperations();
-  const [options, setOptions] = useState<Select2Option[]>([]);
+  const { t } = useAppLocalizer();
+  const { classList } = useSchoolOperations();
 
-  useEffect(() => {
-    fetchClasses(1, {});
-  }, [fetchClasses]);
+  const fetchClassList = async (
+    searchTerm: string
+  ): Promise<AsyncSelectOption[]> => {
+    const response = await classList(1, {
+      searchTerm: searchTerm,
+      pageNumber: 1,
+    });
 
-  useEffect(() => {
-    if (data) {
-      setOptions(
-        data.map((classType) => ({
-          id: classType.id,
-          text: classType.className,
-        }))
-      );
-    }
-  }, [data]);
+    // Safely check if response.data is an array before mapping
+    const teachers = Array.isArray(response.data)
+      ? (response.data as Class[])
+      : [];
+
+    return teachers.map((classObj: Class) => ({
+      id: classObj.id,
+      label: `${classObj.classNameValue} ${classObj.branch.branchName}`,
+    }));
+  };
+
+  const handleChange = (option: AsyncSelectOption | null) => {
+    onChange && onChange(option!.id); // Call the parent onChange if provided
+  };
 
   return (
-    <AppSelect2
-      name={name}
-      data={options}
-      value={value}
-      onChange={onChange}
-      label={t("controls.select2.class.label")}
-    />
+    <div className="form-group">
+      <AppAsyncSelect
+        loadOptions={fetchClassList}
+        onChange={handleChange}
+        placeholder={t("class.className.label")}
+        name={name}
+        label={t("class.className.label")}
+        value={value}
+      />
+    </div>
   );
 };
 export default AppClassSelect;

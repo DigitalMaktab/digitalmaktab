@@ -1,19 +1,19 @@
-import React, { useState } from "react";
+import React from "react";
 import { Step } from "../../components/properties/WizardProps";
 import AppWizard from "../../components/wizard/AppWizard";
 
 import * as Yup from "yup";
 import { WizardFormProps } from "../../components/properties/FormProps";
 import AppFormInput from "../../components/form/AppFormInput";
-import { useTranslation } from "react-i18next";
 import AppAddressForm from "../../components/form/AppAddressForm";
 import { SchoolForAddDto } from "../../dtos/SchoolForAddDto";
 import useSchoolOperations from "../../hooks/useSchoolOperations";
 import { useNavigate } from "react-router-dom";
 import { ResponseResult } from "../../dtos/ResultEnum";
+import { useAppLocalizer } from "../../hooks/useAppLocalizer";
 
 const Signup = () => {
-  const { t } = useTranslation();
+  const { t } = useAppLocalizer();
   const { registerSchool } = useSchoolOperations();
   const navigate = useNavigate();
 

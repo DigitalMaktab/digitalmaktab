@@ -1,25 +1,15 @@
 import { Branch } from "../models/Branch";
+import { Class } from "../models/Class";
+import { Student } from "../models/Student";
 import { Teacher } from "../models/Teacher";
 import apiClient from "./client";
+import {
+  buildParams,
+  FilterParams,
+  PaginationParams,
+} from "./properties/pagintation";
 
 // Define types for pagination and filters for reusability
-interface PaginationParams {
-  pageNumber?: number;
-  pageSize?: number;
-}
-
-interface FilterParams {
-  [key: string]: any;
-}
-
-// Helper function to merge pagination and filter parameters
-const buildParams = (
-  paginationParams: PaginationParams = {},
-  filters: FilterParams = {}
-) => {
-  const { pageNumber = 1, pageSize = 10 } = paginationParams;
-  return { pageNumber, pageSize, ...filters };
-};
 
 // API request functions
 const registerSchool = (school: FormData) =>
@@ -31,6 +21,9 @@ const registerSchool = (school: FormData) =>
 
 const addBranch = (branch: Branch) =>
   apiClient.post("/school/addBranch", branch);
+
+const addClass = (newClass: Class) =>
+  apiClient.post("/school/addClass", newClass);
 
 const classList = (
   paginationParams?: PaginationParams,
@@ -79,6 +72,9 @@ const scheduleList = (
 const registerTeacher = (teacher: Teacher) =>
   apiClient.post("/school/registerTeacher", teacher);
 
+const registerStudent = (teacher: Student) =>
+  apiClient.post("/school/registerStudent", teacher);
+
 // Export all school-related API functions in a single object
 const school = {
   registerSchool,
@@ -90,6 +86,8 @@ const school = {
   addBranch,
   scheduleList,
   registerTeacher,
+  registerStudent,
+  addClass,
 };
 
 export default school;

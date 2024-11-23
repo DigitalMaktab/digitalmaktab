@@ -1,5 +1,6 @@
 import { useRef, useEffect } from "react";
 import { User } from "../models/User";
+import * as Yup from "yup";
 // import { NoticeType } from "antd/es/message/interface";
 // const KEY: string = "updatable";
 
@@ -150,6 +151,54 @@ const getShortFormedDate = (date: string, yesterday: string): string => {
 //   });
 // };
 
+const getValidationSchema = (
+  fields: Record<
+    string,
+    { label: string; type?: string; nested?: Record<string, any> }
+  >,
+  t: any
+) => {
+  const createFieldSchema = (field: {
+    label: string;
+    type?: string;
+    nested?: Record<string, any>;
+  }) => {
+    if (field.nested) {
+      // Create nested schema for compound fields
+      return Yup.object(
+        Object.entries(field.nested).reduce((acc, [key, nestedField]) => {
+          acc[key] = Yup.string().required(
+            t("validation.required", { value: t(nestedField.label) })
+          );
+          return acc;
+        }, {} as Record<string, Yup.StringSchema>)
+      );
+    }
+
+    // Default string field schema
+    return Yup.string().required(
+      t("validation.required", { value: t(field.label) })
+    );
+  };
+
+  // Build schema
+  const schema = Object.entries(fields).reduce((acc, [key, field]) => {
+    acc[key] = createFieldSchema(field);
+    return acc;
+  }, {} as Record<string, Yup.AnySchema>);
+
+  return Yup.object().shape(schema);
+};
+
+const imageToBase64 = (file: File): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = (error) => reject(error);
+    reader.readAsDataURL(file);
+  });
+};
+
 export {
   saveOpenMenu,
   getOpenMenu,
@@ -163,4 +212,6 @@ export {
   getZonedDate,
   //   openMessage,
   getShortFormedDate,
+  getValidationSchema,
+  imageToBase64,
 };

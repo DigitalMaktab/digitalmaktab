@@ -1,12 +1,12 @@
 import React from "react";
 import { SelectProps } from "./properties/SelectProps";
 import { AsyncSelectOption } from "../properties/InputProps";
-import { useTranslation } from "react-i18next";
 import useSchoolOperations from "../../hooks/useSchoolOperations";
 import { Teacher } from "../../models/Teacher";
 import AppAsyncSelect from "../input/AppAsyncSelect";
+import { useAppLocalizer } from "../../hooks/useAppLocalizer";
 const AppTeacherSelect: React.FC<SelectProps> = ({ value, onChange, name }) => {
-  const { t } = useTranslation();
+  const { t } = useAppLocalizer();
   const { teacherList } = useSchoolOperations();
 
   // Define fetchTeachers to fetch options based on a search term

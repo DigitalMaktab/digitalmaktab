@@ -48,7 +48,7 @@ const ClassList = () => {
         render: (enrollments: Enrollment[]) => formatNumber(enrollments.length),
       },
     ],
-    []
+    [formatNumber]
   );
 
   const fetchPageData = useCallback((page: number, filters = {}) => {
@@ -69,6 +69,7 @@ const ClassList = () => {
           columns={columns}
           totalPages={totalPages}
           fetchPageData={fetchPageData}
+          reportTitle={t("class.classList.label")}
           actions={[
             {
               label: t("class.addClass.label"),

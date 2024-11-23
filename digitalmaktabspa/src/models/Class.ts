@@ -18,6 +18,7 @@ export interface Class extends Base {
   classType: ClassType;
   shift: Shift;
   shiftValue: string;
+  teacherId: string;
   teacher: Teacher;
   calendarYear: CalendarYear;
   enrollments: Enrollment[];

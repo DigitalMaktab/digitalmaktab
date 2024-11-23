@@ -8,6 +8,7 @@ using digitalmaktabapi.Dtos;
 using digitalmaktabapi.Dtos.SchoolDashboard;
 using digitalmaktabapi.Headers;
 using digitalmaktabapi.Models;
+using DotCommon.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace digitalmaktabapi.Data
@@ -84,6 +85,16 @@ namespace digitalmaktabapi.Data
             {
                 entities = entities.Where(a => a.TeacherId == classParams.TeacherId);
             }
+
+
+            if (!classParams.SearchTerm.IsEmpty() && classParams.SearchTerm != null)
+            {
+                entities = entities.Where(
+                                a =>
+                                a.Branch.BranchName.Contains(classParams.SearchTerm, StringComparison.CurrentCultureIgnoreCase)
+                            );
+            }
+
             return await PagedList<Class>.CreateAsync(entities, classParams.PageNumber, classParams.PageSize);
         }
 

@@ -17,7 +17,7 @@ const AppMenuItem: React.FC<MenuItemProps> = React.memo(
     link,
   }) => (
     <li className={`sidebar-list ${isActive ? "active" : ""}`}>
-      {subMenu ? (
+      {subMenu && subMenu.length > 0 ? (
         <Link
           className="sidebar-link"
           to="#"

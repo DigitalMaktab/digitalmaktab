@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useCallback, useContext, useMemo, useState } from "react";
 import { AppSideBarProps } from "./properties/ToggleSideBarProps";
 
 import AppMenuMainTitle from "./menu/AppMenuMainTitle";
@@ -29,123 +29,167 @@ const AppSideBar: React.FC<AppSideBarProps> = ({ isOpen }) => {
     setActiveSubMenuItem((prev) => (prev === label ? null : label));
   };
 
-  const allMenuItems: MenuSection[] = [
-    {
-      title: t("sidebar.general.label"),
-      items: [
-        {
-          label: t("sidebar.general.menues.dashboard"),
-          icon: <AIIcons.AiOutlineHome className="stroke-icon" />,
-          link: "/home",
-          roles: [UserRole.ADMIN, UserRole.ROOT_USER],
-        },
-        {
-          label: t("sidebar.general.menues.library.label"),
-          icon: <AIIcons.AiOutlineBook className="stroke-icon" />,
-          subMenu: [
-            {
-              label: t("sidebar.general.menues.library.onlineLibrary"),
-              link: "/online-library",
-            },
-            {
-              label: t("sidebar.general.menues.library.list"),
-              link: "/library",
-            },
-            {
-              label: t("sidebar.general.menues.library.add"),
-              link: "/library-editor/new",
-            },
-          ],
-          roles: [
-            UserRole.ADMIN,
-            UserRole.ROOT_USER,
-            UserRole.TEACHER,
-            UserRole.STUDENT,
-          ],
-        },
-        {
-          label: t("sidebar.general.menues.classes.label"),
-          icon: <SIIcons.SiGoogleclassroom className="stroke-icon" />,
-          subMenu: [
-            {
-              label: t("sidebar.general.menues.branches.list"),
-              link: "/branch-list",
-            },
-            {
-              label: t("sidebar.general.menues.branches.add"),
-              link: "/branch-editor/new",
-            },
-            {
-              label: t("sidebar.general.menues.classes.list"),
-              link: "/class-list",
-            },
-            {
-              label: t("sidebar.general.menues.classes.add"),
-              link: "/class-editor/new",
-            },
-          ],
-          roles: [UserRole.ADMIN, UserRole.ROOT_USER],
-        },
-        {
-          label: t("sidebar.general.menues.timeTable.label"),
-          icon: <AIIcons.AiOutlineSchedule className="stroke-icon" />,
-          subMenu: [
-            {
-              label: t("sidebar.general.menues.timeTable.list"),
-              link: "/timetable",
-            },
-            {
-              label: t("sidebar.general.menues.timeTable.add"),
-              link: "/add-timetable",
-            },
-          ],
-          roles: [UserRole.ADMIN, UserRole.ROOT_USER],
-        },
-      ],
-    },
-    {
-      title: t("sidebar.teachers.label"),
-      items: [
-        {
-          label: t("sidebar.teachers.menues.list"),
-          icon: <LiaIcons.LiaChalkboardTeacherSolid className="stroke-icon" />,
-          link: "/teacher-list",
-          roles: [UserRole.ADMIN, UserRole.ROOT_USER],
-        },
-        {
-          label: t("sidebar.teachers.menues.register"),
-          icon: <AIIcons.AiOutlineUserAdd className="stroke-icon" />,
-          link: "/teacher-editor/new",
-          roles: [UserRole.ADMIN, UserRole.ROOT_USER],
-        },
-      ],
-    },
-    {
-      title: t("sidebar.students.label"),
-      items: [
-        {
-          label: t("sidebar.students.menues.list"),
-          icon: <PIIcons.PiStudent className="stroke-icon" />,
-          link: "/student-list",
-          roles: [UserRole.ADMIN, UserRole.ROOT_USER],
-        },
-        {
-          label: t("sidebar.students.menues.register"),
-          icon: <AIIcons.AiOutlineUserAdd className="stroke-icon" />,
-          link: "/student-editor/new",
-          roles: [UserRole.ADMIN, UserRole.ROOT_USER],
-        },
-      ],
-    },
-  ];
+  // Memoize allMenuItems
+  const allMenuItems = useMemo(
+    () => [
+      {
+        title: t("sidebar.general.label"),
+        items: [
+          {
+            label: t("sidebar.general.menues.dashboard"),
+            icon: <AIIcons.AiOutlineHome className="stroke-icon" />,
+            link: "/home",
+            roles: [UserRole.ADMIN],
+          },
+          {
+            label: t("sidebar.general.menues.library.label"),
+            icon: <AIIcons.AiOutlineBook className="stroke-icon" />,
+            subMenu: [
+              {
+                label: t("sidebar.general.menues.library.onlineLibrary"),
+                link: "/online-library",
+              },
+              {
+                label: t("sidebar.general.menues.library.list"),
+                link: "/library",
+              },
+              {
+                label: t("sidebar.general.menues.library.add"),
+                link: "/library-editor/new",
+              },
+            ],
+            roles: [
+              UserRole.ADMIN,
+              UserRole.ROOT_USER,
+              UserRole.TEACHER,
+              UserRole.STUDENT,
+            ],
+          },
+          {
+            label: t("sidebar.general.menues.classes.label"),
+            icon: <SIIcons.SiGoogleclassroom className="stroke-icon" />,
+            subMenu: [
+              {
+                label: t("sidebar.general.menues.branches.list"),
+                link: "/branch-list",
+              },
+              {
+                label: t("sidebar.general.menues.branches.add"),
+                link: "/branch-editor/new",
+              },
+              {
+                label: t("sidebar.general.menues.classes.list"),
+                link: "/class-list",
+              },
+              {
+                label: t("sidebar.general.menues.classes.add"),
+                link: "/class-editor/new",
+              },
+            ],
+            roles: [UserRole.ADMIN],
+          },
+          {
+            label: t("sidebar.general.menues.timeTable.label"),
+            icon: <AIIcons.AiOutlineSchedule className="stroke-icon" />,
+            subMenu: [
+              {
+                label: t("sidebar.general.menues.timeTable.list"),
+                link: "/timetable",
+              },
+              {
+                label: t("sidebar.general.menues.timeTable.add"),
+                link: "/add-timetable",
+              },
+            ],
+            roles: [UserRole.ADMIN],
+          },
+        ],
+      },
+      {
+        title: t("sidebar.teachers.label"),
+        items: [
+          {
+            label: t("sidebar.teachers.menues.list"),
+            icon: (
+              <LiaIcons.LiaChalkboardTeacherSolid className="stroke-icon" />
+            ),
+            link: "/teacher-list",
+            roles: [UserRole.ADMIN],
+          },
+          {
+            label: t("sidebar.teachers.menues.register"),
+            icon: <AIIcons.AiOutlineUserAdd className="stroke-icon" />,
+            link: "/teacher-editor/new",
+            roles: [UserRole.ADMIN],
+          },
+        ],
+      },
+      {
+        title: t("sidebar.students.label"),
+        items: [
+          {
+            label: t("sidebar.students.menues.list"),
+            icon: <PIIcons.PiStudent className="stroke-icon" />,
+            link: "/student-list",
+            roles: [UserRole.ADMIN],
+          },
+          {
+            label: t("sidebar.students.menues.register"),
+            icon: <AIIcons.AiOutlineUserAdd className="stroke-icon" />,
+            link: "/student-editor/new",
+            roles: [UserRole.ADMIN],
+          },
+        ],
+      },
+    ],
+    [t]
+  );
 
-  // Filter menu items based on user role
-  const menuItems = allMenuItems
-    .map((section) => ({
-      ...section,
-      items: section.items.filter((item) => item.roles?.includes(userRole!)),
-    }))
-    .filter((section) => section.items.length > 0);
+  // Helper function to check role permissions
+  const hasRole = useCallback(
+    (roles: UserRole[] | undefined): boolean => {
+      return roles ? roles.includes(userRole!) : true;
+    },
+    [userRole]
+  );
+
+  // Function to filter and inherit roles for submenus
+  // Memoized filter function
+  const filterMenuItems = useCallback(
+    (menuSections: MenuSection[]): MenuSection[] => {
+      return menuSections
+        .map((section) => ({
+          ...section,
+          items: section.items
+            .filter((item) => hasRole(item.roles)) // Filter items by role
+            .map((item) => ({
+              ...item,
+              subMenu:
+                item.subMenu
+                  ?.map((subItem) => ({
+                    ...subItem,
+                    roles: subItem.roles || item.roles, // Inherit roles for submenus
+                  }))
+                  .filter((subItem) => hasRole(subItem.roles)) || [], // Ensure subMenu is an array
+            }))
+            .filter(
+              (item) => hasRole(item.roles) || (item.subMenu?.length ?? 0) > 0
+            ), // Safely check subMenu length
+        }))
+        .filter((section) =>
+          section.items.some(
+            (item) => hasRole(item.roles) || (item.subMenu?.length ?? 0) > 0 // Safely check subMenu length
+          )
+        );
+    },
+    [hasRole]
+  );
+
+  // Memoized filtered menu items
+  const menuItems = useMemo(
+    () => filterMenuItems(allMenuItems),
+    [allMenuItems, filterMenuItems]
+  );
 
   return (
     <>
@@ -175,6 +219,7 @@ const AppSideBar: React.FC<AppSideBarProps> = ({ isOpen }) => {
                     badge={item.badge}
                     subMenu={item.subMenu}
                     link={item.link}
+                    hasSubMenu={(item.subMenu?.length ?? 0) > 0} // Check if item has a submenu
                     isActive={activeItem === item.label}
                     onMenuClick={() => handleMenuClick(item.label)}
                     onSubMenuClick={handleSubMenuClick}

@@ -10,7 +10,7 @@ const useMainOperations = () => {
   const fetchData = useCallback(
     async (fetchFunc: Function, page: number, filters: any = {}) => {
       const result = await executeMainApi(() =>
-        fetchFunc({ pageNumber: page, pageSize: 10, ...filters })
+        fetchFunc({ pageNumber: page, pageSize: 100, ...filters })
       );
 
       if (result.status === ResponseResult.SUCCESS) {
@@ -50,6 +50,9 @@ const useMainOperations = () => {
   const fetchAddressTypes = (page: number) =>
     fetchData(mainApi.addressTypeList, page);
 
+  const fetchBooks = (page: number, filters: any) =>
+    fetchData(mainApi.bookList, page, filters);
+
   return {
     data,
     status,
@@ -68,6 +71,7 @@ const useMainOperations = () => {
     fetchScheduleTimes,
     fetchShifts,
     fetchAddressTypes,
+    fetchBooks,
   };
 };
 

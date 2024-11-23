@@ -12,4 +12,7 @@ export interface TableProps<T> {
   data: T[];
   columns: Column<T>[];
   fetchPageData: (page: number) => void;
+  showPagination?: boolean;
+  showExport?: boolean;
+  reportTitle?: string;
 }

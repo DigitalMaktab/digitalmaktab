@@ -9,6 +9,7 @@ import { Base } from "../../models/Base";
 import { Action } from "./properties/TableActionPrps";
 import AppTableActions from "./AppTableActions";
 import AppHorizontalSpacer from "../spacer/AppHorizontalSpacer";
+import useJsPdfExportToPdf from "../../hooks/useJsPdfExportToPdf";
 
 const AppTable = <T extends Base>({
   data,
@@ -17,6 +18,9 @@ const AppTable = <T extends Base>({
   rowLink,
   actions = [],
   totalPages,
+  showPagination = true,
+  showExport = true,
+  reportTitle = "",
 }: TableProps<T> & {
   fetchPageData: (page: number, filters: any) => void;
   rowLink?: string;
@@ -28,6 +32,8 @@ const AppTable = <T extends Base>({
   const [currentPage, setCurrentPage] = useState(1);
   const [filters, setFilters] = useState<{ [key: string]: any }>({});
   const [showFilters, setShowFilters] = useState(false);
+
+  const exportToPDF = useJsPdfExportToPdf<T>();
 
   const hasFilters = columns.some((col) => col.filter);
 
@@ -58,6 +64,10 @@ const AppTable = <T extends Base>({
     }
   };
 
+  const handleExport = () => {
+    exportToPDF(columns, data, reportTitle);
+  };
+
   return (
     <>
       <div className="mb-1 d-flex justify-content-end">
@@ -71,7 +81,18 @@ const AppTable = <T extends Base>({
             className="btn-secondary btn-xs "
           />
         )}
-
+        {showExport && (
+          <>
+            <AppHorizontalSpacer />
+            <AppButton
+              label={t("report.print.label")} // Add this button for PDF export
+              type="button"
+              onButtonClick={handleExport}
+              className="btn-primary btn-xs"
+              icon="printer"
+            />
+          </>
+        )}
         <AppHorizontalSpacer />
         <AppTableActions actions={actions} />
       </div>
@@ -113,11 +134,13 @@ const AppTable = <T extends Base>({
             ))}
           </tbody>
         </table>
-        <AppPagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={setCurrentPage}
-        />
+        {showPagination && (
+          <AppPagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+          />
+        )}
       </div>
     </>
   );

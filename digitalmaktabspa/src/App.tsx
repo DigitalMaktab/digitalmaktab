@@ -30,8 +30,17 @@ import LibraryHome from "./screens/library/LibraryHome";
 import OnlineLibrary from "./screens/library/OnlineLibrary";
 import Library from "./screens/library/Library";
 import LibraryEditor from "./screens/library/LibraryEditor";
+import RootHome from "./screens/root/RootHome";
+
+import "react-pdf/dist/esm/Page/AnnotationLayer.css";
+
+// // Set up worker
+// import { pdfjs } from "react-pdf";
+
+// pdfjs.GlobalWorkerOptions.workerSrc = `${process.env.PUBLIC_URL}/pdf.worker.js`;
 
 function App() {
+  // console.log(pdfjs.GlobalWorkerOptions.workerSrc);
   return (
     <LoaderProvider>
       <Router>
@@ -84,7 +93,9 @@ function App() {
             </Route>
 
             <Route element={<AuthRoute requiredRole={UserRole.ROOT_USER} />}>
-              <Route path="dashboard" element={<Dashboard />} />
+              <Route path="/" element={<RootHome />}>
+                <Route path="dashboard" element={<Dashboard />} />
+              </Route>
             </Route>
           </Routes>
         </AuthProvider>

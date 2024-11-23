@@ -55,6 +55,9 @@
             },
             "shift": {
                 "label": "انتخاب شیفت"
+            },
+            "className": {
+                "label": "صنف"
             }
         },
         "saveButton": {
@@ -307,7 +310,13 @@
         "copyright": "کپی رایت ۲۰۲۴ © دیجیتال مکتب"
     },
     "userRole": {
-        "ADMIN": "مکتب"
+        "admin": "مکتب",
+        "principal": "مدیر",
+        "headMaster": "مدیر عمومی",
+        "teacher": "معلم",
+        "student": "شاگرد",
+        "rootUser": "کاربر اصلی",
+        "unknown": "نامعلوم"
     },
     "class": {
         "classList": {
@@ -328,6 +337,9 @@
             "validation": {
                 "required": "نوعیت صنف ضروری میباشد"
             }
+        },
+        "shift": {
+            "label": "شیفت صنف"
         }
     },
     "branch": {
@@ -366,10 +378,10 @@
             "label": "ثبت معلم"
         },
         "firstName": {
-            "label": "اسم"
+            "label": "اسم معلم"
         },
         "lastName": {
-            "label": "تخلص"
+            "label": "تخلص معلم"
         },
         "teacherEditor": {
             "label": "مشخصات معلم",
@@ -420,6 +432,9 @@
         },
         "asasNumber": {
             "label": "نمبر اساس"
+        },
+        "dateOfBirth": {
+            "label": "تاریخ تولد"
         }
     },
     "calendarYear": {
@@ -507,6 +522,9 @@
     },
     "timetable": {
         "label": "تقسیم اوقات",
+        "addTimeTable": {
+            "label": "اضافه نمودن تقسیم اوقات"
+        },
         "dayOfWeek": {
             "label": "روز هفته"
         },
@@ -576,6 +594,36 @@
     },
     "book": {
         "label": "کتاب",
-        "author": "نویسنده"
+        "author": "نویسنده",
+        "bookTitle": {
+            "label": "عنوان کتاب",
+            "placeholder": "جغرافیه صنف اول"
+        },
+        "file": {
+            "label": "نسخه کتاب",
+            "placeholder": "دری.pdf"
+        },
+        "addBook": {
+            "label": "اضافه کردن کتاب"
+        }
+    },
+    "report": {
+        "header": {
+            "leftText": {
+                "label": "۱۴۰"
+            },
+            "centerTextTop": {
+                "label": "پوهنی وزارت"
+            },
+            "centerTextBottom": {
+                "label": "(                 ) ریاست"
+            }
+        },
+        "title": {
+            "label": "گزارش"
+        },
+        "print": {
+            "label": "چاپ"
+        }
     }
 }

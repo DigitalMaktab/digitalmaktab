@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { BranchEditorProps } from "./properties/BranchEditorProps";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useAppLocalizer } from "../../../hooks/useAppLocalizer";
@@ -8,24 +8,32 @@ import AppFormCard from "../../../components/card/AppFormCard";
 import AppFormInput from "../../../components/form/AppFormInput";
 import useSchoolOperations from "../../../hooks/useSchoolOperations";
 import { ResponseResult } from "../../../dtos/ResultEnum";
+import { useFormData } from "../../../hooks/useFormData";
+import { EditorProps } from "../properties/EditorProps";
+import { getValidationSchema } from "../../../helper/helper";
 
-const ClassEditor: React.FC<BranchEditorProps> = ({ initialData }) => {
+const ClassEditor: React.FC<EditorProps> = ({ initialData }) => {
   const { id } = useParams<{ id: string }>();
-  const location = useLocation();
   const navigate = useNavigate();
   const { t } = useAppLocalizer();
-  const dataFromState = location.state?.initialData as Branch;
-  const [formData, setFormData] = useState<Branch>(
-    initialData || dataFromState || {}
+
+  const initialFormData = useMemo(
+    () =>
+      ({
+        branchName: "",
+      } as unknown as Branch),
+    []
   );
+  const [formData] = useFormData<Branch>(initialData, initialFormData);
 
   const { addBranch } = useSchoolOperations();
 
-  const validationSchema: Yup.AnyObjectSchema = Yup.object().shape({
-    branchName: Yup.string().required(
-      t("branch.branchName.validation.required")
-    ),
-  });
+  const validationSchema = getValidationSchema(
+    {
+      branchName: { label: t("branch.branchName.label") },
+    },
+    t
+  );
 
   const submitData = async (data: Branch) => {
     if (id) {

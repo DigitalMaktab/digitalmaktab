@@ -16,6 +16,7 @@ const ScheduleList = () => {
       {
         header: "timetable.dayOfWeek.label",
         accessor: "day",
+        filter: { type: "dropdown" },
       },
       {
         header: "timetable.hour1.label",
@@ -63,18 +64,19 @@ const ScheduleList = () => {
   }, [currentPage, fetchPageData]);
 
   return (
-    <AppCard title={t("class.classList.label")}>
+    <AppCard title={t("timetable.label")}>
       {data && (
         <AppTable
-          rowLink="/class-editor/{id}"
+          rowLink="/schedule-editor/{id}"
           data={data as ScheduleData[]}
           columns={columns}
           totalPages={totalPages}
           fetchPageData={fetchPageData}
+          showPagination={false}
           actions={[
             {
-              label: t("class.addClass.label"),
-              route: "/class-editor/new",
+              label: t("timetable.addTimeTable.label"),
+              route: "/schedule-editor/new",
               icon: "plus",
             },
           ]}

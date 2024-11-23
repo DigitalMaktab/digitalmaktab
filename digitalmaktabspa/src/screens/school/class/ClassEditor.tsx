@@ -1,32 +1,73 @@
-import React, { useState } from "react";
-import { ClassEditorProps } from "./properties/ClassEditorProps";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
-import * as Yup from "yup";
+import React, { useCallback, useMemo } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { Class } from "../../../models/Class";
-import { useTranslation } from "react-i18next";
-import AppFormInput from "../../../components/form/AppFormInput";
 import AppBranchSelect from "../../../components/select/AppBranchSelect";
 import AppFormCard from "../../../components/card/AppFormCard";
 import AppFormSelect from "../../../components/form/AppFormSelect";
 import AppClassTypeSelect from "../../../components/select/AppClassTypeSelect";
 import AppShiftSelect from "../../../components/select/AppShiftSelect";
 import { EditorProps } from "../properties/EditorProps";
+import AppTeacherSelect from "../../../components/select/AppTeacherSelect";
+import { getValidationSchema } from "../../../helper/helper";
+import { useFormData } from "../../../hooks/useFormData";
+import useSchoolOperations from "../../../hooks/useSchoolOperations";
+import { ResponseResult } from "../../../dtos/ResultEnum";
+import AppClassNameSelect from "../../../components/select/AppClassNameSelect";
+import { useAppLocalizer } from "../../../hooks/useAppLocalizer";
 
 const ClassEditor: React.FC<EditorProps> = ({ initialData }) => {
   const { id } = useParams<{ id: string }>();
-  const location = useLocation();
   const navigate = useNavigate();
-  const { t } = useTranslation();
-  const dataFromState = location.state?.initialData as Class;
-  const [formData, setFormData] = useState<Class>(
-    (initialData as Class) || dataFromState || {}
+  const { t } = useAppLocalizer();
+  const { addClass } = useSchoolOperations();
+
+  const initialFormData = useMemo(
+    () =>
+      ({
+        className: "",
+        branchId: "",
+        classType: "",
+        shift: "",
+        teacherId: "",
+      } as unknown as Class),
+    []
   );
 
-  const validationSchema: Yup.AnyObjectSchema = Yup.object().shape({
-    className: Yup.string().required(t("class.className.validation.required")),
-    branchId: Yup.string().required(t("branch.branchName.validation.required")),
-    classType: Yup.string().required(t("class.classType.validation.required")),
-  });
+  const [formData] = useFormData<Class>(initialData, initialFormData);
+
+  const validationSchema = getValidationSchema(
+    {
+      className: { label: t("class.className.label") },
+      branchId: { label: t("branch.branchName.label") },
+      classType: { label: t("class.classType.label") },
+      shift: { label: t("class.shift.label") },
+      teacherId: { label: t("teacher.firstName.label") },
+    },
+    t
+  );
+
+  const submitData = useCallback(
+    async (newClass: Class) => {
+      try {
+        let result;
+        if (id) {
+          // If id exists, update the existing record
+          // result = await updateTeacher(id, teacher); // Assuming `updateTeacher` is available
+          result = {};
+        } else {
+          // If no id, create a new record
+          result = await addClass(newClass);
+        }
+
+        if (result.status === ResponseResult.SUCCESS) {
+          navigate("/class-list");
+        }
+      } catch (error) {
+        console.error("Submission failed:", error);
+      }
+    },
+    [id, addClass, navigate]
+  );
 
   return (
     <>
@@ -37,20 +78,24 @@ const ClassEditor: React.FC<EditorProps> = ({ initialData }) => {
             : t("class.addClass.label")
         }
         initialValues={formData}
-        onSubmit={(data: Class) => {
-          console.log(data);
-        }}
+        onSubmit={submitData}
         validationSchema={validationSchema}
       >
         <div className="row">
-          <div className="col-md-3">
-            <AppFormInput
+          <div className="col-md-4">
+            <AppFormSelect
               name="className"
-              label={t("class.className.label")}
-              value={formData?.classNameValue}
-            />
+              label=""
+              value={id ? formData!.className.toString() : ""}
+            >
+              <AppClassNameSelect
+                name="className"
+                value={id ? formData!.className.toString() : ""}
+                onChange={() => {}}
+              />
+            </AppFormSelect>
           </div>
-          <div className="col-md-3">
+          <div className="col-md-4">
             <AppFormSelect
               name="branchId"
               label=""
@@ -63,7 +108,7 @@ const ClassEditor: React.FC<EditorProps> = ({ initialData }) => {
               />
             </AppFormSelect>
           </div>
-          <div className="col-md-3">
+          <div className="col-md-4">
             <AppFormSelect
               name="classType"
               label=""
@@ -76,7 +121,7 @@ const ClassEditor: React.FC<EditorProps> = ({ initialData }) => {
               />
             </AppFormSelect>
           </div>
-          <div className="col-md-3">
+          <div className="col-md-6">
             <AppFormSelect
               name="shift"
               label=""
@@ -85,6 +130,20 @@ const ClassEditor: React.FC<EditorProps> = ({ initialData }) => {
               <AppShiftSelect
                 name="shift"
                 value={id ? formData!.classType.toString() : ""}
+                onChange={() => {}}
+              />
+            </AppFormSelect>
+          </div>
+
+          <div className="col-md-6">
+            <AppFormSelect
+              name="teacherId"
+              label=""
+              value={id ? formData!.teacherId.toString() : ""}
+            >
+              <AppTeacherSelect
+                name="teacherId"
+                value={id ? formData!.teacherId.toString() : ""}
                 onChange={() => {}}
               />
             </AppFormSelect>

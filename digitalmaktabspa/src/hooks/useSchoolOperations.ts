@@ -105,6 +105,17 @@ const useSchoolOperations = () => {
     [executeSchoolApi]
   );
 
+  const registerStudent = useCallback(
+    (student: Student) =>
+      executeSchoolApi(() => school.registerStudent(student)),
+    [executeSchoolApi]
+  );
+
+  const addClass = useCallback(
+    (branch: Class) => executeSchoolApi(() => school.addClass(branch)),
+    [executeSchoolApi]
+  );
+
   return useMemo(
     () => ({
       data,
@@ -119,6 +130,8 @@ const useSchoolOperations = () => {
       addBranch,
       scheduleList,
       registerTeacher,
+      registerStudent,
+      addClass,
     }),
     [
       data,
@@ -133,6 +146,8 @@ const useSchoolOperations = () => {
       addBranch,
       scheduleList,
       registerTeacher,
+      registerStudent,
+      addClass,
     ]
   );
 };

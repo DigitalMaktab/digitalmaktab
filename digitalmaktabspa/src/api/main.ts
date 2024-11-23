@@ -74,6 +74,8 @@ const addressTypeList = (paginationParams: {
   pageSize: number;
 }) => apiClient.get(`/main/addressTypes`, { params: paginationParams });
 
+const bookList = (paginationParams: { pageNumber: number; pageSize: number }) =>
+  apiClient.get(`/main/books`, { params: paginationParams });
 const mainApi = {
   countryList,
   classList,
@@ -89,6 +91,7 @@ const mainApi = {
   scheduleTimeList,
   shiftList,
   addressTypeList,
+  bookList,
 };
 
 export default mainApi;

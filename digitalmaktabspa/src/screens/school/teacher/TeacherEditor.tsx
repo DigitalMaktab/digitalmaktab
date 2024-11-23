@@ -1,11 +1,10 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useMemo } from "react";
 import AppCard from "../../../components/card/AppCard";
 import AppTab from "../../../components/tab/AppTab";
 import { useAppLocalizer } from "../../../hooks/useAppLocalizer";
 import * as AIIcons from "react-icons/ai";
 import * as SIIcons from "react-icons/si";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
-import * as Yup from "yup";
+import { useNavigate, useParams } from "react-router-dom";
 import AppFormCard from "../../../components/card/AppFormCard";
 import AppFormInput from "../../../components/form/AppFormInput";
 import AppTable from "../../../components/table/AppTable";
@@ -22,65 +21,54 @@ import { ResponseResult } from "../../../dtos/ResultEnum";
 import { EditorProps } from "../properties/EditorProps";
 import { PhoneNumberValue } from "../../../components/properties/InputProps";
 import { Gender } from "../../../models/Gender";
-
-// Separate profile validation schema
-const getProfileValidationSchema = (t: any) =>
-  Yup.object().shape({
-    firstName: Yup.string().required(
-      t("validation.required", { value: t("teacher.firstName.label") })
-    ),
-    lastName: Yup.string().required(
-      t("validation.required", { value: t("teacher.lastName.label") })
-    ),
-    email: Yup.string()
-      .email(t("validation.invalidEmail"))
-      .required(t("validation.required", { value: t("auth.email.label") })),
-    phoneNumber: Yup.object().shape({
-      number: Yup.string()
-        .matches(/^\+?[1-9]\d{1,14}$/, t("validation.invalidPhoneNumber"))
-        .required(
-          t("validation.required", {
-            value: t("auth.signup.phoneNumber.label"),
-          })
-        ),
-    }),
-    gender: Yup.string().required(
-      t("validation.required", { value: t("gender.label") })
-    ),
-    primaryAddress: Yup.object().shape({
-      street: Yup.string().required(
-        t("validation.required", { value: t("addressForm.street.label") })
-      ),
-      region: Yup.string().required(
-        t("validation.required", { value: t("addressForm.region.label") })
-      ),
-      village: Yup.string().required(
-        t("validation.required", { value: t("addressForm.village.label") })
-      ),
-    }),
-  });
+import { useFormData } from "../../../hooks/useFormData";
+import { getValidationSchema } from "../../../helper/helper";
 
 const TeacherEditor: React.FC<EditorProps> = ({ initialData }) => {
   const { t } = useAppLocalizer();
   const { id } = useParams<{ id: string }>();
-  const location = useLocation();
   const navigate = useNavigate();
 
   // Initialize form data
   const initialFormData = useMemo(
-    () => ({
-      firstName: "",
-      lastName: "",
-      email: "",
-      phoneNumber: { countryId: "", number: "" },
-      gender: Gender.EMPTY,
-      primaryAddress: { region: "", street: "", village: "" },
-    }),
+    () =>
+      ({
+        firstName: "",
+        lastName: "",
+        email: "",
+        phoneNumber: { countryId: "", number: "" },
+        gender: Gender.EMPTY,
+        primaryAddress: { region: "", street: "", village: "" },
+      } as Teacher),
     []
   );
 
-  const [formData] = useState<Teacher>(
-    (initialData as Teacher) || location.state?.initialData || initialFormData
+  const [formData] = useFormData<Teacher>(initialData, initialFormData);
+
+  const validationSchema = getValidationSchema(
+    {
+      firstName: { label: t("teacher.firstName.label") },
+      lastName: { label: t("teacher.lastName.label") },
+      email: { label: t("auth.email.label") },
+      gender: { label: t("gender.label") },
+      phoneNumber: {
+        label: "",
+        nested: {
+          number: {
+            label: t("auth.signup.phoneNumber.label"),
+          },
+        },
+      },
+      primaryAddress: {
+        label: t("addressForm.label"),
+        nested: {
+          street: { label: t("addressForm.street.label") },
+          region: { label: t("addressForm.region.label") },
+          village: { label: t("addressForm.village.label") },
+        },
+      },
+    },
+    t
   );
 
   const phoneNumberValue: PhoneNumberValue = useMemo(
@@ -132,7 +120,7 @@ const TeacherEditor: React.FC<EditorProps> = ({ initialData }) => {
 
   const profileTabContent = (
     <AppFormCard
-      validationSchema={getProfileValidationSchema(t)}
+      validationSchema={validationSchema}
       initialValues={formData}
       onSubmit={submitData}
     >

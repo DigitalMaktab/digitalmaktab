@@ -33,9 +33,9 @@ namespace digitalmaktabapi.Controllers
         {
             Guid schoolId = Extensions.GetSessionDetails(this).SchoolId;
             var books = await this.rootRepository.GetBooks(schoolId, userParams);
-            var countreisToReturn = this.mapper.Map<ICollection<BookDto>>(books);
+            var booksToReturn = this.mapper.Map<ICollection<BookDto>>(books);
             Response.AddPagintaion(books.CurrentPage, books.PageSize, books.TotalCount, books.TotalPages);
-            return Ok(countreisToReturn);
+            return Ok(booksToReturn);
         }
 
         [AllowAnonymous]

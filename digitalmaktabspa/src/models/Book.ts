@@ -26,4 +26,6 @@ export interface Book extends OpenLibraryBook {
   bookTitle: string;
   subjectId: string;
   subject: Subject;
+  file?: File | null;
+  bookPath?: string;
 }

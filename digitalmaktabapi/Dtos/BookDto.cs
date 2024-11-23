@@ -10,6 +10,7 @@ namespace digitalmaktabapi.Dtos
         public Guid? SchoolId { get; set; }
         public SchoolDto? School { get; set; }
         public required string BookTitle { get; set; }
+        public required string BookPath { get; set; }
 
         public required Guid SubjectId { get; set; }
         public required SubjectDto Subject { get; set; }

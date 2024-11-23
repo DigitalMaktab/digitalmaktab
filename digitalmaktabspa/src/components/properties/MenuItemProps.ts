@@ -5,6 +5,7 @@ export interface MenuItemProps {
   icon: React.ReactNode;
   badge?: string;
   subMenu?: SubMenuItemProps[];
+  hasSubMenu: boolean;
   isActive: boolean;
   onMenuClick: () => void;
   onSubMenuClick: (label: string) => void;
@@ -32,6 +33,7 @@ export interface SubMenuItemProps {
 export interface SubMenuItem {
   label: string;
   link: string;
+  roles?: UserRole[];
 }
 
 export interface MenuItem {

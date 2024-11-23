@@ -55,6 +55,9 @@
             },
             "shift": {
                 "label": "Select Shift"
+            },
+            "className": {
+                "label": "Class Name"
             }
         },
         "saveButton": {
@@ -307,7 +310,13 @@
         "copyright": "Copyright 2024 © Digital Maktab"
     },
     "userRole": {
-        "ADMIN": "School"
+        "admin": "School",
+        "principal": "Principal",
+        "headMaster": "Head Master",
+        "teacher": "Teacher",
+        "student": "Student",
+        "rootUser": "Root User",
+        "unkown": "Unknown"
     },
     "class": {
         "classList": {
@@ -328,6 +337,9 @@
             "validation": {
                 "required": "Class Type is required"
             }
+        },
+        "shift": {
+            "label": "Class Shift"
         }
     },
     "branch": {
@@ -366,10 +378,10 @@
             "label": "Register Teacher"
         },
         "firstName": {
-            "label": "First Name"
+            "label": "Teacher First Name"
         },
         "lastName": {
-            "label": "Last Name"
+            "label": "Teacher Last Name"
         },
         "teacherEditor": {
             "label": "Teacher Editor",
@@ -420,6 +432,9 @@
         },
         "asasNumber": {
             "label": "Asas Number"
+        },
+        "dateOfBirth": {
+            "label": "Date of Birth"
         }
     },
     "calendarYear": {
@@ -507,6 +522,9 @@
     },
     "timetable": {
         "label": "Time Table",
+        "addTimeTable": {
+            "label": "Add Time Table"
+        },
         "dayOfWeek": {
             "label": "Day of Week"
         },
@@ -576,6 +594,36 @@
     },
     "book": {
         "label": "Book",
-        "author": "Author"
+        "author": "Author",
+        "bookTitle": {
+            "label": "Book Title",
+            "placeholder": "Class 1 Geography"
+        },
+        "file": {
+            "label": "Book Manuscript",
+            "placeholder": "Dari.pdf"
+        },
+        "addBook": {
+            "label": "Add Book"
+        }
+    },
+    "report": {
+        "header": {
+            "leftText": {
+                "label": "140"
+            },
+            "centerTextTop": {
+                "label": "Ministry of Education"
+            },
+            "centerTextBottom": {
+                "label": "Directorate (                   )"
+            }
+        },
+        "title": {
+            "label": "Report"
+        },
+        "print": {
+            "label": "Print"
+        }
     }
 }

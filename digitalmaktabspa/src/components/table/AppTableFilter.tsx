@@ -1,5 +1,4 @@
 import React, { useCallback } from "react";
-import { useTranslation } from "react-i18next";
 import { Column } from "./properties/TableProps";
 import AppInput from "../input/AppInput";
 import { TableFiltersProps } from "./properties/TableFilterProps";
@@ -12,6 +11,8 @@ import AppHorizontalSpacer from "../spacer/AppHorizontalSpacer";
 import AppTeacherSelect from "../select/AppTeacherSelect";
 import { debounce } from "lodash";
 import { GLOBAL_DEBOUNCE_DELAY } from "../../config/config";
+import AppClassSelect from "../select/AppClassSelect";
+import { useAppLocalizer } from "../../hooks/useAppLocalizer";
 
 // Mapping for specific accessors to their corresponding filter components
 const filterComponentMapping: { [key: string]: React.FC<any> } = {
@@ -21,6 +22,7 @@ const filterComponentMapping: { [key: string]: React.FC<any> } = {
   shiftValue: AppShiftSelect,
   "teacher.firstName": AppTeacherSelect,
   // "student.firstName": AppStudentSelect,
+  day: AppClassSelect,
 };
 
 // Mapping for display accessors to their filter accessors
@@ -31,6 +33,7 @@ const filterAccessorMapping: { [key: string]: string } = {
   shiftValue: "shift",
   "teacher.firstName": "teacherId",
   "student.firstName": "studentId",
+  day: "classId", // Since the schedule data is flattened we do map accessor day to classId for filters
 };
 
 const AppTableFilters = <T,>({
@@ -39,7 +42,7 @@ const AppTableFilters = <T,>({
   onFilterChange,
   onApplyFilters,
 }: TableFiltersProps<T>) => {
-  const { t } = useTranslation();
+  const { t } = useAppLocalizer();
 
   // Debounced function for handling input changes in AppInput
   const debouncedFilterChange = debounce((key: string, value: any) => {

@@ -8,6 +8,7 @@ namespace digitalmaktabapi.Headers
 {
     public class ClassParams : GeneralParams
     {
+
         public Guid? BranchId { get; set; }
         public Guid? CalendarYearId { get; set; }
         public ClassType? ClassType { get; set; }
