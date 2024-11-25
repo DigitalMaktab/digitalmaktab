@@ -35,10 +35,11 @@ const useSchoolOperations = () => {
         filters: any
       ) => Promise<{ data: T; headers: Record<string, any> }>,
       page: number,
+      pageSize: number,
       filters: any
     ) => {
       const result = await executeSchoolApi(() =>
-        apiMethod({ pageNumber: page, pageSize: 10 }, filters)
+        apiMethod({ pageNumber: page, pageSize }, filters)
       );
 
       if (
@@ -60,26 +61,26 @@ const useSchoolOperations = () => {
   );
 
   const classList = useCallback(
-    (page: number, filters: any) =>
-      fetchPaginatedData(school.classList, page, filters),
+    (page: number, pageSize: number, filters: any) =>
+      fetchPaginatedData(school.classList, page, pageSize, filters),
     [fetchPaginatedData]
   );
 
   const branchList = useCallback(
-    (page: number, filters: any) =>
-      fetchPaginatedData(school.branchList, page, filters),
+    (page: number, pageSize: number, filters: any) =>
+      fetchPaginatedData(school.branchList, page, pageSize, filters),
     [fetchPaginatedData]
   );
 
   const teacherList = useCallback(
-    (page: number, filters: any) =>
-      fetchPaginatedData(school.teacherList, page, filters),
+    (page: number, pageSize: number, filters: any) =>
+      fetchPaginatedData(school.teacherList, page, pageSize, filters),
     [fetchPaginatedData]
   );
 
   const studentList = useCallback(
-    (page: number, filters: any) =>
-      fetchPaginatedData(school.studentList, page, filters),
+    (page: number, pageSize: number, filters: any) =>
+      fetchPaginatedData(school.studentList, page, pageSize, filters),
     [fetchPaginatedData]
   );
 
@@ -94,8 +95,8 @@ const useSchoolOperations = () => {
   );
 
   const scheduleList = useCallback(
-    (page: number, filters: any) =>
-      fetchPaginatedData(school.scheduleList, page, filters),
+    (page: number, pageSize: number, filters: any) =>
+      fetchPaginatedData(school.scheduleList, page, pageSize, filters),
     [fetchPaginatedData]
   );
 

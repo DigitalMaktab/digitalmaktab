@@ -6,8 +6,11 @@ const settings = {
     apiUrl: "http://192.168.8.123:5000/api",
   },
   prod: {
-    apiUrl: "http://192.168.8.123:5000/api",
+    apiUrl: "http://localhost:5000/api",
   },
 };
 
-export default settings;
+// Export the correct settings based on NODE_ENV
+const currentEnv = process.env.NODE_ENV === "production" ? "prod" : "dev";
+
+export default settings[currentEnv];

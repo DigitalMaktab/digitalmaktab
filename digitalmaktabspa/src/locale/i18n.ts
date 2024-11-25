@@ -4,26 +4,29 @@ import Backend from "i18next-http-backend";
 import LanguageDetector from "i18next-browser-languagedetector";
 
 i18n
-  .use(Backend)
-  .use(LanguageDetector)
-  .use(initReactI18next)
+  .use(Backend) // Load translations from the backend
+  .use(LanguageDetector) // Detect the user's language
+  .use(initReactI18next) // Pass i18n to React
   .init({
-    fallbackLng: "en-US",
-    debug: true,
+    fallbackLng: "en-US", // Default language if detection fails
+    debug: false, // Enable debug mode (set to false in production)
     interpolation: {
-      escapeValue: false,
+      escapeValue: false, // Not needed for React as it escapes by default
     },
     backend: {
-      loadPath: "locales/{{lng}}/translation.json",
+      // Path to load translations
+      loadPath: "/locales/{{lng}}/translation.json", // Ensure the correct public path
     },
     detection: {
+      // Detection options
       order: ["querystring", "cookie", "localStorage", "navigator"],
-      lookupQuerystring: "lng",
-      lookupCookie: "i18next",
-      lookupLocalStorage: "i18nextLng",
-      caches: ["localStorage", "cookie"],
+      lookupQuerystring: "lng", // Query string key (e.g., ?lng=en-US)
+      lookupCookie: "i18next", // Cookie key
+      lookupLocalStorage: "i18nextLng", // Local storage key
+      caches: ["localStorage", "cookie"], // Cache languages in these
     },
-    load: "all",
+    supportedLngs: ["en-US", "fa-AF", "ps-AF"], // List of supported languages
+    load: "currentOnly", // Load only the current language (not all)
   });
 
 export default i18n;

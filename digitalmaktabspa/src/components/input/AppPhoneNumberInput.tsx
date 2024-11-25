@@ -7,6 +7,7 @@ const AppPhoneNumberInput: React.FC<PhoneNumberInputProps> = ({
   value,
   label,
   name,
+  id,
   phonenumbervalue,
   countryIdName,
   required = false,
@@ -49,6 +50,7 @@ const AppPhoneNumberInput: React.FC<PhoneNumberInputProps> = ({
         <input
           name={name}
           type="text"
+          id={id}
           className="form-control"
           style={{ width: "200%" }}
           value={phonenumbervalue.number || ""}

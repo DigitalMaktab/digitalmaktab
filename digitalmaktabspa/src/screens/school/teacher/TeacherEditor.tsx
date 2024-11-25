@@ -184,7 +184,9 @@ const TeacherEditor: React.FC<EditorProps> = ({ initialData }) => {
           data={formData.classes as Class[]}
           columns={columns}
           totalPages={1}
-          fetchPageData={() => {}}
+          showPageSizer={false}
+          showPagination={false}
+          showExport={false}
         />
       )}
     </AppCard>

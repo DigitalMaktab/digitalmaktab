@@ -47,6 +47,7 @@ const AppInput: React.FC<
       <AppFileInput
         name={name}
         label={label}
+        id={name}
         setFieldValue={setFieldValue}
         rest={rest}
       />
@@ -59,6 +60,7 @@ const AppInput: React.FC<
         required={required}
         placeholder={placeholder}
         value={value}
+        id={name}
         rest={rest}
       />
     );
@@ -69,6 +71,7 @@ const AppInput: React.FC<
         name={name}
         label={label}
         required={required}
+        id={name}
         placeholder={placeholder}
         phonenumbervalue={phoneInput}
         countryIdName="phoneNumber.countryId"

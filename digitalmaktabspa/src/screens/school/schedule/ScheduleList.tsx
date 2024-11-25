@@ -9,7 +9,6 @@ import { ScheduleData } from "../../../models/ScheduleData";
 const ScheduleList = () => {
   const { t } = useAppLocalizer();
   const { scheduleList, data, totalPages } = useSchoolOperations();
-  const [currentPage, setCurrentPage] = useState(1);
 
   const columns: Column<ScheduleData>[] = useMemo(
     () => [
@@ -54,34 +53,24 @@ const ScheduleList = () => {
     []
   );
 
-  const fetchPageData = useCallback((page: number, filters = {}) => {
-    setCurrentPage(page);
-    scheduleList(page, filters);
-  }, []);
-
-  useEffect(() => {
-    fetchPageData(currentPage, {});
-  }, [currentPage, fetchPageData]);
-
   return (
     <AppCard title={t("timetable.label")}>
-      {data && (
-        <AppTable
-          rowLink="/schedule-editor/{id}"
-          data={data as ScheduleData[]}
-          columns={columns}
-          totalPages={totalPages}
-          fetchPageData={fetchPageData}
-          showPagination={false}
-          actions={[
-            {
-              label: t("timetable.addTimeTable.label"),
-              route: "/schedule-editor/new",
-              icon: "plus",
-            },
-          ]}
-        />
-      )}
+      <AppTable
+        rowLink="/schedule-editor/{id}"
+        data={data as ScheduleData[]}
+        columns={columns}
+        totalPages={totalPages}
+        fetchPageData={scheduleList}
+        showPagination={false}
+        showPageSizer={false}
+        actions={[
+          {
+            label: t("timetable.addTimeTable.label"),
+            route: "/schedule-editor/new",
+            icon: "plus",
+          },
+        ]}
+      />
     </AppCard>
   );
 };

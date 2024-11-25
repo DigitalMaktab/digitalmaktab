@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import useSchoolOperations from "../../../hooks/useSchoolOperations";
 import { Column } from "../../../components/table/properties/TableProps";
 import { Teacher } from "../../../models/Teacher";
@@ -10,8 +10,8 @@ import { useAppLocalizer } from "../../../hooks/useAppLocalizer";
 const TeacherList = () => {
   const { t, formatCountryCode } = useAppLocalizer();
   const { teacherList, data, totalPages } = useSchoolOperations();
-  const [currentPage, setCurrentPage] = useState(1);
 
+  // Define columns using useMemo for optimization
   const columns: Column<Teacher>[] = useMemo(
     () => [
       {
@@ -45,33 +45,23 @@ const TeacherList = () => {
     [formatCountryCode]
   );
 
-  const fetchPageData = useCallback((page: number, filters = {}) => {
-    setCurrentPage(page);
-    teacherList(page, filters);
-  }, []);
-
-  useEffect(() => {
-    fetchPageData(currentPage, {});
-  }, [currentPage, fetchPageData]);
-
   return (
     <AppCard title={t("teacher.teacherList.label")}>
-      {data && (
-        <AppTable
-          rowLink="/teacher-editor/{id}"
-          data={data as Teacher[]}
-          columns={columns}
-          totalPages={totalPages}
-          fetchPageData={fetchPageData}
-          actions={[
-            {
-              label: t("teacher.registerTeacher.label"),
-              route: "/teacher-editor/new",
-              icon: "plus",
-            },
-          ]}
-        />
-      )}
+      <AppTable
+        rowLink="/teacher-editor/{id}"
+        data={data as Teacher[]}
+        columns={columns}
+        totalPages={totalPages}
+        fetchPageData={teacherList}
+        reportTitle={t("teacher.teacherList.label")}
+        actions={[
+          {
+            label: t("teacher.registerTeacher.label"),
+            route: "/teacher-editor/new",
+            icon: "plus",
+          },
+        ]}
+      />
     </AppCard>
   );
 };

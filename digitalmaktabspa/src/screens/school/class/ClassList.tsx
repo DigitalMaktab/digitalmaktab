@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import useSchoolOperations from "../../../hooks/useSchoolOperations";
 import { Column } from "../../../components/table/properties/TableProps";
 import { Class } from "../../../models/Class";
@@ -12,7 +12,6 @@ import { useAppLocalizer } from "../../../hooks/useAppLocalizer";
 const ClassList = () => {
   const { t, formatNumber } = useAppLocalizer();
   const { classList, data, totalPages } = useSchoolOperations();
-  const [currentPage, setCurrentPage] = useState(1);
 
   const columns: Column<Class>[] = useMemo(
     () => [
@@ -51,34 +50,23 @@ const ClassList = () => {
     [formatNumber]
   );
 
-  const fetchPageData = useCallback((page: number, filters = {}) => {
-    setCurrentPage(page);
-    classList(page, filters);
-  }, []);
-
-  useEffect(() => {
-    fetchPageData(currentPage, {});
-  }, [currentPage, fetchPageData]);
-
   return (
     <AppCard title={t("class.classList.label")}>
-      {data && (
-        <AppTable
-          rowLink="/class-editor/{id}"
-          data={data as Class[]}
-          columns={columns}
-          totalPages={totalPages}
-          fetchPageData={fetchPageData}
-          reportTitle={t("class.classList.label")}
-          actions={[
-            {
-              label: t("class.addClass.label"),
-              route: "/class-editor/new",
-              icon: "plus",
-            },
-          ]}
-        />
-      )}
+      <AppTable
+        rowLink="/class-editor/{id}"
+        data={data as Class[]}
+        columns={columns}
+        totalPages={totalPages}
+        fetchPageData={classList}
+        reportTitle={t("class.classList.label")}
+        actions={[
+          {
+            label: t("class.addClass.label"),
+            route: "/class-editor/new",
+            icon: "plus",
+          },
+        ]}
+      />
     </AppCard>
   );
 };

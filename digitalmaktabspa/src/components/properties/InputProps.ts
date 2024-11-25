@@ -9,6 +9,7 @@ export interface InputProps {
   placeholder?: PlaceHolder;
   value?: string;
   required?: boolean;
+  id?: string;
   // setFieldValue?: FormikHelpers<any>["setFieldValue"];
   setFieldValue?: (field: string, value: any) => void;
   phoneNumber?: PhoneNumberValue;

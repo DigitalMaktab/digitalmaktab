@@ -1,0 +1,654 @@
+{
+    "appName": "Digital Maktab",
+    "logo": "Logo",
+    "apiResponse": {
+        "error": "An error occured",
+        "requestSent": "Request is alreay sent",
+        "unknownError": "Unknown error occured"
+    },
+    "close": {
+        "label": "Close"
+    },
+    "slogan": {
+        "label": "Learn, Create, Change",
+        "learn": "Learn",
+        "create": "Create",
+        "change": "Change"
+    },
+    "controls": {
+        "fileInput": {
+            "button": "Choose File",
+            "placeholder": "No file is selected"
+        },
+        "passwordInput": {
+            "show": "Show",
+            "hide": "Hide"
+        },
+        "wizard": {
+            "nextButton": {
+                "label": "Next"
+            },
+            "previousButton": {
+                "label": "Previous"
+            },
+            "finishButton": {
+                "label": "Finish"
+            }
+        },
+        "select2": {
+            "loading": "Loading...",
+            "errorLoading": "Error loading the results",
+            "inputTooLong": "Please delete {input} characters",
+            "inputTooShort": "Please enter {remainingChars} or more characters",
+            "loadingMore": "Loading more results...",
+            "maximumSelected": "You can only select {maximum} item(s)",
+            "noResults": "No results found",
+            "searching": "Searching...",
+            "country": {
+                "label": "Select Country"
+            },
+            "branch": {
+                "label": "Select Branch"
+            },
+            "classType": {
+                "label": "Select Class Type"
+            },
+            "shift": {
+                "label": "Select Shift"
+            },
+            "className": {
+                "label": "Class Name"
+            }
+        },
+        "saveButton": {
+            "label": "Save"
+        }
+    },
+    "languages": {
+        "en": "English",
+        "fa": "Dari",
+        "ps": "Pashto"
+    },
+    "auth": {
+        "email": {
+            "label": "Email Address",
+            "placeholder": "info@email.com",
+            "validation": {
+                "required": "Email is required",
+                "invalid": "Email is invalid"
+            }
+        },
+        "password": {
+            "label": "Password",
+            "placeholder": "*******",
+            "validation": {
+                "required": "Password is required",
+                "atLeast8Chars": "Password must be at least 8 characters"
+            }
+        },
+        "login": {
+            "login": "Login",
+            "headerText": "Sign in to account",
+            "headerLabel": "Enter your email &amp; password to login",
+            "rememberPassword": "Remember password",
+            "forgotPassword": "Forgot password?",
+            "dontHaveAccount": "Don't have account",
+            "createAccount": "Create Account",
+            "unauthorized": "Unauthorized Result, Wrong email, password combination"
+        },
+        "signup": {
+            "createAccount": "Sign up to account",
+            "specifications": "Provide the following details to register",
+            "about": {
+                "label": "About",
+                "description": "Add School Details"
+            },
+            "address": {
+                "label": "Address",
+                "description": "Add Address Details"
+            },
+            "verify": {
+                "label": "Verify",
+                "description": "Verify the Details"
+            },
+            "schoolName": {
+                "label": "School Name",
+                "placeholder": "Sobh e Omid School",
+                "validation": {
+                    "required": "School name is required"
+                }
+            },
+            "code": {
+                "label": "Code",
+                "placeholder": "12345",
+                "validation": {
+                    "required": "School Code is required"
+                }
+            },
+            "phoneNumber": {
+                "label": "Contact Number",
+                "placeholder": "787446099",
+                "validation": {
+                    "required": "Contact Number is required"
+                }
+            },
+            "countryId": {
+                "label": "Country",
+                "placeholder": "AF",
+                "validation": {
+                    "required": "Country is required"
+                }
+            },
+            "logo": {
+                "label": "Logo",
+                "placeholder": "Select logo"
+            }
+        }
+    },
+    "header": {
+        "search": {
+            "placeholder": "Search anything..."
+        },
+        "user": {
+            "name": "Wade Warren",
+            "role": "UI Designer",
+            "actions": {
+                "account": "Account",
+                "logout": "Logout"
+            }
+        }
+    },
+    "sidebar": {
+        "general": {
+            "label": "General",
+            "menues": {
+                "dashboard": "Dashboard",
+                "library": {
+                    "label": "Library",
+                    "onlineLibrary": "Online Library",
+                    "list": "Books List",
+                    "add": "Add Book"
+                },
+                "branches": {
+                    "label": "Branches",
+                    "list": "Branch List",
+                    "add": "Add Branch"
+                },
+                "classes": {
+                    "label": "Classes",
+                    "list": "Class List",
+                    "add": "Add Class"
+                },
+                "timeTable": {
+                    "label": "Time Table",
+                    "list": "Schedule",
+                    "add": "Add Schedule"
+                }
+            }
+        },
+        "teachers": {
+            "label": "Teachers",
+            "menues": {
+                "list": "Teacher List",
+                "register": "Register Teacher"
+            }
+        },
+        "students": {
+            "label": "Students",
+            "menues": {
+                "list": "Student List",
+                "register": "Register Student"
+            }
+        }
+    },
+    "breadcrumb": {
+        "title": "Default Dashboard"
+    },
+    "public": {
+        "header": {
+            "back": "Back",
+            "createAccount": {
+                "label": "Create Account"
+            },
+            "home": {
+                "label": "Home"
+            },
+            "features": {
+                "label": "Features"
+            }
+        },
+        "home": {
+            "kickStart": "Kick-start your school management journey!",
+            "details": "Efficiently manage your school, enhance communication, and empower students and staff—all in one powerful system. Simplify your school management today!"
+        },
+        "features": {
+            "description": "The system offers complete management of educational processes, covering administrative, academic, and library-related tasks",
+            "features": {
+                "schoolRegistry": {
+                    "title": "School Registry",
+                    "description": "The School Registry manages essential information about the school, including its structure, staff, and administrative details."
+                },
+                "teacherRegistry": {
+                    "title": "Teacher Registry",
+                    "description": "The Teachers Registry manages teacher profiles, qualifications, and assignments, ensuring proper organization of staff information."
+                },
+                "studentRegistry": {
+                    "title": "Student Registry",
+                    "description": "The Student Registry efficiently manages student information, including enrollment, personal details, academic records, and attendance."
+                },
+                "classRegistry": {
+                    "title": "Class Registry",
+                    "description": "The Classes Registry organizes and manages information about class schedules, subjects, and student assignments."
+                },
+                "subjects": {
+                    "title": "Subjects",
+                    "description": "The Subjects module manages information related to academic subjects, including course details, curriculum, and assigned teachers."
+                },
+                "grades": {
+                    "title": "Grades",
+                    "description": "The Grades module manages the recording and tracking of student performance and exam results across all subjects."
+                },
+                "attendance": {
+                    "title": "Attendance",
+                    "description": "The Attendance module tracks and manages student attendance, providing insights into their presence and absences."
+                },
+                "library": {
+                    "title": "Library",
+                    "description": "The Library module manages the catalog of books and resources, including Afghanistan MOE books, and facilitates borrowing and tracking."
+                }
+            }
+        },
+        "support": {
+            "title": "Support",
+            "description": "Fast issue resolution, and dedicated experts for a seamless experience",
+            "details": "We give it as we think that excellent support is needed",
+            "more": "Check our reviews for fast and accurate support to ensure support. we offer premium assistance around-the-clock for any bugs you encounter. and we’ll do best to help you out with any future updates for free."
+        },
+        "footer": {
+            "label": "Digital Maktab, a trusted partner for your school."
+        }
+    },
+    "addressForm": {
+        "title": "Address",
+        "street": {
+            "label": "Street",
+            "placeholder": "12th Street",
+            "validation": {
+                "required": "Street is required"
+            }
+        },
+        "village": {
+            "label": "Address 2",
+            "placeholder": "Optional",
+            "validation": {
+                "required": "Address 2 is required"
+            }
+        },
+        "region": {
+            "label": "Region",
+            "placeholder": "Region",
+            "validation": {
+                "required": "Region is required"
+            }
+        },
+        "postalCode": {
+            "label": "Postal Code",
+            "placeholder": "4040",
+            "validation": {
+                "required": "Postal Code is required"
+            }
+        }
+    },
+    "profile": {
+        "label": "Profile",
+        "editProfile": {
+            "label": "Edit Profile"
+        }
+    },
+    "footer": {
+        "label": "Hand crafted &amp; made with",
+        "copyright": "Copyright 2024 © Digital Maktab"
+    },
+    "userRole": {
+        "admin": "School",
+        "principal": "Principal",
+        "headMaster": "Head Master",
+        "teacher": "Teacher",
+        "student": "Student",
+        "rootUser": "Root User",
+        "unkown": "Unknown"
+    },
+    "class": {
+        "classList": {
+            "label": "Class List"
+        },
+        "addClass": {
+            "label": "Add Class"
+        },
+        "title": "Class",
+        "className": {
+            "label": "Class Name",
+            "validation": {
+                "required": "Class Name is required"
+            }
+        },
+        "classType": {
+            "label": "Class Type",
+            "validation": {
+                "required": "Class Type is required"
+            }
+        },
+        "shift": {
+            "label": "Class Shift"
+        }
+    },
+    "branch": {
+        "branchName": {
+            "label": "Branch Name",
+            "validation": {
+                "required": "Branch Name is required"
+            }
+        },
+        "branchList": {
+            "label": "Branch List"
+        },
+        "addBranch": {
+            "label": "Add Branch"
+        },
+        "title": "Branch"
+    },
+    "shift": {
+        "label": "Shift"
+    },
+    "gender": {
+        "label": "Gender",
+        "male": {
+            "label": "Male"
+        },
+        "female": {
+            "label": "Female"
+        }
+    },
+    "teacher": {
+        "teacherName": "Supervisor Teacher",
+        "teacherList": {
+            "label": "Teacher List"
+        },
+        "registerTeacher": {
+            "label": "Register Teacher"
+        },
+        "firstName": {
+            "label": "Teacher First Name"
+        },
+        "lastName": {
+            "label": "Teacher Last Name"
+        },
+        "teacherEditor": {
+            "label": "Teacher Editor",
+            "tabs": {
+                "profile": {
+                    "label": "Profile"
+                },
+                "classes": {
+                    "label": "Classes"
+                },
+                "schedules": {
+                    "lable": "Schedules"
+                }
+            }
+        }
+    },
+    "student": {
+        "label": "Student",
+        "studentList": {
+            "label": "Student List"
+        },
+        "registerStudent": {
+            "label": "Register Student"
+        },
+        "firstNameNative": {
+            "label": "First Name"
+        },
+        "lastNameNative": {
+            "label": "Last Name"
+        },
+        "fatherNameNative": {
+            "label": "Father Name"
+        },
+        "grandFatherNameNative": {
+            "label": "Grand Father Name"
+        },
+        "firstNameEnglish": {
+            "label": "First Name English"
+        },
+        "lastNameEnglish": {
+            "label": "Last Name English"
+        },
+        "fatherNameEnglish": {
+            "label": "Father Name English"
+        },
+        "grandFatherNameEnglish": {
+            "label": "Grand Father Name English"
+        },
+        "asasNumber": {
+            "label": "Asas Number"
+        },
+        "dateOfBirth": {
+            "label": "Date of Birth"
+        }
+    },
+    "calendarYear": {
+        "label": "Calendar Year",
+        "year": {
+            "label": "Year"
+        },
+        "nativeYear": {
+            "label": "Native Year"
+        }
+    },
+    "enrollment": {
+        "label": "Enrollment",
+        "enrolled": {
+            "label": "Enrolled"
+        }
+    },
+    "pagination": {
+        "next": "Next",
+        "previous": "Previous"
+    },
+    "filters": {
+        "button": {
+            "label": "Search",
+            "reset": "Reset Filters"
+        },
+        "show": {
+            "label": "Show filters"
+        },
+        "hide": {
+            "label": "Hide filters"
+        },
+        "implementation": {
+            "required": "Implementation of ({{value}}) is required"
+        }
+    },
+    "unauthorized": {
+        "header": {
+            "label": "Unauthorized Access"
+        },
+        "message": {
+            "label": "You do not have permission to view this page."
+        },
+        "backToHome": {
+            "label": "Back to Home"
+        }
+    },
+    "welcomeCard": {
+        "welcome": {
+            "label": "Welcome ({{value}})"
+        },
+        "text": {
+            "label": "Welcome to the Dashboard! Access tools and resources designed to support learning, teaching, and school management."
+        }
+    },
+    "schoolDashboard": {
+        "totalStudents": "Total Students",
+        "totalTeachers": "Total Teachers",
+        "totalClasses": "Total Classes",
+        "totalBranches": "Total Class Branches"
+    },
+    "studentGenderChart": {
+        "label": "Gender Distribution"
+    },
+    "teacherGenderChart": {
+        "label": "Gender Distribution"
+    },
+    "classBranchChart": {
+        "label": "Class Branch Distribution"
+    },
+    "classEnrollmentChart": {
+        "label": "Class Enrollment",
+        "classes": {
+            "label": "Classes"
+        },
+        "enrollment": {
+            "label": "Enrollment Count"
+        }
+    },
+    "phoneNumber": {
+        "label": "Phone Number",
+        "number": {
+            "label": "Number"
+        }
+    },
+    "timetable": {
+        "label": "Time Table",
+        "addTimeTable": {
+            "label": "Add Time Table"
+        },
+        "dayOfWeek": {
+            "label": "Day of Week"
+        },
+        "hour1": {
+            "label": "Hour 1"
+        },
+        "hour2": {
+            "label": "Hour 2"
+        },
+        "hour3": {
+            "label": "Hour 3"
+        },
+        "hour4": {
+            "label": "Hour 4"
+        },
+        "hour5": {
+            "label": "Hour 5"
+        },
+        "hour6": {
+            "label": "Hour 6"
+        },
+        "hour7": {
+            "label": "Hour 7"
+        },
+        "hour8": {
+            "label": "Hour 8"
+        }
+    },
+    "validation": {
+        "required": "Field ({{value}}) is required",
+        "invalidEmail": "Email is invalid",
+        "invalidPhoneNumber": "Invalid Phone Number"
+    },
+    "asyncSelect": {
+        "noOptionsMessage": {
+            "label": "No options found"
+        },
+        "loading": {
+            "label": "Loading..."
+        }
+    },
+    "library": {
+        "label": "Library",
+        "noImageAvailable": "No Image",
+        "booksPerPage": {
+            "label": "{{value}} books per page"
+        },
+        "onlineLibrary": {
+            "label": "Online Library",
+            "unkownAuthor": {
+                "label": "Unknown"
+            },
+            "note": {
+                "label": "Note: You need to create an account to be able to read the full version of books on Open Library website."
+            }
+        },
+        "search": {
+            "placeholder": "Search Books",
+            "label": "Search"
+        },
+        "noResultsFound": {
+            "label": "No result found"
+        },
+        "readButton": {
+            "label": "Read"
+        }
+    },
+    "book": {
+        "label": "Book",
+        "author": "Author",
+        "bookTitle": {
+            "label": "Book Title",
+            "placeholder": "Class 1 Geography"
+        },
+        "file": {
+            "label": "Book Manuscript",
+            "placeholder": "Dari.pdf"
+        },
+        "addBook": {
+            "label": "Add Book"
+        }
+    },
+    "report": {
+        "header": {
+            "leftText": {
+                "label": "140"
+            },
+            "centerTextTop": {
+                "label": "Ministry of Education"
+            },
+            "centerTextBottom": {
+                "label": "Directorate (                   )"
+            }
+        },
+        "footer": {
+            "pageNumber": {
+                "label": "Page {{currentPage}} of {{totalPages}}"
+            }
+        },
+        "title": {
+            "label": "Report"
+        },
+        "print": {
+            "label": "Print"
+        },
+        "subject": {
+            "label": "Subject"
+        },
+        "author": {
+            "label": "Author"
+        }
+    },
+    "table": {
+        "pageSize": {
+            "label": "Page Size"
+        },
+        "loading": {
+            "label": "Loading..."
+        },
+        "noData": {
+            "label": "No data available"
+        },
+        "error": {
+            "label": "An error occurred while loading the data."
+        }
+    }
+}

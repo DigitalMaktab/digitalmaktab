@@ -5,7 +5,7 @@ import settings from "../config/settings";
 import { getFromCache, saveToCache } from "../cache/cache";
 
 let apiClient = axios.create({
-  baseURL: settings.dev.apiUrl,
+  baseURL: settings.apiUrl,
   timeout: 60000,
   headers: {
     "Content-Type": "application/json",

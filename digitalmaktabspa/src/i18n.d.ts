@@ -1,8 +1,10 @@
 import "react-i18next";
 
-// Extending the default i18n with our keys
+// Extend the default i18n resources type with your keys
 declare module "react-i18next" {
-  interface Resources {
-    translation: typeof import("../../public/locales/en-US/translation.json");
+  interface CustomTypeOptions {
+    resources: {
+      translation: typeof import("../public/locales/en-US/translation.json");
+    };
   }
 }

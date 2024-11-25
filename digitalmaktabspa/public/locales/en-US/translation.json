@@ -619,11 +619,36 @@
                 "label": "Directorate (                   )"
             }
         },
+        "footer": {
+            "pageNumber": {
+                "label": "Page {{currentPage}} of {{totalPages}}"
+            }
+        },
         "title": {
             "label": "Report"
         },
         "print": {
             "label": "Print"
+        },
+        "subject": {
+            "label": "Subject"
+        },
+        "author": {
+            "label": "Author"
+        }
+    },
+    "table": {
+        "pageSize": {
+            "label": "Page Size"
+        },
+        "loading": {
+            "label": "Loading..."
+        },
+        "noData": {
+            "label": "No data available"
+        },
+        "error": {
+            "label": "An error occurred while loading the data."
         }
     }
 }

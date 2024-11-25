@@ -6,10 +6,9 @@ import { useAppLocalizer } from "./useAppLocalizer";
 import { Column } from "../components/table/properties/TableProps";
 
 const useJsPdfExportToPdf = <T>() => {
-  const { t, dir } = useAppLocalizer();
+  const { t, dir, formatNumber } = useAppLocalizer();
   const cachedLogo = useRef<string | null>(null);
 
-  // Helper function to fetch and cache image as Base64
   const fetchImageBase64 = async (path: string): Promise<string> => {
     if (cachedLogo.current) return cachedLogo.current;
     try {
@@ -32,7 +31,6 @@ const useJsPdfExportToPdf = <T>() => {
     }
   };
 
-  // Main function to export data to PDF
   const exportToPDF = useCallback(
     async (
       columns: Column<T>[],
@@ -50,15 +48,19 @@ const useJsPdfExportToPdf = <T>() => {
           format: "a4",
         });
 
-        // Load and set the font
         doc.addFileToVFS("VazirMatn-Regular.ttf", VazirMatnBase64);
         doc.addFont("VazirMatn-Regular.ttf", "VazirMatn", "normal");
         doc.setFont("VazirMatn");
 
-        // Fetch and cache logo
+        // Set document properties
+        doc.setProperties({
+          title,
+          subject: t("report.subject.label"),
+          author: t("report.author.label"),
+        });
+
         const logoBase64 = await fetchImageBase64(logoPath);
 
-        // Header rendering
         const renderHeader = () => {
           const isRTL = dir === "rtl";
           const pageWidth = doc.internal.pageSize.getWidth();
@@ -75,7 +77,6 @@ const useJsPdfExportToPdf = <T>() => {
           });
         };
 
-        // Table rendering
         const renderTable = () => {
           const isRTL = dir === "rtl";
           const headers = columns.map((col) => t(col.header));
@@ -106,7 +107,6 @@ const useJsPdfExportToPdf = <T>() => {
           });
         };
 
-        // Title rendering
         const renderTitle = () => {
           doc.setFontSize(16);
           doc.text(title, doc.internal.pageSize.getWidth() / 2, 80, {
@@ -114,18 +114,47 @@ const useJsPdfExportToPdf = <T>() => {
           });
         };
 
-        // Render all components
+        const renderFooter = () => {
+          const pageCount = (doc.internal as any).getNumberOfPages();
+          const pageWidth = doc.internal.pageSize.getWidth();
+          const pageHeight = doc.internal.pageSize.getHeight();
+
+          for (let i = 1; i <= pageCount; i++) {
+            doc.setPage(i);
+            doc.setFontSize(10);
+            const text = t("report.footer.pageNumber.label", {
+              currentPage: formatNumber(i),
+              totalPages: formatNumber(pageCount),
+            });
+            const isRTL = dir === "rtl";
+            const footerX = isRTL ? 20 : pageWidth - 20;
+
+            doc.text(text, footerX, pageHeight - 30, {
+              align: isRTL ? "left" : "right",
+            });
+          }
+        };
+
         renderHeader();
         renderTitle();
         renderTable();
+        renderFooter();
 
-        // Open PDF in new tab
-        doc.output("dataurlnewwindow");
+        // Open the PDF in a new tab with the correct title
+        const pdfBlob = doc.output("blob");
+        const url = URL.createObjectURL(pdfBlob);
+        const pdfWindow = window.open(url, "_blank");
+        if (pdfWindow && pdfWindow.document) {
+          pdfWindow.document.title = title;
+        }
+
+        // Download the PDF with a meaningful name
+        // doc.save(`${title}.pdf`);
       } catch (error) {
         console.error("Error generating PDF:", error);
       }
     },
-    [t, dir]
+    [t, dir, formatNumber]
   );
 
   return exportToPDF;

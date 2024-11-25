@@ -44,6 +44,7 @@ const AppSelect2: React.FC<Select2Props> = ({
       )}
       <select
         ref={selectRef}
+        id={name}
         className="form-control"
         name={name}
         value={value} // Set value here instead of selected on option

@@ -2,6 +2,7 @@
   "name": "digitalmaktabspa",
   "version": "0.1.0",
   "private": true,
+  "homepage": "/",
   "dependencies": {
     "@react-pdf-viewer/core": "^3.12.0",
     "@react-pdf-viewer/default-layout": "^3.12.0",
@@ -53,7 +54,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "react-scripts build && cp -r build/* ../digitalmaktabapi/wwwroot",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },

@@ -1,0 +1,654 @@
+{
+    "appName": "مکتب دیجیتالی",
+    "logo": "لوگو",
+    "apiResponse": {
+        "error": "خطایی رخ داد",
+        "requestSent": "درخواست شما ارسال گردیده است",
+        "unknownError": "خطایی نا معلوم رخ داد"
+    },
+    "close": {
+        "label": "بستن"
+    },
+    "slogan": {
+        "label": "یاد بگیرید، خلق کنید، تغییر دهید",
+        "learn": "یاد بگیرید",
+        "create": "خلق کنید",
+        "change": "تغیر دهید"
+    },
+    "controls": {
+        "fileInput": {
+            "button": "انتخاب فایل",
+            "placeholder": "فایلی انتخاب نشده است"
+        },
+        "passwordInput": {
+            "show": "نمایش رمز",
+            "hide": "پنهان کردن"
+        },
+        "wizard": {
+            "nextButton": {
+                "label": "بعدی"
+            },
+            "previousButton": {
+                "label": "قبلی"
+            },
+            "finishButton": {
+                "label": "ثبت"
+            }
+        },
+        "select2": {
+            "loading": "... در حال بارگزاری",
+            "errorLoading": "بارگذاری اطلاعات با خطا مواجه شد",
+            "inputTooLong": "لطفاً {input} کاراکتر حذف کنید",
+            "inputTooShort": "لطفاً {remainingChars} یا تعداد بیشتری کاراکتر وارد کنید",
+            "loadingMore": "بارگذاری اطلاعات بیشتر...",
+            "maximumSelected": "شما تنها می‌توانید {maximum} مورد را انتخاب کنید",
+            "noResults": "نتیجه‌ای یافت نشد",
+            "searching": "در حال جستجو...",
+            "country": {
+                "label": "انتخاب کشور"
+            },
+            "branch": {
+                "label": "انتخاب شاخه صنف"
+            },
+            "classType": {
+                "label": "انتخاب نوع صنف"
+            },
+            "shift": {
+                "label": "انتخاب شیفت"
+            },
+            "className": {
+                "label": "صنف"
+            }
+        },
+        "saveButton": {
+            "label": "ثبت"
+        }
+    },
+    "languages": {
+        "en": "انگلیسی",
+        "fa": "دری",
+        "ps": "پشتو"
+    },
+    "auth": {
+        "email": {
+            "label": "آدرس ایمیل",
+            "placeholder": "info@email.com",
+            "validation": {
+                "required": "ایمیل ضروری میباشد",
+                "invalid": "قالب ایمیل درست نمیباشد."
+            }
+        },
+        "password": {
+            "label": "رمز ورود",
+            "placeholder": "*******",
+            "validation": {
+                "required": "پسورد ضروری میباشد.",
+                "atLeast8Chars": "رمز ورود حد اقل باید ۸ کاراکتر باشد"
+            }
+        },
+        "login": {
+            "login": "وردو به سیستم",
+            "headerText": "به حساب تان وارد شوید",
+            "headerLabel": "آدرس ایمیل و رمز خود را ارایه بدارید",
+            "rememberPassword": "به یاد داشته باش",
+            "forgotPassword": "رمز تان را فراموش کرده اید؟",
+            "dontHaveAccount": "حساب ندارید؟",
+            "createAccount": "ایجاد حساب",
+            "unauthorized": "نتیجه غیر مجاز، ترکیب ایمیل و رمز عبور نادرست است."
+        },
+        "signup": {
+            "createAccount": "ایجاد حساب",
+            "specifications": "برای ثبت حساب معلومات زیر را وارد نمایید.",
+            "about": {
+                "label": "مشخصات",
+                "description": "مشخصات مکتب را وارد کنید"
+            },
+            "address": {
+                "label": "آدرس",
+                "description": "آدرس مکتب را وارد کنید"
+            },
+            "verify": {
+                "label": "تایید",
+                "description": "تایید معلومات"
+            },
+            "schoolName": {
+                "label": "اسم مکتب",
+                "placeholder": "خصوصی صبح امید",
+                "validation": {
+                    "required": "اسم مکتب ضروری میباشد."
+                }
+            },
+            "code": {
+                "label": "کود مکتب",
+                "placeholder": "۱۲۳۴۵",
+                "validation": {
+                    "required": "کود مکتب ضروری میباشد"
+                }
+            },
+            "phoneNumber": {
+                "label": "شماره تماس",
+                "placeholder": "۷۸۷۴۴۶۰۹۹",
+                "validation": {
+                    "required": "شماره تماس ضروری میباشد"
+                }
+            },
+            "countryId": {
+                "label": "کشور",
+                "placeholder": "AF",
+                "validation": {
+                    "required": "انتخاب کشور ضروری میباشد"
+                }
+            },
+            "logo": {
+                "label": "لوگو",
+                "placeholder": "انتخاب لوگو"
+            }
+        }
+    },
+    "header": {
+        "search": {
+            "placeholder": "جستجو ..."
+        },
+        "user": {
+            "name": "محمد نعیم داهی",
+            "role": "ادمین",
+            "actions": {
+                "account": "حساب",
+                "logout": "خروج"
+            }
+        }
+    },
+    "sidebar": {
+        "general": {
+            "label": "عمومیات",
+            "menues": {
+                "dashboard": "داشبورد",
+                "library": {
+                    "label": "کتابخانه",
+                    "onlineLibrary": "کتابخانه آنلان",
+                    "list": "لیست کتاب",
+                    "add": "اضافه نمودن کتاب"
+                },
+                "branches": {
+                    "label": "شاخه های صنوف",
+                    "list": "لیست شاخه صنوف",
+                    "add": "اضافه نمودن شاخه صنف"
+                },
+                "classes": {
+                    "label": "صنوف",
+                    "list": "لیست صنف ها",
+                    "add": "اضافه نمودن صنف"
+                },
+                "timeTable": {
+                    "label": "جدول زمانی",
+                    "list": "تقسیم اوقات",
+                    "add": "اضافه نمودن تقسیم اوقات"
+                }
+            }
+        },
+        "teachers": {
+            "label": "معلمین",
+            "menues": {
+                "list": "لیست استادان",
+                "register": "ثبت معلم"
+            }
+        },
+        "students": {
+            "label": "شاگردان",
+            "menues": {
+                "list": "لیست شاگرد ها",
+                "register": "ثبت شاگرد"
+            }
+        }
+    },
+    "breadcrumb": {
+        "title": "داشبورد پیش فرض"
+    },
+    "public": {
+        "header": {
+            "back": "بستن",
+            "createAccount": {
+                "label": "ایجاد حساب"
+            },
+            "home": {
+                "label": "صفحه اصلی"
+            },
+            "features": {
+                "label": "ویژگی ها"
+            }
+        },
+        "home": {
+            "kickStart": "سفر مدیریت مکتب خود را آغاز کنید!",
+            "details": "مدیریت مکتب خود را با دیجیتال مکتب آغاز کنید، ارتباطات را بهبود بخشید، و به دانش‌آموزان و معلمان قدرت دهید — همه در یک سیستم قدرتمند!"
+        },
+        "features": {
+            "description": "این سیستم مدیریت کامل پروسه‌های آموزشی را فراهم می‌کند که شامل وظایف اداری، تحصیلی و مربوط به کتابخانه می‌باشد",
+            "features": {
+                "schoolRegistry": {
+                    "title": "احصاییه مکتب",
+                    "description": "سیستم احصاییه مکتب اطلاعات ضروری مربوط به مکتب، از جمله ساختار، کارکنان و جزئیات اداری را مدیریت می‌کند."
+                },
+                "teacherRegistry": {
+                    "title": "ثبت نام معلمین",
+                    "description": "سیستم ثبت‌نام معلمان پروفایل‌ها، مدارک تحصیلی و وظایف معلمان را مدیریت می‌کند و از سازماندهی مناسب اطلاعات کارکنان اطمینان حاصل می‌نماید."
+                },
+                "studentRegistry": {
+                    "title": "ثبت نام شاگردان",
+                    "description": "سیستم ثبت‌نام دانش‌آموزان به طور مؤثر اطلاعات دانش‌آموزان را شامل ثبت‌نام، جزئیات شخصی، سوابق تحصیلی و حضور و غیاب مدیریت می‌کند."
+                },
+                "classRegistry": {
+                    "title": "ثبت صنوف",
+                    "description": "سیستم ثبت‌نام صنوف اطلاعات مربوط به برنامه‌های درسی، مضامین و تخصیص شاگردان را مدیریت و سازماندهی می‌کند."
+                },
+                "subjects": {
+                    "title": "مضامین",
+                    "description": "مادیول مضامین اطلاعات مربوط به مضامین تحصیلی، شامل جزئیات دوره، برنامه درسی و معلمان تخصیص‌یافته را مدیریت می‌کند."
+                },
+                "grades": {
+                    "title": "نمرات",
+                    "description": "مادیول نمرات ثبت و پیگیری عملکرد تحصیلی و نتایج امتحانات دانش‌آموزان را در تمامی مضامین مدیریت می‌کند."
+                },
+                "attendance": {
+                    "title": "حاضری",
+                    "description": "ماژول حضور و غیاب پیگیری و مدیریت حضور و غیاب دانش‌آموزان را انجام داده و اطلاعاتی در مورد حضور و غیبت آن‌ها ارائه می‌دهد."
+                },
+                "library": {
+                    "title": "کتابخانه",
+                    "description": "مادیول کتابخانه مدیریت فهرست کتاب‌ها و منابع، شامل کتاب‌های وزارت معارف افغانستان را انجام داده و فرآیند امانت‌گیری و پیگیری را تسهیل می‌کند."
+                }
+            }
+        },
+        "support": {
+            "title": "خدمات",
+            "description": "حل سریع مشکلات و کارشناسان متعهد برای یک تجربه بدون نقص",
+            "details": "تعهد ما به شما",
+            "more": "بررسی های ما را برای خدمات سریع و دقیق مشاهده کنید تا از کیفیت خدمات اطمینان حاصل کنید. ما کمک های ممتاز را به صورت ۲۴ ساعته برای هرگونه مشکلاتی که با آن مواجه می شوید ارایه می دهیم و تمام تلاش خود را خواهیم کرد تا در به روز رسانی های آینده به صورت رایگان به شما کمک کنیم."
+        },
+        "footer": {
+            "label": "مکتب دیجیتالیء شریک قابل اعتماد برای مکتب شما"
+        }
+    },
+    "addressForm": {
+        "title": "آدرس",
+        "street": {
+            "label": "سرک",
+            "placeholder": "سرک دوازدهم",
+            "validation": {
+                "required": "سرک ضروری میباشد"
+            }
+        },
+        "village": {
+            "label": "قریه",
+            "placeholder": "قریه",
+            "validation": {
+                "required": "قریه ضروری میباشد"
+            }
+        },
+        "region": {
+            "label": "ناحیه",
+            "placeholder": "ناحیه ۱۱",
+            "validation": {
+                "required": "ناحیه ضروری میباشد"
+            }
+        },
+        "postalCode": {
+            "label": "آدرس پوستی",
+            "placeholder": "۴۰۴۰",
+            "validation": {
+                "required": "آدرس پوستی ضروری میباشد"
+            }
+        }
+    },
+    "profile": {
+        "label": "حساب",
+        "editProfile": {
+            "label": "ویرایش حساب"
+        }
+    },
+    "footer": {
+        "label": "ساخته شده با عشق و هنر",
+        "copyright": "کپی رایت ۲۰۲۴ © دیجیتال مکتب"
+    },
+    "userRole": {
+        "admin": "مکتب",
+        "principal": "مدیر",
+        "headMaster": "مدیر عمومی",
+        "teacher": "معلم",
+        "student": "شاگرد",
+        "rootUser": "کاربر اصلی",
+        "unknown": "نامعلوم"
+    },
+    "class": {
+        "classList": {
+            "label": "لیست صنوف"
+        },
+        "addClass": {
+            "label": "اضافه نمودن صنف"
+        },
+        "title": "صنف",
+        "className": {
+            "label": "اسم صنف",
+            "validation": {
+                "required": "اسم صنف ضروری میباشد"
+            }
+        },
+        "classType": {
+            "label": "نوعیت صنف",
+            "validation": {
+                "required": "نوعیت صنف ضروری میباشد"
+            }
+        },
+        "shift": {
+            "label": "شیفت صنف"
+        }
+    },
+    "branch": {
+        "branchName": {
+            "label": "شاخه صنف",
+            "validation": {
+                "required": "شاخه صنف ضروری میباشد"
+            }
+        },
+        "branchList": {
+            "label": "لیست شاخه صنوف"
+        },
+        "addBranch": {
+            "label": "اضافه نمودن شاخه صنف"
+        },
+        "title": "شاخه صنف"
+    },
+    "shift": {
+        "label": "شیفت"
+    },
+    "gender": {
+        "label": "جنسیت",
+        "male": {
+            "label": "مذکر"
+        },
+        "female": {
+            "label": "مونث"
+        }
+    },
+    "teacher": {
+        "teacherName": "نگران صنف",
+        "teacherList": {
+            "label": "لست معلمین"
+        },
+        "registerTeacher": {
+            "label": "ثبت معلم"
+        },
+        "firstName": {
+            "label": "اسم معلم"
+        },
+        "lastName": {
+            "label": "تخلص معلم"
+        },
+        "teacherEditor": {
+            "label": "مشخصات معلم",
+            "tabs": {
+                "profile": {
+                    "label": "مشخصات"
+                },
+                "classes": {
+                    "label": "صنوف"
+                },
+                "schedules": {
+                    "label": "تقسیم اوقات"
+                }
+            }
+        }
+    },
+    "student": {
+        "label": "شاگرد",
+        "studentList": {
+            "label": "لست شاگردان"
+        },
+        "registerStudent": {
+            "label": "ثبت شاگرد"
+        },
+        "firstNameNative": {
+            "label": "اسم"
+        },
+        "lastNameNative": {
+            "label": "تخلص"
+        },
+        "fatherNameNative": {
+            "label": "اسم پدر"
+        },
+        "grandFatherNameNative": {
+            "label": "اسم پدر کلان"
+        },
+        "firstNameEnglish": {
+            "label": "اسم انگلیسی"
+        },
+        "lastNameEnglish": {
+            "label": "تخلص انگلیسی"
+        },
+        "fatherNameEnglish": {
+            "label": "اسم پدر انگلیسی"
+        },
+        "grandFatherNameEnglish": {
+            "label": "اسم پدر کلان انگلیسی"
+        },
+        "asasNumber": {
+            "label": "نمبر اساس"
+        },
+        "dateOfBirth": {
+            "label": "تاریخ تولد"
+        }
+    },
+    "calendarYear": {
+        "label": "سال تعلیمی",
+        "year": {
+            "label": "میلادی"
+        },
+        "nativeYear": {
+            "label": "هجری قمری"
+        }
+    },
+    "enrollment": {
+        "label": "شمولیت",
+        "enrolled": {
+            "label": "تعداد شمولیت"
+        }
+    },
+    "pagination": {
+        "next": "بعدی",
+        "previous": "قبلی"
+    },
+    "filters": {
+        "button": {
+            "label": "جستجو",
+            "reset": "تنظیم مجدد فلتر ها "
+        },
+        "show": {
+            "label": "نمایش فلتر ها"
+        },
+        "hide": {
+            "label": "پنهان نمودن فلتر ها"
+        },
+        "implementation": {
+            "required": "پیاده سازی ({{value}}) لازم است"
+        }
+    },
+    "unauthorized": {
+        "header": {
+            "label": "دسترسی غیر مجاز"
+        },
+        "message": {
+            "label": "شما اجازه مشاهده این صحفه را ندارید."
+        },
+        "backToHome": {
+            "label": "به صفحه اصلی بروید"
+        }
+    },
+    "welcomeCard": {
+        "welcome": {
+            "label": "خوش آمدید ({{value}})"
+        },
+        "text": {
+            "label": "به داشبورد خوش آمدید! به ابزارها و منابعی دسترسی داشته باشید که برای حمایت از آموزش، تدریس و مدیریت مکتب طراحی شده‌اند."
+        }
+    },
+    "schoolDashboard": {
+        "totalStudents": "تعداد شاگرد ها",
+        "totalTeachers": "تعداد معلمین",
+        "totalClasses": "تعداد صنف ها",
+        "totalBranches": "تعداد شاخه های صنف"
+    },
+    "studentGenderChart": {
+        "label": "توزیع جنسیت شاگردان"
+    },
+    "teacherGenderChart": {
+        "label": "توزیع جنسیت معلمین"
+    },
+    "classBranchChart": {
+        "label": "توزیع صنوف و شاخه های آن"
+    },
+    "classEnrollmentChart": {
+        "label": "چارت شمولیت صنوف",
+        "classes": {
+            "label": "صنوف"
+        },
+        "enrollment": {
+            "label": "تعداد شاگردان"
+        }
+    },
+    "phoneNumber": {
+        "label": "شماره تماس",
+        "number": {
+            "label": "شماره"
+        }
+    },
+    "timetable": {
+        "label": "تقسیم اوقات",
+        "addTimeTable": {
+            "label": "اضافه نمودن تقسیم اوقات"
+        },
+        "dayOfWeek": {
+            "label": "روز هفته"
+        },
+        "hour1": {
+            "label": "ساعت اول"
+        },
+        "hour2": {
+            "label": "ساعت دوم"
+        },
+        "hour3": {
+            "label": "ساعت سوم"
+        },
+        "hour4": {
+            "label": "ساعت چهارم"
+        },
+        "hour5": {
+            "label": "ساعت پنجم"
+        },
+        "hour6": {
+            "label": "ساعت ششم"
+        },
+        "hour7": {
+            "label": "ساعت هفتم"
+        },
+        "hour8": {
+            "label": "ساعت هشتم"
+        }
+    },
+    "validation": {
+        "required": "مشخصه ({{value}}) ضروری است",
+        "invalidEmail": "ایمیل قالب درست ندارد.",
+        "invalidPhoneNumber": "شماره تماس غیر مجاز"
+    },
+    "asyncSelect": {
+        "noOptionsMessage": {
+            "label": "کدام گزینه‌ای یافت نشد"
+        },
+        "loading": {
+            "label": "در حال بارگیری..."
+        }
+    },
+    "library": {
+        "label": "کتابخانه",
+        "noImageAvailable": "بدون عکس",
+        "booksPerPage": {
+            "label": "{{value}} کتاب بر صفحه"
+        },
+        "onlineLibrary": {
+            "label": "کتابخانه آنلاین",
+            "unknownAuthor": {
+                "label": "نامعلوم"
+            },
+            "note": {
+                "label": "توجه: برای اینکه بتوانید نسخه کامل کتاب‌ها را مطالعه کنید، نیاز است که یک حساب کاربری به ویبسایت Open Library ایجاد کنید."
+            }
+        },
+        "search": {
+            "placeholder": "جستجوی کتاب....",
+            "label": "جستجو"
+        },
+        "noResultsFound": {
+            "label": "نتیجه ای یافت نشد"
+        },
+        "readButton": {
+            "label": "خواندن"
+        }
+    },
+    "book": {
+        "label": "کتاب",
+        "author": "نویسنده",
+        "bookTitle": {
+            "label": "عنوان کتاب",
+            "placeholder": "جغرافیه صنف اول"
+        },
+        "file": {
+            "label": "نسخه کتاب",
+            "placeholder": "دری.pdf"
+        },
+        "addBook": {
+            "label": "اضافه کردن کتاب"
+        }
+    },
+    "report": {
+        "header": {
+            "leftText": {
+                "label": "۱۴۰"
+            },
+            "centerTextTop": {
+                "label": "پوهنی وزارت"
+            },
+            "centerTextBottom": {
+                "label": "(                 ) ریاست"
+            }
+        },
+        "footer": {
+            "pageNumber": {
+                "label": "صفحه {{currentPage}} از {{totalPages}}"
+            }
+        },
+        "title": {
+            "label": "گزارش"
+        },
+        "print": {
+            "label": "چاپ"
+        },
+        "subject": {
+            "label": "موضوع"
+        },
+        "author": {
+            "label": "نویسنده"
+        }
+    },
+    "table": {
+        "pageSize": {
+            "label": "اندازه صفحه"
+        },
+        "loading": {
+            "label": "در حال بارگذاری..."
+        },
+        "noData": {
+            "label": "هیچ اطلاعاتی موجود نیست"
+        },
+        "error": {
+            "label": "در هنگام بارگذاری اطلاعات خطایی رخ داد."
+        }
+    }
+}

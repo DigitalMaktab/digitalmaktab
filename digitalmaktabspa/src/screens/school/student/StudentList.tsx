@@ -9,7 +9,6 @@ import AppTable from "../../../components/table/AppTable";
 const StudentList = () => {
   const { t } = useTranslation();
   const { studentList, data, totalPages } = useSchoolOperations();
-  const [currentPage, setCurrentPage] = useState(1);
 
   const columns: Column<Student>[] = useMemo(
     () => [
@@ -53,33 +52,23 @@ const StudentList = () => {
     []
   );
 
-  const fetchPageData = useCallback((page: number, filters = {}) => {
-    setCurrentPage(page);
-    studentList(page, filters);
-  }, []);
-
-  useEffect(() => {
-    fetchPageData(currentPage, {});
-  }, [currentPage, fetchPageData]);
-
   return (
     <AppCard title={t("student.studentList.label")}>
-      {data && (
-        <AppTable
-          rowLink="/student-editor/{id}"
-          data={data as Student[]}
-          columns={columns}
-          totalPages={totalPages}
-          fetchPageData={fetchPageData}
-          actions={[
-            {
-              label: t("student.registerStudent.label"),
-              route: "/student-editor/new",
-              icon: "plus",
-            },
-          ]}
-        />
-      )}
+      <AppTable
+        rowLink="/student-editor/{id}"
+        data={data as Student[]}
+        columns={columns}
+        totalPages={totalPages}
+        fetchPageData={studentList}
+        reportTitle={t("student.studentList.label")}
+        actions={[
+          {
+            label: t("student.registerStudent.label"),
+            route: "/student-editor/new",
+            icon: "plus",
+          },
+        ]}
+      />
     </AppCard>
   );
 };

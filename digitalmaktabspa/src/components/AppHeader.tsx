@@ -117,6 +117,8 @@ const AppHeader: React.FC<AppHeaderProps> = ({ onSidebarToggle }) => {
                 <FeatherIcon icon="search" className="svg-color" />
               </span>
               <input
+                name="search"
+                id="search"
                 className="form-control"
                 type="text"
                 placeholder={t("header.search.placeholder")}

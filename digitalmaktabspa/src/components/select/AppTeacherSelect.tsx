@@ -5,6 +5,7 @@ import useSchoolOperations from "../../hooks/useSchoolOperations";
 import { Teacher } from "../../models/Teacher";
 import AppAsyncSelect from "../input/AppAsyncSelect";
 import { useAppLocalizer } from "../../hooks/useAppLocalizer";
+
 const AppTeacherSelect: React.FC<SelectProps> = ({ value, onChange, name }) => {
   const { t } = useAppLocalizer();
   const { teacherList } = useSchoolOperations();
@@ -13,10 +14,7 @@ const AppTeacherSelect: React.FC<SelectProps> = ({ value, onChange, name }) => {
   const fetchTeachers = async (
     searchTerm: string
   ): Promise<AsyncSelectOption[]> => {
-    const response = await teacherList(1, {
-      searchTerm: searchTerm,
-      pageNumber: 1,
-    });
+    const response = await teacherList(1, 10, { searchTerm }); // Pass correct arguments
 
     // Safely check if response.data is an array before mapping
     const teachers = Array.isArray(response.data)
@@ -31,7 +29,7 @@ const AppTeacherSelect: React.FC<SelectProps> = ({ value, onChange, name }) => {
 
   // Handle selection change
   const handleChange = (option: AsyncSelectOption | null) => {
-    onChange && onChange(option!.id); // Call the parent onChange if provided
+    onChange && onChange(option!.id); // Handle null option safely
   };
 
   return (
@@ -47,4 +45,5 @@ const AppTeacherSelect: React.FC<SelectProps> = ({ value, onChange, name }) => {
     </div>
   );
 };
+
 export default AppTeacherSelect;

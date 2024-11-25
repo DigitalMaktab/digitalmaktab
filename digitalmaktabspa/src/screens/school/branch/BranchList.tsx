@@ -9,7 +9,6 @@ import AppTable from "../../../components/table/AppTable";
 const BranchList = () => {
   const { t } = useTranslation();
   const { branchList, data, totalPages } = useSchoolOperations();
-  const [currentPage, setCurrentPage] = useState(1);
 
   const columns: Column<Branch>[] = useMemo(
     () => [
@@ -21,33 +20,23 @@ const BranchList = () => {
     []
   );
 
-  const fetchPageData = useCallback((page: number, filters = {}) => {
-    setCurrentPage(page);
-    branchList(page, filters);
-  }, []);
-
-  useEffect(() => {
-    fetchPageData(currentPage, {});
-  }, [currentPage, fetchPageData]);
-
   return (
     <AppCard title={t("branch.branchList.label")}>
-      {data && (
-        <AppTable
-          rowLink="/branch-editor/{id}"
-          data={data as Branch[]}
-          columns={columns}
-          fetchPageData={fetchPageData}
-          totalPages={totalPages}
-          actions={[
-            {
-              label: t("branch.addBranch.label"),
-              route: "/branch-editor/new",
-              icon: "plus",
-            },
-          ]}
-        />
-      )}
+      <AppTable
+        rowLink="/branch-editor/{id}"
+        data={data as Branch[]}
+        columns={columns}
+        fetchPageData={branchList}
+        totalPages={totalPages}
+        reportTitle={t("branch.branchList.label")}
+        actions={[
+          {
+            label: t("branch.addBranch.label"),
+            route: "/branch-editor/new",
+            icon: "plus",
+          },
+        ]}
+      />
     </AppCard>
   );
 };

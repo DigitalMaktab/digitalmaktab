@@ -619,11 +619,36 @@
                 "label": "(                 ) ریاست"
             }
         },
+        "footer": {
+            "pageNumber": {
+                "label": "صفحه {{currentPage}} از {{totalPages}}"
+            }
+        },
         "title": {
             "label": "گزارش"
         },
         "print": {
             "label": "چاپ"
+        },
+        "subject": {
+            "label": "موضوع"
+        },
+        "author": {
+            "label": "نویسنده"
+        }
+    },
+    "table": {
+        "pageSize": {
+            "label": "اندازه صفحه"
+        },
+        "loading": {
+            "label": "در حال بارگذاری..."
+        },
+        "noData": {
+            "label": "هیچ اطلاعاتی موجود نیست"
+        },
+        "error": {
+            "label": "در هنگام بارگذاری اطلاعات خطایی رخ داد."
         }
     }
 }

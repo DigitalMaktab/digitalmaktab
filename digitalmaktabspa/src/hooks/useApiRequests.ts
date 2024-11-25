@@ -20,7 +20,7 @@ const useApiRequests = <T>() => {
     }> => {
       if (status === ResponseResult.LOADING) {
         return {
-          status: ResponseResult.ERROR,
+          status: ResponseResult.LOADING,
           errors: [t("apiResponse.requestSent")],
         };
       }

@@ -4,18 +4,26 @@ import { useState, useEffect, useCallback } from "react";
 const useWindowWidth = (debounceTime = 100) => {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
+  // Debounced resize handler
   const handleResize = useCallback(() => {
     setWindowWidth(window.innerWidth);
   }, []);
 
   useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
+
     const debouncedResize = () => {
-      const timeoutId = setTimeout(handleResize, debounceTime);
-      return () => clearTimeout(timeoutId);
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(handleResize, debounceTime);
     };
 
     window.addEventListener("resize", debouncedResize);
-    return () => window.removeEventListener("resize", debouncedResize);
+
+    // Cleanup on unmount
+    return () => {
+      clearTimeout(timeoutId);
+      window.removeEventListener("resize", debouncedResize);
+    };
   }, [handleResize, debounceTime]);
 
   return windowWidth;

@@ -281,18 +281,13 @@ else
 }
 
 // Add Cross-Site Scripting (XSS) Prevention
-app.Use(async (context, next) =>
-{
-    context.Response.Headers.Append("Content-Security-Policy", "default-src 'self'; script-src 'self' https://trusted.cdn.com; style-src 'self'");
-    await next();
-});
+// app.Use(async (context, next) =>
+// {
+//     context.Response.Headers.Append("Content-Security-Policy", "default-src 'self'; script-src 'self' https://trusted.cdn.com; style-src 'self'");
+//     await next();
+// });
 
-app.UseStaticFiles(); // Enables serving static files
-app.UseStaticFiles(new StaticFileOptions
-{
-    FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "Resources")),
-    RequestPath = "/Resources"
-});
+
 
 Seeder.SeedCountries(app);
 
@@ -301,11 +296,42 @@ Seeder.SeedCountries(app);
 // app.UseCors("AllowNgrok");
 
 // app.UseCors("AllowAll");
+
+// Static files and SPA fallback
+app.UseDefaultFiles();
+// app.UseStaticFiles();
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new CompositeFileProvider(
+        new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot")),
+        new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "Resources"))
+    ),
+    RequestPath = ""
+});
+
+// app.Use(async (context, next) =>
+// {
+//     context.Response.Headers.Append("Content-Security-Policy",
+//         "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:;");
+//     await next();
+// });
+
+app.MapFallbackToFile("index.html");
+
+// Security and CSP
+
+
+// HTTPS Redirection in Production
+if (app.Environment.IsProduction())
+{
+    app.UseHttpsRedirection();
+}
+
 app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 
 app.UseIpRateLimiting();
 
-app.UseHttpsRedirection();
+
 app.UseAuthentication();
 app.UseAuthorization();
 
