@@ -6,6 +6,7 @@ export interface ButtonProperties {
   inModal?: boolean;
   inRow?: boolean;
   icon?: string;
+  iconSize?: number;
   disabled?: boolean | undefined;
   className?: string;
   style?: any;

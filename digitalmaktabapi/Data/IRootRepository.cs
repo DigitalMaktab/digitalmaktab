@@ -17,6 +17,9 @@ namespace digitalmaktabapi.Data
         Task<District> GetDistrict(Guid districtId);
         Task<PagedList<Book>> GetBooks(Guid? schoolId, UserParams userParams);
         Task<Book> GetBook(Guid bookId);
+
+        Task<PagedList<Subject>> GetSubjects(UserParams userParams);
+        Task<Subject> GetSubject(Guid subjectId);
         Task<PagedList<CalendarYear>> GetCalendarYears(UserParams userParams);
         Task<CalendarYear> GetCalendarYear(Guid calendarYearId);
 

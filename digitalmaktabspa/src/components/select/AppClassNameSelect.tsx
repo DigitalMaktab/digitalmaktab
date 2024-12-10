@@ -15,7 +15,7 @@ const AppClassNameSelect: React.FC<SelectProps> = ({
 
   useEffect(() => {
     const fetchData = async () => {
-      await fetchClasses(1, {});
+      await fetchClasses(1, 10, {});
     };
 
     fetchData();

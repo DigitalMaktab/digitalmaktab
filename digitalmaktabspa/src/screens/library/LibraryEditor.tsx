@@ -3,12 +3,10 @@ import { useNavigate, useParams } from "react-router-dom";
 import { EditorProps } from "../school/properties/EditorProps";
 import { useAppLocalizer } from "../../hooks/useAppLocalizer";
 import { Book } from "../../models/Book";
-import { useFormData } from "../../hooks/useFormData";
-import { getValidationSchema } from "../../helper/helper";
 import { ResponseResult } from "../../dtos/ResultEnum";
-import AppFormCard from "../../components/card/AppFormCard";
 import useRootOperations from "../../hooks/useRootOperations";
 import AppFormInput from "../../components/form/AppFormInput";
+import AppBaseEditor from "../../components/AppBaseEditor";
 
 const ClassEditor: React.FC<EditorProps> = ({ initialData }) => {
   const { id } = useParams<{ id: string }>();
@@ -17,24 +15,15 @@ const ClassEditor: React.FC<EditorProps> = ({ initialData }) => {
 
   const { addBook } = useRootOperations();
 
-  const initialFormData = useMemo(
-    () =>
-      ({
-        bookTitle: "",
-        file: "",
-      } as unknown as Book),
-    []
-  );
+  const initialFormData = {
+    bookTitle: "",
+    file: "",
+  } as unknown as Book;
 
-  const [formData] = useFormData<Book>(initialData, initialFormData);
-
-  const validationSchema = getValidationSchema(
-    {
-      bookTitle: { label: t("book.bookTitle.label") },
-      file: { label: t("book.file.label") },
-    },
-    t
-  );
+  const validationSchemaConfig = {
+    bookTitle: { label: t("book.bookTitle.label") },
+    file: { label: t("book.file.label") },
+  } as Record<keyof Book, { label: string }>;
 
   const submitData = useCallback(
     async (book: Book) => {
@@ -65,15 +54,12 @@ const ClassEditor: React.FC<EditorProps> = ({ initialData }) => {
 
   return (
     <>
-      <AppFormCard
-        title={
-          formData?.bookTitle
-            ? `${formData.bookTitle}`
-            : t("book.addBook.label")
-        }
-        initialValues={formData}
+      <AppBaseEditor<Book>
+        initialData={initialData}
+        initialFormData={initialFormData}
+        validationSchemaConfig={validationSchemaConfig}
         onSubmit={submitData}
-        validationSchema={validationSchema}
+        title={(data) => data.bookTitle || t("book.addBook.label")}
       >
         <div className="row">
           <div className="col-md-6">
@@ -93,7 +79,7 @@ const ClassEditor: React.FC<EditorProps> = ({ initialData }) => {
             />
           </div>
         </div>
-      </AppFormCard>
+      </AppBaseEditor>
     </>
   );
 };

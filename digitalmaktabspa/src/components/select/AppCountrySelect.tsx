@@ -17,7 +17,7 @@ const AppCountrySelect: React.FC<SelectProps> = ({
 
   useEffect(() => {
     const fetchData = async () => {
-      await fetchCountries(1, {});
+      await fetchCountries(1, 10, {});
     };
 
     fetchData();

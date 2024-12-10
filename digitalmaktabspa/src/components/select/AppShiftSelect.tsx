@@ -11,7 +11,7 @@ const AppShiftSelect: React.FC<SelectProps> = ({ value, onChange, name }) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      await fetchShifts(1);
+      await fetchShifts(1, 10, {});
     };
 
     fetchData();

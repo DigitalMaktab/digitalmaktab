@@ -7,6 +7,7 @@ const AppButton: React.FC<ButtonProperties> = ({
   type,
   onButtonClick,
   icon,
+  iconSize = 100,
   disabled,
   className,
   ...rest
@@ -19,7 +20,7 @@ const AppButton: React.FC<ButtonProperties> = ({
       type={type}
       onClick={onButtonClick}
     >
-      {icon && <FeatherIcon icon={icon} />} {label}
+      {icon && <FeatherIcon icon={icon} size={iconSize} />} {label}
     </button>
   );
 };

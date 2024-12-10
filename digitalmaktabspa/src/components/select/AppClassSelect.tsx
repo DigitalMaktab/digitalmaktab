@@ -13,10 +13,7 @@ const AppClassSelect: React.FC<SelectProps> = ({ value, onChange, name }) => {
   const fetchClassList = async (
     searchTerm: string
   ): Promise<AsyncSelectOption[]> => {
-    const response = await classList(1, {
-      searchTerm: searchTerm,
-      pageNumber: 1,
-    });
+    const response = await classList(1, 10, { searchTerm });
 
     // Safely check if response.data is an array before mapping
     const teachers = Array.isArray(response.data)

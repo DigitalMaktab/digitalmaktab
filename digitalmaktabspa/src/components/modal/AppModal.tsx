@@ -7,6 +7,9 @@ interface AppModalProps {
   title?: string;
   errors?: string[];
   imageSrc?: string;
+  isFullScreen?: boolean;
+  modalHeader?: boolean;
+  modalContent?: React.ReactNode;
 }
 
 const AppModal: React.FC<AppModalProps> = ({
@@ -15,8 +18,14 @@ const AppModal: React.FC<AppModalProps> = ({
   title,
   errors,
   imageSrc,
+  isFullScreen = false,
+  modalContent,
+  modalHeader,
 }) => {
   const { t } = useTranslation();
+  const modalClassName = isFullScreen
+    ? "modal-dialog modal-dialog-centered modal-fullscreen"
+    : "modal-dialog modal-dialog-centered";
   if (!isVisible) return null;
   return (
     <div
@@ -28,31 +37,47 @@ const AppModal: React.FC<AppModalProps> = ({
       aria-hidden="true"
       onClick={onClose}
     >
-      <div className="modal-dialog modal-dialog-centered" role="document">
+      <div className={modalClassName} role="document">
         <div className="modal-content">
-          <div className="modal-body">
-            <div className="modal-toggle-wrapper">
-              <h4 className="text-center pb-2">{t("apiResponse.error")}</h4>
-              <ul>
-                {errors &&
-                  errors.map((error, index) => (
-                    <li
-                      className="txt-danger"
-                      key={index}
-                      style={{ marginBottom: 10 }}
-                    >
-                      {error}
-                    </li>
-                  ))}
-              </ul>
+          {modalHeader && (
+            <div className="modal-header">
+              <h5 className="modal-title" id="myFullLargeModalLabel">
+                {title}
+              </h5>
               <button
-                className="btn btn-secondary d-flex m-auto btn-xs"
+                className="btn-close"
                 type="button"
                 data-bs-dismiss="modal"
-              >
-                {t("close.label")}
-              </button>
+                aria-label="Close"
+              ></button>
             </div>
+          )}
+          <div className="modal-body">
+            {errors && (
+              <div className="modal-toggle-wrapper">
+                <h4 className="text-center pb-2">{t("apiResponse.error")}</h4>
+                <ul>
+                  {errors &&
+                    errors.map((error, index) => (
+                      <li
+                        className="txt-danger"
+                        key={index}
+                        style={{ marginBottom: 10 }}
+                      >
+                        {error}
+                      </li>
+                    ))}
+                </ul>
+                <button
+                  className="btn btn-secondary d-flex m-auto btn-xs"
+                  type="button"
+                  data-bs-dismiss="modal"
+                >
+                  {t("close.label")}
+                </button>
+              </div>
+            )}
+            {modalContent}
           </div>
         </div>
       </div>

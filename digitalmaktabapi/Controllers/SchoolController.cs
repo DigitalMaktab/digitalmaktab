@@ -120,6 +120,7 @@ namespace digitalmaktabapi.Controllers
                 studentToCreate.SchoolId = this.SchoolId;
                 studentToCreate.CreationUserId = this.SchoolId;
                 studentToCreate.UpdateUserId = this.SchoolId;
+                studentToCreate.CalendarYearId = this.CalendarYearId;
                 await this.studentRepository.Register(studentToCreate, studentPassword);
             }
 
@@ -217,6 +218,19 @@ namespace digitalmaktabapi.Controllers
             return Ok(teachersToReturn);
         }
 
+
+        [HttpDelete("deleteTeacher/{id}")]
+        public async Task<IActionResult> DeleteTeacher(Guid id)
+        {
+            var teacher = await this.teacherRepository.GetTeacher(id);
+            if (teacher != null)
+            {
+                this.teacherRepository.Delete(teacher);
+                await this.teacherRepository.SaveAll();
+            }
+            return NoContent();
+        }
+
         [HttpGet("teacher/{teacherId}")]
         public async Task<IActionResult> GetTeacher(Guid teacherId)
         {
@@ -234,6 +248,12 @@ namespace digitalmaktabapi.Controllers
             classToCreate.UpdateUserId = this.Id;
             classToCreate.SchoolId = this.SchoolId;
             classToCreate.CalendarYearId = this.CalendarYearId;
+
+            if (classToCreate.Teacher == null)
+            {
+
+            }
+
             this.schoolRepository.Add(classToCreate);
             await this.schoolRepository.SaveAll();
             return NoContent();
@@ -268,6 +288,16 @@ namespace digitalmaktabapi.Controllers
             this.schoolRepository.Add(classSubjectToCreate);
             await this.schoolRepository.SaveAll();
             return NoContent();
+        }
+
+        [HttpGet("classSubjects")]
+        public async Task<IActionResult> GetClassSubjects([FromQuery] ClassParams classParams)
+        {
+            classParams.CalendarYearId = this.CalendarYearId;
+            var classSubjects = await this.schoolRepository.GetClassSubjects(this.SchoolId, classParams);
+            var classSubjectsToReturn = this.mapper!.Map<ICollection<ClassSubjectDto>>(classSubjects);
+            Response.AddPagintaion(classSubjects.CurrentPage, classSubjects.PageSize, classSubjects.TotalCount, classSubjects.TotalPages);
+            return Ok(classSubjectsToReturn);
         }
 
         [HttpPost("enroll")]
@@ -371,7 +401,7 @@ namespace digitalmaktabapi.Controllers
                     Hour5 = groupedByDay.ContainsKey(day) ? GetSubjectName(groupedByDay[day].FirstOrDefault(s => s.ScheduleTime == ScheduleTime.FIFTH)) : string.Empty,
                     Hour6 = groupedByDay.ContainsKey(day) ? GetSubjectName(groupedByDay[day].FirstOrDefault(s => s.ScheduleTime == ScheduleTime.SIXTH)) : string.Empty,
                     Hour7 = groupedByDay.ContainsKey(day) ? GetSubjectName(groupedByDay[day].FirstOrDefault(s => s.ScheduleTime == ScheduleTime.SEVENTH)) : string.Empty,
-                    Hour8 = groupedByDay.ContainsKey(day) ? GetSubjectName(groupedByDay[day].FirstOrDefault(s => s.ScheduleTime == ScheduleTime.EIGHTTH)) : string.Empty
+                    Hour8 = groupedByDay.ContainsKey(day) ? GetSubjectName(groupedByDay[day].FirstOrDefault(s => s.ScheduleTime == ScheduleTime.EIGHT)) : string.Empty
                 };
 
                 flattenedSchedules.Add(flattenedData);

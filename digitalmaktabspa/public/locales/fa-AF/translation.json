@@ -4,7 +4,8 @@
     "apiResponse": {
         "error": "خطایی رخ داد",
         "requestSent": "درخواست شما ارسال گردیده است",
-        "unknownError": "خطایی نا معلوم رخ داد"
+        "unknownError": "خطایی نا معلوم رخ داد",
+        "foreignKeyError": "عملیه انجام نشد زیرا این مورد با سایر رکوردها مرتبط است."
     },
     "close": {
         "label": "بستن"
@@ -163,6 +164,16 @@
             "label": "عمومیات",
             "menues": {
                 "dashboard": "داشبورد",
+                "calendarYear": {
+                    "label": "سال تعلیمی",
+                    "list": "لست سال تعمیلی",
+                    "add": "اضافه نمودن سال تعلیمی"
+                },
+                "subjects": {
+                    "label": "مضامین",
+                    "list": "لست مضامین",
+                    "add": "اضافه نمودن مضون"
+                },
                 "library": {
                     "label": "کتابخانه",
                     "onlineLibrary": "کتابخانه آنلان",
@@ -178,6 +189,11 @@
                     "label": "صنوف",
                     "list": "لیست صنف ها",
                     "add": "اضافه نمودن صنف"
+                },
+                "classSubjects": {
+                    "label": "مضامین صنف",
+                    "list": "لست مضامین صنف",
+                    "add": "اضافه کردن مضمون صنف"
                 },
                 "timeTable": {
                     "label": "جدول زمانی",
@@ -269,7 +285,8 @@
         }
     },
     "addressForm": {
-        "title": "آدرس",
+        "title": "سکونت اصلی",
+        "secondaryAddressTitle": "سکونت فرعی",
         "street": {
             "label": "سرک",
             "placeholder": "سرک دوازدهم",
@@ -435,6 +452,20 @@
         },
         "dateOfBirth": {
             "label": "تاریخ تولد"
+        },
+        "studentEditor": {
+            "label": "مشخصات شاگرد",
+            "tabs": {
+                "profile": {
+                    "label": "مشخصات"
+                },
+                "class": {
+                    "label": "صنف"
+                },
+                "schedules": {
+                    "lable": "تقسیم اوقات"
+                }
+            }
         }
     },
     "calendarYear": {
@@ -444,6 +475,12 @@
         },
         "nativeYear": {
             "label": "هجری قمری"
+        },
+        "add": {
+            "label": "اضافه نمودن سال تعلیمی"
+        },
+        "list": {
+            "label": "لست سال تعلیمی"
         }
     },
     "enrollment": {
@@ -605,6 +642,9 @@
         },
         "addBook": {
             "label": "اضافه کردن کتاب"
+        },
+        "list": {
+            "label": "لست کتب"
         }
     },
     "report": {
@@ -649,6 +689,51 @@
         },
         "error": {
             "label": "در هنگام بارگذاری اطلاعات خطایی رخ داد."
+        },
+        "actions": {
+            "label": "عملیات"
         }
+    },
+    "status": {
+        "label": "حالت",
+        "active": {
+            "label": "فعال"
+        },
+        "inactive": {
+            "label": "غیر فعال"
+        }
+    },
+    "subject": {
+        "label": "مضمون",
+        "subjectName": {
+            "label": "اسم مضمون"
+        },
+        "add": {
+            "label": "اضافه نمودن مضمون"
+        },
+        "list": {
+            "label": "لست مضامین"
+        }
+    },
+    "classSubject": {
+        "label": "مضمون صنف",
+        "total": {
+            "label": "تعداد مضامین صنف"
+        },
+        "add": {
+            "label": "اضافه کردن مضمون صنف"
+        },
+        "list": {
+            "label": "لست مضامین صنف"
+        },
+        "subjectAndClass": {
+            "label": "صنف و مضمون"
+        }
+    },
+    "dayOfWeek": {
+        "label": "روز هفته"
+    },
+    "scheduleTime": {
+        "label": "ساعت"
     }
 }

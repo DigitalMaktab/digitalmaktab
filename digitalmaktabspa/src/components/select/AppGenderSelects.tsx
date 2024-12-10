@@ -11,7 +11,7 @@ const AppGenderSelect: React.FC<SelectProps> = ({ value, onChange, name }) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      await fetchGenders(1);
+      await fetchGenders(1, 10, {});
     };
 
     fetchData();

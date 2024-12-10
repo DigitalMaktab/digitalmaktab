@@ -57,7 +57,34 @@ namespace digitalmaktabapi.Data
                     a => a.Subject.ClassSubjects
                     .Any(a => a.ClassId == userParams.ClassId));
             }
+
+            if (userParams.SearchTerm != null)
+            {
+                entities = entities.Where(
+                    a => a.BookTitle.Contains(userParams.SearchTerm, StringComparison.CurrentCultureIgnoreCase));
+            }
             return await PagedList<Book>.CreateAsync(entities, userParams.PageNumber, userParams.PageSize);
+        }
+
+
+        public async Task<Subject> GetSubject(Guid id)
+        {
+            var entity = await this.context.Subjects.Include(a => a.Book).FirstOrDefaultAsync(a => a.Id == id);
+            return entity;
+        }
+
+        public async Task<PagedList<Subject>> GetSubjects(UserParams userParams)
+        {
+            var entities = this.context.Subjects
+                .Include(a => a.Book)
+                .AsQueryable();
+
+            if (userParams.SearchTerm != null)
+            {
+                entities = entities.Where(
+                    a => a.SubjectName.Contains(userParams.SearchTerm, StringComparison.CurrentCultureIgnoreCase));
+            }
+            return await PagedList<Subject>.CreateAsync(entities, userParams.PageNumber, userParams.PageSize);
         }
 
         public async Task<CalendarYear> GetCalendarYear(Guid calendarYearId)

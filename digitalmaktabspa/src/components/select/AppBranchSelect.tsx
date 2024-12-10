@@ -12,7 +12,7 @@ const AppBranchSelect: React.FC<SelectProps> = ({ value, onChange, name }) => {
 
   useEffect(() => {
     const getList = async () => {
-      await branchList(1, {});
+      await branchList(1, 10, {});
     };
     getList();
   }, []);

@@ -1,19 +1,17 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Class } from "../../../models/Class";
 import AppBranchSelect from "../../../components/select/AppBranchSelect";
-import AppFormCard from "../../../components/card/AppFormCard";
 import AppFormSelect from "../../../components/form/AppFormSelect";
 import AppClassTypeSelect from "../../../components/select/AppClassTypeSelect";
 import AppShiftSelect from "../../../components/select/AppShiftSelect";
 import { EditorProps } from "../properties/EditorProps";
 import AppTeacherSelect from "../../../components/select/AppTeacherSelect";
-import { getValidationSchema } from "../../../helper/helper";
-import { useFormData } from "../../../hooks/useFormData";
 import useSchoolOperations from "../../../hooks/useSchoolOperations";
 import { ResponseResult } from "../../../dtos/ResultEnum";
 import AppClassNameSelect from "../../../components/select/AppClassNameSelect";
 import { useAppLocalizer } from "../../../hooks/useAppLocalizer";
+import AppBaseEditor from "../../../components/AppBaseEditor";
 
 const ClassEditor: React.FC<EditorProps> = ({ initialData }) => {
   const { id } = useParams<{ id: string }>();
@@ -21,30 +19,21 @@ const ClassEditor: React.FC<EditorProps> = ({ initialData }) => {
   const { t } = useAppLocalizer();
   const { addClass } = useSchoolOperations();
 
-  const initialFormData = useMemo(
-    () =>
-      ({
-        className: "",
-        branchId: "",
-        classType: "",
-        shift: "",
-        teacherId: "",
-      } as unknown as Class),
-    []
-  );
+  const initialFormData = {
+    className: "",
+    branchId: "",
+    classType: "",
+    shift: "",
+    teacherId: "",
+  } as unknown as Class;
 
-  const [formData] = useFormData<Class>(initialData, initialFormData);
-
-  const validationSchema = getValidationSchema(
-    {
-      className: { label: t("class.className.label") },
-      branchId: { label: t("branch.branchName.label") },
-      classType: { label: t("class.classType.label") },
-      shift: { label: t("class.shift.label") },
-      teacherId: { label: t("teacher.firstName.label") },
-    },
-    t
-  );
+  const validationSchemaConfig = {
+    className: { label: t("class.className.label") },
+    branchId: { label: t("branch.branchName.label") },
+    classType: { label: t("class.classType.label") },
+    shift: { label: t("class.shift.label") },
+    teacherId: { label: t("teacher.firstName.label") },
+  } as Record<keyof Class, { label: string }>;
 
   const submitData = useCallback(
     async (newClass: Class) => {
@@ -71,85 +60,88 @@ const ClassEditor: React.FC<EditorProps> = ({ initialData }) => {
 
   return (
     <>
-      <AppFormCard
-        title={
-          formData?.className && formData.branch?.branchName
-            ? `${formData.className} ${formData.branch.branchName}`
+      <AppBaseEditor<Class>
+        initialData={initialData}
+        initialFormData={initialFormData}
+        validationSchemaConfig={validationSchemaConfig}
+        onSubmit={submitData}
+        title={(data) =>
+          data.className && data.branch?.branchName
+            ? `${data.className} ${data.branch.branchName}`
             : t("class.addClass.label")
         }
-        initialValues={formData}
-        onSubmit={submitData}
-        validationSchema={validationSchema}
       >
-        <div className="row">
-          <div className="col-md-4">
-            <AppFormSelect
-              name="className"
-              label=""
-              value={id ? formData!.className.toString() : ""}
-            >
-              <AppClassNameSelect
+        {(props) => (
+          <div className="row">
+            <div className="col-md-4">
+              <AppFormSelect
                 name="className"
-                value={id ? formData!.className.toString() : ""}
-                onChange={() => {}}
-              />
-            </AppFormSelect>
-          </div>
-          <div className="col-md-4">
-            <AppFormSelect
-              name="branchId"
-              label=""
-              value={id ? formData!.branchId : ""}
-            >
-              <AppBranchSelect
+                label=""
+                value={id ? props.formData!.className.toString() : ""}
+              >
+                <AppClassNameSelect
+                  name="className"
+                  value={id ? props.formData!.className.toString() : ""}
+                  onChange={() => {}}
+                />
+              </AppFormSelect>
+            </div>
+            <div className="col-md-4">
+              <AppFormSelect
                 name="branchId"
-                value={id ? formData!.branchId : ""}
-                onChange={() => {}}
-              />
-            </AppFormSelect>
-          </div>
-          <div className="col-md-4">
-            <AppFormSelect
-              name="classType"
-              label=""
-              value={id ? formData!.classType.toString() : ""}
-            >
-              <AppClassTypeSelect
+                label=""
+                value={id ? props.formData!.branchId : ""}
+              >
+                <AppBranchSelect
+                  name="branchId"
+                  value={id ? props.formData!.branchId : ""}
+                  onChange={() => {}}
+                />
+              </AppFormSelect>
+            </div>
+            <div className="col-md-4">
+              <AppFormSelect
                 name="classType"
-                value={id ? formData!.classType.toString() : ""}
-                onChange={() => {}}
-              />
-            </AppFormSelect>
-          </div>
-          <div className="col-md-6">
-            <AppFormSelect
-              name="shift"
-              label=""
-              value={id ? formData!.classType.toString() : ""}
-            >
-              <AppShiftSelect
+                label=""
+                value={id ? props.formData!.classType.toString() : ""}
+              >
+                <AppClassTypeSelect
+                  name="classType"
+                  value={id ? props.formData!.classType.toString() : ""}
+                  onChange={() => {}}
+                />
+              </AppFormSelect>
+            </div>
+            <div className="col-md-6">
+              <AppFormSelect
                 name="shift"
-                value={id ? formData!.classType.toString() : ""}
-                onChange={() => {}}
-              />
-            </AppFormSelect>
-          </div>
+                label=""
+                value={id ? props.formData!.classType.toString() : ""}
+              >
+                <AppShiftSelect
+                  name="shift"
+                  value={id ? props.formData!.classType.toString() : ""}
+                  onChange={() => {}}
+                />
+              </AppFormSelect>
+            </div>
 
-          <div className="col-md-6">
-            <AppFormSelect
-              name="teacherId"
-              label=""
-              value={id ? formData!.teacherId.toString() : ""}
-            >
-              <AppTeacherSelect
+            <div className="col-md-6">
+              <AppFormSelect
                 name="teacherId"
-                value={id ? formData!.teacherId.toString() : ""}
-                onChange={() => {}}
-              />
-            </AppFormSelect>
+                label=""
+                value={id ? props.formData!.teacherId.toString() : ""}
+              >
+                <AppTeacherSelect
+                  name="teacherId"
+                  value={id ? props.formData!.teacherId.toString() : ""}
+                  onChange={() => {}}
+                />
+              </AppFormSelect>
+            </div>
           </div>
-        </div>
-      </AppFormCard>
+        )}
+      </AppBaseEditor>
     </>
   );
 };

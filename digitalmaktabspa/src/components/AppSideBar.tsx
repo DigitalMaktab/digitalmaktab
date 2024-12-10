@@ -8,6 +8,7 @@ import * as AIIcons from "react-icons/ai";
 import * as PIIcons from "react-icons/pi";
 import * as LiaIcons from "react-icons/lia";
 import * as SIIcons from "react-icons/si";
+import * as BIIcons from "react-icons/bi";
 import { MenuSection } from "./properties/MenuItemProps";
 import { useTranslation } from "react-i18next";
 import { UserRole } from "../models/UserRole";
@@ -35,6 +36,36 @@ const AppSideBar: React.FC<AppSideBarProps> = ({ isOpen }) => {
       {
         title: t("sidebar.general.label"),
         items: [
+          {
+            label: t("sidebar.general.menues.calendarYear.label"),
+            icon: <AIIcons.AiOutlineCalendar className="stroke-icon" />,
+            subMenu: [
+              {
+                label: t("sidebar.general.menues.calendarYear.list"),
+                link: "/calendar-year-list",
+              },
+              {
+                label: t("sidebar.general.menues.calendarYear.add"),
+                link: "/calendar-year-editor/new",
+              },
+            ],
+            roles: [UserRole.ROOT_USER],
+          },
+          {
+            label: t("sidebar.general.menues.subjects.label"),
+            icon: <BIIcons.BiMath className="stroke-icon" />,
+            subMenu: [
+              {
+                label: t("sidebar.general.menues.subjects.list"),
+                link: "/subject-list",
+              },
+              {
+                label: t("sidebar.general.menues.subjects.add"),
+                link: "/subject-editor/new",
+              },
+            ],
+            roles: [UserRole.ROOT_USER],
+          },
           {
             label: t("sidebar.general.menues.dashboard"),
             icon: <AIIcons.AiOutlineHome className="stroke-icon" />,
@@ -85,6 +116,14 @@ const AppSideBar: React.FC<AppSideBarProps> = ({ isOpen }) => {
                 label: t("sidebar.general.menues.classes.add"),
                 link: "/class-editor/new",
               },
+              {
+                label: t("sidebar.general.menues.classSubjects.list"),
+                link: "/class-subject-list",
+              },
+              {
+                label: t("sidebar.general.menues.classSubjects.add"),
+                link: "/class-subject-editor/new",
+              },
             ],
             roles: [UserRole.ADMIN],
           },
@@ -98,7 +137,7 @@ const AppSideBar: React.FC<AppSideBarProps> = ({ isOpen }) => {
               },
               {
                 label: t("sidebar.general.menues.timeTable.add"),
-                link: "/add-timetable",
+                link: "/timetable-editor/new",
               },
             ],
             roles: [UserRole.ADMIN],

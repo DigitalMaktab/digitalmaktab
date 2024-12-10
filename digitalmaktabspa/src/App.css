@@ -56530,3 +56530,11 @@ div[id*="react-select"] .css-bg3whk-option:hover {
   font-size: 1.2rem; /* Adjust size as needed */
   color: #6c757d; /* Neutral gray color, can adjust to match your theme */
 }
+
+.table-row-selected {
+  background-color: #f0f8ff !important; /* Light blue background */
+}
+
+.table-row-selected:hover {
+  background-color: #e0efff !important; /* Slightly darker on hover */
+}

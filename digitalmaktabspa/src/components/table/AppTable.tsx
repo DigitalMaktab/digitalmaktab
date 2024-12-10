@@ -16,6 +16,7 @@ const AppTable = <T extends Base>({
   data = [], // Default data to an empty array
   columns,
   fetchPageData,
+  deleteRow,
   rowLink,
   actions = [],
   totalPages,
@@ -23,6 +24,8 @@ const AppTable = <T extends Base>({
   showExport = true,
   reportTitle = "",
   showPageSizer = true,
+  onRowsSelect,
+  selectMultiple = false,
 }: TableProps<T> & {
   rowLink?: string;
   actions?: Action[];
@@ -30,6 +33,30 @@ const AppTable = <T extends Base>({
 }) => {
   const { t, formatNumber } = useAppLocalizer();
   const navigate = useNavigate();
+
+  const [selectedRows, setSelectedRows] = useState<T[]>([]);
+
+  const handleRowSelection = (row: T) => {
+    setSelectedRows((prev) => {
+      let updatedSelection: T[];
+      if (prev.some((selected) => selected.id === row.id)) {
+        updatedSelection = prev.filter((selected) => selected.id !== row.id);
+      } else {
+        updatedSelection = selectMultiple ? [...prev, row] : [row];
+      }
+      return updatedSelection;
+    });
+  };
+
+  // Synchronize with parent component after state updates
+  useEffect(() => {
+    if (onRowsSelect) {
+      onRowsSelect(selectedRows);
+    }
+  }, [selectedRows, onRowsSelect]);
+
+  const isRowSelected = (row: T) =>
+    selectedRows.some((selected) => selected.id === row.id);
 
   // Ensure data is an array, even if null or undefined is passed
   const safeData = data || [];
@@ -122,6 +149,19 @@ const AppTable = <T extends Base>({
     exportToPDF(columns, safeData, reportTitle);
   };
 
+  const handleDelete = async (row: T) => {
+    if (deleteRow) {
+      const response = await deleteRow(row.id);
+      if (response.status === ResponseResult.SUCCESS) {
+        await fetchPageData!(
+          tableState.currentPage,
+          tableState.pageSize,
+          tableState.filters
+        );
+      }
+    }
+  };
+
   return (
     <>
       <div className="mb-1 d-flex justify-content-end">
@@ -201,6 +241,7 @@ const AppTable = <T extends Base>({
                       {t(col.header)}
                     </th>
                   ))}
+                  {deleteRow && <th scope="col">{t("table.actions.label")}</th>}
                 </tr>
               </thead>
               <tbody>
@@ -208,7 +249,14 @@ const AppTable = <T extends Base>({
                   <tr
                     key={rowIndex}
                     onDoubleClick={() => navigateToRow(row)}
-                    style={{ cursor: rowLink ? "pointer" : "default" }}
+                    onClick={() => handleRowSelection(row)}
+                    className={isRowSelected(row) ? "table-row-selected" : ""}
+                    style={{
+                      cursor: "pointer",
+                      backgroundColor: isRowSelected(row)
+                        ? "#f0f8ff"
+                        : "transparent", // Highlight selected rows
+                    }}
                   >
                     {columns.map((col, colIndex) => {
                       const cellContent = col.render
@@ -217,6 +265,18 @@ const AppTable = <T extends Base>({
 
                       return <td key={colIndex}>{cellContent ?? ""}</td>;
                     })}
+
+                    {deleteRow && (
+                      <td>
+                        <AppButton
+                          label=""
+                          type="button"
+                          onButtonClick={() => handleDelete(row)}
+                          icon="trash"
+                          className="btn-danger btn-xs"
+                        />
+                      </td>
+                    )}
                   </tr>
                 ))}
               </tbody>

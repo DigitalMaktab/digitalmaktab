@@ -66,7 +66,7 @@ const ScheduleList = () => {
         actions={[
           {
             label: t("timetable.addTimeTable.label"),
-            route: "/schedule-editor/new",
+            route: "/timetable-editor/new",
             icon: "plus",
           },
         ]}

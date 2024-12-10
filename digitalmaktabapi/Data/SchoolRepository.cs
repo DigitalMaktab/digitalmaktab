@@ -64,6 +64,7 @@ namespace digitalmaktabapi.Data
                 .Include(a => a.Branch)
                 .Include(a => a.CalendarYear)
                 .Include(a => a.Enrollments)
+                .Include(a => a.ClassSubjects)
                 .Where(a => a.SchoolId == schoolId).AsQueryable();
             if (classParams.BranchId.HasValue)
             {
@@ -96,6 +97,31 @@ namespace digitalmaktabapi.Data
             }
 
             return await PagedList<Class>.CreateAsync(entities, classParams.PageNumber, classParams.PageSize);
+        }
+
+        public async Task<PagedList<ClassSubject>> GetClassSubjects(Guid schoolId, ClassParams classParams)
+        {
+            var entities = this.context.ClassSubjects
+                .Include(a => a.Class)
+                .ThenInclude(a => a.Branch)
+                .Include(a => a.Subject)
+                .Where(a => a.Class.SchoolId == schoolId).AsQueryable();
+
+            if (classParams.CalendarYearId.HasValue)
+            {
+                entities = entities.Where(a => a.Class.CalendarYearId == classParams.CalendarYearId);
+            }
+
+
+            if (!classParams.SearchTerm.IsEmpty() && classParams.SearchTerm != null)
+            {
+                entities = entities.Where(
+                                a =>
+                                a.Subject.SubjectName.Contains(classParams.SearchTerm, StringComparison.CurrentCultureIgnoreCase)
+                            );
+            }
+
+            return await PagedList<ClassSubject>.CreateAsync(entities, classParams.PageNumber, classParams.PageSize);
         }
 
         public async Task<Enrollment> GetEnrollment(Guid id)
@@ -190,7 +216,6 @@ namespace digitalmaktabapi.Data
                 .ThenInclude(a => a.Class)
                 .AnyAsync(
                     a => a.ClassSubjectId == classSubjectId &&
-                    a.TeacherId == teacherId &&
                     a.DayOfWeek == dayOfWeek &&
                     a.ScheduleTime == scheduleTime &&
                     a.ClassSubject.Class.CalendarYearId == calendarYearId

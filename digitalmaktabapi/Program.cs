@@ -299,15 +299,29 @@ Seeder.SeedCountries(app);
 
 // Static files and SPA fallback
 app.UseDefaultFiles();
-// app.UseStaticFiles();
-app.UseStaticFiles(new StaticFileOptions
+
+
+if (app.Environment.IsDevelopment())
 {
-    FileProvider = new CompositeFileProvider(
-        new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot")),
-        new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "Resources"))
-    ),
-    RequestPath = ""
-});
+    app.UseStaticFiles(new StaticFileOptions
+    {
+        FileProvider = new PhysicalFileProvider(
+            Path.Combine(Directory.GetCurrentDirectory(), "Resources")
+        ),
+        RequestPath = "/resources"
+    });
+}
+else
+{
+    app.UseStaticFiles(new StaticFileOptions
+    {
+        FileProvider = new CompositeFileProvider(
+            new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot")),
+            new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "Resources"))
+        ),
+        RequestPath = ""
+    });
+}
 
 // app.Use(async (context, next) =>
 // {

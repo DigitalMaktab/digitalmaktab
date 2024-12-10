@@ -35,7 +35,7 @@ namespace digitalmaktabapi.Controllers
         public async Task<IActionResult> GetSchools([FromQuery] UserParams userParams)
         {
             var schools = await this.schoolRepository.GetSchools(userParams);
-            var schoolsToReturn = this.mapper.Map<ICollection<SchoolDto>>(schools);
+            var schoolsToReturn = this.mapper!.Map<ICollection<SchoolDto>>(schools);
             return Ok(schoolsToReturn);
         }
 
@@ -43,7 +43,7 @@ namespace digitalmaktabapi.Controllers
         public async Task<IActionResult> AddCalendaryYear(AddCalendarYearDto calendarYearDto)
         {
 
-            var calendarYearToCreate = this.mapper.Map<CalendarYear>(calendarYearDto);
+            var calendarYearToCreate = this.mapper!.Map<CalendarYear>(calendarYearDto);
             calendarYearToCreate.CreationUserId = this.Id;
             calendarYearToCreate.UpdateUserId = this.Id;
             this.rootRepository.Add(calendarYearToCreate);
@@ -55,7 +55,7 @@ namespace digitalmaktabapi.Controllers
         public async Task<IActionResult> GetCalendarYears([FromQuery] UserParams userParams)
         {
             var calendarYears = await this.rootRepository.GetCalendarYears(userParams);
-            var calendarYearsToReturn = this.mapper.Map<ICollection<CalendarYearDto>>(calendarYears);
+            var calendarYearsToReturn = this.mapper!.Map<ICollection<CalendarYearDto>>(calendarYears);
             return Ok(calendarYearsToReturn);
         }
 
@@ -63,7 +63,7 @@ namespace digitalmaktabapi.Controllers
         public async Task<IActionResult> GetActiveCalendarYear()
         {
             var calendarYear = await this.rootRepository.GetActiveCalendarYear();
-            var calendarYearToReturn = this.mapper.Map<CalendarYearDto>(calendarYear);
+            var calendarYearToReturn = this.mapper!.Map<CalendarYearDto>(calendarYear);
             return Ok(calendarYearToReturn);
         }
 
@@ -78,7 +78,7 @@ namespace digitalmaktabapi.Controllers
             UploadResponse uploadResponse = await UploadService.Upload(addRootBookDto.File, "books");
             if (uploadResponse.Status == Status.SUCCESS)
             {
-                var bookToCreate = this.mapper.Map<Book>(addRootBookDto);
+                var bookToCreate = this.mapper!.Map<Book>(addRootBookDto);
                 bookToCreate.CreationUserId = this.Id;
                 bookToCreate.UpdateUserId = this.Id;
                 bookToCreate.BookPath = uploadResponse.Path!;
@@ -93,11 +93,25 @@ namespace digitalmaktabapi.Controllers
         [HttpPost("addSubject")]
         public async Task<IActionResult> AddSubject(AddSubjectDto subjectDto)
         {
-            var subjectToCreate = this.mapper.Map<Subject>(subjectDto);
+            var subjectToCreate = this.mapper!.Map<Subject>(subjectDto);
+            var book = await this.rootRepository.GetBook(subjectDto.BookId) ?? throw new Exception("Book not found");
             subjectToCreate.CreationUserId = this.Id;
             subjectToCreate.UpdateUserId = this.Id;
+            subjectToCreate.Book = book;
             this.rootRepository.Add(subjectToCreate);
             await this.rootRepository.SaveAll();
+            return NoContent();
+        }
+
+        [HttpDelete("deleteSubject/{id}")]
+        public async Task<IActionResult> DeleteTeacher(Guid id)
+        {
+            var subject = await this.rootRepository.GetSubject(id);
+            if (subject != null)
+            {
+                this.rootRepository.Delete(subject);
+                await this.rootRepository.SaveAll();
+            }
             return NoContent();
         }
 
@@ -108,9 +122,9 @@ namespace digitalmaktabapi.Controllers
             rootUserDto.Email = rootUserDto.Email.ToLower();
             if (await this.rootRepository.Exists(rootUserDto.Email))
             {
-                return BadRequest(this.localizer["UserExists"].Value);
+                return BadRequest(this.localizer!["UserExists"].Value);
             }
-            var userToCreate = this.mapper.Map<User>(rootUserDto);
+            var userToCreate = this.mapper!.Map<User>(rootUserDto);
             await this.rootRepository.Register(userToCreate, rootUserDto.Password);
             return StatusCode(201);
         }

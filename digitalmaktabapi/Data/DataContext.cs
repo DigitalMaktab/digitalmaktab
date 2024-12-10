@@ -29,6 +29,16 @@ namespace digitalmaktabapi.Data
         public DbSet<Attendance> Attendances { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
+
+
+            // Set default delete behavior to Restrict for all relationships
+            foreach (var foreignKey in modelBuilder.Model.GetEntityTypes()
+                .SelectMany(e => e.GetForeignKeys()))
+            {
+                foreignKey.DeleteBehavior = DeleteBehavior.Restrict;
+            }
+
             foreach (var entityType in modelBuilder.Model.GetEntityTypes())
             {
                 if (typeof(Base).IsAssignableFrom(entityType.ClrType))
@@ -74,6 +84,11 @@ namespace digitalmaktabapi.Data
 
             modelBuilder.Entity<Teacher>().OwnsOne(a => a.PrimaryAddress);
             modelBuilder.Entity<Teacher>().OwnsOne(a => a.PhoneNumber);
+            modelBuilder.Entity<Class>()
+                .HasOne(c => c.Teacher)
+                .WithMany(t => t.Classes) // Assuming a teacher can teach multiple classes
+                .HasForeignKey(c => c.TeacherId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Subject>()
             .HasOne(a => a.Book)

@@ -4,7 +4,8 @@
     "apiResponse": {
         "error": "An error occured",
         "requestSent": "Request is alreay sent",
-        "unknownError": "Unknown error occured"
+        "unknownError": "Unknown error occured",
+        "foreignKeyError": "The operation could not be completed because the item is associated with other records."
     },
     "close": {
         "label": "Close"
@@ -163,6 +164,16 @@
             "label": "General",
             "menues": {
                 "dashboard": "Dashboard",
+                "calendarYear": {
+                    "label": "Calendar Year",
+                    "list": "Calendar Year List",
+                    "add": "Add Calendar Year"
+                },
+                "subjects": {
+                    "label": "Subjects",
+                    "list": "Subject List",
+                    "add": "Add Subject"
+                },
                 "library": {
                     "label": "Library",
                     "onlineLibrary": "Online Library",
@@ -178,6 +189,11 @@
                     "label": "Classes",
                     "list": "Class List",
                     "add": "Add Class"
+                },
+                "classSubjects": {
+                    "label": "Class Subjects",
+                    "list": "Class Subject List",
+                    "add": "Add Class Subject"
                 },
                 "timeTable": {
                     "label": "Time Table",
@@ -270,6 +286,7 @@
     },
     "addressForm": {
         "title": "Address",
+        "secondaryAddressTitle": "Secondary Address",
         "street": {
             "label": "Street",
             "placeholder": "12th Street",
@@ -435,6 +452,20 @@
         },
         "dateOfBirth": {
             "label": "Date of Birth"
+        },
+        "studentEditor": {
+            "label": "Student Editor",
+            "tabs": {
+                "profile": {
+                    "label": "Profile"
+                },
+                "class": {
+                    "label": "Classes"
+                },
+                "schedules": {
+                    "lable": "Schedules"
+                }
+            }
         }
     },
     "calendarYear": {
@@ -444,6 +475,12 @@
         },
         "nativeYear": {
             "label": "Native Year"
+        },
+        "add": {
+            "label": "Add Calendar Year"
+        },
+        "list": {
+            "label": "Calendar Years"
         }
     },
     "enrollment": {
@@ -605,6 +642,9 @@
         },
         "addBook": {
             "label": "Add Book"
+        },
+        "list": {
+            "label": "Book List"
         }
     },
     "report": {
@@ -649,6 +689,51 @@
         },
         "error": {
             "label": "An error occurred while loading the data."
+        },
+        "actions": {
+            "label": "Actions"
         }
+    },
+    "status": {
+        "label": "Status",
+        "active": {
+            "label": "Active"
+        },
+        "inactive": {
+            "label": "Inactive"
+        }
+    },
+    "subject": {
+        "label": "Subject",
+        "subjectName": {
+            "label": "Subject Name"
+        },
+        "add": {
+            "label": "Add Subject"
+        },
+        "list": {
+            "label": "Subject List"
+        }
+    },
+    "classSubject": {
+        "label": "Class Subject",
+        "total": {
+            "label": "Total Class Subjects"
+        },
+        "add": {
+            "label": "Add Class Subject"
+        },
+        "list": {
+            "label": "Class Subject List"
+        },
+        "subjectAndClass": {
+            "label": "Class and Subject"
+        }
+    },
+    "dayOfWeek": {
+        "label": "Day of Week"
+    },
+    "scheduleTime": {
+        "label": "Schedule Time"
     }
 }

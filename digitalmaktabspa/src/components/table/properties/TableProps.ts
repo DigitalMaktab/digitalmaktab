@@ -23,8 +23,15 @@ export interface TableProps<T> {
     headers?: Record<string, any>;
     errors?: string[];
   }>;
+
+  deleteRow?: (id: string) => Promise<{
+    status: ResponseResult;
+  }>;
   showPagination?: boolean;
   showExport?: boolean;
   reportTitle?: string;
   showPageSizer?: boolean;
+
+  onRowsSelect?: (selectedRows: T[]) => void;
+  selectMultiple?: boolean;
 }

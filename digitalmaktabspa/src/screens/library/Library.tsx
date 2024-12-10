@@ -1,62 +1,72 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import useMainOperations from "../../hooks/useMainOperations";
-import AppPDFGenerator from "../../components/pdf/AppPdfGenerator";
-import AppPDFPreview from "../../components/pdf/AppPdfPreview";
-import AppPdfPreviewFromLink from "../../components/pdf/AppPdfPreviewFromLink";
-import AppExportTableToPdf from "../../components/pdf/AppExportTableToPdf";
-import AppExportStyledTableToPdf from "../../components/pdf/AppExportStyledTableToPdf";
+import { Book } from "../../models/Book";
+import { Column } from "../../components/table/properties/TableProps";
+import AppCard from "../../components/card/AppCard";
+import { useAppLocalizer } from "../../hooks/useAppLocalizer";
+import AppTable from "../../components/table/AppTable";
+import AppLibraryPdfPreview from "../../components/pdf/AppLibraryPdfPreview";
 
 const Library = () => {
-  const { fetchBooks, data } = useMainOperations();
-  const [currentPage, setCurrentPage] = useState(1);
+  const { t } = useAppLocalizer();
+  const { fetchBooks, data, totalPages } = useMainOperations();
 
-  const fetchPageData = useCallback(async (page: number, filters = {}) => {
-    setCurrentPage(page);
-    await fetchBooks(page, filters);
+  const [selectedRows, setSelectedRows] = useState<Book[]>([]);
+  const [showModal, setShowModal] = useState<boolean>(false);
+
+  const columns: Column<Book>[] = useMemo(
+    () => [
+      {
+        header: "book.bookTitle.label",
+        accessor: "bookTitle",
+      },
+    ],
+    []
+  );
+
+  const handleRowSelect = useCallback((selectedRows: Book[]) => {
+    setSelectedRows(selectedRows);
   }, []);
 
-  useEffect(() => {
-    fetchPageData(currentPage, {});
-  }, [currentPage, fetchPageData]);
+  const readBook = () => {
+    if (selectedRows.length === 0) {
+      return;
+    }
+    setShowModal(true);
+  };
 
   return (
-    <>
-      {data && (
-        <>
-          <div className="row">
-            <div className="col-md-12">
-              <AppPDFGenerator />
-            </div>
-          </div>
-
-          <div className="row">
-            <div className="col-md-12">
-              <AppPDFPreview />
-            </div>
-          </div>
-
-          <div className="row">
-            <div className="col-md-12">
-              <AppPdfPreviewFromLink
-                pdfUrl={`http://0.0.0.0:5000/${data[2].bookPath}`}
-              />
-            </div>
-          </div>
-
-          <div className="row">
-            <div className="col-md-12">
-              <AppExportTableToPdf />
-            </div>
-          </div>
-
-          <div className="row">
-            <div className="col-md-12">
-              <AppExportStyledTableToPdf />
-            </div>
-          </div>
-        </>
+    <AppCard title={t("book.list.label")}>
+      <AppTable
+        rowLink="/librar-editor/{id}"
+        data={data as Book[]}
+        columns={columns}
+        totalPages={totalPages}
+        fetchPageData={fetchBooks}
+        reportTitle={t("book.list.label")}
+        actions={[
+          {
+            label: t("book.addBook.label"),
+            route: "/library-editor/new",
+            icon: "plus",
+          },
+          {
+            label: t("library.readButton.label"),
+            onClick: readBook,
+            icon: "book-open",
+          },
+        ]}
+        onRowsSelect={handleRowSelect}
+      />
+      {selectedRows.length > 0 && (
+        <AppLibraryPdfPreview
+          isVisible={showModal}
+          onClose={() => setShowModal(false)}
+          title={selectedRows[0].bookTitle}
+          pdfUrl={`http://192.168.8.142:5000/${selectedRows[0].bookPath}`}
+        />
       )}
-    </>
+    </AppCard>
   );
 };
 

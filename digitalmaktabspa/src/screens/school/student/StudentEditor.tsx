@@ -1,73 +1,20 @@
-import React, { useMemo, useCallback, useState } from "react";
+import React, { useCallback } from "react";
 import AppCard from "../../../components/card/AppCard";
 import AppTab from "../../../components/tab/AppTab";
-import AppFormCard from "../../../components/card/AppFormCard";
 import AppFormInput from "../../../components/form/AppFormInput";
 import AppAddressForm from "../../../components/form/AppAddressForm";
-import AppFormSelect from "../../../components/form/AppFormSelect";
 import AppGenderSelect from "../../../components/select/AppGenderSelects";
 import { useAppLocalizer } from "../../../hooks/useAppLocalizer";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { TabItem } from "../../../components/tab/properties/TabProps";
 import * as AIIcons from "react-icons/ai";
 import * as SIIcons from "react-icons/si";
-import * as Yup from "yup";
 import { Gender } from "../../../models/Gender";
 import useSchoolOperations from "../../../hooks/useSchoolOperations";
 import { Student } from "../../../models/Student";
 import { EditorProps } from "../properties/EditorProps";
-
-const getStudentValidationSchema = (t: any) =>
-  Yup.object().shape({
-    firstNameNative: Yup.string().required(
-      t("validation.required", { value: t("student.firstNameNative.label") })
-    ),
-    lastNameNative: Yup.string().required(
-      t("validation.required", { value: t("student.lastNameNative.label") })
-    ),
-    fatherNameNative: Yup.string().required(
-      t("validation.required", { value: t("student.fatherNameNative.label") })
-    ),
-    grandFatherNameNative: Yup.string().required(
-      t("validation.required", {
-        value: t("student.grandFatherNameNative.label"),
-      })
-    ),
-    firstNameEnglish: Yup.string().required(
-      t("validation.required", { value: t("student.firstNameEnglish.label") })
-    ),
-    lastNameEnglish: Yup.string().required(
-      t("validation.required", { value: t("student.lastNameEnglish.label") })
-    ),
-    asasNumber: Yup.number().required(
-      t("validation.required", { value: t("student.asasNumber.label") })
-    ),
-    calendarYearId: Yup.string()
-      .required(
-        t("validation.required", { value: t("student.calendarYear.label") })
-      )
-      .uuid(t("validation.invalidUuid")),
-    joiningClassId: Yup.string()
-      .required(
-        t("validation.required", { value: t("student.joiningClass.label") })
-      )
-      .uuid(t("validation.invalidUuid")),
-    primaryAddress: Yup.object().required(
-      t("validation.required", { value: t("address.primary.label") })
-    ),
-    secondaryAddress: Yup.object().required(
-      t("validation.required", { value: t("address.secondary.label") })
-    ),
-    gender: Yup.string().required(
-      t("validation.required", { value: t("gender.label") })
-    ),
-    dateOfBirth: Yup.date().required(
-      t("validation.required", { value: t("student.dateOfBirth.label") })
-    ),
-    email: Yup.string()
-      .email(t("validation.invalidEmail"))
-      .required(t("validation.required", { value: t("auth.email.label") })),
-  });
+import AppBaseEditor from "../../../components/AppBaseEditor";
+import AppFormSelect from "../../../components/form/AppFormSelect";
 
 const StudentEditor: React.FC<EditorProps> = ({ initialData }) => {
   const { t } = useAppLocalizer();
@@ -76,29 +23,59 @@ const StudentEditor: React.FC<EditorProps> = ({ initialData }) => {
   const location = useLocation();
   const { registerStudent } = useSchoolOperations();
 
-  const initialFormData = useMemo(
-    () => ({
-      firstNameNative: "",
-      lastNameNative: "",
-      fatherNameNative: "",
-      grandFatherNameNative: "",
-      firstNameEnglish: "",
-      lastNameEnglish: "",
-      asasNumber: "",
-      calendarYearId: "",
-      joiningClassId: "",
-      primaryAddress: { street: "", region: "", village: "" },
-      secondaryAddress: { street: "", region: "", village: "" },
-      gender: Gender.EMPTY,
-      dateOfBirth: "",
-      email: "",
-    }),
-    []
-  );
+  const validationSchemaConfig = {
+    firstNameNative: { label: t("student.firstNameNative.label") },
+    lastNameNative: { label: t("student.lastNameNative.label") },
+    fatherNameNative: { label: t("student.fatherNameNative.label") },
+    grandFatherNameNative: { label: t("student.grandFatherNameNative.label") },
+    firstNameEnglish: { label: t("student.firstNameEnglish.label") },
+    lastNameEnglish: { label: t("student.lastNameEnglish.label") },
+    fatherNameEnglish: { label: t("student.fatherNameEnglish.label") },
+    grandFatherNameEnglish: {
+      label: t("student.grandFatherNameEnglish.label"),
+    },
+    asasNumber: { label: t("student.asasNumber.label") },
+    gender: { label: t("gender.label") },
+    dateOfBirth: { label: t("student.dateOfBirth.label") },
+    primaryAddress: {
+      label: t("addressForm.label"),
+      nested: {
+        street: { label: t("addressForm.street.label") },
+        region: { label: t("addressForm.region.label") },
+        village: { label: t("addressForm.village.label") },
+      },
+    },
+    secondaryAddress: {
+      label: t("addressForm.label"),
+      nested: {
+        street: { label: t("addressForm.street.label") },
+        region: { label: t("addressForm.region.label") },
+        village: { label: t("addressForm.village.label") },
+      },
+    },
+  } as unknown as Record<
+    keyof Student,
+    { label: string; nested?: Record<string, any> }
+  >;
 
-  const [formData] = useState<Student>(
-    (initialData as Student) || location.state?.initialData || initialFormData
-  );
+  const initialFormData = {
+    firstNameNative: "",
+    lastNameNative: "",
+    fatherNameNative: "",
+    grandFatherNameNative: "",
+    firstNameEnglish: "",
+    lastNameEnglish: "",
+    fatherNameEnglish: "",
+    grandFatherNameEnglish: "",
+    asasNumber: "",
+    calendarYearId: "",
+    joiningClassId: "",
+    primaryAddress: { street: "", region: "", village: "" },
+    secondaryAddress: { street: "", region: "", village: "" },
+    gender: Gender.EMPTY,
+    dateOfBirth: "",
+    email: "",
+  } as unknown as Student;
 
   const handleSubmit = useCallback(
     async (formData: any) => {
@@ -119,86 +96,128 @@ const StudentEditor: React.FC<EditorProps> = ({ initialData }) => {
   );
 
   const profileTabContent = (
-    <AppFormCard
-      validationSchema={getStudentValidationSchema(t)}
-      initialValues={formData}
+    <AppBaseEditor<Student>
+      validationSchemaConfig={validationSchemaConfig}
+      initialData={initialData}
+      initialFormData={initialFormData}
+      title={(data) => ""}
       onSubmit={handleSubmit}
     >
-      <div className="row">
-        <div className="col-md-4">
-          <AppFormInput
-            name="firstNameNative"
-            label={t("student.firstNameNative.label")}
-          />
-        </div>
-        <div className="col-md-4">
-          <AppFormInput
-            name="lastNameNative"
-            label={t("student.lastNameNative.label")}
-          />
-        </div>
-        <div className="col-md-4">
-          <AppFormInput
-            name="fatherNameNative"
-            label={t("student.fatherNameNative.label")}
-          />
-        </div>
-      </div>
-      <div className="row">
-        <div className="col-md-4">
-          <AppFormInput
-            name="firstNameEnglish"
-            label={t("student.firstNameEnglish.label")}
-          />
-        </div>
-        <div className="col-md-4">
-          <AppFormInput
-            name="lastNameEnglish"
-            label={t("student.lastNameEnglish.label")}
-          />
-        </div>
-        <div className="col-md-4">
-          <AppFormInput
-            name="asasNumber"
-            label={t("student.asasNumber.label")}
-          />
-        </div>
-      </div>
-      <div className="row">
-        <div className="col-md-6">
-          {/* <AppFormSelect
+      {(props) => (
+        <>
+          <div className="row">
+            <div className="col-md-3">
+              <AppFormInput
+                name="firstNameNative"
+                required
+                label={t("student.firstNameNative.label")}
+              />
+            </div>
+            <div className="col-md-3">
+              <AppFormInput
+                name="lastNameNative"
+                required
+                label={t("student.lastNameNative.label")}
+              />
+            </div>
+            <div className="col-md-3">
+              <AppFormInput
+                name="fatherNameNative"
+                required
+                label={t("student.fatherNameNative.label")}
+              />
+            </div>
+            <div className="col-md-3">
+              <AppFormInput
+                name="grandFatherNameNative"
+                required
+                label={t("student.grandFatherNameNative.label")}
+              />
+            </div>
+          </div>
+          <div className="row">
+            <div className="col-md-3">
+              <AppFormInput
+                name="firstNameEnglish"
+                required
+                label={t("student.firstNameEnglish.label")}
+              />
+            </div>
+            <div className="col-md-3">
+              <AppFormInput
+                name="lastNameEnglish"
+                required
+                label={t("student.lastNameEnglish.label")}
+              />
+            </div>
+            <div className="col-md-3">
+              <AppFormInput
+                name="fatherNameEnglish"
+                required
+                label={t("student.fatherNameEnglish.label")}
+              />
+            </div>
+            <div className="col-md-3">
+              <AppFormInput
+                name="grandFatherNameEnglish"
+                required
+                label={t("student.grandFatherNameEnglish.label")}
+              />
+            </div>
+          </div>
+          <div className="row">
+            <div className="col-md-6">
+              {/* <AppFormSelect
             name="calendarYearId"
             label={t("student.calendarYear.label")}
             options={[]} // Options from API
           /> */}
-        </div>
-        <div className="col-md-6">
-          {/* <AppFormSelect
+            </div>
+            <div className="col-md-6">
+              {/* <AppFormSelect
             name="joiningClassId"
             label={t("student.joiningClass.label")}
             options={[]} // Options from API
           /> */}
-        </div>
-      </div>
-      <div className="row">
-        <div className="col-md-6">
-          <AppGenderSelect
-            name="gender"
-            value={formData?.gender?.toString() || ""}
-            onChange={() => {}}
+            </div>
+          </div>
+          <div className="row">
+            <div className="col-md-4">
+              <AppFormInput
+                name="asasNumber"
+                required
+                label={t("student.asasNumber.label")}
+              />
+            </div>
+            <div className="col-md-4">
+              <AppFormSelect
+                name="gender"
+                label=""
+                value={id ? props.formData!.gender.toString() : Gender.EMPTY}
+              >
+                <AppGenderSelect
+                  name="gender"
+                  value={id ? props.formData!.gender.toString() : Gender.EMPTY}
+                  onChange={() => {}}
+                />
+              </AppFormSelect>
+            </div>
+            <div className="col-md-4">
+              <AppFormInput
+                name="dateOfBirth"
+                type="date"
+                label={t("student.dateOfBirth.label")}
+              />
+            </div>
+          </div>
+          <AppAddressForm prefix="primaryAddress" />
+          <AppAddressForm
+            prefix="secondaryAddress"
+            title={t("addressForm.secondaryAddressTitle")}
           />
-        </div>
-        <div className="col-md-6">
-          <AppFormInput
-            name="dateOfBirth"
-            type="date"
-            label={t("student.dateOfBirth.label")}
-          />
-        </div>
-      </div>
-      <AppAddressForm prefix="primaryAddress" />
-      <AppAddressForm prefix="secondaryAddress" />
-    </AppFormCard>
+        </>
+      )}
+    </AppBaseEditor>
   );
 
   const tabData: TabItem[] = [

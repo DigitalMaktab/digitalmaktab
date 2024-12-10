@@ -15,7 +15,7 @@ const AppClassTypeSelect: React.FC<SelectProps> = ({
 
   useEffect(() => {
     const fetchData = async () => {
-      await fetchClassTypes(1);
+      await fetchClassTypes(1, 10, {});
     };
 
     fetchData();

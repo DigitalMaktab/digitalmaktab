@@ -33,6 +33,13 @@ import LibraryEditor from "./screens/library/LibraryEditor";
 import RootHome from "./screens/root/RootHome";
 
 import "react-pdf/dist/esm/Page/AnnotationLayer.css";
+import CalendarYearList from "./screens/root/calendarYear/CalendarYearList";
+import CalendarYearEditor from "./screens/root/calendarYear/CalendarYearEditor";
+import SubjectList from "./screens/root/subject/SubjectList";
+import SubjectEditor from "./screens/root/subject/SubjectEditor";
+import ClassSubjectEditor from "./screens/school/class/subject/ClassSubjectEditor";
+import ClassSubjectList from "./screens/school/class/subject/ClassSubjectList";
+import ScheduleEditor from "./screens/school/schedule/ScheduleEditor";
 
 // // Set up worker
 // import { pdfjs } from "react-pdf";
@@ -67,20 +74,45 @@ function App() {
               <Route path="/" element={<SchoolHome />}>
                 <Route path="home" element={<SchoolDashboard />} />
                 <Route path="profile" element={<SchoolProfile />} />
+
                 <Route path="branch-list" element={<BranchList />} />
                 <Route path="branch-editor/new" element={<BranchEditor />} />
                 <Route path="branch-editor/:id" element={<BranchEditor />} />
+
                 <Route path="class-list" element={<ClassList />} />
                 <Route path="class-editor/new" element={<ClassEditor />} />
                 <Route path="class-editor/:id" element={<ClassEditor />} />
+
+                <Route
+                  path="class-subject-list"
+                  element={<ClassSubjectList />}
+                />
+                <Route
+                  path="class-subject-editor/new"
+                  element={<ClassSubjectEditor />}
+                />
+                <Route
+                  path="class-subject-editor/:id"
+                  element={<ClassSubjectEditor />}
+                />
+
                 <Route path="teacher-list" element={<TeacherList />} />
                 <Route path="teacher-editor/new" element={<TeacherEditor />} />
                 <Route path="teacher-editor/:id" element={<TeacherEditor />} />
+
                 <Route path="student-list" element={<StudentList />} />
                 <Route path="student-editor/new" element={<StudentEditor />} />
                 <Route path="student-editor/:id" element={<StudentEditor />} />
 
                 <Route path="timetable" element={<ScheduleList />} />
+                <Route
+                  path="timetable-editor/new"
+                  element={<ScheduleEditor />}
+                />
+                <Route
+                  path="timetable-editor/:id"
+                  element={<ScheduleEditor />}
+                />
               </Route>
             </Route>
 
@@ -95,6 +127,22 @@ function App() {
             <Route element={<AuthRoute requiredRole={UserRole.ROOT_USER} />}>
               <Route path="/" element={<RootHome />}>
                 <Route path="dashboard" element={<Dashboard />} />
+                <Route
+                  path="calendar-year-list"
+                  element={<CalendarYearList />}
+                />
+                <Route
+                  path="calendar-year-editor/new"
+                  element={<CalendarYearEditor />}
+                />
+                <Route
+                  path="calendar-year-editor/:id"
+                  element={<CalendarYearEditor />}
+                />
+
+                <Route path="subject-list" element={<SubjectList />} />
+                <Route path="subject-editor/new" element={<SubjectEditor />} />
+                <Route path="subject-editor/:id" element={<SubjectEditor />} />
               </Route>
             </Route>
           </Routes>

@@ -19,7 +19,6 @@ namespace digitalmaktabapi.Dtos
         public required string FatherNameEnglish { get; set; }
         public required string GrandFatherNameEnglish { get; set; }
         public required int AsasNumber { get; set; }
-        public required Guid CalendarYearId { get; set; }
         public required Guid JoiningClassId { get; set; }
         public required AddAddressDto PrimaryAddress { get; set; }
         public required AddAddressDto SecondaryAddress { get; set; }
@@ -55,14 +54,6 @@ namespace digitalmaktabapi.Dtos
             RuleFor(a => a.FatherNameEnglish).NotNull().NotEmpty();
             RuleFor(a => a.GrandFatherNameEnglish).NotNull().NotEmpty();
             RuleFor(a => a.AsasNumber).NotNull().NotEmpty();
-            RuleFor(a => a.CalendarYearId)
-                .NotNull()
-                .NotEmpty()
-                .Must(a => a != Guid.Empty);
-            RuleFor(a => a.JoiningClassId)
-                .NotNull()
-                .NotEmpty()
-                .Must(a => a != Guid.Empty);
 
             RuleFor(a => a.PrimaryAddress).NotNull().NotEmpty();
             RuleFor(a => a.SecondaryAddress).NotNull().NotEmpty();

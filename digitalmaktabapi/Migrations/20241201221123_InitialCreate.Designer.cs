@@ -12,8 +12,8 @@ using digitalmaktabapi.Data;
 namespace digitalmaktabapi.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20240821210743_anyfieldremoved")]
-    partial class anyfieldremoved
+    [Migration("20241201221123_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -962,17 +962,19 @@ namespace digitalmaktabapi.Migrations
                 {
                     b.HasOne("digitalmaktabapi.Models.Class", null)
                         .WithMany("Attendances")
-                        .HasForeignKey("ClassId");
+                        .HasForeignKey("ClassId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("digitalmaktabapi.Models.Enrollment", "Enrollment")
                         .WithMany()
                         .HasForeignKey("EnrollmentId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("digitalmaktabapi.Models.Student", null)
                         .WithMany("Attendances")
-                        .HasForeignKey("StudentId");
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Enrollment");
                 });
@@ -981,11 +983,13 @@ namespace digitalmaktabapi.Migrations
                 {
                     b.HasOne("digitalmaktabapi.Models.School", "School")
                         .WithMany()
-                        .HasForeignKey("SchoolId");
+                        .HasForeignKey("SchoolId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("digitalmaktabapi.Models.Subject", "Subject")
                         .WithOne("Book")
-                        .HasForeignKey("digitalmaktabapi.Models.Book", "SubjectId");
+                        .HasForeignKey("digitalmaktabapi.Models.Book", "SubjectId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("School");
 
@@ -997,7 +1001,7 @@ namespace digitalmaktabapi.Migrations
                     b.HasOne("digitalmaktabapi.Models.School", "School")
                         .WithMany("Branches")
                         .HasForeignKey("SchoolId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("School");
@@ -1008,7 +1012,7 @@ namespace digitalmaktabapi.Migrations
                     b.HasOne("digitalmaktabapi.Models.Country", "Country")
                         .WithMany("Cities")
                         .HasForeignKey("CountryId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Country");
@@ -1019,25 +1023,25 @@ namespace digitalmaktabapi.Migrations
                     b.HasOne("digitalmaktabapi.Models.Branch", "Branch")
                         .WithMany()
                         .HasForeignKey("BranchId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("digitalmaktabapi.Models.CalendarYear", "CalendarYear")
                         .WithMany()
                         .HasForeignKey("CalendarYearId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("digitalmaktabapi.Models.School", "School")
                         .WithMany()
                         .HasForeignKey("SchoolId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("digitalmaktabapi.Models.Teacher", "Teacher")
                         .WithMany("Classes")
                         .HasForeignKey("TeacherId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Branch");
@@ -1054,13 +1058,13 @@ namespace digitalmaktabapi.Migrations
                     b.HasOne("digitalmaktabapi.Models.Class", "Class")
                         .WithMany("ClassSubjects")
                         .HasForeignKey("ClassId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("digitalmaktabapi.Models.Subject", "Subject")
                         .WithMany("ClassSubjects")
                         .HasForeignKey("SubjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Class");
@@ -1073,7 +1077,7 @@ namespace digitalmaktabapi.Migrations
                     b.HasOne("digitalmaktabapi.Models.City", "City")
                         .WithMany("Districts")
                         .HasForeignKey("CityId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("City");
@@ -1084,19 +1088,19 @@ namespace digitalmaktabapi.Migrations
                     b.HasOne("digitalmaktabapi.Models.CalendarYear", "CalendarYear")
                         .WithMany()
                         .HasForeignKey("CalendarYearId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("digitalmaktabapi.Models.Class", "Class")
                         .WithMany("Enrollments")
                         .HasForeignKey("ClassId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("digitalmaktabapi.Models.Student", "Student")
                         .WithMany("Enrollments")
                         .HasForeignKey("StudentId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("CalendarYear");
@@ -1111,13 +1115,13 @@ namespace digitalmaktabapi.Migrations
                     b.HasOne("digitalmaktabapi.Models.CalendarYear", "CalendarYear")
                         .WithMany()
                         .HasForeignKey("CalendarYearId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("digitalmaktabapi.Models.Student", "Student")
                         .WithMany("Fees")
                         .HasForeignKey("StudentId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("CalendarYear");
@@ -1130,13 +1134,13 @@ namespace digitalmaktabapi.Migrations
                     b.HasOne("digitalmaktabapi.Models.ClassSubject", "ClassSubject")
                         .WithMany()
                         .HasForeignKey("ClassSubjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("digitalmaktabapi.Models.Enrollment", "Enrollment")
                         .WithMany()
                         .HasForeignKey("EnrollmentId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("ClassSubject");
@@ -1149,17 +1153,18 @@ namespace digitalmaktabapi.Migrations
                     b.HasOne("digitalmaktabapi.Models.ClassSubject", "ClassSubject")
                         .WithMany()
                         .HasForeignKey("ClassSubjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("digitalmaktabapi.Models.Student", null)
                         .WithMany("Schedules")
-                        .HasForeignKey("StudentId");
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("digitalmaktabapi.Models.Teacher", "Teacher")
                         .WithMany("Schedules")
                         .HasForeignKey("TeacherId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("ClassSubject");
@@ -1200,7 +1205,8 @@ namespace digitalmaktabapi.Migrations
 
                             b1.HasOne("digitalmaktabapi.Models.District", "District")
                                 .WithMany()
-                                .HasForeignKey("DistrictId");
+                                .HasForeignKey("DistrictId")
+                                .OnDelete(DeleteBehavior.Restrict);
 
                             b1.WithOwner()
                                 .HasForeignKey("SchoolId");
@@ -1250,19 +1256,19 @@ namespace digitalmaktabapi.Migrations
                     b.HasOne("digitalmaktabapi.Models.CalendarYear", "JoiningYear")
                         .WithMany()
                         .HasForeignKey("CalendarYearId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("digitalmaktabapi.Models.Class", "JoiningClass")
                         .WithMany()
                         .HasForeignKey("JoiningClassId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("digitalmaktabapi.Models.School", "School")
                         .WithMany("Students")
                         .HasForeignKey("SchoolId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.OwnsOne("digitalmaktabapi.Models.NationalId", "NationalId", b1 =>
@@ -1424,7 +1430,7 @@ namespace digitalmaktabapi.Migrations
                     b.HasOne("digitalmaktabapi.Models.School", "School")
                         .WithMany()
                         .HasForeignKey("SchoolId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.OwnsOne("digitalmaktabapi.Models.PhoneNumber", "PhoneNumber", b1 =>

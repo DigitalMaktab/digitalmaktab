@@ -9,7 +9,7 @@ namespace digitalmaktabapi.Models
         FIFTH,
         SIXTH,
         SEVENTH,
-        EIGHTTH,
+        EIGHT,
         NINTH,
         TENTH
     }

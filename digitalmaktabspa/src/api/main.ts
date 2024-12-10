@@ -1,4 +1,9 @@
 import apiClient from "./client";
+import {
+  buildParams,
+  FilterParams,
+  PaginationParams,
+} from "./properties/pagintation";
 
 const countryList = (
   paginationParams: { pageNumber: number; pageSize: number },
@@ -74,8 +79,30 @@ const addressTypeList = (paginationParams: {
   pageSize: number;
 }) => apiClient.get(`/main/addressTypes`, { params: paginationParams });
 
-const bookList = (paginationParams: { pageNumber: number; pageSize: number }) =>
-  apiClient.get(`/main/books`, { params: paginationParams });
+const bookList = (
+  paginationParams?: PaginationParams,
+  filters?: FilterParams
+) => {
+  const params = buildParams(paginationParams, filters);
+  return apiClient.get("/main/books", { params });
+};
+
+const subjectList = (
+  paginationParams?: PaginationParams,
+  filters?: FilterParams
+) => {
+  const params = buildParams(paginationParams, filters);
+  return apiClient.get("/main/subjects", { params });
+};
+
+const activeCalendarYear = (
+  paginationParams?: PaginationParams,
+  filters?: FilterParams
+) => {
+  const params = buildParams(paginationParams, filters);
+  return apiClient.get("/main/activeCalendarYear", { params });
+};
+
 const mainApi = {
   countryList,
   classList,
@@ -92,6 +119,8 @@ const mainApi = {
   shiftList,
   addressTypeList,
   bookList,
+  subjectList,
+  activeCalendarYear,
 };
 
 export default mainApi;

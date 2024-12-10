@@ -56,7 +56,11 @@ const useApiRequests = <T>() => {
           if (errorStatus === 401) {
             errorMessages = [t("auth.login.unauthorized")];
           } else if (typeof responseData === "string") {
-            errorMessages = [responseData];
+            if (responseData.includes("foreign key constraint fails")) {
+              errorMessages = [t("apiResponse.foreignKeyError")];
+            } else {
+              errorMessages = [responseData];
+            }
           } else if (responseData.errors) {
             errorMessages = Object.entries(responseData.errors).flatMap(
               ([field, messages]) => messages.map((msg) => `${field}: ${msg}`)

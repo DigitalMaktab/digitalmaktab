@@ -9,7 +9,8 @@ import { useAppLocalizer } from "../../../hooks/useAppLocalizer";
 
 const TeacherList = () => {
   const { t, formatCountryCode } = useAppLocalizer();
-  const { teacherList, data, totalPages } = useSchoolOperations();
+  const { teacherList, deleteTeacher, data, totalPages } =
+    useSchoolOperations();
 
   // Define columns using useMemo for optimization
   const columns: Column<Teacher>[] = useMemo(
@@ -53,6 +54,7 @@ const TeacherList = () => {
         columns={columns}
         totalPages={totalPages}
         fetchPageData={teacherList}
+        deleteRow={deleteTeacher}
         reportTitle={t("teacher.teacherList.label")}
         actions={[
           {

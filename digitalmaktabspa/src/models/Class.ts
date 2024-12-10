@@ -2,6 +2,7 @@ import { Base } from "./Base";
 import { Branch } from "./Branch";
 import { CalendarYear } from "./CalendarYear";
 import { ClassName } from "./ClassName";
+import { ClassSubject } from "./ClassSubject";
 import { ClassType } from "./ClassType";
 import { Enrollment } from "./Enrollment";
 import { School } from "./School";
@@ -22,4 +23,5 @@ export interface Class extends Base {
   teacher: Teacher;
   calendarYear: CalendarYear;
   enrollments: Enrollment[];
+  classSubjects: ClassSubject[];
 }

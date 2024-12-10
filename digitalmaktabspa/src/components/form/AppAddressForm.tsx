@@ -3,12 +3,15 @@ import AppFormInput from "./AppFormInput";
 import { useTranslation } from "react-i18next";
 import { AddressFormProps } from "./properties/AddressFormProps";
 
-const AppAddressForm: React.FC<AddressFormProps> = ({ prefix = "address" }) => {
+const AppAddressForm: React.FC<AddressFormProps> = ({
+  title,
+  prefix = "address",
+}) => {
   const { t } = useTranslation();
   const getName = (field: string) => `${prefix}.${field}`;
   return (
     <div className="address-form-container">
-      <h4>{t("addressForm.title")}</h4>
+      <h4>{title ? title : t("addressForm.title")}</h4>
       <div className="row">
         <div className="col-md-6">
           <AppFormInput
