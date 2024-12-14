@@ -87,6 +87,7 @@ const AppSideBar: React.FC<AppSideBarProps> = ({ isOpen }) => {
               {
                 label: t("sidebar.general.menues.library.add"),
                 link: "/library-editor/new",
+                roles: [UserRole.ROOT_USER, UserRole.ADMIN],
               },
             ],
             roles: [
