@@ -4,19 +4,19 @@ import { SelectProps } from "./properties/SelectProps";
 import { Select2Option } from "../properties/InputProps";
 import AppSelect2 from "../input/AppSelect2";
 import { useTranslation } from "react-i18next";
-const AppGenderSelect: React.FC<SelectProps> = ({
+const AppIsOrphanSelect: React.FC<SelectProps> = ({
   value,
   onChange,
   name,
   required,
 }) => {
   const { t } = useTranslation();
-  const { fetchGenders, data } = useMainOperations();
+  const { fetchIsOrphans, data } = useMainOperations();
   const [options, setOptions] = useState<Select2Option[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
-      await fetchGenders(1, 10, {});
+      await fetchIsOrphans(1, 50, {});
     };
 
     fetchData();
@@ -40,10 +40,10 @@ const AppGenderSelect: React.FC<SelectProps> = ({
         value={value}
         onChange={onChange}
         loading={false}
-        label={t("gender.label")}
+        label={t("isOrphan.label")}
         required={required}
       />
     </div>
   );
 };
-export default AppGenderSelect;
+export default AppIsOrphanSelect;

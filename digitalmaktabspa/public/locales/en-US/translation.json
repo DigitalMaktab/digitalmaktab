@@ -417,6 +417,7 @@
     },
     "student": {
         "label": "Student",
+        "title": "Student Details",
         "studentList": {
             "label": "Student List"
         },
@@ -466,6 +467,27 @@
                     "lable": "Schedules"
                 }
             }
+        },
+        "relatives": {
+            "label": "Relatives"
+        },
+        "brotherName": {
+            "label": "Brother Name"
+        },
+        "fUncleName": {
+            "label": "Father Side Uncle Name"
+        },
+        "fCousineName": {
+            "label": "Father Side Cousine Name"
+        },
+        "mUncleName": {
+            "label": "Mother Side Uncle Name"
+        },
+        "mCousineName": {
+            "label": "Mother Side Cousine Name"
+        },
+        "extraDetails": {
+            "label": "Extra Details"
         }
     },
     "calendarYear": {
@@ -735,5 +757,40 @@
     },
     "scheduleTime": {
         "label": "Schedule Time"
+    },
+    "nationalId": {
+        "title": "National ID",
+        "electronicNationalIdNumber": {
+            "label": "Electronic National ID Number",
+            "placeholder": "Electronic National ID Number"
+        },
+        "nationalIdNumber": {
+            "label": "National ID Number",
+            "placeholder": "National ID Number"
+        },
+        "volume": {
+            "label": "Volume",
+            "placeholder": "Volume"
+        },
+        "page": {
+            "label": "Page",
+            "placeholder": "Page"
+        },
+        "registerNumber": {
+            "label": "Register Number",
+            "placeholder": "Register Number"
+        }
+    },
+    "bloodGroup": {
+        "label": "Blood Group"
+    },
+    "disabilityType": {
+        "label": "Disability Type"
+    },
+    "isOrphan": {
+        "label": "Is Orphan?"
+    },
+    "language": {
+        "label": "Mother Tongue"
     }
 }

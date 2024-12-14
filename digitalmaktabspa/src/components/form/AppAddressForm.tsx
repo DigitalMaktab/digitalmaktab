@@ -2,6 +2,7 @@ import React from "react";
 import AppFormInput from "./AppFormInput";
 import { useTranslation } from "react-i18next";
 import { AddressFormProps } from "./properties/AddressFormProps";
+import AppFormSectionContainer from "./AppFormSectionContainer";
 
 const AppAddressForm: React.FC<AddressFormProps> = ({
   title,
@@ -10,8 +11,7 @@ const AppAddressForm: React.FC<AddressFormProps> = ({
   const { t } = useTranslation();
   const getName = (field: string) => `${prefix}.${field}`;
   return (
-    <div className="address-form-container">
-      <h4>{title ? title : t("addressForm.title")}</h4>
+    <AppFormSectionContainer title={title ? title : t("addressForm.title")}>
       <div className="row">
         <div className="col-md-6">
           <AppFormInput
@@ -45,7 +45,7 @@ const AppAddressForm: React.FC<AddressFormProps> = ({
           />
         </div>
       </div>
-    </div>
+    </AppFormSectionContainer>
   );
 };
 

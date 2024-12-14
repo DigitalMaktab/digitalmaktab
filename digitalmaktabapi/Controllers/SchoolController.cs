@@ -114,7 +114,7 @@ namespace digitalmaktabapi.Controllers
                 EmailFooter = this.localizer!["EmailFooter"]
             };
 
-            if (await this.mailService.SendMail(mailData))
+            if (await this.mailService.SendGrid(mailData))
             {
                 var studentToCreate = this.mapper!.Map<Student>(studentDto);
                 studentToCreate.SchoolId = this.SchoolId;
@@ -122,6 +122,16 @@ namespace digitalmaktabapi.Controllers
                 studentToCreate.UpdateUserId = this.SchoolId;
                 studentToCreate.CalendarYearId = this.CalendarYearId;
                 await this.studentRepository.Register(studentToCreate, studentPassword);
+
+                // Enroll Student to joining Class
+                AddEnrollmentDto enrollmentDto = new()
+                {
+                    StudentId = studentToCreate.Id,
+                    CalendarYearId = this.CalendarYearId,
+                    ClassId = studentDto.JoiningClassId,
+                };
+
+                await this.EnrollStudentToClass(enrollmentDto);
             }
 
             return StatusCode(201);
@@ -303,18 +313,29 @@ namespace digitalmaktabapi.Controllers
         [HttpPost("enroll")]
         public async Task<IActionResult> Enroll(AddEnrollmentDto enrollmentDto)
         {
-            if (await this.schoolRepository.IsSudentEnrolled(enrollmentDto.StudentId, enrollmentDto.CalendarYearId, enrollmentDto.ClassId))
+            bool enroll = await EnrollStudentToClass(enrollmentDto);
+
+            if (!enroll)
             {
                 return BadRequest(this.localizer!["StudentIsEnrolled"].Value);
             }
+            return NoContent();
+        }
 
+        [NonAction]
+        public async Task<bool> EnrollStudentToClass(AddEnrollmentDto enrollmentDto)
+        {
+            if (await this.schoolRepository.IsSudentEnrolled(enrollmentDto.StudentId, enrollmentDto.CalendarYearId, enrollmentDto.ClassId))
+            {
+                return false;
+            }
             var enrollmentToCreate = this.mapper!.Map<Enrollment>(enrollmentDto);
             enrollmentToCreate.CreationUserId = this.Id;
             enrollmentToCreate.UpdateUserId = this.Id;
 
             this.schoolRepository.Add(enrollmentToCreate);
             await this.schoolRepository.SaveAll();
-            return NoContent();
+            return true;
         }
 
         [HttpGet("classStudents/{classId}/{calendarYearId}")]

@@ -74,8 +74,8 @@ const scheduleList = (
 const registerTeacher = (teacher: Teacher) =>
   apiClient.post("/school/registerTeacher", teacher);
 
-const registerStudent = (teacher: Student) =>
-  apiClient.post("/school/registerStudent", teacher);
+const registerStudent = (student: Student) =>
+  apiClient.post("/school/registerStudent", student);
 
 const deleteTeacher = (id: string) =>
   apiClient.delete(`/school/deleteTeacher/${id}`);

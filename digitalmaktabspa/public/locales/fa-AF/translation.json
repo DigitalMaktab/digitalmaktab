@@ -417,6 +417,7 @@
     },
     "student": {
         "label": "شاگرد",
+        "title": "مشخصات شاگرد",
         "studentList": {
             "label": "لست شاگردان"
         },
@@ -466,6 +467,27 @@
                     "lable": "تقسیم اوقات"
                 }
             }
+        },
+        "relatives": {
+            "label": "اقارب"
+        },
+        "brotherName": {
+            "label": "اسم برادر"
+        },
+        "fUncleName": {
+            "label": "اسم کاکا"
+        },
+        "fCousinName": {
+            "label": "اسم پسر کاکا"
+        },
+        "mUncleName": {
+            "label": "اسم ماما"
+        },
+        "mCousinName": {
+            "label": "اسم پسر ماما"
+        },
+        "extraDetails": {
+            "label": "جزئیات اضافی"
         }
     },
     "calendarYear": {
@@ -735,5 +757,40 @@
     },
     "scheduleTime": {
         "label": "ساعت"
+    },
+    "nationalId": {
+        "title": "تذکره",
+        "electronicNationalIdNumber": {
+            "label": "نمره تذکره الکترونیکی",
+            "placeholder": "نمره تذکره الکترونیکی"
+        },
+        "nationalIdNumber": {
+            "label": "نمره تذکره",
+            "placeholder": "نمره تذکره"
+        },
+        "volume": {
+            "label": "جلد",
+            "placeholder": "جلد"
+        },
+        "page": {
+            "label": "صفحه",
+            "placeholder": "صفحه"
+        },
+        "registerNumber": {
+            "label": "نمره کتاب",
+            "placeholder": "نمره کتاب"
+        }
+    },
+    "bloodGroup": {
+        "label": "گروپ خون"
+    },
+    "disabilityType": {
+        "label": "نوع معلولیت"
+    },
+    "isOrphan": {
+        "label": "یتیم است؟"
+    },
+    "language": {
+        "label": "زبان مادری"
     }
 }

@@ -56386,13 +56386,13 @@ html[dir=rtl] .job-cards-view .radio-primary {
 }
 
 
-.address-form-container {
+.form-container {
   border: 1px dashed #ccc;
   padding: 16px;
   margin: 16px 0;
 }
 
-.address-form-container h4 {
+.form-container h4 {
   margin-bottom: 10px;
   color: var(--bs-card-title-color);
 }

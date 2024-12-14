@@ -13,6 +13,7 @@ const AppSelect2: React.FC<Select2Props> = ({
   showLable = true,
   loading = false,
   loadingError = false,
+  required,
 }) => {
   const selectRef = useRef<HTMLSelectElement>(null);
 
@@ -51,7 +52,7 @@ const AppSelect2: React.FC<Select2Props> = ({
         onChange={(e) => onChange(e.target.value)}
       >
         <option value="" disabled>
-          {label || "Select an option"}
+          {label} {required && "*"}
         </option>
         {data.map((option) => (
           <option key={option.id} value={option.id}>

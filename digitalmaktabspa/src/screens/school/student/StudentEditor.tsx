@@ -8,13 +8,23 @@ import { useAppLocalizer } from "../../../hooks/useAppLocalizer";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { TabItem } from "../../../components/tab/properties/TabProps";
 import * as AIIcons from "react-icons/ai";
-import * as SIIcons from "react-icons/si";
 import { Gender } from "../../../models/Gender";
 import useSchoolOperations from "../../../hooks/useSchoolOperations";
 import { Student } from "../../../models/Student";
 import { EditorProps } from "../properties/EditorProps";
 import AppBaseEditor from "../../../components/AppBaseEditor";
 import AppFormSelect from "../../../components/form/AppFormSelect";
+import AppNationalIdForm from "../../../components/form/AppNationalIdForm";
+import AppFormSectionContainer from "../../../components/form/AppFormSectionContainer";
+import { BloodGroup } from "../../../models/BloodGroup";
+import AppBloodGroupSelect from "../../../components/select/AppBloodGroupSelect";
+import { DisabilityType } from "../../../models/DisabilityType";
+import AppDisabilityTypeSelect from "../../../components/select/AppDisabilityTypeSelect";
+import { IsOrphan } from "../../../models/IsOrphan";
+import AppIsOrphanSelect from "../../../components/select/AppIsOrphanSelect";
+import AppLanguageSelect from "../../../components/select/AppLanguageSelect";
+import { Language } from "../../../models/Language";
+import AppClassSelect from "../../../components/select/AppClassSelect";
 
 const StudentEditor: React.FC<EditorProps> = ({ initialData }) => {
   const { t } = useAppLocalizer();
@@ -53,6 +63,10 @@ const StudentEditor: React.FC<EditorProps> = ({ initialData }) => {
         village: { label: t("addressForm.village.label") },
       },
     },
+    disabilityType: { label: t("disabilityType.label") },
+    isOrphan: { label: t("isOrphan.label") },
+    motherTongue: { label: t("language.label") },
+    email: { label: t("auth.email.label") },
   } as unknown as Record<
     keyof Student,
     { label: string; nested?: Record<string, any> }
@@ -68,24 +82,40 @@ const StudentEditor: React.FC<EditorProps> = ({ initialData }) => {
     fatherNameEnglish: "",
     grandFatherNameEnglish: "",
     asasNumber: "",
-    calendarYearId: "",
+    gender: Gender.EMPTY,
+    dateOfBirth: "",
     joiningClassId: "",
     primaryAddress: { street: "", region: "", village: "" },
     secondaryAddress: { street: "", region: "", village: "" },
-    gender: Gender.EMPTY,
-    dateOfBirth: "",
+    nationalId: {
+      electronicNationalIdNumber: "",
+      nationalIdNumber: "",
+      volume: "",
+      page: "",
+      registerNumber: "",
+    },
+    brotherName: "",
+    fUncleName: "",
+    fCousinName: "",
+    mUncleName: "",
+    mCousinName: "",
+    phoneNumber: { countryId: "", number: "" },
+    bloodGroup: BloodGroup.EMPTY,
+    disabilityType: DisabilityType.EMPTY,
+    isOrphan: IsOrphan.EMPTY,
+    motherTongue: Language.EMPTY,
     email: "",
   } as unknown as Student;
 
   const handleSubmit = useCallback(
-    async (formData: any) => {
+    async (student: Student) => {
       try {
         if (id) {
           // Update existing student
-          // await updateStudent(id, formData);
+          // await updateStudent(id, student);
         } else {
           // Register a new student
-          await registerStudent(formData);
+          await registerStudent(student);
         }
         navigate("/student-list");
       } catch (error) {
@@ -105,116 +135,302 @@ const StudentEditor: React.FC<EditorProps> = ({ initialData }) => {
     >
       {(props) => (
         <>
-          <div className="row">
-            <div className="col-md-3">
-              <AppFormInput
-                name="firstNameNative"
-                required
-                label={t("student.firstNameNative.label")}
-              />
-            </div>
-            <div className="col-md-3">
-              <AppFormInput
-                name="lastNameNative"
-                required
-                label={t("student.lastNameNative.label")}
-              />
-            </div>
-            <div className="col-md-3">
-              <AppFormInput
-                name="fatherNameNative"
-                required
-                label={t("student.fatherNameNative.label")}
-              />
-            </div>
-            <div className="col-md-3">
-              <AppFormInput
-                name="grandFatherNameNative"
-                required
-                label={t("student.grandFatherNameNative.label")}
-              />
-            </div>
-          </div>
-          <div className="row">
-            <div className="col-md-3">
-              <AppFormInput
-                name="firstNameEnglish"
-                required
-                label={t("student.firstNameEnglish.label")}
-              />
-            </div>
-            <div className="col-md-3">
-              <AppFormInput
-                name="lastNameEnglish"
-                required
-                label={t("student.lastNameEnglish.label")}
-              />
-            </div>
-            <div className="col-md-3">
-              <AppFormInput
-                name="fatherNameEnglish"
-                required
-                label={t("student.fatherNameEnglish.label")}
-              />
-            </div>
-            <div className="col-md-3">
-              <AppFormInput
-                name="grandFatherNameEnglish"
-                required
-                label={t("student.grandFatherNameEnglish.label")}
-              />
-            </div>
-          </div>
-          <div className="row">
-            <div className="col-md-6">
-              {/* <AppFormSelect
-            name="calendarYearId"
-            label={t("student.calendarYear.label")}
-            options={[]} // Options from API
-          /> */}
-            </div>
-            <div className="col-md-6">
-              {/* <AppFormSelect
-            name="joiningClassId"
-            label={t("student.joiningClass.label")}
-            options={[]} // Options from API
-          /> */}
-            </div>
-          </div>
-          <div className="row">
-            <div className="col-md-4">
-              <AppFormInput
-                name="asasNumber"
-                required
-                label={t("student.asasNumber.label")}
-              />
-            </div>
-            <div className="col-md-4">
-              <AppFormSelect
-                name="gender"
-                label=""
-                value={id ? props.formData!.gender.toString() : Gender.EMPTY}
-              >
-                <AppGenderSelect
-                  name="gender"
-                  value={id ? props.formData!.gender.toString() : Gender.EMPTY}
-                  onChange={() => {}}
+          <AppFormSectionContainer title={t("student.title")}>
+            <div className="row">
+              <div className="col-md-3">
+                <AppFormInput
+                  name="firstNameNative"
+                  required
+                  label={t("student.firstNameNative.label")}
+                  placeholder={t("student.firstNameNative.label")}
                 />
-              </AppFormSelect>
+              </div>
+              <div className="col-md-3">
+                <AppFormInput
+                  name="lastNameNative"
+                  required
+                  label={t("student.lastNameNative.label")}
+                  placeholder={t("student.lastNameNative.label")}
+                />
+              </div>
+              <div className="col-md-3">
+                <AppFormInput
+                  name="fatherNameNative"
+                  required
+                  label={t("student.fatherNameNative.label")}
+                  placeholder={t("student.fatherNameNative.label")}
+                />
+              </div>
+              <div className="col-md-3">
+                <AppFormInput
+                  name="grandFatherNameNative"
+                  required
+                  label={t("student.grandFatherNameNative.label")}
+                  placeholder={t("student.grandFatherNameNative.label")}
+                />
+              </div>
             </div>
-            <div className="col-md-4">
-              <AppFormInput
-                name="dateOfBirth"
-                type="date"
-                label={t("student.dateOfBirth.label")}
+            <div className="row">
+              <div className="col-md-3">
+                <AppFormInput
+                  name="firstNameEnglish"
+                  required
+                  label={t("student.firstNameEnglish.label")}
+                  placeholder={t("student.firstNameEnglish.label")}
+                />
+              </div>
+              <div className="col-md-3">
+                <AppFormInput
+                  name="lastNameEnglish"
+                  required
+                  label={t("student.lastNameEnglish.label")}
+                  placeholder={t("student.lastNameEnglish.label")}
+                />
+              </div>
+              <div className="col-md-3">
+                <AppFormInput
+                  name="fatherNameEnglish"
+                  required
+                  label={t("student.fatherNameEnglish.label")}
+                  placeholder={t("student.fatherNameEnglish.label")}
+                />
+              </div>
+              <div className="col-md-3">
+                <AppFormInput
+                  name="grandFatherNameEnglish"
+                  required
+                  label={t("student.grandFatherNameEnglish.label")}
+                  placeholder={t("student.grandFatherNameEnglish.label")}
+                />
+              </div>
+            </div>
+            <div className="row">
+              <div className="col-md-3">
+                <AppFormInput
+                  name="asasNumber"
+                  required
+                  label={t("student.asasNumber.label")}
+                  placeholder={t("student.asasNumber.label")}
+                />
+              </div>
+              <div className="col-md-3">
+                <AppFormSelect
+                  name="gender"
+                  label=""
+                  value={id ? props.formData!.gender.toString() : Gender.EMPTY}
+                  required
+                >
+                  <AppGenderSelect
+                    name="gender"
+                    value={
+                      id ? props.formData!.gender.toString() : Gender.EMPTY
+                    }
+                    onChange={() => {}}
+                    required
+                  />
+                </AppFormSelect>
+              </div>
+              <div className="col-md-3">
+                <AppFormInput
+                  name="dateOfBirth"
+                  type="date"
+                  value={props.formData.dateOfBirth}
+                  label={t("student.dateOfBirth.label")}
+                  placeholder={t("student.dateOfBirth.label")}
+                />
+              </div>
+              <div className="col-md-3">
+                <AppFormInput
+                  label={t("auth.signup.phoneNumber.label")}
+                  name="phoneNumber.number"
+                  placeholder={t("auth.signup.phoneNumber.placeholder")}
+                  type="phoneNumber"
+                />
+              </div>
+            </div>
+          </AppFormSectionContainer>
+          <div className="row">
+            <div className="col-md-6">
+              <AppAddressForm prefix="primaryAddress" />
+            </div>
+            <div className="col-md-6">
+              <AppAddressForm
+                prefix="secondaryAddress"
+                title={t("addressForm.secondaryAddressTitle")}
               />
             </div>
           </div>
-          <AppAddressForm prefix="primaryAddress" />
-          <AppAddressForm
-            prefix="secondaryAddress"
-            title={t("addressForm.secondaryAddressTitle")}
-          />
+          <div className="row">
+            <div className="col-md-6">
+              <AppNationalIdForm />
+            </div>
+            <div className="col-md-6">
+              <AppFormSectionContainer title={t("student.relatives.label")}>
+                <div className="row">
+                  <div className="col-md-12">
+                    <AppFormInput
+                      name="brotherName"
+                      label={t("student.brotherName.label")}
+                      placeholder={t("student.brotherName.label")}
+                    />
+                  </div>
+                  <div className="col-md-6">
+                    <AppFormInput
+                      name="fUncleName"
+                      label={t("student.fUncleName.label")}
+                      placeholder={t("student.fUncleName.label")}
+                    />
+                  </div>
+                  <div className="col-md-6">
+                    <AppFormInput
+                      name="fCousinName"
+                      label={t("student.fCousinName.label")}
+                      placeholder={t("student.fCousinName.label")}
+                    />
+                  </div>
+                  <div className="col-md-6">
+                    <AppFormInput
+                      name="mUncleName"
+                      label={t("student.mUncleName.label")}
+                      placeholder={t("student.mUncleName.label")}
+                    />
+                  </div>
+                  <div className="col-md-6">
+                    <AppFormInput
+                      name="mCousinName"
+                      label={t("student.mCousinName.label")}
+                      placeholder={t("student.mCousinName.label")}
+                    />
+                  </div>
+                </div>
+              </AppFormSectionContainer>
+            </div>
+          </div>
+          <AppFormSectionContainer title={t("student.extraDetails.label")}>
+            <div className="row">
+              <div className="col-md-2">
+                <AppFormSelect
+                  name="disabilityType"
+                  label=""
+                  value={
+                    id
+                      ? props.formData!.disabilityType?.toString() ||
+                        DisabilityType.EMPTY
+                      : DisabilityType.EMPTY
+                  }
+                >
+                  <AppDisabilityTypeSelect
+                    name="disabilityType"
+                    value={
+                      id
+                        ? props.formData!.disabilityType?.toString() ||
+                          DisabilityType.EMPTY
+                        : DisabilityType.EMPTY
+                    }
+                    onChange={() => {}}
+                  />
+                </AppFormSelect>
+              </div>
+              <div className="col-md-2">
+                <AppFormSelect
+                  name="isOrphan"
+                  label=""
+                  value={
+                    id
+                      ? props.formData!.isOrphan?.toString() || IsOrphan.EMPTY
+                      : IsOrphan.EMPTY
+                  }
+                >
+                  <AppIsOrphanSelect
+                    name="isOrphan"
+                    value={
+                      id
+                        ? props.formData!.isOrphan?.toString() || IsOrphan.EMPTY
+                        : IsOrphan.EMPTY
+                    }
+                    onChange={() => {}}
+                  />
+                </AppFormSelect>
+              </div>
+              <div className="col-md-2">
+                <AppFormSelect
+                  name="motherTongue"
+                  label=""
+                  value={
+                    id
+                      ? props.formData!.motherTongue?.toString() ||
+                        IsOrphan.EMPTY
+                      : IsOrphan.EMPTY
+                  }
+                >
+                  <AppLanguageSelect
+                    name="motherTongue"
+                    value={
+                      id
+                        ? props.formData!.motherTongue?.toString() ||
+                          IsOrphan.EMPTY
+                        : IsOrphan.EMPTY
+                    }
+                    onChange={() => {}}
+                  />
+                </AppFormSelect>
+              </div>
+              <div className="col-md-2">
+                <AppFormSelect
+                  name="bloodGroup"
+                  label=""
+                  value={
+                    id
+                      ? props.formData!.bloodGroup?.toString() ||
+                        BloodGroup.EMPTY
+                      : BloodGroup.EMPTY
+                  }
+                  required
+                >
+                  <AppBloodGroupSelect
+                    name="bloodGroup"
+                    value={
+                      id
+                        ? props.formData!.bloodGroup?.toString() ||
+                          BloodGroup.EMPTY
+                        : BloodGroup.EMPTY
+                    }
+                    onChange={() => {}}
+                  />
+                </AppFormSelect>
+              </div>
+              <div className="col-md-2">
+                <AppFormSelect
+                  name="joiningClassId"
+                  label=""
+                  value={
+                    id
+                      ? props.formData!.joiningClassId.toString()
+                      : BloodGroup.EMPTY
+                  }
+                  required
+                >
+                  <AppClassSelect
+                    name="joiningClassId"
+                    value={
+                      id
+                        ? props.formData!.joiningClassId.toString()
+                        : BloodGroup.EMPTY
+                    }
+                    onChange={() => {}}
+                  />
+                </AppFormSelect>
+              </div>
+              <div className="col-md-2">
+                <AppFormInput
+                  name="email"
+                  required
+                  label={t("auth.email.label")}
+                  placeholder={t("auth.email.placeholder")}
+                />
+              </div>
+            </div>
+          </AppFormSectionContainer>
         </>
       )}
     </AppBaseEditor>
