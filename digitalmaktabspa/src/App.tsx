@@ -40,6 +40,10 @@ import SubjectEditor from "./screens/root/subject/SubjectEditor";
 import ClassSubjectEditor from "./screens/school/class/subject/ClassSubjectEditor";
 import ClassSubjectList from "./screens/school/class/subject/ClassSubjectList";
 import ScheduleEditor from "./screens/school/schedule/ScheduleEditor";
+import Settings from "./screens/main/Settings";
+import Defaults from "./screens/main/Defaults";
+import Faq from "./screens/main/Faq";
+import PrivacyPolicy from "./screens/main/PrivacyPolicy";
 
 // // Set up worker
 // import { pdfjs } from "react-pdf";
@@ -70,6 +74,12 @@ function App() {
                 <Route path="library" element={<Library />} />
                 <Route path="library-editor/new" element={<LibraryEditor />} />
                 <Route path="library-editor/:id" element={<LibraryEditor />} />
+
+                {/* SideBar Footer Menu Items */}
+                <Route path="settings" element={<Settings />} />
+                <Route path="defaults" element={<Defaults />} />
+                <Route path="faq" element={<Faq />} />
+                <Route path="privacy-policy" element={<PrivacyPolicy />} />
               </Route>
               <Route path="/" element={<SchoolHome />}>
                 <Route path="home" element={<SchoolDashboard />} />

@@ -38,7 +38,7 @@ const Library = () => {
   return (
     <AppCard title={t("book.list.label")}>
       <AppTable
-        rowLink="/librar-editor/{id}"
+        rowLink="/library-editor/{id}"
         data={data as Book[]}
         columns={columns}
         totalPages={totalPages}

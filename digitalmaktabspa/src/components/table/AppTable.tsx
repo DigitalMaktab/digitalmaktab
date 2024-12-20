@@ -1,4 +1,10 @@
-import React, { ReactNode, useEffect, useState, useCallback } from "react";
+import React, {
+  ReactNode,
+  useEffect,
+  useState,
+  useCallback,
+  useContext,
+} from "react";
 import { TableProps } from "./properties/TableProps";
 import { useNavigate } from "react-router-dom";
 import AppPagination from "./AppPagination";
@@ -11,6 +17,7 @@ import AppHorizontalSpacer from "../spacer/AppHorizontalSpacer";
 import useJsPdfExportToPdf from "../../hooks/useJsPdfExportToPdf";
 import { useAppLocalizer } from "../../hooks/useAppLocalizer";
 import { ResponseResult } from "../../dtos/ResultEnum";
+import { AuthContext } from "../../helper/auth/AuthProvider";
 
 const AppTable = <T extends Base>({
   data = [], // Default data to an empty array
@@ -26,6 +33,9 @@ const AppTable = <T extends Base>({
   showPageSizer = true,
   onRowsSelect,
   selectMultiple = false,
+  deleteRoles = [],
+  navigateToEditorRoles = [],
+  exportRoles = [],
 }: TableProps<T> & {
   rowLink?: string;
   actions?: Action[];
@@ -33,6 +43,7 @@ const AppTable = <T extends Base>({
 }) => {
   const { t, formatNumber } = useAppLocalizer();
   const navigate = useNavigate();
+  const { userRole } = useContext(AuthContext);
 
   const [selectedRows, setSelectedRows] = useState<T[]>([]);
 
@@ -137,7 +148,11 @@ const AppTable = <T extends Base>({
   };
 
   const navigateToRow = (row: T) => {
-    if (rowLink) {
+    if (
+      rowLink &&
+      (navigateToEditorRoles.length === 0 ||
+        navigateToEditorRoles.includes(userRole!))
+    ) {
       const path = rowLink.replace("{id}", row.id);
       navigate(path.startsWith("/") ? path : `/${path}`, {
         state: { initialData: row },
@@ -146,11 +161,16 @@ const AppTable = <T extends Base>({
   };
 
   const handleExport = () => {
-    exportToPDF(columns, safeData, reportTitle);
+    if (exportRoles.length === 0 || exportRoles.includes(userRole!)) {
+      exportToPDF(columns, safeData, reportTitle);
+    }
   };
 
   const handleDelete = async (row: T) => {
-    if (deleteRow) {
+    if (
+      deleteRow &&
+      (deleteRoles.length === 0 || deleteRoles.includes(userRole!))
+    ) {
       const response = await deleteRow(row.id);
       if (response.status === ResponseResult.SUCCESS) {
         await fetchPageData!(
@@ -200,18 +220,20 @@ const AppTable = <T extends Base>({
             className="btn-secondary btn-xs "
           />
         )}
-        {showExport && safeData.length !== 0 && (
-          <>
-            <AppHorizontalSpacer />
-            <AppButton
-              label={t("report.print.label")}
-              type="button"
-              onButtonClick={handleExport}
-              className="btn-primary btn-xs"
-              icon="printer"
-            />
-          </>
-        )}
+        {showExport &&
+          safeData.length !== 0 &&
+          (exportRoles.length === 0 || exportRoles.includes(userRole!)) && (
+            <>
+              <AppHorizontalSpacer />
+              <AppButton
+                label={t("report.print.label")}
+                type="button"
+                onButtonClick={handleExport}
+                className="btn-primary btn-xs"
+                icon="printer"
+              />
+            </>
+          )}
         <AppHorizontalSpacer />
         <AppTableActions actions={actions} />
       </div>
@@ -266,17 +288,19 @@ const AppTable = <T extends Base>({
                       return <td key={colIndex}>{cellContent ?? ""}</td>;
                     })}
 
-                    {deleteRow && (
-                      <td>
-                        <AppButton
-                          label=""
-                          type="button"
-                          onButtonClick={() => handleDelete(row)}
-                          icon="trash"
-                          className="btn-danger btn-xs"
-                        />
-                      </td>
-                    )}
+                    {deleteRow &&
+                      (deleteRoles.length === 0 ||
+                        deleteRoles.includes(userRole!)) && (
+                        <td>
+                          <AppButton
+                            label=""
+                            type="button"
+                            onButtonClick={() => handleDelete(row)}
+                            icon="trash"
+                            className="btn-danger btn-xs"
+                          />
+                        </td>
+                      )}
                   </tr>
                 ))}
               </tbody>

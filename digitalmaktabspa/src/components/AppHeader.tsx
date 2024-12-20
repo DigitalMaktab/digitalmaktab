@@ -61,13 +61,13 @@ const AppHeader: React.FC<AppHeaderProps> = ({ onSidebarToggle }) => {
         content: (
           <ul>
             <li className="d-flex">
-              <FeatherIcon icon="home" />
+              <FeatherIcon icon="user" />
               <Link className="ms-2" to="/profile">
                 {t("header.user.actions.account")}
               </Link>
             </li>
             <li className="d-flex">
-              <FeatherIcon icon="lock" />
+              <FeatherIcon icon="log-out" />
               <Link className="ms-2" to="/login" onClick={handleLogout}>
                 {t("header.user.actions.logout")}
               </Link>

@@ -56538,3 +56538,151 @@ div[id*="react-select"] .css-bg3whk-option:hover {
 .table-row-selected:hover {
   background-color: #e0efff !important; /* Slightly darker on hover */
 }
+
+.sidebar-footer {
+  position: fixed;
+  bottom: 0;
+  width: inherit;
+  display: flex;
+  justify-content: space-around;
+  background-color: var(--sidebar-footer-bg, #f8f9fa); /* Default for light theme */
+  color: var(--sidebar-footer-font, #22262c); /* Default text color */
+  padding: 10px 0;
+  border-top: 1px solid var(--sidebar-footer-border, #e9ecef); /* Default border */
+  transition: opacity 0.3s ease, visibility 0.3s ease, background-color 0.3s ease;
+}
+
+.action-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+  color: inherit; /* Inherits text color */
+}
+
+.action-button:hover {
+  color: var(--theme-default); /* Dynamic theme color */
+}
+
+.vertical-menu {
+  position: fixed;
+  bottom: 60px; /* Adjust based on footer height */
+  width: inherit;
+  background-color: var(--vertical-menu-bg, #fff); /* Light theme background */
+  color: var(--vertical-menu-font, #22262c); /* Light theme text color */
+  box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+  padding: 15px 10px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.vertical-menu ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.vertical-menu ul li {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--vertical-menu-border, #e9ecef); /* Default border */
+  cursor: pointer;
+}
+
+.vertical-menu ul li:last-child {
+  border-bottom: none;
+}
+
+.vertical-menu ul li:hover {
+  color: var(--theme-default); /* Dynamic theme color */
+}
+
+.hidden-footer {
+  opacity: 0;
+  visibility: hidden; /* Hides the footer */
+}
+
+/* Dark Theme Styles */
+html[data-theme="dark"] {
+  --sidebar-footer-bg: var(--card-color); /* Dark theme background */
+  --sidebar-footer-font: var(--light-font); /* Dark theme text color */
+  --sidebar-footer-border: var(--light-border); /* Dark theme border */
+  
+  --vertical-menu-bg: var(--card-color); /* Dark theme background */
+  --vertical-menu-font: var(--light-font); /* Dark theme text color */
+  --vertical-menu-border: var(--light-border); /* Dark theme border */
+}
+
+.privacy-policy-page {
+  padding: 2rem;
+  background-color: #f9f9f9;
+  font-family: "Vazir Matn", sans-serif;
+  color: #333;
+}
+
+.privacy-policy-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.privacy-policy-title {
+  font-size: 2rem;
+  color: #43b9b2;
+}
+
+.privacy-policy-subtitle {
+  font-size: 1.2rem;
+  color: #666;
+}
+
+.privacy-policy-content {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.privacy-policy-intro {
+  margin-bottom: 2rem;
+}
+
+.privacy-policy-sections {
+  margin-top: 1rem;
+}
+
+.policy-section {
+  border-bottom: 1px solid #eee;
+  padding: 1rem 0;
+}
+
+.policy-section-title {
+  font-size: 1.2rem;
+  color: #43b9b2;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.policy-icon {
+  margin-right: 0.5rem;
+}
+
+.policy-section-content {
+  font-size: 1rem;
+  color: #666;
+  margin-left: 1.5rem;
+  margin-top: 0.5rem;
+}
+
+.privacy-policy-footer {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
+
+
+
+.back-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

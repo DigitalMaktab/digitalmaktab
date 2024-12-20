@@ -15,7 +15,7 @@ const useHome = () => {
 
   // Update sidebar state on window resize
   useEffect(() => {
-    setSidebarOpen(!isMobileView);
+    setSidebarOpen(!isMobileView); // Sidebar starts closed on mobile
   }, [isMobileView]);
 
   return {

@@ -6,6 +6,7 @@ import AppCard from "../../../components/card/AppCard";
 import AppTable from "../../../components/table/AppTable";
 import { PhoneNumber } from "../../../models/PhoneNumber";
 import { useAppLocalizer } from "../../../hooks/useAppLocalizer";
+import { UserRole } from "../../../models/UserRole";
 
 const TeacherList = () => {
   const { t, formatCountryCode } = useAppLocalizer();
@@ -63,6 +64,7 @@ const TeacherList = () => {
             icon: "plus",
           },
         ]}
+        deleteRoles={[UserRole.ADMIN]}
       />
     </AppCard>
   );

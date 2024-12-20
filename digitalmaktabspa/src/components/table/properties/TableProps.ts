@@ -1,4 +1,5 @@
 import { ResponseResult } from "../../../dtos/ResultEnum";
+import { UserRole } from "../../../models/UserRole";
 
 export interface Column<T> {
   header: string;
@@ -34,4 +35,7 @@ export interface TableProps<T> {
 
   onRowsSelect?: (selectedRows: T[]) => void;
   selectMultiple?: boolean;
+  deleteRoles?: UserRole[]; // Specify roles for deletion
+  navigateToEditorRoles?: UserRole[]; // Specify roles for double-click
+  exportRoles?: UserRole[];
 }

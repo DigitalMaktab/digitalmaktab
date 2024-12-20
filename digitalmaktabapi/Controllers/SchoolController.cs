@@ -213,6 +213,7 @@ namespace digitalmaktabapi.Controllers
                 teacherToCreate.SchoolId = this.SchoolId;
                 teacherToCreate.CreationUserId = this.SchoolId;
                 teacherToCreate.UpdateUserId = this.SchoolId;
+                teacherToCreate.UserRole = UserRole.TEACHER;
                 await this.teacherRepository.Register(teacherToCreate, teacherPassword);
                 return StatusCode(201);
             }

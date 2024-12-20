@@ -1,4 +1,10 @@
-import React, { useCallback, useContext, useMemo, useState } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { AppSideBarProps } from "./properties/ToggleSideBarProps";
 
 import AppMenuMainTitle from "./menu/AppMenuMainTitle";
@@ -9,10 +15,12 @@ import * as PIIcons from "react-icons/pi";
 import * as LiaIcons from "react-icons/lia";
 import * as SIIcons from "react-icons/si";
 import * as BIIcons from "react-icons/bi";
+import * as MDIcons from "react-icons/md";
 import { MenuSection } from "./properties/MenuItemProps";
 import { useTranslation } from "react-i18next";
 import { UserRole } from "../models/UserRole";
 import { AuthContext } from "../helper/auth/AuthProvider";
+import { Link, useNavigate } from "react-router-dom";
 
 const AppSideBar: React.FC<AppSideBarProps> = ({ isOpen }) => {
   const { t } = useTranslation();
@@ -21,6 +29,19 @@ const AppSideBar: React.FC<AppSideBarProps> = ({ isOpen }) => {
   const [activeSubMenuItem, setActiveSubMenuItem] = useState<string | null>(
     null
   );
+  const [showVerticalMenu, setShowVerticalMenu] = useState(false);
+  const { logout } = useContext(AuthContext)!;
+  const navigate = useNavigate();
+
+  const toggleVerticalMenu = () => {
+    setShowVerticalMenu((prev) => !prev);
+  };
+
+  useEffect(() => {
+    if (!isOpen) {
+      setShowVerticalMenu(false);
+    }
+  }, [isOpen]);
 
   const handleMenuClick = (label: string) => {
     setActiveItem((prev) => (prev === label ? null : label));
@@ -201,24 +222,23 @@ const AppSideBar: React.FC<AppSideBarProps> = ({ isOpen }) => {
         .map((section) => ({
           ...section,
           items: section.items
-            .filter((item) => hasRole(item.roles)) // Filter items by role
             .map((item) => ({
               ...item,
               subMenu:
                 item.subMenu
                   ?.map((subItem) => ({
                     ...subItem,
-                    roles: subItem.roles || item.roles, // Inherit roles for submenus
+                    roles: subItem.roles || item.roles, // Inherit roles only if subItem roles are not defined
                   }))
-                  .filter((subItem) => hasRole(subItem.roles)) || [], // Ensure subMenu is an array
+                  .filter((subItem) => hasRole(subItem.roles)) || [], // Filter subMenu based on roles
             }))
             .filter(
-              (item) => hasRole(item.roles) || (item.subMenu?.length ?? 0) > 0
-            ), // Safely check subMenu length
+              (item) => hasRole(item.roles) || (item.subMenu?.length ?? 0) > 0 // Ensure the item itself or its subMenu has valid roles
+            ),
         }))
         .filter((section) =>
           section.items.some(
-            (item) => hasRole(item.roles) || (item.subMenu?.length ?? 0) > 0 // Safely check subMenu length
+            (item) => hasRole(item.roles) || (item.subMenu?.length ?? 0) > 0 // Ensure the section has at least one valid item or submenu
           )
         );
     },
@@ -230,6 +250,11 @@ const AppSideBar: React.FC<AppSideBarProps> = ({ isOpen }) => {
     () => filterMenuItems(allMenuItems),
     [allMenuItems, filterMenuItems]
   );
+
+  const handleLogout = useCallback(() => {
+    logout();
+    navigate("/login");
+  }, [logout, navigate]);
 
   return (
     <>
@@ -271,9 +296,78 @@ const AppSideBar: React.FC<AppSideBarProps> = ({ isOpen }) => {
             ))}
           </ul>
         </div>
+
         <div className="right-arrow" id="right-arrow">
           <FeatherIcon icon="arrow-right" />
         </div>
+
+        <div className={`sidebar-footer ${!isOpen ? "hidden-footer" : ""}`}>
+          <Link className="action-button" to="/login" onClick={handleLogout}>
+            <FeatherIcon icon="log-out" />
+          </Link>
+          <Link className="action-button" to="/profile">
+            <FeatherIcon icon="user" />
+          </Link>
+          <button className="action-button" onClick={toggleVerticalMenu}>
+            <FeatherIcon icon="info" />
+          </button>
+        </div>
+
+        {/* Vertical Menu */}
+        {showVerticalMenu && (
+          <div className={`vertical-menu ${!isOpen ? "hidden-footer" : ""}`}>
+            <ul>
+              <li>
+                <Link to={"/settings"}>
+                  <FeatherIcon icon="settings" />{" "}
+                  {t("sidebar.footer.menu.settings")}
+                </Link>
+              </li>
+              <li>
+                <Link to={"/defaults"}>
+                  <FeatherIcon icon="layers" />{" "}
+                  {t("sidebar.footer.menu.defaults")}
+                </Link>
+              </li>
+
+              <li>
+                <Link to={"/faq"}>
+                  <FeatherIcon icon="play-circle" />{" "}
+                  {t("sidebar.footer.menu.howToUseTheApp")}
+                </Link>
+              </li>
+              <li>
+                <FeatherIcon icon="help-circle" />{" "}
+                {t("sidebar.footer.menu.faq")}
+              </li>
+              <li>
+                <FeatherIcon icon="edit-3" />{" "}
+                {t("sidebar.footer.menu.suggestions")}
+              </li>
+              <li>
+                <Link to="/privacy-policy">
+                  <MDIcons.MdOutlinePrivacyTip size={24} />{" "}
+                  {t("sidebar.footer.menu.privacyPolicy")}
+                </Link>
+              </li>
+              <li>
+                <FeatherIcon icon="info" /> {t("sidebar.footer.menu.about")}
+              </li>
+              <li>
+                <FeatherIcon icon="file-text" />{" "}
+                {t("sidebar.footer.menu.termsOfService")}
+              </li>
+              <li>
+                <FeatherIcon icon="phone" />{" "}
+                {t("sidebar.footer.menu.contactUs")}
+              </li>
+              <li>
+                <FeatherIcon icon="message-circle" />{" "}
+                {t("sidebar.footer.menu.feedback")}
+              </li>
+            </ul>
+          </div>
+        )}
       </aside>
     </>
   );

@@ -306,7 +306,7 @@ namespace digitalmaktabapi.Controllers
                         .Select(e => new EnumsDto
                         {
                             Id = Convert.ToInt32(e),
-                            Name = this.localizer[e.ToString()].Value
+                            Name = this.localizer![e.ToString()].Value
                         }).ToList();
         }
 
@@ -316,7 +316,7 @@ namespace digitalmaktabapi.Controllers
             return new EnumsDto
             {
                 Id = id,
-                Name = this.localizer[enumValue.ToString()].Value
+                Name = this.localizer![enumValue.ToString()].Value
             };
         }
 

@@ -215,6 +215,21 @@
                 "list": "Student List",
                 "register": "Register Student"
             }
+        },
+        "footer": {
+            "menu": {
+                "settings": "Settings",
+                "defaults": "Defaults",
+                "howToUseTheApp": "How to Use the App",
+                "suggestions": "Suggestions",
+                "privacyPolicy": "Privacy Policy",
+                "about": "About",
+                "termsOfService": "Terms of Service",
+                "contactUs": "Contact Us",
+                "feedback": "Feedback",
+                "faq": "Frequently asked Questions",
+                "appVersion": "Version: 1.0.0"
+            }
         }
     },
     "breadcrumb": {
@@ -792,5 +807,35 @@
     },
     "language": {
         "label": "Mother Tongue"
+    },
+    "privacyPolicy": {
+        "header": {
+            "title": "Privacy Policy",
+            "subtitle": "Learn how we handle your data responsibly"
+        },
+        "intro": "At our school, we value your privacy. Below, you can find the details of our privacy practices.",
+        "personalData": {
+            "title": "Personal Data Collection",
+            "description": "We collect personal data such as names, emails, and contact information to provide better services."
+        },
+        "dataUsage": {
+            "title": "How We Use Your Data",
+            "description": "Your data is used to improve school operations, provide services, and ensure a safe environment."
+        },
+        "thirdParties": {
+            "title": "Sharing with Third Parties",
+            "description": "We do not share your data with third parties without your consent, except as required by law."
+        },
+        "dataRetention": {
+            "title": "Data Retention Policy",
+            "description": "We retain your data for as long as necessary to fulfill the purposes outlined in this policy."
+        },
+        "rights": {
+            "title": "Your Rights",
+            "description": "You have the right to access, update, or delete your data. Contact us to exercise these rights."
+        },
+        "footer": {
+            "back": "Back"
+        }
     }
 }
