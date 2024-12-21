@@ -124,4 +124,8 @@
         <value>یو درست ایمیل ارایه ورکری</value>
         <comment/>
     </data>
+    <data name="Required" xml:space="preserve">
+        <value>{PropertyName} اړین دی</value>
+        <comment/>
+    </data>
 </root>

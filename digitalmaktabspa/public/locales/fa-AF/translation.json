@@ -390,7 +390,10 @@
         "title": "شاخه صنف"
     },
     "shift": {
-        "label": "شیفت"
+        "label": "شیفت",
+        "shiftList": {
+            "label": "لیست شیفت‌ها"
+        }
     },
     "gender": {
         "label": "جنسیت",
@@ -399,6 +402,9 @@
         },
         "female": {
             "label": "مونث"
+        },
+        "genderList": {
+            "label": "لیست جنسیت‌ها"
         }
     },
     "teacher": {
@@ -771,7 +777,10 @@
         "label": "روز هفته"
     },
     "scheduleTime": {
-        "label": "ساعت"
+        "label": "ساعت",
+        "scheduleTimeList": {
+            "label": "لیست زمان‌بندی‌ها"
+        }
     },
     "nationalId": {
         "title": "تذکره",
@@ -797,16 +806,25 @@
         }
     },
     "bloodGroup": {
-        "label": "گروپ خون"
+        "label": "گروپ خون",
+        "bloodGroupList": {
+            "label": "لیست گروه‌های خونی"
+        }
     },
     "disabilityType": {
         "label": "نوع معلولیت"
     },
     "isOrphan": {
-        "label": "یتیم است؟"
+        "label": "یتیم است؟",
+        "isOrphanList": {
+            "label": "لیست یتیم‌ها"
+        }
     },
     "language": {
-        "label": "زبان مادری"
+        "label": "زبان مادری",
+        "languageList": {
+            "label": "لیست زبان‌ها"
+        }
     },
     "privacyPolicy": {
         "header": {
@@ -836,6 +854,52 @@
         },
         "footer": {
             "back": "بازگشت"
+        }
+    },
+    "country": {
+        "countryList": {
+            "label": "لیست کشورها"
+        },
+        "countryName": {
+            "label": "نام کشور"
+        }
+    },
+    "classType": {
+        "classTypeList": {
+            "label": "لیست انواع صنف"
+        },
+        "classTypeName": {
+            "label": "نام نوع صنف"
+        }
+    },
+    "disability": {
+        "disabilityList": {
+            "label": "لیست معلولیت‌ها"
+        }
+    },
+    "examType": {
+        "examTypeList": {
+            "label": "لیست انواع امتحان"
+        }
+    },
+    "month": {
+        "monthList": {
+            "label": "لیست ماه‌ها"
+        }
+    },
+    "day": {
+        "dayList": {
+            "label": "لیست روزها"
+        }
+    },
+    "addressType": {
+        "addressTypeList": {
+            "label": "لیست انواع آدرس"
+        }
+    },
+    "enum": {
+        "name": {
+            "label": "نام"
         }
     }
 }

@@ -121,7 +121,43 @@
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
     <data name="SchoolExists" xml:space="preserve">
-        <value>دا خو موجود ده خرکوسه</value>
-        <comment/>
+        <value>ښوونځی د دې بریښنالیک سره ثبت شوی دی</value>
+        <comment>ښوونځی د دې بریښنالیک سره ثبت شوی دی</comment>
+    </data>
+    <data name="InvalidCurrentPassword" xml:space="preserve">
+        <value>ستاسو اوسنی رمز ناسم دی</value>
+        <comment>اوسنی رمز ناسم دی</comment>
+    </data>
+    <data name="AccountAccessSubject" xml:space="preserve">
+        <value>د حساب لاسرسی</value>
+        <comment>د حساب لاسرسی موضوع</comment>
+    </data>
+    <data name="AccountDetails" xml:space="preserve">
+        <value>ګرانه {0}، مهرباني وکړئ دلته خپل د حساب لاسرسی معلومات ومومئ. بریښنالیک: {1}، رمز: {2}</value>
+        <comment>د حساب لاسرسی توضیحات</comment>
+    </data>
+    <data name="StudentExists" xml:space="preserve">
+        <value>زده کوونکی د دې بریښنالیک سره په سیسټم کې شتون لري.</value>
+        <comment>زده کوونکی د دې بریښنالیک سره شتون لري</comment>
+    </data>
+    <data name="TeacherExists" xml:space="preserve">
+        <value>ښوونکی د دې بریښنالیک سره په سیسټم کې شتون لري.</value>
+        <comment>ښوونکی د دې بریښنالیک سره شتون لري</comment>
+    </data>
+    <data name="StudentIsEnrolled" xml:space="preserve">
+        <value>زده کوونکی لا دمخه په ټولګي کې شامل شوی دی.</value>
+        <comment>زده کوونکی لا دمخه په ټولګي کې شامل شوی دی</comment>
+    </data>
+    <data name="SchedulExist" xml:space="preserve">
+        <value>دا مهال ویش لا دمخه د دې ټولګي لپاره اضافه شوی دی.</value>
+        <comment>مهال ویش لا دمخه د دې ټولګي لپاره اضافه شوی دی</comment>
+    </data>
+    <data name="FailedToCreateAccountDueToEmailSendingFailure" xml:space="preserve">
+        <value>د حساب مشخصاتو لیږلو لپاره د بریښنالیک سرور سره نښلول نشي کیدی.</value>
+        <comment>د بریښنالیک لیږلو ناکامۍ له امله د حساب جوړولو ناکامي</comment>
+    </data>
+    <data name="EmailFooter" xml:space="preserve">
+        <value>&lt;div class='email-footer'&gt;&amp;copy; 2024 Digital Maktab. ټول حقونه خوندي دي.&lt;br&gt;که تاسو کومې پوښتنې لرئ، مهرباني وکړئ &lt;a href='mailto:support@digitalmaktab.com'&gt;موږ سره اړیکه ونیسئ&lt;/a&gt;.&lt;/div&gt;</value>
+        <comment>د بریښنالیک پای</comment>
     </data>
 </root>

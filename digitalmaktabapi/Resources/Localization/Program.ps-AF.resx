@@ -124,4 +124,8 @@
         <value>رابط برنامه کار بردی مکتب دیجیتالی نخسه اول</value>
         <comment/>
     </data>
+    <data name="DigitalMaktabAPIV1" xml:space="preserve">
+        <value>دیجیتال مکتب API V1</value>
+        <comment/>
+    </data>
 </root>

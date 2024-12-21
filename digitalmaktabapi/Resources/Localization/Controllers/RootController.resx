@@ -122,6 +122,6 @@
     </resheader>
     <data name="UserExists" xml:space="preserve">
         <value>Root User Exists</value>
-        <comment/>
+        <comment>Root user already exists</comment>
     </data>
 </root>

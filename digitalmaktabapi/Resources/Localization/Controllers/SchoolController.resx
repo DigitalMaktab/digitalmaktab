@@ -122,42 +122,42 @@
     </resheader>
     <data name="SchoolExists" xml:space="preserve">
         <value>An School is registered with this email address on the System.</value>
-        <comment/>
+        <comment>School already registered with this email</comment>
     </data>
     <data name="InvalidCurrentPassword" xml:space="preserve">
         <value>Your current password is not correct.</value>
-        <comment/>
+        <comment>Current password is incorrect</comment>
     </data>
     <data name="AccountAccessSubject" xml:space="preserve">
         <value>Account Access</value>
-        <comment/>
+        <comment>Account access subject</comment>
     </data>
     <data name="AccountDetails" xml:space="preserve">
         <value>Dear {0}, Please find your accoun access information here. Email: {1}, Password: {2}</value>
-        <comment/>
+        <comment>Account access details</comment>
     </data>
     <data name="StudentExists" xml:space="preserve">
         <value>The student with Email Exists in the system.</value>
-        <comment/>
+        <comment>Student already exists with this email</comment>
     </data>
     <data name="TeacherExists" xml:space="preserve">
         <value>The teacher with Email Exists in the system.</value>
-        <comment/>
+        <comment>Teacher already exists with this email</comment>
     </data>
     <data name="StudentIsEnrolled" xml:space="preserve">
         <value>The student is already enrolled in the class.</value>
-        <comment/>
+        <comment>Student already enrolled in the class</comment>
     </data>
     <data name="SchedulExist" xml:space="preserve">
         <value>This Schedule is already added for this class.</value>
-        <comment/>
+        <comment>Schedule already exists for this class</comment>
     </data>
     <data name="FailedToCreateAccountDueToEmailSendingFailure" xml:space="preserve">
         <value>Can not connect to email server to send the Account Specifications.</value>
-        <comment/>
+        <comment>Failed to create account due to email sending failure</comment>
     </data>
     <data name="EmailFooter" xml:space="preserve">
         <value>&lt;div class='email-footer'&gt;&amp;copy; 2024 Digital Maktab. All rights reserved.&lt;br&gt;If you have any questions, feel free to &lt;a href='mailto:support@digitalmaktab.com'&gt;Contact Us&lt;/a&gt;.&lt;/div&gt;</value>
-        <comment/>
+        <comment>Email footer</comment>
     </data>
 </root>

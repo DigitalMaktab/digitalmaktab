@@ -122,6 +122,6 @@
     </resheader>
     <data name="AttendanceExists" xml:space="preserve">
         <value>Attendance exists</value>
-        <comment/>
+        <comment>Attendance record already exists</comment>
     </data>
 </root>

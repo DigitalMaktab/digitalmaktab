@@ -390,7 +390,10 @@
         "title": "Branch"
     },
     "shift": {
-        "label": "Shift"
+        "label": "Shift",
+        "shiftList": {
+            "label": "Shift List"
+        }
     },
     "gender": {
         "label": "Gender",
@@ -399,6 +402,9 @@
         },
         "female": {
             "label": "Female"
+        },
+        "genderList": {
+            "label": "Gender List"
         }
     },
     "teacher": {
@@ -771,7 +777,10 @@
         "label": "Day of Week"
     },
     "scheduleTime": {
-        "label": "Schedule Time"
+        "label": "Schedule Time",
+        "scheduleTimeList": {
+            "label": "Schedule Time List"
+        }
     },
     "nationalId": {
         "title": "National ID",
@@ -797,16 +806,25 @@
         }
     },
     "bloodGroup": {
-        "label": "Blood Group"
+        "label": "Blood Group",
+        "bloodGroupList": {
+            "label": "Blood Group List"
+        }
     },
     "disabilityType": {
         "label": "Disability Type"
     },
     "isOrphan": {
-        "label": "Is Orphan?"
+        "label": "Is Orphan?",
+        "isOrphanList": {
+            "label": "Orphan List"
+        }
     },
     "language": {
-        "label": "Mother Tongue"
+        "label": "Mother Tongue",
+        "languageList": {
+            "label": "Language List"
+        }
     },
     "privacyPolicy": {
         "header": {
@@ -836,6 +854,52 @@
         },
         "footer": {
             "back": "Back"
+        }
+    },
+    "country": {
+        "countryList": {
+            "label": "Country List"
+        },
+        "countryName": {
+            "label": "Country Name"
+        }
+    },
+    "classType": {
+        "classTypeList": {
+            "label": "Class Type List"
+        },
+        "classTypeName": {
+            "label": "Class Type Name"
+        }
+    },
+    "disability": {
+        "disabilityList": {
+            "label": "Disability List"
+        }
+    },
+    "examType": {
+        "examTypeList": {
+            "label": "Exam Type List"
+        }
+    },
+    "month": {
+        "monthList": {
+            "label": "Month List"
+        }
+    },
+    "day": {
+        "dayList": {
+            "label": "Day List"
+        }
+    },
+    "addressType": {
+        "addressTypeList": {
+            "label": "Address Type List"
+        }
+    },
+    "enum": {
+        "name": {
+            "label": "Name"
         }
     }
 }

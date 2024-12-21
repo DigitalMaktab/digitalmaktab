@@ -121,91 +121,323 @@
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
     <data name="FIRST" xml:space="preserve">
-        <value>First</value>
-        <comment/>
+        <value>لومړی</value>
+        <comment>لومړی توکی</comment>
     </data>
     <data name="SECOND" xml:space="preserve">
-        <value>Second</value>
-        <comment/>
+        <value>دوهم</value>
+        <comment>دوهم توکی</comment>
     </data>
     <data name="THIRD" xml:space="preserve">
-        <value>Third</value>
-        <comment/>
+        <value>دریم</value>
+        <comment>دریم توکی</comment>
     </data>
     <data name="FOURTH" xml:space="preserve">
-        <value>Fourth</value>
-        <comment/>
+        <value>څلورم</value>
+        <comment>څلورم توکی</comment>
     </data>
     <data name="FIFTH" xml:space="preserve">
-        <value>Fifth</value>
-        <comment/>
+        <value>پنځم</value>
+        <comment>پنځم توکی</comment>
     </data>
     <data name="SIXTH" xml:space="preserve">
-        <value>Sixth</value>
-        <comment/>
+        <value>شپږم</value>
+        <comment>شپږم توکی</comment>
     </data>
     <data name="SEVENTH" xml:space="preserve">
-        <value>Seventh</value>
-        <comment/>
+        <value>اووم</value>
+        <comment>اووم توکی</comment>
     </data>
     <data name="EIGHT" xml:space="preserve">
-        <value>Eight</value>
-        <comment/>
+        <value>اتم</value>
+        <comment>اتم توکی</comment>
     </data>
     <data name="NINTH" xml:space="preserve">
-        <value>Ninth</value>
-        <comment/>
+        <value>نهم</value>
+        <comment>نهم توکی</comment>
     </data>
     <data name="TENTH" xml:space="preserve">
-        <value>Tenth</value>
-        <comment/>
+        <value>لسم</value>
+        <comment>لسم توکی</comment>
     </data>
     <data name="ELEVENTH" xml:space="preserve">
-        <value>Elevent</value>
-        <comment/>
+        <value>یوولسم</value>
+        <comment>یوولسم توکی</comment>
     </data>
     <data name="TWELVTH" xml:space="preserve">
-        <value>Twelvth</value>
-        <comment/>
+        <value>دوولسم</value>
+        <comment>دوولسم توکی</comment>
     </data>
     <data name="THIRTHEENT" xml:space="preserve">
-        <value>Thirteent</value>
-        <comment/>
+        <value>دیارلسم</value>
+        <comment>دیارلسم توکی</comment>
     </data>
     <data name="FOURTHEENT" xml:space="preserve">
-        <value>Fourteenth</value>
-        <comment/>
+        <value>څوارلسم</value>
+        <comment>څوارلسم توکی</comment>
     </data>
-<data name="A_PLUS" xml:space="preserve">
+    <data name="A_PLUS" xml:space="preserve">
         <value>A+</value>
-        <comment/>
+        <comment>A+ درجه</comment>
     </data>
     <data name="A_MINUS" xml:space="preserve">
         <value>A-</value>
-        <comment/>
+        <comment>A- درجه</comment>
     </data>
     <data name="B_PLUS" xml:space="preserve">
         <value>B+</value>
-        <comment/>
+        <comment>B+ درجه</comment>
     </data>
     <data name="B_MINUS" xml:space="preserve">
         <value>B-</value>
-        <comment/>
+        <comment>B- درجه</comment>
     </data>
     <data name="O_PLUS" xml:space="preserve">
         <value>O+</value>
-        <comment/>
+        <comment>O+ د وینې ډول</comment>
     </data>
     <data name="O_MINUS" xml:space="preserve">
         <value>O-</value>
-        <comment/>
+        <comment>O- د وینې ډول</comment>
     </data>
     <data name="AB_PLUS" xml:space="preserve">
         <value>AB+</value>
-        <comment/>
+        <comment>AB+ د وینې ډول</comment>
     </data>
     <data name="AB_MINUS" xml:space="preserve">
         <value>AB-</value>
-        <comment/>
+        <comment>AB- د وینې ډول</comment>
+    </data>
+    <data name="MORNING" xml:space="preserve">
+        <value>سهار</value>
+        <comment>د سهار وخت</comment>
+    </data>
+    <data name="EVENING" xml:space="preserve">
+        <value>ماښام</value>
+        <comment>د ماښام وخت</comment>
+    </data>
+    <data name="LOCAL" xml:space="preserve">
+        <value>ځايي</value>
+        <comment>ځايي توکی</comment>
+    </data>
+    <data name="ACCELERATED" xml:space="preserve">
+        <value>چټک</value>
+        <comment>چټک توکی</comment>
+    </data>
+    <data name="APPENDIX" xml:space="preserve">
+        <value>ضمیمه</value>
+        <comment>ضمیمه توکی</comment>
+    </data>
+    <data name="NIGTH" xml:space="preserve">
+        <value>شپه</value>
+        <comment>د شپې وخت</comment>
+    </data>
+    <data name="PRIMARY" xml:space="preserve">
+        <value>لومړنی</value>
+        <comment>لومړنی توکی</comment>
+    </data>
+    <data name="SECONDARY" xml:space="preserve">
+        <value>ثانوي</value>
+        <comment>ثانوي توکی</comment>
+    </data>
+    <data name="NO_DISABILITY" xml:space="preserve">
+        <value>بې معلولیت</value>
+        <comment>بې معلولیت</comment>
+    </data>
+    <data name="BLIND" xml:space="preserve">
+        <value>نابینا</value>
+        <comment>نابینا</comment>
+    </data>
+    <data name="DEAF" xml:space="preserve">
+        <value>کاڼه</value>
+        <comment>کاڼه</comment>
+    </data>
+    <data name="PARALYZED" xml:space="preserve">
+        <value>فلج</value>
+        <comment>فلج</comment>
+    </data>
+    <data name="CRIPPLED" xml:space="preserve">
+        <value>معیوب</value>
+        <comment>معیوب</comment>
+    </data>
+    <data name="MUTE" xml:space="preserve">
+        <value>ګونګ</value>
+        <comment>ګونګ</comment>
+    </data>
+    <data name="OTHER" xml:space="preserve">
+        <value>نور</value>
+        <comment>نور</comment>
+    </data>
+    <data name="MID_TERM" xml:space="preserve">
+        <value>منځنۍ دوره</value>
+        <comment>منځنۍ دوره</comment>
+    </data>
+    <data name="FINAL" xml:space="preserve">
+        <value>وروستۍ</value>
+        <comment>وروستۍ</comment>
+    </data>
+    <data name="MALE" xml:space="preserve">
+        <value>نارینه</value>
+        <comment>نارینه</comment>
+    </data>
+    <data name="FEMALE" xml:space="preserve">
+        <value>ښځینه</value>
+        <comment>ښځینه</comment>
+    </data>
+    <data name="NOT_ORPHAN" xml:space="preserve">
+        <value>یتیم نه دی</value>
+        <comment>یتیم نه دی</comment>
+    </data>
+    <data name="FATHER_SIDE" xml:space="preserve">
+        <value>د پلار اړخ</value>
+        <comment>د پلار اړخ</comment>
+    </data>
+    <data name="MOTHER_SIDE" xml:space="preserve">
+        <value>د مور اړخ</value>
+        <comment>د مور اړخ</comment>
+    </data>
+    <data name="BOTH_SIDES" xml:space="preserve">
+        <value>دواړه اړخونه</value>
+        <comment>دواړه اړخونه</comment>
+    </data>
+    <data name="DARI" xml:space="preserve">
+        <value>دري</value>
+        <comment>دري</comment>
+    </data>
+    <data name="PASHTO" xml:space="preserve">
+        <value>پښتو</value>
+        <comment>پښتو</comment>
+    </data>
+    <data name="TAJIKI" xml:space="preserve">
+        <value>تاجکي</value>
+        <comment>تاجکي</comment>
+    </data>
+    <data name="UZBEKI" xml:space="preserve">
+        <value>ازبکي</value>
+        <comment>ازبکي</comment>
+    </data>
+    <data name="PASHAYI" xml:space="preserve">
+        <value>پشه يي</value>
+        <comment>پشه يي</comment>
+    </data>
+    <data name="TURKMANI" xml:space="preserve">
+        <value>ترکمني</value>
+        <comment>ترکمني</comment>
+    </data>
+    <data name="GUJARI" xml:space="preserve">
+        <value>ګوجري</value>
+        <comment>ګوجري</comment>
+    </data>
+    <data name="BALUCHI" xml:space="preserve">
+        <value>بلوڅي</value>
+        <comment>بلوڅي</comment>
+    </data>
+    <data name="NURISTANI" xml:space="preserve">
+        <value>نورستاني</value>
+        <comment>نورستاني</comment>
+    </data>
+    <data name="WAKHANI" xml:space="preserve">
+        <value>واخاني</value>
+        <comment>واخاني</comment>
+    </data>
+    <data name="SHAIGHANI" xml:space="preserve">
+        <value>شايغاني</value>
+        <comment>شايغاني</comment>
+    </data>
+    <data name="HINDI" xml:space="preserve">
+        <value>هندي</value>
+        <comment>هندي</comment>
+    </data>
+    <data name="JANUARY" xml:space="preserve">
+        <value>مرغومی</value>
+        <comment>مرغومی</comment>
+    </data>
+    <data name="FEBRUARY" xml:space="preserve">
+        <value>سلواغه</value>
+        <comment>سلواغه</comment>
+    </data>
+    <data name="MARCH" xml:space="preserve">
+        <value>کب</value>
+        <comment>کب</comment>
+    </data>
+    <data name="APRIL" xml:space="preserve">
+        <value>وری</value>
+        <comment>وری</comment>
+    </data>
+    <data name="MAY" xml:space="preserve">
+        <value>غویی</value>
+        <comment>غویی</comment>
+    </data>
+    <data name="JUNE" xml:space="preserve">
+        <value>غبرګولی</value>
+        <comment>غبرګولی</comment>
+    </data>
+    <data name="JULY" xml:space="preserve">
+        <value>چنګاښ</value>
+        <comment>چنګاښ</comment>
+    </data>
+    <data name="AUGUST" xml:space="preserve">
+        <value>زمری</value>
+        <comment>زمری</comment>
+    </data>
+    <data name="SEPTEMBER" xml:space="preserve">
+        <value>وږی</value>
+        <comment>وږی</comment>
+    </data>
+    <data name="OCTOBER" xml:space="preserve">
+        <value>تله</value>
+        <comment>تله</comment>
+    </data>
+    <data name="NOVEMBER" xml:space="preserve">
+        <value>لړم</value>
+        <comment>لړم</comment>
+    </data>
+    <data name="DECEMBER" xml:space="preserve">
+        <value>لیندۍ</value>
+        <comment>لیندۍ</comment>
+    </data>
+    <data name="FileCannotBeEmpty" xml:space="preserve">
+        <value>فایل خالي نشي کیدی</value>
+        <comment>فایل خالي نشي کیدی</comment>
+    </data>
+    <data name="FileSizeLimit" xml:space="preserve">
+        <value>د فایل اندازه باید له {0} MB څخه زیاته نه وي.</value>
+        <comment>د فایل اندازه باید له {0} MB څخه زیاته نه وي.</comment>
+    </data>
+    <data name="AllowedFileTypes" xml:space="preserve">
+        <value>یوازې {0} فایلونه اجازه لري.</value>
+        <comment>یوازې {0} فایلونه اجازه لري.</comment>
+    </data>
+    <data name="SATURDAY" xml:space="preserve">
+        <value>شنبه</value>
+        <comment>شنبه</comment>
+    </data>
+    <data name="SUNDAY" xml:space="preserve">
+        <value>یکشنبه</value>
+        <comment>یکشنبه</comment>
+    </data>
+    <data name="MONDAY" xml:space="preserve">
+        <value>دوشنبه</value>
+        <comment>دوشنبه</comment>
+    </data>
+    <data name="TUESDAY" xml:space="preserve">
+        <value>سه‌شنبه</value>
+        <comment>سه‌شنبه</comment>
+    </data>
+    <data name="WEDNESDAY" xml:space="preserve">
+        <value>چهارشنبه</value>
+        <comment>چهارشنبه</comment>
+    </data>
+    <data name="THURSDAY" xml:space="preserve">
+        <value>پنج‌شنبه</value>
+        <comment>پنج‌شنبه</comment>
+    </data>
+    <data name="FRIDAY" xml:space="preserve">
+        <value>جمعه</value>
+        <comment>جمعه</comment>
+    </data>
+    <data name="InvalidCurrentPassword" xml:space="preserve">
+        <value>ستاسو اوسنی رمز ناسم دی</value>
+        <comment>ستاسو اوسنی رمز ناسم دی</comment>
     </data>
 </root>
