@@ -509,6 +509,9 @@
         },
         "extraDetails": {
             "label": "جزئیات اضافی"
+        },
+        "monthlyFee": {
+            "label": "فیس ماهانه"
         }
     },
     "calendarYear": {
@@ -900,6 +903,15 @@
     "enum": {
         "name": {
             "label": "نام"
+        }
+    },
+    "schoolType": {
+        "label": "نوع مکتب",
+        "validation": {
+            "required": "نوع مکتب ضروری میباشد"
+        },
+        "schoolTypeList": {
+            "label": "لیست انواع مکتب"
         }
     }
 }

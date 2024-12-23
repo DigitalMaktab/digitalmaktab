@@ -23,6 +23,7 @@ const filterComponentMapping: { [key: string]: React.FC<any> } = {
   "teacher.firstName": AppTeacherSelect,
   // "student.firstName": AppStudentSelect,
   day: AppClassSelect,
+  joiningClass: AppClassSelect,
 };
 
 // Mapping for display accessors to their filter accessors
@@ -34,6 +35,7 @@ const filterAccessorMapping: { [key: string]: string } = {
   "teacher.firstName": "teacherId",
   "student.firstName": "studentId",
   day: "classId", // Since the schedule data is flattened we do map accessor day to classId for filters
+  joiningClass: "classId",
 };
 
 const AppTableFilters = <T,>({

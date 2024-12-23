@@ -1,3 +1,4 @@
+import { SchoolType } from "../models/SchoolType";
 import { AddAddressDto } from "./AddAddressDto";
 import { AddPhoneNumberDto } from "./AddPhoneNumberDto";
 
@@ -10,4 +11,5 @@ export interface SchoolForAddDto {
   confirmPassword?: string;
   logo?: File | null;
   code: string;
+  schoolType: SchoolType;
 }

@@ -103,6 +103,10 @@ const activeCalendarYear = (
   return apiClient.get("/main/activeCalendarYear", { params });
 };
 
+const schoolTypeList = (paginationParams: {
+  pageNumber: number;
+  pageSize: number;
+}) => apiClient.get(`/main/schoolTypes`, { params: paginationParams });
 const mainApi = {
   countryList,
   classList,
@@ -121,6 +125,7 @@ const mainApi = {
   bookList,
   subjectList,
   activeCalendarYear,
+  schoolTypeList,
 };
 
 export default mainApi;

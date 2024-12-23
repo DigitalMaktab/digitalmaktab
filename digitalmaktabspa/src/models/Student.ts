@@ -2,6 +2,7 @@ import { AddPhoneNumberDto } from "../dtos/AddPhoneNumberDto";
 import { Address } from "./Address";
 import { Base } from "./Base";
 import { BloodGroup } from "./BloodGroup";
+import { Class } from "./Class";
 import { DisabilityType } from "./DisabilityType";
 import { Gender } from "./Gender";
 import { IsOrphan } from "./IsOrphan";
@@ -24,6 +25,7 @@ export interface Student extends Base {
   genderValue: string;
   dateOfBirth: string;
   joiningClassId: string;
+  joiningClass: Class;
 
   phoneNumber: AddPhoneNumberDto;
 
@@ -51,4 +53,5 @@ export interface Student extends Base {
   motherTongueValue: string;
 
   email: string;
+  monthlyFee?: number;
 }

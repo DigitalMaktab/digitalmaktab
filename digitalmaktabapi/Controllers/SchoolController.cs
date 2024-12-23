@@ -416,14 +416,14 @@ namespace digitalmaktabapi.Controllers
                 var flattenedData = new FlattenedScheduleDto
                 {
                     Day = this.mainLocalizer[day.ToString()].Value,
-                    Hour1 = groupedByDay.ContainsKey(day) ? GetSubjectName(groupedByDay[day].FirstOrDefault(s => s.ScheduleTime == ScheduleTime.FIRST)) : string.Empty,
-                    Hour2 = groupedByDay.ContainsKey(day) ? GetSubjectName(groupedByDay[day].FirstOrDefault(s => s.ScheduleTime == ScheduleTime.SECOND)) : string.Empty,
-                    Hour3 = groupedByDay.ContainsKey(day) ? GetSubjectName(groupedByDay[day].FirstOrDefault(s => s.ScheduleTime == ScheduleTime.THIRD)) : string.Empty,
-                    Hour4 = groupedByDay.ContainsKey(day) ? GetSubjectName(groupedByDay[day].FirstOrDefault(s => s.ScheduleTime == ScheduleTime.FOURTH)) : string.Empty,
-                    Hour5 = groupedByDay.ContainsKey(day) ? GetSubjectName(groupedByDay[day].FirstOrDefault(s => s.ScheduleTime == ScheduleTime.FIFTH)) : string.Empty,
-                    Hour6 = groupedByDay.ContainsKey(day) ? GetSubjectName(groupedByDay[day].FirstOrDefault(s => s.ScheduleTime == ScheduleTime.SIXTH)) : string.Empty,
-                    Hour7 = groupedByDay.ContainsKey(day) ? GetSubjectName(groupedByDay[day].FirstOrDefault(s => s.ScheduleTime == ScheduleTime.SEVENTH)) : string.Empty,
-                    Hour8 = groupedByDay.ContainsKey(day) ? GetSubjectName(groupedByDay[day].FirstOrDefault(s => s.ScheduleTime == ScheduleTime.EIGHT)) : string.Empty
+                    Hour1 = groupedByDay.ContainsKey(day) && groupedByDay[day].FirstOrDefault(s => s.ScheduleTime == ScheduleTime.FIRST) != null ? GetSubjectName(groupedByDay[day].FirstOrDefault(s => s.ScheduleTime == ScheduleTime.FIRST)!) : string.Empty,
+                    Hour2 = groupedByDay.ContainsKey(day) && groupedByDay[day].FirstOrDefault(s => s.ScheduleTime == ScheduleTime.SECOND) != null ? GetSubjectName(groupedByDay[day].FirstOrDefault(s => s.ScheduleTime == ScheduleTime.SECOND)!) : string.Empty,
+                    Hour3 = groupedByDay.ContainsKey(day) && groupedByDay[day].FirstOrDefault(s => s.ScheduleTime == ScheduleTime.THIRD) != null ? GetSubjectName(groupedByDay[day].FirstOrDefault(s => s.ScheduleTime == ScheduleTime.THIRD)!) : string.Empty,
+                    Hour4 = groupedByDay.ContainsKey(day) && groupedByDay[day].FirstOrDefault(s => s.ScheduleTime == ScheduleTime.FOURTH) != null ? GetSubjectName(groupedByDay[day].FirstOrDefault(s => s.ScheduleTime == ScheduleTime.FOURTH)!) : string.Empty,
+                    Hour5 = groupedByDay.ContainsKey(day) && groupedByDay[day].FirstOrDefault(s => s.ScheduleTime == ScheduleTime.FIFTH) != null ? GetSubjectName(groupedByDay[day].FirstOrDefault(s => s.ScheduleTime == ScheduleTime.FIFTH)!) : string.Empty,
+                    Hour6 = groupedByDay.ContainsKey(day) && groupedByDay[day].FirstOrDefault(s => s.ScheduleTime == ScheduleTime.SIXTH) != null ? GetSubjectName(groupedByDay[day].FirstOrDefault(s => s.ScheduleTime == ScheduleTime.SIXTH)!) : string.Empty,
+                    Hour7 = groupedByDay.ContainsKey(day) && groupedByDay[day].FirstOrDefault(s => s.ScheduleTime == ScheduleTime.SEVENTH) != null ? GetSubjectName(groupedByDay[day].FirstOrDefault(s => s.ScheduleTime == ScheduleTime.SEVENTH)!) : string.Empty,
+                    Hour8 = groupedByDay.ContainsKey(day) && groupedByDay[day].FirstOrDefault(s => s.ScheduleTime == ScheduleTime.EIGHT) != null ? GetSubjectName(groupedByDay[day].FirstOrDefault(s => s.ScheduleTime == ScheduleTime.EIGHT)!) : string.Empty
                 };
 
                 flattenedSchedules.Add(flattenedData);

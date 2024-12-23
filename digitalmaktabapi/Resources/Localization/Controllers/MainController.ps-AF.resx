@@ -440,4 +440,12 @@
         <value>ستاسو اوسنی رمز ناسم دی</value>
         <comment>ستاسو اوسنی رمز ناسم دی</comment>
     </data>
+    <data name="PUBLIC" xml:space="preserve">
+        <value>دولتی</value>
+        <comment>دولتي ښوونځی</comment>
+    </data>
+    <data name="PRIVATE" xml:space="preserve">
+        <value>شخصي</value>
+        <comment>شخصي ښوونځی</comment>
+    </data>
 </root>

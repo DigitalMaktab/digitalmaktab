@@ -14,6 +14,8 @@ namespace digitalmaktabapi.Dtos
         public required string Email { get; set; }
         public required string Logo { get; set; }
         public required int Code { get; set; }
+        public required SchoolType SchoolType { get; set; }
+        public required string SchoolTypeValue { get; set; }
         public required UserRole UserRole { get; set; }
         public ICollection<StudentDto> Students { get; set; } = [];
     }

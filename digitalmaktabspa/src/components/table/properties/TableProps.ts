@@ -9,6 +9,9 @@ export interface Column<T> {
   filter?: {
     type: "text" | "dropdown";
   };
+  sortable?: boolean;
+  width?: number;
+  hidden?: boolean;
 }
 
 export interface TableProps<T> {

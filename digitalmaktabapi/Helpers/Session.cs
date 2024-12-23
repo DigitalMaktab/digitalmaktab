@@ -13,5 +13,6 @@ namespace digitalmaktabapi.Helpers
         public UserRole UserRole { get; set; }
         public Guid SchoolId { get; set; }
         public Guid CalendarYearId { get; set; }
+        public SchoolType SchoolType { get; set; }
     }
 }

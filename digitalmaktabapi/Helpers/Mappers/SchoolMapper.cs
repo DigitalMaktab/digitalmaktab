@@ -32,8 +32,6 @@ namespace digitalmaktabapi.Helpers.Mappers
             CreateMap<AddEnrollmentDto, Enrollment>();
             CreateMap<AddScheduleDto, Schedule>();
 
-
-
             CreateMap<ClassEnrollmentChartDomain, ClassEnrollmentChartDto>()
                 .ForMember(dest => dest.ClassNameAndBranch, opt => opt.MapFrom(src => localizer[src.ClassName.ToString()].Value + " " + src.BranchName));
 

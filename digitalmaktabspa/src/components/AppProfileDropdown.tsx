@@ -5,6 +5,7 @@ import { User } from "../models/User";
 import { getUser } from "../helper/helper";
 import AppImg from "./AppImg";
 import { UserRole } from "../models/UserRole";
+import useUser from "../hooks/useUser";
 
 const AppProfileDropdown: React.FC<DropdownItemProps> = ({
   dropdownKey,
@@ -17,20 +18,7 @@ const AppProfileDropdown: React.FC<DropdownItemProps> = ({
   style,
 }) => {
   const { t } = useTranslation();
-  const [user, setUser] = useState<User | null>(null);
-
-  useEffect(() => {
-    const fetchedUser = getUser();
-    if (
-      fetchedUser &&
-      typeof fetchedUser === "object" &&
-      "role" in fetchedUser
-    ) {
-      setUser(fetchedUser as User);
-    } else {
-      setUser(null);
-    }
-  }, []);
+  const user = useUser();
 
   const roleMap: Record<UserRole, string> = {
     [UserRole.ADMIN]: t("userRole.admin"),
@@ -114,7 +102,9 @@ const AppProfileDropdown: React.FC<DropdownItemProps> = ({
         {renderUserProfile()}
         <div className="flex-grow-1">
           <h5>{getUserName()}</h5>
-          <span>{getUserRole()}</span>
+          <span>
+            {getUserRole()} - {user?.school?.schoolTypeValue}
+          </span>
         </div>
       </div>
       <div className={`custom-menu overflow-hidden ${isOpen ? "show" : ""}`}>

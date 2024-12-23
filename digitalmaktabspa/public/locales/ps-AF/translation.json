@@ -509,6 +509,9 @@
         },
         "extraDetails": {
             "label": "اضافي جزئیات"
+        },
+        "monthlyFee": {
+            "label": "میاشتي فیس"
         }
     },
     "calendarYear": {
@@ -900,6 +903,15 @@
     "enum": {
         "name": {
             "label": "نوم"
+        }
+    },
+    "schoolType": {
+        "label": "د ښوونځي ډول",
+        "validation": {
+            "required": "د ښوونځي ډول اړین دی"
+        },
+        "schoolTypeList": {
+            "label": "د ښوونځي ډول لیست"
         }
     }
 }

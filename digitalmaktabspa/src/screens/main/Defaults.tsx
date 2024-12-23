@@ -22,6 +22,7 @@ const Defaults = () => {
     fetchScheduleTimes,
     fetchShifts,
     fetchAddressTypes,
+    fetchSchoolTypes,
     totalPages,
   } = useMainOperations();
   const { t } = useAppLocalizer();
@@ -39,6 +40,7 @@ const Defaults = () => {
   const [scheduleTimesData, setScheduleTimesData] = useState<EnumDto[]>([]);
   const [shiftsData, setShiftsData] = useState<EnumDto[]>([]);
   const [addressTypesData, setAddressTypesData] = useState<EnumDto[]>([]);
+  const [schoolTypesData, setSchoolTypesData] = useState<EnumDto[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -55,6 +57,7 @@ const Defaults = () => {
       const scheduleTimesResult = await fetchScheduleTimes(1, 10, {});
       const shiftsResult = await fetchShifts(1, 10, {});
       const addressTypesResult = await fetchAddressTypes(1, 10, {});
+      const schoolTypesResult = await fetchSchoolTypes(1, 10, {});
 
       setCountriesData(countriesResult.data);
       setClassTypesData(classTypesResult.data);
@@ -69,6 +72,7 @@ const Defaults = () => {
       setScheduleTimesData(scheduleTimesResult.data);
       setShiftsData(shiftsResult.data);
       setAddressTypesData(addressTypesResult.data);
+      setSchoolTypesData(schoolTypesResult.data);
     };
     fetchData();
   }, [t]);
@@ -270,6 +274,19 @@ const Defaults = () => {
               totalPages={totalPages}
               fetchPageData={fetchAddressTypes}
               reportTitle={t("addressType.addressTypeList.label")}
+              showExport={false}
+              showPageSizer={false}
+            />
+          </AppCard>
+        </div>
+        <div className="col-md-6">
+          <AppCard title={t("schoolType.schoolTypeList.label")}>
+            <AppTable
+              data={schoolTypesData}
+              columns={enumColumns}
+              totalPages={totalPages}
+              fetchPageData={fetchSchoolTypes}
+              reportTitle={t("schoolType.schoolTypeList.label")}
               showExport={false}
               showPageSizer={false}
             />

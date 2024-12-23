@@ -154,17 +154,39 @@ const getShortFormedDate = (date: string, yesterday: string): string => {
 const getValidationSchema = (
   fields: Record<
     string,
-    { label: string; type?: string; nested?: Record<string, any> }
+    {
+      label: string;
+      type?: string;
+      nested?: Record<string, any>;
+      condition?: boolean | ((values: Record<string, any>) => boolean);
+    }
   >,
   t: any
 ) => {
-  const createFieldSchema = (field: {
-    label: string;
-    type?: string;
-    nested?: Record<string, any>;
-  }) => {
+  const createFieldSchema = (
+    field: {
+      label: string;
+      type?: string;
+      nested?: Record<string, any>;
+      condition?: boolean | ((values: Record<string, any>) => boolean);
+    },
+    values: Record<string, any>
+  ) => {
+    // Check for conditional validation
+    if (field.condition) {
+      const condition =
+        typeof field.condition === "function"
+          ? field.condition(values)
+          : field.condition;
+
+      if (!condition) {
+        // If the condition is not met, skip validation for this field
+        return Yup.mixed().notRequired();
+      }
+    }
+
+    // Handle nested fields
     if (field.nested) {
-      // Create nested schema for compound fields
       return Yup.object(
         Object.entries(field.nested).reduce((acc, [key, nestedField]) => {
           acc[key] = Yup.string().required(
@@ -175,15 +197,18 @@ const getValidationSchema = (
       );
     }
 
-    // Default string field schema
+    // Default schema for string fields
     return Yup.string().required(
       t("validation.required", { value: t(field.label) })
     );
   };
 
-  // Build schema
+  // Build schema with Yup.lazy for conditional fields
   const schema = Object.entries(fields).reduce((acc, [key, field]) => {
-    acc[key] = createFieldSchema(field);
+    acc[key] = Yup.lazy((values: Record<string, any>) => {
+      // Ensure createFieldSchema always returns a valid Yup schema
+      return createFieldSchema(field, values);
+    }) as unknown as Yup.Schema<any>; // Cast to unknown first, then to Yup.Schema
     return acc;
   }, {} as Record<string, Yup.AnySchema>);
 

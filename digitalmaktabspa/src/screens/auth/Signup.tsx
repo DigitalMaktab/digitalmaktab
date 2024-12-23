@@ -11,6 +11,9 @@ import useSchoolOperations from "../../hooks/useSchoolOperations";
 import { useNavigate } from "react-router-dom";
 import { ResponseResult } from "../../dtos/ResultEnum";
 import { useAppLocalizer } from "../../hooks/useAppLocalizer";
+import { SchoolType } from "../../models/SchoolType";
+import AppSchoolTypeSelect from "../../components/select/AppSchoolTypeSelect";
+import AppFormSelect from "../../components/form/AppFormSelect";
 
 const Signup = () => {
   const { t } = useAppLocalizer();
@@ -49,6 +52,19 @@ const Signup = () => {
             required={true}
             placeholder={t("auth.signup.code.placeholder")}
           />
+          <AppFormSelect
+            name="schoolType"
+            label=""
+            value={SchoolType.EMPTY.toString()}
+            required={true}
+          >
+            <AppSchoolTypeSelect
+              name="schoolType"
+              required={true}
+              value={SchoolType.EMPTY.toString()}
+              onChange={() => {}}
+            />
+          </AppFormSelect>
 
           <AppFormInput
             label={t("auth.signup.phoneNumber.label")}
@@ -100,6 +116,7 @@ const Signup = () => {
       region: "",
       postalCode: "",
     },
+    schoolType: SchoolType.EMPTY,
   };
 
   const submit = async (school: SchoolForAddDto) => {
@@ -143,6 +160,8 @@ const Signup = () => {
       formData.append("logo", school.logo);
     }
 
+    formData.append("schoolType", school.schoolType.toString());
+
     formData.append("code", school.code);
 
     const result = await registerSchool(formData);
@@ -171,6 +190,7 @@ const Signup = () => {
         t("auth.signup.phoneNumber.validation.required")
       ),
     }),
+    schoolType: Yup.string().required(t("schoolType.validation.required")),
   });
 
   const step2ValidationSchema: Yup.AnyObjectSchema = Yup.object({

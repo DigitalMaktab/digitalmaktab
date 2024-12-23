@@ -56,6 +56,7 @@ namespace digitalmaktabapi.Data
             var students = this.context.Students
             .Include(a => a.Enrollments)
             .ThenInclude(a => a.Class)
+            .ThenInclude(a => a.Branch)
             .Where(a => a.SchoolId == schoolId)
             .AsQueryable();
 

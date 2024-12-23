@@ -440,4 +440,12 @@
         <value>Your current password is invalid</value>
         <comment>Invalid current password</comment>
     </data>
+    <data name="PUBLIC" xml:space="preserve">
+        <value>Public</value>
+        <comment>Public School</comment>
+    </data>
+    <data name="PRIVATE" xml:space="preserve">
+        <value>Private</value>
+        <comment>Private School</comment>
+    </data>
 </root>

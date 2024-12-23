@@ -1,5 +1,6 @@
 import { AddAddressDto } from "../dtos/AddAddressDto";
 import { AddPhoneNumberDto } from "../dtos/AddPhoneNumberDto";
+import { SchoolType } from "./SchoolType";
 import { UserRole } from "./UserRole";
 
 export interface School {
@@ -12,4 +13,6 @@ export interface School {
   confirmPassword?: string;
   logo?: File | null;
   code: string;
+  schoolType: SchoolType;
+  schoolTypeValue: string;
 }

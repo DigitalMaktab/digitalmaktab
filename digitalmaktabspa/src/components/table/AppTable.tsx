@@ -1,11 +1,5 @@
-import React, {
-  ReactNode,
-  useEffect,
-  useState,
-  useCallback,
-  useContext,
-} from "react";
-import { TableProps } from "./properties/TableProps";
+import React, { useEffect, useState, useCallback, useContext } from "react";
+import { Column, TableProps } from "./properties/TableProps";
 import { useNavigate } from "react-router-dom";
 import AppPagination from "./AppPagination";
 import AppButton from "../AppButton";
@@ -18,6 +12,8 @@ import useJsPdfExportToPdf from "../../hooks/useJsPdfExportToPdf";
 import { useAppLocalizer } from "../../hooks/useAppLocalizer";
 import { ResponseResult } from "../../dtos/ResultEnum";
 import { AuthContext } from "../../helper/auth/AuthProvider";
+
+import * as FAIcons from "react-icons/fa";
 
 const AppTable = <T extends Base>({
   data = [], // Default data to an empty array
@@ -69,13 +65,14 @@ const AppTable = <T extends Base>({
   const isRowSelected = (row: T) =>
     selectedRows.some((selected) => selected.id === row.id);
 
-  // Ensure data is an array, even if null or undefined is passed
   const safeData = data || [];
 
   const [tableState, setTableState] = useState({
     currentPage: 1,
     pageSize: 10,
     filters: {},
+    sortBy: "", // To hold the column being sorted
+    sortOrder: "asc", // To hold the sort order
   });
 
   const [showFilters, setShowFilters] = useState(false);
@@ -86,7 +83,6 @@ const AppTable = <T extends Base>({
 
   const hasFilters = columns.some((col) => col.filter);
 
-  // Memoized fetch logic
   const fetchData = useCallback(async () => {
     setLoading(true); // Start loading
     setError(null); // Clear previous errors
@@ -182,6 +178,34 @@ const AppTable = <T extends Base>({
     }
   };
 
+  // Sort the data when a column is clicked
+  const handleSort = (column: Column<T>) => {
+    const sortOrder =
+      tableState.sortBy === column.accessor && tableState.sortOrder === "asc"
+        ? "desc"
+        : "asc";
+    setTableState((prevState) => ({
+      ...prevState,
+      sortBy: column.accessor as string,
+      sortOrder,
+    }));
+  };
+
+  // Sort data based on the current sort order
+  const sortedData = React.useMemo(() => {
+    const sorted = [...safeData];
+    if (tableState.sortBy) {
+      sorted.sort((a, b) => {
+        const aValue = a[tableState.sortBy as keyof T];
+        const bValue = b[tableState.sortBy as keyof T];
+        if (aValue < bValue) return tableState.sortOrder === "asc" ? -1 : 1;
+        if (aValue > bValue) return tableState.sortOrder === "asc" ? 1 : -1;
+        return 0;
+      });
+    }
+    return sorted;
+  }, [safeData, tableState.sortBy, tableState.sortOrder]);
+
   return (
     <>
       <div className="mb-1 d-flex justify-content-end">
@@ -258,16 +282,35 @@ const AppTable = <T extends Base>({
             <table className="table">
               <thead className="table-dark">
                 <tr>
-                  {columns.map((col, index) => (
-                    <th key={index} scope="col">
-                      {t(col.header)}
-                    </th>
-                  ))}
+                  {columns.map((col, index) =>
+                    !col.hidden ? (
+                      <th
+                        key={index}
+                        scope="col"
+                        style={{ width: col.width }}
+                        onClick={
+                          col.sortable ? () => handleSort(col) : undefined
+                        }
+                      >
+                        {t(col.header)}
+                        {col.sortable && (
+                          <span>
+                            {tableState.sortBy === col.accessor &&
+                            tableState.sortOrder === "asc" ? (
+                              <FAIcons.FaCaretUp />
+                            ) : (
+                              <FAIcons.FaCaretDown />
+                            )}
+                          </span>
+                        )}
+                      </th>
+                    ) : null
+                  )}
                   {deleteRow && <th scope="col">{t("table.actions.label")}</th>}
                 </tr>
               </thead>
               <tbody>
-                {safeData.map((row, rowIndex) => (
+                {sortedData.map((row, rowIndex) => (
                   <tr
                     key={rowIndex}
                     onDoubleClick={() => navigateToRow(row)}
@@ -280,13 +323,15 @@ const AppTable = <T extends Base>({
                         : "transparent", // Highlight selected rows
                     }}
                   >
-                    {columns.map((col, colIndex) => {
-                      const cellContent = col.render
-                        ? col.render(row[col.accessor], row)
-                        : (row[col.accessor] as ReactNode);
-
-                      return <td key={colIndex}>{cellContent ?? ""}</td>;
-                    })}
+                    {columns.map((col, colIndex) =>
+                      !col.hidden ? (
+                        <td key={colIndex} style={{ width: col.width }}>
+                          {col.render
+                            ? col.render(row[col.accessor], row)
+                            : (row[col.accessor] as React.ReactNode)}
+                        </td>
+                      ) : null
+                    )}
 
                     {deleteRow &&
                       (deleteRoles.length === 0 ||

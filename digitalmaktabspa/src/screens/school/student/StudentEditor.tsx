@@ -25,6 +25,9 @@ import AppIsOrphanSelect from "../../../components/select/AppIsOrphanSelect";
 import AppLanguageSelect from "../../../components/select/AppLanguageSelect";
 import { Language } from "../../../models/Language";
 import AppClassSelect from "../../../components/select/AppClassSelect";
+import useUser from "../../../hooks/useUser";
+import { SchoolType } from "../../../models/SchoolType";
+import { cond } from "lodash";
 
 const StudentEditor: React.FC<EditorProps> = ({ initialData }) => {
   const { t } = useAppLocalizer();
@@ -32,6 +35,7 @@ const StudentEditor: React.FC<EditorProps> = ({ initialData }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { registerStudent } = useSchoolOperations();
+  const user = useUser();
 
   const validationSchemaConfig = {
     firstNameNative: { label: t("student.firstNameNative.label") },
@@ -67,9 +71,17 @@ const StudentEditor: React.FC<EditorProps> = ({ initialData }) => {
     isOrphan: { label: t("isOrphan.label") },
     motherTongue: { label: t("language.label") },
     email: { label: t("auth.email.label") },
+    monthlyFee: {
+      label: t("student.monthlyFee.label"),
+      condition: () => user?.school?.schoolType === SchoolType.PRIVATE, // Conditional validation based on 'schoolType'
+    },
   } as unknown as Record<
     keyof Student,
-    { label: string; nested?: Record<string, any> }
+    {
+      label: string;
+      nested?: Record<string, any>;
+      condition?: boolean | ((values: Record<string, any>) => boolean);
+    }
   >;
 
   const initialFormData = {
@@ -105,6 +117,7 @@ const StudentEditor: React.FC<EditorProps> = ({ initialData }) => {
     isOrphan: IsOrphan.EMPTY,
     motherTongue: Language.EMPTY,
     email: "",
+    monthlyFee: null,
   } as unknown as Student;
 
   const handleSubmit = useCallback(
@@ -308,7 +321,7 @@ const StudentEditor: React.FC<EditorProps> = ({ initialData }) => {
           </div>
           <AppFormSectionContainer title={t("student.extraDetails.label")}>
             <div className="row">
-              <div className="col-md-2">
+              <div className="col-md-3">
                 <AppFormSelect
                   name="disabilityType"
                   label=""
@@ -331,7 +344,7 @@ const StudentEditor: React.FC<EditorProps> = ({ initialData }) => {
                   />
                 </AppFormSelect>
               </div>
-              <div className="col-md-2">
+              <div className="col-md-3">
                 <AppFormSelect
                   name="isOrphan"
                   label=""
@@ -352,7 +365,7 @@ const StudentEditor: React.FC<EditorProps> = ({ initialData }) => {
                   />
                 </AppFormSelect>
               </div>
-              <div className="col-md-2">
+              <div className="col-md-3">
                 <AppFormSelect
                   name="motherTongue"
                   label=""
@@ -375,7 +388,7 @@ const StudentEditor: React.FC<EditorProps> = ({ initialData }) => {
                   />
                 </AppFormSelect>
               </div>
-              <div className="col-md-2">
+              <div className="col-md-3">
                 <AppFormSelect
                   name="bloodGroup"
                   label=""
@@ -399,29 +412,21 @@ const StudentEditor: React.FC<EditorProps> = ({ initialData }) => {
                   />
                 </AppFormSelect>
               </div>
-              <div className="col-md-2">
+              <div className="col-md-4">
                 <AppFormSelect
                   name="joiningClassId"
                   label=""
-                  value={
-                    id
-                      ? props.formData!.joiningClassId.toString()
-                      : BloodGroup.EMPTY
-                  }
+                  value={id ? props.formData!.joiningClassId.toString() : ""}
                   required
                 >
                   <AppClassSelect
                     name="joiningClassId"
-                    value={
-                      id
-                        ? props.formData!.joiningClassId.toString()
-                        : BloodGroup.EMPTY
-                    }
+                    value={id ? props.formData!.joiningClassId.toString() : ""}
                     onChange={() => {}}
                   />
                 </AppFormSelect>
               </div>
-              <div className="col-md-2">
+              <div className="col-md-4">
                 <AppFormInput
                   name="email"
                   required
@@ -429,6 +434,17 @@ const StudentEditor: React.FC<EditorProps> = ({ initialData }) => {
                   placeholder={t("auth.email.placeholder")}
                 />
               </div>
+              {user?.school?.schoolType === SchoolType.PRIVATE && (
+                <div className="col-md-4">
+                  <AppFormInput
+                    name="monthlyFee"
+                    type="number"
+                    required={true}
+                    label={t("student.monthlyFee.label")}
+                    placeholder={t("student.monthlyFee.label")}
+                  />
+                </div>
+              )}
             </div>
           </AppFormSectionContainer>
         </>

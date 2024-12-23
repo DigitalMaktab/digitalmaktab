@@ -509,6 +509,9 @@
         },
         "extraDetails": {
             "label": "Extra Details"
+        },
+        "monthlyFee": {
+            "label": "Monthly Fee"
         }
     },
     "calendarYear": {
@@ -900,6 +903,15 @@
     "enum": {
         "name": {
             "label": "Name"
+        }
+    },
+    "schoolType": {
+        "label": "School Types",
+        "validation": {
+            "required": "School Type is required"
+        },
+        "schoolTypeList": {
+            "label": "School Type List"
         }
     }
 }

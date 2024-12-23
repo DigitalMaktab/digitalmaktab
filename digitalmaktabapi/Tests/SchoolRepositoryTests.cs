@@ -53,6 +53,7 @@ public class SchoolRepositoryTests
             Status = true,
             SchoolName = "Test School",
             Address = new Address { Street = "123 Test St" },
+            SchoolType = SchoolType.PUBLIC,
             PhoneNumber = new PhoneNumber
             {
                 Number = "123-456-7890",
@@ -100,6 +101,7 @@ public class SchoolRepositoryTests
             Status = true,
             SchoolName = "Test School",
             Address = new Address { Street = "123 Test St" },
+            SchoolType = SchoolType.PUBLIC,
             PhoneNumber = new PhoneNumber
             {
                 Number = "123-456-7890",
@@ -140,6 +142,7 @@ public class SchoolRepositoryTests
             Status = true,
             SchoolName = "Test School",
             Address = new Address { Street = "123 Test St" },
+            SchoolType = SchoolType.PUBLIC,
             PhoneNumber = new PhoneNumber
             {
                 Number = "123-456-7890",

@@ -79,6 +79,9 @@ const useMainOperations = () => {
   const fetchActiveCalendarYear = () =>
     fetchPaginatedData(mainApi.activeCalendarYear, 1, 10, {});
 
+  const fetchSchoolTypes = (page: number, pageSize: number, filters: any) =>
+    fetchPaginatedData(mainApi.schoolTypeList, page, pageSize, filters);
+
   return {
     data,
     status,
@@ -100,6 +103,7 @@ const useMainOperations = () => {
     fetchBooks,
     subjectList,
     fetchActiveCalendarYear,
+    fetchSchoolTypes,
   };
 };
 

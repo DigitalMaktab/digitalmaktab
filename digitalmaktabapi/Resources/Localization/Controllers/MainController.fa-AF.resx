@@ -440,4 +440,12 @@
         <value>رمز وردو فعلی شما درست نمیباشد.</value>
         <comment/>
     </data>
+    <data name="PUBLIC" xml:space="preserve">
+        <value>دولتی</value>
+        <comment>مکتب دولتی</comment>
+    </data>
+    <data name="PRIVATE" xml:space="preserve">
+        <value>خصوصی</value>
+        <comment>مکتب خصوصی</comment>
+    </data>
 </root>

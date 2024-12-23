@@ -297,6 +297,20 @@ namespace digitalmaktabapi.Controllers
             return Ok(this.mapper!.Map<CalendarYearDto>(await this.rootRepository.GetActiveCalendarYear()));
         }
 
+        [AllowAnonymous]
+        [HttpGet("schoolTypes")]
+        public async Task<ActionResult<IEnumerable<EnumsDto>>> GetSchoolTypes()
+        {
+            var schoolTypes = GetEnumList<SchoolType>();
+            return await Task.FromResult(Ok(schoolTypes));
+        }
+
+        [HttpGet("schoolType/{id}")]
+        public async Task<ActionResult<EnumsDto>> GetSchoolType(int id)
+        {
+            return await GetEnumResponse<SchoolType>(id);
+        }
+
         // Helper methods
 
         private List<EnumsDto> GetEnumList<T>() where T : Enum

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using digitalmaktabapi.Controllers;
@@ -20,6 +21,7 @@ namespace digitalmaktabapi.Dtos
         public required string ConfirmPassword { get; set; }
         public IFormFile? Logo { get; set; }
         public required int Code { get; set; }
+        public required SchoolType SchoolType { get; set; }
     }
 
 
@@ -35,6 +37,7 @@ namespace digitalmaktabapi.Dtos
             RuleFor(a => a.ConfirmPassword).NotEmpty().NotNull().Matches(a => a.Password);
             RuleFor(a => a.Code).NotNull().NotEmpty();
             RuleFor(a => a.Logo).ValidateFile(maxSize: 1 * 1024 * 1024, localizer, allowedExtensions: [".png", ".jpg"]);
+            RuleFor(a => a.SchoolType).IsInEnum();
         }
     }
 }
