@@ -50,7 +50,7 @@ namespace digitalmaktabapi.Data
         public async Task<Class> GetClass(Guid classId)
         {
             var entity = await this.context.Classes
-            .Include(a => a.ClassSubjects)
+            .Include(a => a.Courses)
             .ThenInclude(a => a.Subject)
             .ThenInclude(a => a.Book)
             .FirstOrDefaultAsync(a => a.Id == classId);
@@ -64,7 +64,7 @@ namespace digitalmaktabapi.Data
                 .Include(a => a.Branch)
                 .Include(a => a.CalendarYear)
                 .Include(a => a.Enrollments)
-                .Include(a => a.ClassSubjects)
+                .Include(a => a.Courses)
                 .Where(a => a.SchoolId == schoolId).AsQueryable();
             if (classParams.BranchId.HasValue)
             {
@@ -99,9 +99,9 @@ namespace digitalmaktabapi.Data
             return await PagedList<Class>.CreateAsync(entities, classParams.PageNumber, classParams.PageSize);
         }
 
-        public async Task<PagedList<ClassSubject>> GetClassSubjects(Guid schoolId, ClassParams classParams)
+        public async Task<PagedList<Course>> GetCourses(Guid schoolId, ClassParams classParams)
         {
-            var entities = this.context.ClassSubjects
+            var entities = this.context.Courses
                 .Include(a => a.Class)
                 .ThenInclude(a => a.Branch)
                 .Include(a => a.Subject)
@@ -121,7 +121,7 @@ namespace digitalmaktabapi.Data
                             );
             }
 
-            return await PagedList<ClassSubject>.CreateAsync(entities, classParams.PageNumber, classParams.PageSize);
+            return await PagedList<Course>.CreateAsync(entities, classParams.PageNumber, classParams.PageSize);
         }
 
         public async Task<Enrollment> GetEnrollment(Guid id)
@@ -162,19 +162,19 @@ namespace digitalmaktabapi.Data
         public async Task<PagedList<Schedule>> GetSchedules(UserParams userParams)
         {
             var schedules = this.context.Schedules
-            .Include(a => a.ClassSubject)
+            .Include(a => a.Course)
             .ThenInclude(a => a.Subject)
-            .Include(a => a.ClassSubject)
+            .Include(a => a.Course)
             .ThenInclude(a => a.Class)
             .AsQueryable();
 
             if (userParams.ClassId.HasValue)
             {
-                schedules = schedules.Where(a => a.ClassSubject.ClassId == userParams.ClassId);
+                schedules = schedules.Where(a => a.Course.ClassId == userParams.ClassId);
             }
             if (userParams.CalendarYearId.HasValue)
             {
-                schedules = schedules.Where(a => a.ClassSubject.Class.CalendarYearId == userParams.CalendarYearId);
+                schedules = schedules.Where(a => a.Course.Class.CalendarYearId == userParams.CalendarYearId);
             }
 
             if (userParams.TeacherId.HasValue)
@@ -200,25 +200,25 @@ namespace digitalmaktabapi.Data
         public async Task<bool> IsClassHasScheduleInDayAndTime(Guid calendarYearId, Models.DayOfWeek dayOfWeek, ScheduleTime scheduleTime)
         {
             return await this.context.Schedules
-                .Include(a => a.ClassSubject)
+                .Include(a => a.Course)
                 .ThenInclude(a => a.Class)
                 .AnyAsync(
                     a => a.DayOfWeek == dayOfWeek &&
                     a.ScheduleTime == scheduleTime &&
-                    a.ClassSubject.Class.CalendarYearId == calendarYearId
+                    a.Course.Class.CalendarYearId == calendarYearId
                 );
         }
 
-        public async Task<bool> IsScheduleExist(Guid calendarYearId, Guid classSubjectId, Guid teacherId, Models.DayOfWeek dayOfWeek, ScheduleTime scheduleTime)
+        public async Task<bool> IsScheduleExist(Guid calendarYearId, Guid courseId, Guid teacherId, Models.DayOfWeek dayOfWeek, ScheduleTime scheduleTime)
         {
             return await this.context.Schedules
-                .Include(a => a.ClassSubject)
+                .Include(a => a.Course)
                 .ThenInclude(a => a.Class)
                 .AnyAsync(
-                    a => a.ClassSubjectId == classSubjectId &&
+                    a => a.CourseId == courseId &&
                     a.DayOfWeek == dayOfWeek &&
                     a.ScheduleTime == scheduleTime &&
-                    a.ClassSubject.Class.CalendarYearId == calendarYearId
+                    a.Course.Class.CalendarYearId == calendarYearId
             );
         }
 

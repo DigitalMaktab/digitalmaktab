@@ -18,7 +18,7 @@ namespace digitalmaktabapi.Data
         public DbSet<CalendarYear> CalendarYears { get; set; }
         public DbSet<Subject> Subjects { get; set; }
         public DbSet<Class> Classes { get; set; }
-        public DbSet<ClassSubject> ClassSubjects { get; set; }
+        public DbSet<Course> Courses { get; set; }
         public DbSet<Enrollment> Enrollments { get; set; }
         public DbSet<Fee> Fees { get; set; }
         public DbSet<Grade> Grades { get; set; }

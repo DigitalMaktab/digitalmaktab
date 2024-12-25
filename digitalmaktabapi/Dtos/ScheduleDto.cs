@@ -8,8 +8,8 @@ namespace digitalmaktabapi.Dtos
 {
     public class ScheduleDto : BaseDto
     {
-        public required Guid ClassSubjectId { get; set; }
-        public required ClassSubjectDto ClassSubject { get; set; }
+        public required Guid CourseId { get; set; }
+        public required CourseDto Course { get; set; }
         public required Guid TeacherId { get; set; }
         public required TeacherDto Teacher { get; set; }
         public required string DayOfWeekValue { get; set; }

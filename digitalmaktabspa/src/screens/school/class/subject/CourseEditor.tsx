@@ -3,32 +3,32 @@ import { EditorProps } from "../../properties/EditorProps";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAppLocalizer } from "../../../../hooks/useAppLocalizer";
 import useSchoolOperations from "../../../../hooks/useSchoolOperations";
-import { ClassSubject } from "../../../../models/ClassSubject";
+import { Course } from "../../../../models/Course";
 import { ResponseResult } from "../../../../dtos/ResultEnum";
 import AppBaseEditor from "../../../../components/AppBaseEditor";
 import AppFormSelect from "../../../../components/form/AppFormSelect";
 import AppSubjectSelect from "../../../../components/select/AppSubjectSelect";
 import AppClassSelect from "../../../../components/select/AppClassSelect";
 
-const SubjectEditor: React.FC<EditorProps> = ({ initialData }) => {
+const CourseEditor: React.FC<EditorProps> = ({ initialData }) => {
   const { id } = useParams<{ id: string }>();
   const { t } = useAppLocalizer();
   const navigate = useNavigate();
 
-  const { addClassSubject } = useSchoolOperations();
+  const { addCourse } = useSchoolOperations();
 
   const initialFormData = {
     classId: "",
     subjectId: "",
-  } as ClassSubject;
+  } as Course;
 
   const validationSchemaConfig = {
     classId: { label: t("subject.subjectName.label") },
     subjectId: { label: t("class.className.label") },
-  } as Record<keyof ClassSubject, { label: string }>;
+  } as Record<keyof Course, { label: string }>;
 
   const submitData = useCallback(
-    async (classSubject: ClassSubject) => {
+    async (course: Course) => {
       let result;
       if (id) {
         // TODO: Update the Subject
@@ -36,17 +36,17 @@ const SubjectEditor: React.FC<EditorProps> = ({ initialData }) => {
         return;
       }
 
-      result = await addClassSubject(classSubject);
+      result = await addCourse(course);
 
       if (result.status === ResponseResult.SUCCESS) {
         navigate("/class-subject-list");
       }
     },
-    [id, navigate, addClassSubject]
+    [id, navigate, addCourse]
   );
 
   return (
-    <AppBaseEditor<ClassSubject>
+    <AppBaseEditor<Course>
       initialData={initialData}
       initialFormData={initialFormData}
       validationSchemaConfig={validationSchemaConfig}
@@ -54,7 +54,7 @@ const SubjectEditor: React.FC<EditorProps> = ({ initialData }) => {
       title={(data) =>
         data.subject && data.class
           ? `${data.subject.subjectName}`
-          : t("classSubject.add.label")
+          : t("course.add.label")
       }
     >
       {(props) => (
@@ -93,4 +93,4 @@ const SubjectEditor: React.FC<EditorProps> = ({ initialData }) => {
   );
 };
 
-export default SubjectEditor;
+export default CourseEditor;

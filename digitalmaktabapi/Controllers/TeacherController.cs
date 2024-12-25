@@ -111,7 +111,7 @@ namespace digitalmaktabapi.Controllers
 
             foreach (GradeAddDto gradeDto in addGradeDtos.Grades)
             {
-                var grade = await this.repository.GetGrade(gradeDto.EnrollmentId, gradeDto.ClassSubjectId, gradeDto.ExamType);
+                var grade = await this.repository.GetGrade(gradeDto.EnrollmentId, gradeDto.CourseId, gradeDto.ExamType);
                 if (grade == null)
                 {
                     var attendanceToCreate = this.mapper!.Map<Grade>(gradeDto);

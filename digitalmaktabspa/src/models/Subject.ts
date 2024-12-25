@@ -1,10 +1,10 @@
 import { Base } from "./Base";
 import { Book } from "./Book";
-import { ClassSubject } from "./ClassSubject";
+import { Course } from "./Course";
 
 export interface Subject extends Base {
   subjectName: string;
   bookId: string;
   book: Book;
-  classSubjects: ClassSubject[];
+  courses: Course[];
 }

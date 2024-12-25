@@ -7,10 +7,10 @@ import { Schedule } from "../../../models/Schedule";
 import { ResponseResult } from "../../../dtos/ResultEnum";
 import AppBaseEditor from "../../../components/AppBaseEditor";
 import AppFormSelect from "../../../components/form/AppFormSelect";
-import AppClassSubjectSelect from "../../../components/select/AppClassSubjectSelect";
 import AppTeacherSelect from "../../../components/select/AppTeacherSelect";
 import AppDayOfWeekSelect from "../../../components/select/AppDayOfWeekSelect";
 import AppScheduleTimeSelect from "../../../components/select/AppScheduleTimeSelect";
+import AppCourseSelect from "../../../components/select/AppCourseSelect";
 
 const SubjectEditor: React.FC<EditorProps> = ({ initialData }) => {
   const { id } = useParams<{ id: string }>();
@@ -20,14 +20,14 @@ const SubjectEditor: React.FC<EditorProps> = ({ initialData }) => {
   const { addSchedule } = useSchoolOperations();
 
   const initialFormData = {
-    classSubjectId: "",
+    courseId: "",
     teacherId: "",
     dayOfWeek: 0,
     scheduleTime: 0,
   } as Schedule;
 
   const validationSchemaConfig = {
-    classSubjectId: { label: t("classSubject.subjectAndClass.label") },
+    courseId: { label: t("course.subjectAndClass.label") },
     teacherId: { label: t("teacher.firstName.label") },
     dayOfWeek: { label: t("dayOfWeek.label") },
     scheduleTime: { label: t("scheduleTime.label") },
@@ -58,11 +58,11 @@ const SubjectEditor: React.FC<EditorProps> = ({ initialData }) => {
       validationSchemaConfig={validationSchemaConfig}
       onSubmit={submitData}
       title={(data) =>
-        data.classSubject &&
-        data.classSubject.subject &&
+        data.course &&
+        data.course.subject &&
         data.dayOfWeek &&
         data.scheduleTime
-          ? `${data.classSubject.subject.subjectName} ${data.dayOfWeek} ${data.scheduleTime}`
+          ? `${data.course.subject.subjectName} ${data.dayOfWeek} ${data.scheduleTime}`
           : t("timetable.addTimeTable.label")
       }
     >
@@ -71,13 +71,13 @@ const SubjectEditor: React.FC<EditorProps> = ({ initialData }) => {
           <div className="col-md-6">
             <AppFormSelect
               required={true}
-              name="classSubjectId"
+              name="courseId"
               label=""
-              value={id ? props.formData!.classSubjectId.toString() : ""}
+              value={id ? props.formData!.courseId.toString() : ""}
             >
-              <AppClassSubjectSelect
-                name="classSubjectId"
-                value={id ? props.formData!.classSubjectId.toString() : ""}
+              <AppCourseSelect
+                name="courseId"
+                value={id ? props.formData!.courseId.toString() : ""}
                 onChange={() => {}}
               />
             </AppFormSelect>

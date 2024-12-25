@@ -21,14 +21,14 @@ namespace digitalmaktabapi.Data
 
         Task<Class> GetClass(Guid classId);
 
-        Task<PagedList<ClassSubject>> GetClassSubjects(Guid schoolId, ClassParams userParams);
+        Task<PagedList<Course>> GetCourses(Guid schoolId, ClassParams userParams);
 
         Task<bool> IsSudentEnrolled(Guid studentId, Guid calendarYearId, Guid classId);
 
         Task<PagedList<Enrollment>> GetEnrollments(Guid classId, Guid calendarYearId, UserParams userParams);
         Task<Enrollment> GetEnrollment(Guid id);
 
-        Task<bool> IsScheduleExist(Guid calendarYearId, Guid classSubjectId, Guid teacherId, DayOfWeek dayOfWeek, ScheduleTime scheduleTime);
+        Task<bool> IsScheduleExist(Guid calendarYearId, Guid courseId, Guid teacherId, DayOfWeek dayOfWeek, ScheduleTime scheduleTime);
         Task<bool> IsClassHasScheduleInDayAndTime(Guid calendarYearId, DayOfWeek dayOfWeek, ScheduleTime scheduleTime);
         Task<PagedList<Schedule>> GetSchedules(UserParams userParams);
 

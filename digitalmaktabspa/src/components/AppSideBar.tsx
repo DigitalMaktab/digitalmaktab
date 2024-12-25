@@ -139,12 +139,12 @@ const AppSideBar: React.FC<AppSideBarProps> = ({ isOpen }) => {
                 link: "/class-editor/new",
               },
               {
-                label: t("sidebar.general.menues.classSubjects.list"),
-                link: "/class-subject-list",
+                label: t("sidebar.general.menues.courses.list"),
+                link: "/course-list",
               },
               {
-                label: t("sidebar.general.menues.classSubjects.add"),
-                link: "/class-subject-editor/new",
+                label: t("sidebar.general.menues.courses.add"),
+                link: "/course-editor/new",
               },
             ],
             roles: [UserRole.ADMIN],

@@ -190,10 +190,10 @@
                     "list": "Class List",
                     "add": "Add Class"
                 },
-                "classSubjects": {
-                    "label": "Class Subjects",
-                    "list": "Class Subject List",
-                    "add": "Add Class Subject"
+                "courses": {
+                    "label": "Courses",
+                    "list": "Course List",
+                    "add": "Add Course Subject"
                 },
                 "timeTable": {
                     "label": "Time Table",
@@ -761,16 +761,16 @@
             "label": "Subject List"
         }
     },
-    "classSubject": {
-        "label": "Class Subject",
+    "course": {
+        "label": "Course",
         "total": {
-            "label": "Total Class Subjects"
+            "label": "Total Courses"
         },
         "add": {
-            "label": "Add Class Subject"
+            "label": "Add Course"
         },
         "list": {
-            "label": "Class Subject List"
+            "label": "Course List"
         },
         "subjectAndClass": {
             "label": "Class and Subject"

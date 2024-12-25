@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace digitalmaktabapi.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class initialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -184,6 +184,7 @@ namespace digitalmaktabapi.Migrations
                     Logo = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Code = table.Column<int>(type: "int", nullable: false),
+                    SchoolType = table.Column<int>(type: "int", nullable: false),
                     UserRole = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
                     CreationUserId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci"),
                     CreationDate = table.Column<DateTime>(type: "datetime(6)", nullable: true, defaultValueSql: "CURRENT_TIMESTAMP"),
@@ -378,7 +379,7 @@ namespace digitalmaktabapi.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "ClassSubject",
+                name: "Course",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
@@ -392,15 +393,15 @@ namespace digitalmaktabapi.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ClassSubject", x => x.Id);
+                    table.PrimaryKey("PK_Course", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ClassSubject_Class_ClassId",
+                        name: "FK_Course_Class_ClassId",
                         column: x => x.ClassId,
                         principalTable: "Class",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_ClassSubject_Subject_SubjectId",
+                        name: "FK_Course_Subject_SubjectId",
                         column: x => x.SubjectId,
                         principalTable: "Subject",
                         principalColumn: "Id",
@@ -454,7 +455,7 @@ namespace digitalmaktabapi.Migrations
                     SecondaryAddress_PostalCode = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     SecondaryAddress_AddressType = table.Column<int>(type: "int", nullable: true),
-                    NationalId_ElectoricNationIdNumber = table.Column<string>(type: "longtext", nullable: true)
+                    NationalId_ElectronicNationalIdNumber = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     NationalId_NationalIdNumber = table.Column<int>(type: "int", nullable: true),
                     NationalId_Volume = table.Column<int>(type: "int", nullable: true),
@@ -607,7 +608,7 @@ namespace digitalmaktabapi.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    ClassSubjectId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    CourseId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     TeacherId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     DayOfWeek = table.Column<int>(type: "int", nullable: false),
                     ScheduleTime = table.Column<int>(type: "int", nullable: false),
@@ -622,9 +623,9 @@ namespace digitalmaktabapi.Migrations
                 {
                     table.PrimaryKey("PK_Schedule", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Schedule_ClassSubject_ClassSubjectId",
-                        column: x => x.ClassSubjectId,
-                        principalTable: "ClassSubject",
+                        name: "FK_Schedule_Course_CourseId",
+                        column: x => x.CourseId,
+                        principalTable: "Course",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
@@ -687,7 +688,7 @@ namespace digitalmaktabapi.Migrations
                 {
                     Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     EnrollmentId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    ClassSubjectId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    CourseId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     ExamType = table.Column<int>(type: "int", nullable: false),
                     Score = table.Column<decimal>(type: "decimal(65,30)", nullable: false),
                     CreationUserId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci"),
@@ -700,9 +701,9 @@ namespace digitalmaktabapi.Migrations
                 {
                     table.PrimaryKey("PK_Grade", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Grade_ClassSubject_ClassSubjectId",
-                        column: x => x.ClassSubjectId,
-                        principalTable: "ClassSubject",
+                        name: "FK_Grade_Course_CourseId",
+                        column: x => x.CourseId,
+                        principalTable: "Course",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
@@ -771,13 +772,13 @@ namespace digitalmaktabapi.Migrations
                 column: "TeacherId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ClassSubject_ClassId",
-                table: "ClassSubject",
+                name: "IX_Course_ClassId",
+                table: "Course",
                 column: "ClassId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ClassSubject_SubjectId",
-                table: "ClassSubject",
+                name: "IX_Course_SubjectId",
+                table: "Course",
                 column: "SubjectId");
 
             migrationBuilder.CreateIndex(
@@ -811,9 +812,9 @@ namespace digitalmaktabapi.Migrations
                 column: "StudentId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Grade_ClassSubjectId",
+                name: "IX_Grade_CourseId",
                 table: "Grade",
-                column: "ClassSubjectId");
+                column: "CourseId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Grade_EnrollmentId",
@@ -821,9 +822,9 @@ namespace digitalmaktabapi.Migrations
                 column: "EnrollmentId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Schedule_ClassSubjectId",
+                name: "IX_Schedule_CourseId",
                 table: "Schedule",
-                column: "ClassSubjectId");
+                column: "CourseId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Schedule_StudentId",
@@ -916,7 +917,7 @@ namespace digitalmaktabapi.Migrations
                 name: "Enrollment");
 
             migrationBuilder.DropTable(
-                name: "ClassSubject");
+                name: "Course");
 
             migrationBuilder.DropTable(
                 name: "Student");

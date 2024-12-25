@@ -9,8 +9,8 @@ namespace digitalmaktabapi.Models
     [Table("Schedule")]
     public class Schedule : Base
     {
-        public required Guid ClassSubjectId { get; set; }
-        public required ClassSubject ClassSubject { get; set; }
+        public required Guid CourseId { get; set; }
+        public required Course Course { get; set; }
         public required Guid TeacherId { get; set; }
         public required Teacher Teacher { get; set; }
         public required DayOfWeek DayOfWeek { get; set; }

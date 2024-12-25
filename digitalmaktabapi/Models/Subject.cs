@@ -12,6 +12,6 @@ namespace digitalmaktabapi.Models
         public required string SubjectName { get; set; }
         public required Guid BookId { get; set; }
         public required Book Book { get; set; }
-        public required ICollection<ClassSubject> ClassSubjects { get; set; } = [];
+        public required ICollection<Course> Courses { get; set; } = [];
     }
 }

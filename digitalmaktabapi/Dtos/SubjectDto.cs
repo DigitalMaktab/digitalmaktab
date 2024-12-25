@@ -10,6 +10,6 @@ namespace digitalmaktabapi.Dtos
         public required string SubjectName { get; set; }
         public required Guid BookId { get; set; }
         public required BookDto Book { get; set; }
-        public required ICollection<ClassSubjectDto> ClassSubjects { get; set; } = [];
+        public required ICollection<CourseDto> Courses { get; set; } = [];
     }
 }

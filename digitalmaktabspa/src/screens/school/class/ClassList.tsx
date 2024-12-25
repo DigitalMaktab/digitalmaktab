@@ -8,7 +8,7 @@ import AppCard from "../../../components/card/AppCard";
 import AppTable from "../../../components/table/AppTable";
 import { Enrollment } from "../../../models/Enrollment";
 import { useAppLocalizer } from "../../../hooks/useAppLocalizer";
-import { ClassSubject } from "../../../models/ClassSubject";
+import { Course } from "../../../models/Course";
 
 const ClassList = () => {
   const { t, formatNumber } = useAppLocalizer();
@@ -48,10 +48,9 @@ const ClassList = () => {
         render: (enrollments: Enrollment[]) => formatNumber(enrollments.length),
       },
       {
-        header: "classSubject.total.label",
-        accessor: "classSubjects",
-        render: (classSubjects: ClassSubject[]) =>
-          formatNumber(classSubjects.length),
+        header: "course.total.label",
+        accessor: "courses",
+        render: (courses: Course[]) => formatNumber(courses.length),
       },
     ],
     [formatNumber]

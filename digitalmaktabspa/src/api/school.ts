@@ -1,6 +1,6 @@
 import { Branch } from "../models/Branch";
 import { Class } from "../models/Class";
-import { ClassSubject } from "../models/ClassSubject";
+import { Course } from "../models/Course";
 import { Schedule } from "../models/Schedule";
 import { Student } from "../models/Student";
 import { Teacher } from "../models/Teacher";
@@ -80,15 +80,15 @@ const registerStudent = (student: Student) =>
 const deleteTeacher = (id: string) =>
   apiClient.delete(`/school/deleteTeacher/${id}`);
 
-const addClassSubject = (classSubject: ClassSubject) =>
-  apiClient.post("/school/addClassSubject", classSubject);
+const addCourse = (course: Course) =>
+  apiClient.post("/school/addCourse", course);
 
-const classSubjectList = (
+const courseList = (
   paginationParams?: PaginationParams,
   filters?: FilterParams
 ) => {
   const params = buildParams(paginationParams, filters);
-  return apiClient.get("/school/classSubjects", { params });
+  return apiClient.get("/school/courses", { params });
 };
 
 const addSchedule = (schedule: Schedule) =>
@@ -107,8 +107,8 @@ const school = {
   registerStudent,
   addClass,
   deleteTeacher,
-  addClassSubject,
-  classSubjectList,
+  addCourse,
+  courseList,
   addSchedule,
 };
 

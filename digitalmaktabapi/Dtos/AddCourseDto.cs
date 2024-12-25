@@ -6,16 +6,16 @@ using FluentValidation;
 
 namespace digitalmaktabapi.Dtos
 {
-    public class AddClassSubjectDto
+    public class AddCourseDto
     {
         public required Guid ClassId { get; set; }
         public required Guid SubjectId { get; set; }
     }
 
 
-    public class AddClassSubjectDtoValidator : AbstractValidator<AddClassSubjectDto>
+    public class AddCourseDtoValidator : AbstractValidator<AddCourseDto>
     {
-        public AddClassSubjectDtoValidator()
+        public AddCourseDtoValidator()
         {
             RuleFor(a => a.ClassId)
                 .NotNull()

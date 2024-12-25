@@ -288,27 +288,27 @@ namespace digitalmaktabapi.Controllers
         }
 
 
-        [HttpPost("addClassSubject")]
-        public async Task<IActionResult> AddClassSubject(AddClassSubjectDto classSubjectDto)
+        [HttpPost("addCourse")]
+        public async Task<IActionResult> AddCourse(AddCourseDto courseDto)
         {
 
-            var classSubjectToCreate = this.mapper!.Map<ClassSubject>(classSubjectDto);
-            classSubjectToCreate.CreationUserId = this.Id;
-            classSubjectToCreate.UpdateUserId = this.Id;
+            var coruseToCreate = this.mapper!.Map<Course>(courseDto);
+            coruseToCreate.CreationUserId = this.Id;
+            coruseToCreate.UpdateUserId = this.Id;
 
-            this.schoolRepository.Add(classSubjectToCreate);
+            this.schoolRepository.Add(coruseToCreate);
             await this.schoolRepository.SaveAll();
             return NoContent();
         }
 
-        [HttpGet("classSubjects")]
-        public async Task<IActionResult> GetClassSubjects([FromQuery] ClassParams classParams)
+        [HttpGet("courses")]
+        public async Task<IActionResult> GetCourses([FromQuery] ClassParams classParams)
         {
             classParams.CalendarYearId = this.CalendarYearId;
-            var classSubjects = await this.schoolRepository.GetClassSubjects(this.SchoolId, classParams);
-            var classSubjectsToReturn = this.mapper!.Map<ICollection<ClassSubjectDto>>(classSubjects);
-            Response.AddPagintaion(classSubjects.CurrentPage, classSubjects.PageSize, classSubjects.TotalCount, classSubjects.TotalPages);
-            return Ok(classSubjectsToReturn);
+            var courses = await this.schoolRepository.GetCourses(this.SchoolId, classParams);
+            var coursesToReturn = this.mapper!.Map<ICollection<CourseDto>>(courses);
+            Response.AddPagintaion(courses.CurrentPage, courses.PageSize, courses.TotalCount, courses.TotalPages);
+            return Ok(coursesToReturn);
         }
 
         [HttpPost("enroll")]
@@ -372,7 +372,7 @@ namespace digitalmaktabapi.Controllers
         [HttpPost("addSchedule")]
         public async Task<IActionResult> AddSchedule(AddScheduleDto scheduleDto)
         {
-            if (await this.schoolRepository.IsScheduleExist(this.CalendarYearId, scheduleDto.ClassSubjectId, scheduleDto.TeacherId, scheduleDto.DayOfWeek, scheduleDto.ScheduleTime))
+            if (await this.schoolRepository.IsScheduleExist(this.CalendarYearId, scheduleDto.CourseId, scheduleDto.TeacherId, scheduleDto.DayOfWeek, scheduleDto.ScheduleTime))
             {
                 return BadRequest(this.localizer!["SchedulExist"].Value);
             }
@@ -435,7 +435,7 @@ namespace digitalmaktabapi.Controllers
         // Helper method to safely get the subject name with null checks
         private static string GetSubjectName(ScheduleDto schedule)
         {
-            return schedule?.ClassSubject?.Subject?.SubjectName ?? string.Empty;
+            return schedule?.Course?.Subject?.SubjectName ?? string.Empty;
         }
 
 

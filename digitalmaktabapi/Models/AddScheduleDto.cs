@@ -9,7 +9,7 @@ namespace digitalmaktabapi.Models
 {
     public class AddScheduleDto
     {
-        public required Guid ClassSubjectId { get; set; }
+        public required Guid CourseId { get; set; }
         public required Guid TeacherId { get; set; }
         public required DayOfWeek DayOfWeek { get; set; }
         public required ScheduleTime ScheduleTime { get; set; }
@@ -19,7 +19,7 @@ namespace digitalmaktabapi.Models
     {
         public AddScheduleDtoValidator()
         {
-            RuleFor(a => a.ClassSubjectId)
+            RuleFor(a => a.CourseId)
                 .NotNull()
                 .NotEmpty()
                 .Must(a => a != Guid.Empty);

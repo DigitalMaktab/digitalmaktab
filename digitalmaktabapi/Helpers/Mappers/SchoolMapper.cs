@@ -28,7 +28,7 @@ namespace digitalmaktabapi.Helpers.Mappers
             CreateMap<AddTeacherDto, Teacher>();
             CreateMap<AddClassDto, Class>();
             CreateMap<AddStudentDto, Student>();
-            CreateMap<AddClassSubjectDto, ClassSubject>();
+            CreateMap<AddCourseDto, Course>();
             CreateMap<AddEnrollmentDto, Enrollment>();
             CreateMap<AddScheduleDto, Schedule>();
 
@@ -45,8 +45,8 @@ namespace digitalmaktabapi.Helpers.Mappers
                 (typeof(CalendarYear), typeof(CalendarYearDto)),
                 (typeof(Branch), typeof(BranchDto)),
                 (typeof(Class), typeof(ClassDto)),
-                (typeof(ClassSubject), typeof(ClassSubjectDto)),
-                (typeof(ClassSubject), typeof(ClassSubjectForClassDto)),
+                (typeof(Course), typeof(CourseDto)),
+                (typeof(Course), typeof(CourseForClassDto)),
                 (typeof(Enrollment), typeof(EnrollmentDto)),
                 (typeof(Schedule), typeof(ScheduleDto))
             );

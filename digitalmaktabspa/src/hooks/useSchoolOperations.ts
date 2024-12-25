@@ -9,7 +9,7 @@ import { Teacher } from "../models/Teacher";
 import { Student } from "../models/Student";
 import { SchoolDashboardData } from "../models/schoolDashboard/SchoolDashboardData";
 import { ScheduleData } from "../models/ScheduleData";
-import { ClassSubject } from "../models/ClassSubject";
+import { Course } from "../models/Course";
 import { Schedule } from "../models/Schedule";
 
 const useSchoolOperations = () => {
@@ -25,7 +25,7 @@ const useSchoolOperations = () => {
     | Student[]
     | SchoolDashboardData
     | ScheduleData[]
-    | ClassSubject[]
+    | Course[]
   >();
 
   const [totalPages, setTotalPages] = useState(1);
@@ -125,15 +125,14 @@ const useSchoolOperations = () => {
     [executeSchoolApi]
   );
 
-  const addClassSubject = useCallback(
-    (branch: ClassSubject) =>
-      executeSchoolApi(() => school.addClassSubject(branch)),
+  const addCourse = useCallback(
+    (course: Course) => executeSchoolApi(() => school.addCourse(course)),
     [executeSchoolApi]
   );
 
-  const classSubjectList = useCallback(
+  const courseList = useCallback(
     (page: number, pageSize: number, filters: any) =>
-      fetchPaginatedData(school.classSubjectList, page, pageSize, filters),
+      fetchPaginatedData(school.courseList, page, pageSize, filters),
     [fetchPaginatedData]
   );
 
@@ -160,8 +159,8 @@ const useSchoolOperations = () => {
       registerStudent,
       addClass,
       deleteTeacher,
-      addClassSubject,
-      classSubjectList,
+      addCourse,
+      courseList,
       addSchedule,
     }),
     [
@@ -180,8 +179,8 @@ const useSchoolOperations = () => {
       registerStudent,
       addClass,
       deleteTeacher,
-      addClassSubject,
-      classSubjectList,
+      addCourse,
+      courseList,
       addSchedule,
     ]
   );

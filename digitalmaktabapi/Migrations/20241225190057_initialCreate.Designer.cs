@@ -12,8 +12,8 @@ using digitalmaktabapi.Data;
 namespace digitalmaktabapi.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20241222231443_SchoolTypeAdded")]
-    partial class SchoolTypeAdded
+    [Migration("20241225190057_initialCreate")]
+    partial class initialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -300,46 +300,6 @@ namespace digitalmaktabapi.Migrations
                     b.ToTable("Class");
                 });
 
-            modelBuilder.Entity("digitalmaktabapi.Models.ClassSubject", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
-
-                    b.Property<Guid>("ClassId")
-                        .HasColumnType("char(36)");
-
-                    b.Property<DateTime?>("CreationDate")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime(6)")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
-
-                    b.Property<Guid?>("CreationUserId")
-                        .HasColumnType("char(36)");
-
-                    b.Property<bool>("Status")
-                        .HasColumnType("tinyint(1)");
-
-                    b.Property<Guid>("SubjectId")
-                        .HasColumnType("char(36)");
-
-                    b.Property<DateTime?>("UpdateDate")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime(6)")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
-
-                    b.Property<Guid?>("UpdateUserId")
-                        .HasColumnType("char(36)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ClassId");
-
-                    b.HasIndex("SubjectId");
-
-                    b.ToTable("ClassSubject");
-                });
-
             modelBuilder.Entity("digitalmaktabapi.Models.Country", b =>
                 {
                     b.Property<Guid>("Id")
@@ -380,6 +340,46 @@ namespace digitalmaktabapi.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Country");
+                });
+
+            modelBuilder.Entity("digitalmaktabapi.Models.Course", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("ClassId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime?>("CreationDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime(6)")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<Guid?>("CreationUserId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<bool>("Status")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<Guid>("SubjectId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime?>("UpdateDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime(6)")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<Guid?>("UpdateUserId")
+                        .HasColumnType("char(36)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClassId");
+
+                    b.HasIndex("SubjectId");
+
+                    b.ToTable("Course");
                 });
 
             modelBuilder.Entity("digitalmaktabapi.Models.District", b =>
@@ -518,7 +518,7 @@ namespace digitalmaktabapi.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
-                    b.Property<Guid>("ClassSubjectId")
+                    b.Property<Guid>("CourseId")
                         .HasColumnType("char(36)");
 
                     b.Property<DateTime?>("CreationDate")
@@ -551,7 +551,7 @@ namespace digitalmaktabapi.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ClassSubjectId");
+                    b.HasIndex("CourseId");
 
                     b.HasIndex("EnrollmentId");
 
@@ -564,7 +564,7 @@ namespace digitalmaktabapi.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
-                    b.Property<Guid>("ClassSubjectId")
+                    b.Property<Guid>("CourseId")
                         .HasColumnType("char(36)");
 
                     b.Property<DateTime?>("CreationDate")
@@ -600,7 +600,7 @@ namespace digitalmaktabapi.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ClassSubjectId");
+                    b.HasIndex("CourseId");
 
                     b.HasIndex("StudentId");
 
@@ -1056,16 +1056,16 @@ namespace digitalmaktabapi.Migrations
                     b.Navigation("Teacher");
                 });
 
-            modelBuilder.Entity("digitalmaktabapi.Models.ClassSubject", b =>
+            modelBuilder.Entity("digitalmaktabapi.Models.Course", b =>
                 {
                     b.HasOne("digitalmaktabapi.Models.Class", "Class")
-                        .WithMany("ClassSubjects")
+                        .WithMany("Courses")
                         .HasForeignKey("ClassId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("digitalmaktabapi.Models.Subject", "Subject")
-                        .WithMany("ClassSubjects")
+                        .WithMany("Courses")
                         .HasForeignKey("SubjectId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -1134,9 +1134,9 @@ namespace digitalmaktabapi.Migrations
 
             modelBuilder.Entity("digitalmaktabapi.Models.Grade", b =>
                 {
-                    b.HasOne("digitalmaktabapi.Models.ClassSubject", "ClassSubject")
+                    b.HasOne("digitalmaktabapi.Models.Course", "Course")
                         .WithMany()
-                        .HasForeignKey("ClassSubjectId")
+                        .HasForeignKey("CourseId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
@@ -1146,16 +1146,16 @@ namespace digitalmaktabapi.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("ClassSubject");
+                    b.Navigation("Course");
 
                     b.Navigation("Enrollment");
                 });
 
             modelBuilder.Entity("digitalmaktabapi.Models.Schedule", b =>
                 {
-                    b.HasOne("digitalmaktabapi.Models.ClassSubject", "ClassSubject")
+                    b.HasOne("digitalmaktabapi.Models.Course", "Course")
                         .WithMany()
-                        .HasForeignKey("ClassSubjectId")
+                        .HasForeignKey("CourseId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
@@ -1170,7 +1170,7 @@ namespace digitalmaktabapi.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("ClassSubject");
+                    b.Navigation("Course");
 
                     b.Navigation("Teacher");
                 });
@@ -1522,7 +1522,7 @@ namespace digitalmaktabapi.Migrations
                 {
                     b.Navigation("Attendances");
 
-                    b.Navigation("ClassSubjects");
+                    b.Navigation("Courses");
 
                     b.Navigation("Enrollments");
                 });
@@ -1555,7 +1555,7 @@ namespace digitalmaktabapi.Migrations
                     b.Navigation("Book")
                         .IsRequired();
 
-                    b.Navigation("ClassSubjects");
+                    b.Navigation("Courses");
                 });
 
             modelBuilder.Entity("digitalmaktabapi.Models.Teacher", b =>

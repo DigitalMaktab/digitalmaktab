@@ -54,7 +54,7 @@ namespace digitalmaktabapi.Data
             {
                 entities = this.context.Books
                 .Where(
-                    a => a.Subject.ClassSubjects
+                    a => a.Subject.Courses
                     .Any(a => a.ClassId == userParams.ClassId));
             }
 

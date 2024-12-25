@@ -17,7 +17,7 @@ namespace digitalmaktabapi.Data
 
         Task<PagedList<Attendance>> GetAttendances(UserParams userParams);
 
-        Task<Grade> GetGrade(Guid enrollmentId, Guid classSubjectId, ExamType examType);
+        Task<Grade> GetGrade(Guid enrollmentId, Guid courseId, ExamType examType);
 
         Task<PagedList<Grade>> GetGrades(UserParams userParams);
     }

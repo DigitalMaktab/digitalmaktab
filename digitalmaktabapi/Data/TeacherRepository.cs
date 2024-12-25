@@ -131,11 +131,11 @@ namespace digitalmaktabapi.Data
             return await PagedList<Attendance>.CreateAsync(attendances, userParams.PageNumber, userParams.PageSize);
         }
 
-        public async Task<Grade> GetGrade(Guid enrollmentId, Guid classSubjectId, ExamType examType)
+        public async Task<Grade> GetGrade(Guid enrollmentId, Guid courseId, ExamType examType)
         {
             return await this.context.Grades.FirstOrDefaultAsync(
                 a => a.EnrollmentId == enrollmentId &&
-                a.ClassSubjectId == classSubjectId &&
+                a.CourseId == courseId &&
                 a.ExamType == examType
             );
         }
@@ -151,7 +151,7 @@ namespace digitalmaktabapi.Data
 
             var grades = this.context.Grades
                 .Include(a => a.Enrollment).ThenInclude(a => a.Student)
-                .Include(a => a.ClassSubject).ThenInclude(a => a.Class)
+                .Include(a => a.Course).ThenInclude(a => a.Class)
                 .Where(a => a.Enrollment.CalendarYearId == userParams.CalendarYearId)
                 .AsQueryable();
 

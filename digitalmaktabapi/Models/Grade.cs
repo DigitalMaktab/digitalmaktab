@@ -11,8 +11,8 @@ namespace digitalmaktabapi.Models
     {
         public required Guid EnrollmentId { get; set; }
         public required Enrollment Enrollment { get; set; }
-        public required Guid ClassSubjectId { get; set; }
-        public required ClassSubject ClassSubject { get; set; }
+        public required Guid CourseId { get; set; }
+        public required Course Course { get; set; }
         public required ExamType ExamType { get; set; }
         public required decimal Score { get; set; }
     }

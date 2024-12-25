@@ -20,7 +20,7 @@ namespace digitalmaktabapi.Models
         public required Shift Shift { get; set; }
         public required Guid TeacherId { get; set; }
         public required Teacher Teacher { get; set; }
-        public required ICollection<ClassSubject> ClassSubjects { get; set; } = [];
+        public required ICollection<Course> Courses { get; set; } = [];
         public required ICollection<Attendance> Attendances { get; set; } = [];
         public required ICollection<Enrollment> Enrollments { get; set; } = [];
     }

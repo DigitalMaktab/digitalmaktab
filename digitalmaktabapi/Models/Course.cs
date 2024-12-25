@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace digitalmaktabapi.Models
 {
-    [Table("ClassSubject")]
-    public class ClassSubject : Base
+    [Table("Course")]
+    public class Course : Base
     {
         public required Guid ClassId { get; set; }
         public required Class Class { get; set; }

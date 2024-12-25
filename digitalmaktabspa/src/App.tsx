@@ -37,13 +37,13 @@ import CalendarYearList from "./screens/root/calendarYear/CalendarYearList";
 import CalendarYearEditor from "./screens/root/calendarYear/CalendarYearEditor";
 import SubjectList from "./screens/root/subject/SubjectList";
 import SubjectEditor from "./screens/root/subject/SubjectEditor";
-import ClassSubjectEditor from "./screens/school/class/subject/ClassSubjectEditor";
-import ClassSubjectList from "./screens/school/class/subject/ClassSubjectList";
 import ScheduleEditor from "./screens/school/schedule/ScheduleEditor";
 import Settings from "./screens/main/Settings";
 import Defaults from "./screens/main/Defaults";
 import Faq from "./screens/main/Faq";
 import PrivacyPolicy from "./screens/main/PrivacyPolicy";
+import CourseEditor from "./screens/school/class/subject/CourseEditor";
+import CourseList from "./screens/school/class/subject/CourseList";
 
 // // Set up worker
 // import { pdfjs } from "react-pdf";
@@ -93,18 +93,9 @@ function App() {
                 <Route path="class-editor/new" element={<ClassEditor />} />
                 <Route path="class-editor/:id" element={<ClassEditor />} />
 
-                <Route
-                  path="class-subject-list"
-                  element={<ClassSubjectList />}
-                />
-                <Route
-                  path="class-subject-editor/new"
-                  element={<ClassSubjectEditor />}
-                />
-                <Route
-                  path="class-subject-editor/:id"
-                  element={<ClassSubjectEditor />}
-                />
+                <Route path="course-list" element={<CourseList />} />
+                <Route path="course-editor/new" element={<CourseEditor />} />
+                <Route path="course-editor/:id" element={<CourseEditor />} />
 
                 <Route path="teacher-list" element={<TeacherList />} />
                 <Route path="teacher-editor/new" element={<TeacherEditor />} />

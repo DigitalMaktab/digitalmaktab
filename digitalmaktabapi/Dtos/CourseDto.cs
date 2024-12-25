@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace digitalmaktabapi.Dtos
 {
-    public class ClassSubjectDto : BaseDto
+    public class CourseDto : BaseDto
     {
         public required Guid ClassId { get; set; }
         public required ClassDto Class { get; set; }

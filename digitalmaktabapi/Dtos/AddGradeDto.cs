@@ -25,7 +25,7 @@ namespace digitalmaktabapi.Dtos
     public class GradeAddDto
     {
         public required Guid EnrollmentId { get; set; }
-        public required Guid ClassSubjectId { get; set; }
+        public required Guid CourseId { get; set; }
         public required ExamType ExamType { get; set; }
         public required decimal Score { get; set; }
     }
@@ -39,7 +39,7 @@ namespace digitalmaktabapi.Dtos
                 .NotEmpty()
                 .Must(a => a != Guid.Empty);
 
-            RuleFor(a => a.ClassSubjectId)
+            RuleFor(a => a.CourseId)
                 .NotNull()
                 .NotEmpty()
                 .Must(a => a != Guid.Empty);

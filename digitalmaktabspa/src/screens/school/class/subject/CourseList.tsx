@@ -1,18 +1,18 @@
 import React, { useMemo } from "react";
 import { useAppLocalizer } from "../../../../hooks/useAppLocalizer";
 import useSchoolOperations from "../../../../hooks/useSchoolOperations";
-import { ClassSubject } from "../../../../models/ClassSubject";
+import { Course } from "../../../../models/Course";
 import { Column } from "../../../../components/table/properties/TableProps";
 import { Class } from "../../../../models/Class";
 import AppCard from "../../../../components/card/AppCard";
 import AppTable from "../../../../components/table/AppTable";
 import { Subject } from "../../../../models/Subject";
 
-const ClassSubjectList = () => {
+const CourseList = () => {
   const { t } = useAppLocalizer();
-  const { classSubjectList, data, totalPages } = useSchoolOperations();
+  const { courseList, data, totalPages } = useSchoolOperations();
 
-  const columns: Column<ClassSubject>[] = useMemo(
+  const columns: Column<Course>[] = useMemo(
     () => [
       {
         header: "class.className.label",
@@ -30,17 +30,17 @@ const ClassSubjectList = () => {
   );
 
   return (
-    <AppCard title={t("classSubject.list.label")}>
+    <AppCard title={t("course.list.label")}>
       <AppTable
         rowLink="/class-subject-editor/{id}"
-        data={data as ClassSubject[]}
+        data={data as Course[]}
         columns={columns}
         totalPages={totalPages}
-        fetchPageData={classSubjectList}
-        reportTitle={t("classSubject.list.label")}
+        fetchPageData={courseList}
+        reportTitle={t("course.list.label")}
         actions={[
           {
-            label: t("classSubject.add.label"),
+            label: t("course.add.label"),
             route: "/class-subject-editor/new",
             icon: "plus",
           },
@@ -50,4 +50,4 @@ const ClassSubjectList = () => {
   );
 };
 
-export default ClassSubjectList;
+export default CourseList;
