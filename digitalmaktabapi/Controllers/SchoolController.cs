@@ -292,9 +292,16 @@ namespace digitalmaktabapi.Controllers
         public async Task<IActionResult> AddCourse(AddCourseDto courseDto)
         {
 
+
+            if (await this.schoolRepository.IsCourseExist(courseDto.ClassId, courseDto.SubjectId, this.CalendarYearId))
+            {
+                return BadRequest(this.localizer!["CourseExists"].Value);
+            }
+
             var coruseToCreate = this.mapper!.Map<Course>(courseDto);
             coruseToCreate.CreationUserId = this.Id;
             coruseToCreate.UpdateUserId = this.Id;
+
 
             this.schoolRepository.Add(coruseToCreate);
             await this.schoolRepository.SaveAll();

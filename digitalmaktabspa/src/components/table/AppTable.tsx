@@ -65,7 +65,7 @@ const AppTable = <T extends Base>({
   const isRowSelected = (row: T) =>
     selectedRows.some((selected) => selected.id === row.id);
 
-  const safeData = data || [];
+  const safeData = React.useMemo(() => data || [], [data]);
 
   const [tableState, setTableState] = useState({
     currentPage: 1,

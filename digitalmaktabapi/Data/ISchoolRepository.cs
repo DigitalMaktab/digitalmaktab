@@ -41,5 +41,7 @@ namespace digitalmaktabapi.Data
         Task<GenderChartDto> GetGenderChart(Guid id);
         Task<GenderChartDto> GetTeachersGenderChart(Guid id);
         Task<ICollection<ClassEnrollmentChartDomain>> GetClassEnrollmentChart(Guid id);
+
+        Task<bool> IsCourseExist(Guid classId, Guid subjectId, Guid calendarYearId);
     }
 }

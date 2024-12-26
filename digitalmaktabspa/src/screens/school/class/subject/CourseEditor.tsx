@@ -9,6 +9,7 @@ import AppBaseEditor from "../../../../components/AppBaseEditor";
 import AppFormSelect from "../../../../components/form/AppFormSelect";
 import AppSubjectSelect from "../../../../components/select/AppSubjectSelect";
 import AppClassSelect from "../../../../components/select/AppClassSelect";
+import AppTeacherSelect from "../../../../components/select/AppTeacherSelect";
 
 const CourseEditor: React.FC<EditorProps> = ({ initialData }) => {
   const { id } = useParams<{ id: string }>();
@@ -20,11 +21,13 @@ const CourseEditor: React.FC<EditorProps> = ({ initialData }) => {
   const initialFormData = {
     classId: "",
     subjectId: "",
+    teacherId: "",
   } as Course;
 
   const validationSchemaConfig = {
     classId: { label: t("subject.subjectName.label") },
     subjectId: { label: t("class.className.label") },
+    teacherId: { label: t("teacher.firstName.label") },
   } as Record<keyof Course, { label: string }>;
 
   const submitData = useCallback(
@@ -39,7 +42,7 @@ const CourseEditor: React.FC<EditorProps> = ({ initialData }) => {
       result = await addCourse(course);
 
       if (result.status === ResponseResult.SUCCESS) {
-        navigate("/class-subject-list");
+        navigate("/course-list");
       }
     },
     [id, navigate, addCourse]
@@ -59,7 +62,7 @@ const CourseEditor: React.FC<EditorProps> = ({ initialData }) => {
     >
       {(props) => (
         <div className="row">
-          <div className="col-md-6">
+          <div className="col-md-4">
             <AppFormSelect
               required={true}
               name="classId"
@@ -73,7 +76,7 @@ const CourseEditor: React.FC<EditorProps> = ({ initialData }) => {
               />
             </AppFormSelect>
           </div>
-          <div className="col-md-6">
+          <div className="col-md-4">
             <AppFormSelect
               required={true}
               name="subjectId"
@@ -83,6 +86,20 @@ const CourseEditor: React.FC<EditorProps> = ({ initialData }) => {
               <AppSubjectSelect
                 name="subjectId"
                 value={id ? props.formData!.subjectId.toString() : ""}
+                onChange={() => {}}
+              />
+            </AppFormSelect>
+          </div>
+          <div className="col-md-4">
+            <AppFormSelect
+              required={true}
+              name="teacherId"
+              label=""
+              value={id ? props.formData!.subjectId.toString() : ""}
+            >
+              <AppTeacherSelect
+                name="teacherId"
+                value={id ? props.formData!.teacherId.toString() : ""}
                 onChange={() => {}}
               />
             </AppFormSelect>

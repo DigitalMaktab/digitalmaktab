@@ -40,6 +40,18 @@ namespace digitalmaktabapi.Controllers
             return Ok(teacherToReturn);
         }
 
+
+        [HttpGet("courses")]
+        public async Task<IActionResult> GetCourses([FromQuery] ClassParams classParams)
+        {
+            classParams.CalendarYearId = this.CalendarYearId;
+            classParams.TeacherId = this.Id;
+            var courses = await this.schoolRepository.GetCourses(this.SchoolId, classParams);
+            var coursesToReturn = this.mapper!.Map<ICollection<CourseDto>>(courses);
+            Response.AddPagintaion(courses.CurrentPage, courses.PageSize, courses.TotalCount, courses.TotalPages);
+            return Ok(coursesToReturn);
+        }
+
         [HttpGet("schedules")]
         public async Task<IActionResult> GetSchedules([FromQuery] GeneralParams generalParams)
         {

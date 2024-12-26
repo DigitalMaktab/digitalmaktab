@@ -60,7 +60,9 @@ const StudentList = () => {
       {
         header: "student.monthlyFee.label",
         accessor: "monthlyFee",
-        hidden: user?.school?.schoolType !== SchoolType.PRIVATE,
+        hidden: user?.school
+          ? user.school.schoolType !== SchoolType.PRIVATE
+          : true,
         sortable: true,
       },
       {

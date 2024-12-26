@@ -27,6 +27,13 @@ namespace digitalmaktabapi.Data
         public DbSet<User> Users { get; set; }
         public DbSet<Branch> Branches { get; set; }
         public DbSet<Attendance> Attendances { get; set; }
+        public DbSet<Assignment> Assignments { get; set; }
+        public DbSet<LearningMaterial> LearningMaterials { get; set; }
+        public DbSet<QuestionBank> QuestionBanks { get; set; }
+        public DbSet<Quiz> Quizzes { get; set; }
+        public DbSet<QuizAttemp> QuizAttemps { get; set; }
+        public DbSet<AssignmentSubmission> AssignmentSubmissions { get; set; }
+        public DbSet<Progress> Progresses { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

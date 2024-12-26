@@ -42,3 +42,22 @@ export interface TableProps<T> {
   navigateToEditorRoles?: UserRole[]; // Specify roles for double-click
   exportRoles?: UserRole[];
 }
+
+export interface RoleSpecificTableProps<T> {
+  titleKey: string;
+  fetchData?: (
+    page: number,
+    pageSize: number,
+    filters: any
+  ) => Promise<{
+    status: ResponseResult;
+    data?: T[];
+    headers?: Record<string, any>;
+    errors?: string[];
+  }>;
+  data: T[];
+  totalPages: number;
+  addRoute: string;
+  rowLinkTemplate: string;
+  columns?: Column<T>[];
+}

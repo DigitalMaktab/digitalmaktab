@@ -160,4 +160,8 @@
         <value>&lt;div class='email-footer'&gt;&amp;copy; ۲۰۲۴ مکتب دیجیتال. کلیه حقوق محفوظ است.&lt;br&gt;اگر سوالی دارید، با ما به تماس شوید &lt;a href='mailto:support@digitalmaktab.com'&gt;تماس با ما&lt;/a&gt;.&lt;/div&gt;</value>
         <comment/>
     </data>
+    <data name="CourseExists" xml:space="preserve">
+        <value>این مضمون برای سال جاری قبلاً ثبت شده است.</value>
+        <comment>کورس قبلاً ثبت شده است.</comment>
+    </data>
 </root>

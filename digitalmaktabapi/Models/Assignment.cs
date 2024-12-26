@@ -6,15 +6,14 @@ using System.Threading.Tasks;
 
 namespace digitalmaktabapi.Models
 {
-    [Table("LearningMaterial")]
-    public class LearningMaterial : Base
+    [Table("Assignment")]
+    public class Assignment : Base
     {
         public required string Title { get; set; }
         public required string Description { get; set; }
         public string? FilePath { get; set; }
-        public required LearningMaterialType LearningMaterialType { get; set; }
-        public string? ThumbnailPath { get; set; }
-        public required string CourseId { get; set; }
+        public required Guid CourseId { get; set; }
         public required Course Course { get; set; }
+        public required DateTime DueDate { get; set; }
     }
 }

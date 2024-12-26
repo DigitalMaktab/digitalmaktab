@@ -43,7 +43,10 @@ import Defaults from "./screens/main/Defaults";
 import Faq from "./screens/main/Faq";
 import PrivacyPolicy from "./screens/main/PrivacyPolicy";
 import CourseEditor from "./screens/school/class/subject/CourseEditor";
-import CourseList from "./screens/school/class/subject/CourseList";
+import CourseList from "./screens/school/class/subject/SchoolCourseList";
+import SchoolCourseList from "./screens/school/class/subject/SchoolCourseList";
+import TeacherCourseList from "./screens/teacher/course/TeacherCourseList";
+import TeacherHome from "./screens/teacher/TeacherHome";
 
 // // Set up worker
 // import { pdfjs } from "react-pdf";
@@ -93,7 +96,7 @@ function App() {
                 <Route path="class-editor/new" element={<ClassEditor />} />
                 <Route path="class-editor/:id" element={<ClassEditor />} />
 
-                <Route path="course-list" element={<CourseList />} />
+                <Route path="course-list" element={<SchoolCourseList />} />
                 <Route path="course-editor/new" element={<CourseEditor />} />
                 <Route path="course-editor/:id" element={<CourseEditor />} />
 
@@ -122,7 +125,16 @@ function App() {
             </Route>
 
             <Route element={<AuthRoute requiredRole={UserRole.TEACHER} />}>
-              <Route path="teacher-dashboard" element={<TeacherDashboard />} />
+              <Route path="/" element={<TeacherHome />}>
+                <Route
+                  path="teacher-dashboard"
+                  element={<TeacherDashboard />}
+                />
+                <Route
+                  path="teacher-course-list"
+                  element={<TeacherCourseList />}
+                />
+              </Route>
             </Route>
 
             <Route element={<AuthRoute requiredRole={UserRole.ROOT_USER} />}>

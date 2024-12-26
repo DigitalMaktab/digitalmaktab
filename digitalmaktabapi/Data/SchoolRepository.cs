@@ -105,11 +105,17 @@ namespace digitalmaktabapi.Data
                 .Include(a => a.Class)
                 .ThenInclude(a => a.Branch)
                 .Include(a => a.Subject)
+                .Include(a => a.Teacher)
                 .Where(a => a.Class.SchoolId == schoolId).AsQueryable();
 
             if (classParams.CalendarYearId.HasValue)
             {
                 entities = entities.Where(a => a.Class.CalendarYearId == classParams.CalendarYearId);
+            }
+
+            if (classParams.TeacherId.HasValue)
+            {
+                entities = entities.Where(a => a.TeacherId == classParams.TeacherId);
             }
 
 
@@ -285,6 +291,17 @@ namespace digitalmaktabapi.Data
                 .ToListAsync();
 
             return classEnrollmentCounts;
+        }
+
+        public async Task<bool> IsCourseExist(Guid classId, Guid subjectId, Guid calendarYearId)
+        {
+            return await this.context.Courses
+                .Include(a => a.Class)
+                .AnyAsync(
+                    a => a.ClassId == classId &&
+                    a.SubjectId == subjectId &&
+                    a.Class.CalendarYearId == calendarYearId
+            );
         }
     }
 }

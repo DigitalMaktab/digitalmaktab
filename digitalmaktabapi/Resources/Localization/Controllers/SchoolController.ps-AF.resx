@@ -160,4 +160,8 @@
         <value>&lt;div class='email-footer'&gt;&amp;copy; 2024 Digital Maktab. ټول حقونه خوندي دي.&lt;br&gt;که تاسو کومې پوښتنې لرئ، مهرباني وکړئ &lt;a href='mailto:support@digitalmaktab.com'&gt;موږ سره اړیکه ونیسئ&lt;/a&gt;.&lt;/div&gt;</value>
         <comment>د بریښنالیک پای</comment>
     </data>
+    <data name="CourseExists" xml:space="preserve">
+        <value>دا مضمون د روان کال لپاره مخکې ثبت شوی دی.</value>
+        <comment>مضمون مخکې ثبت شوی دی.</comment>
+    </data>
 </root>

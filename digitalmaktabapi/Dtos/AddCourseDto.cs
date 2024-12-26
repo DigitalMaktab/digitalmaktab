@@ -10,6 +10,7 @@ namespace digitalmaktabapi.Dtos
     {
         public required Guid ClassId { get; set; }
         public required Guid SubjectId { get; set; }
+        public required Guid TeacherId { get; set; }
     }
 
 
@@ -23,6 +24,11 @@ namespace digitalmaktabapi.Dtos
                 .Must(a => a != Guid.Empty);
 
             RuleFor(a => a.SubjectId)
+                .NotNull()
+                .NotEmpty()
+                .Must(a => a != Guid.Empty);
+
+            RuleFor(a => a.TeacherId)
                 .NotNull()
                 .NotEmpty()
                 .Must(a => a != Guid.Empty);

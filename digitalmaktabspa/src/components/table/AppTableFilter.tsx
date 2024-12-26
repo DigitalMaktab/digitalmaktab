@@ -20,6 +20,7 @@ const filterComponentMapping: { [key: string]: React.FC<any> } = {
   branch: AppBranchSelect,
   classTypeValue: AppClassTypeSelect,
   shiftValue: AppShiftSelect,
+  teacher: AppTeacherSelect,
   "teacher.firstName": AppTeacherSelect,
   // "student.firstName": AppStudentSelect,
   day: AppClassSelect,
@@ -34,6 +35,7 @@ const filterAccessorMapping: { [key: string]: string } = {
   shiftValue: "shift",
   "teacher.firstName": "teacherId",
   "student.firstName": "studentId",
+  teacher: "teacherId",
   day: "classId", // Since the schedule data is flattened we do map accessor day to classId for filters
   joiningClass: "classId",
 };
