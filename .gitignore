@@ -29,7 +29,7 @@ digitalmaktabspa/yarn-error.log*
 
 # DigitalMaktab API
 
-digitalmaktabapi/appsettings*.json
+# digitalmaktabapi/appsettings*.json
 digitalmaktabapi/bin
 digitalmaktabapi/Resources/*/
 !digitalmaktabapi/Resources/Reports
