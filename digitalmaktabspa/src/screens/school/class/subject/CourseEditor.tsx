@@ -10,6 +10,15 @@ import AppFormSelect from "../../../../components/form/AppFormSelect";
 import AppSubjectSelect from "../../../../components/select/AppSubjectSelect";
 import AppClassSelect from "../../../../components/select/AppClassSelect";
 import AppTeacherSelect from "../../../../components/select/AppTeacherSelect";
+import { TabItem } from "../../../../components/tab/properties/TabProps";
+import * as SIIcons from "react-icons/si";
+import * as MDIcons from "react-icons/md";
+import * as RIIcons from "react-icons/ri";
+import AppCard from "../../../../components/card/AppCard";
+import { useFormData } from "../../../../hooks/useFormData";
+import AppTab from "../../../../components/tab/AppTab";
+import CourseMaterial from "./CourseMaterial";
+import { UserRole } from "../../../../models/UserRole";
 
 const CourseEditor: React.FC<EditorProps> = ({ initialData }) => {
   const { id } = useParams<{ id: string }>();
@@ -30,6 +39,8 @@ const CourseEditor: React.FC<EditorProps> = ({ initialData }) => {
     teacherId: { label: t("teacher.firstName.label") },
   } as Record<keyof Course, { label: string }>;
 
+  const [formData] = useFormData<Course>(initialData, initialFormData);
+
   const submitData = useCallback(
     async (course: Course) => {
       let result;
@@ -48,7 +59,7 @@ const CourseEditor: React.FC<EditorProps> = ({ initialData }) => {
     [id, navigate, addCourse]
   );
 
-  return (
+  const courseTabContent = (
     <AppBaseEditor<Course>
       initialData={initialData}
       initialFormData={initialFormData}
@@ -107,6 +118,58 @@ const CourseEditor: React.FC<EditorProps> = ({ initialData }) => {
         </div>
       )}
     </AppBaseEditor>
+  );
+
+  const assignmentsTabContent = <div>Assignments</div>;
+  const quizzesTabContent = <div>Quizzes</div>;
+  const onlineClassTabContent = <div>{t("comingSoon")}</div>;
+
+  const courseMaterialTabContent = <CourseMaterial id={id} />;
+
+  const tabData: TabItem[] = [
+    {
+      id: "course",
+      title: t("course.courseEditor.tabs.course.label"),
+      content: courseTabContent,
+      icon: <SIIcons.SiGoogleclassroom className="stroke-icon" />,
+      roles: [UserRole.ADMIN],
+    },
+    {
+      id: "courseMaterial",
+      title: t("course.courseEditor.tabs.courseMaterial.label"),
+      content: courseMaterialTabContent,
+      icon: <SIIcons.SiFuturelearn className="stroke-icon" />,
+    },
+    {
+      id: "assignments",
+      title: t("course.courseEditor.tabs.assignments.label"),
+      content: assignmentsTabContent,
+      icon: <MDIcons.MdOutlineAssignment className="stroke-icon" />,
+    },
+    {
+      id: "quizzes",
+      title: t("course.courseEditor.tabs.quizzes.label"),
+      content: quizzesTabContent,
+      icon: <MDIcons.MdOutlineQuiz className="stroke-icon" />,
+    },
+    {
+      id: "onlineClass",
+      title: t("course.courseEditor.tabs.onlineClass.label"),
+      content: onlineClassTabContent,
+      icon: <RIIcons.RiVidiconLine className="stroke-icon" />,
+    },
+  ];
+
+  return (
+    <AppCard
+      title={
+        formData?.class?.classNameValue && formData.class?.branch?.branchName
+          ? `${formData.class?.classNameValue} ${formData.class?.branch?.branchName}`
+          : t("course.courseEditor.label")
+      }
+    >
+      <AppTab tabs={tabData} defaultActiveTab="course" />
+    </AppCard>
   );
 };
 

@@ -1,15 +1,12 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { School } from "../../../models/School";
 import { getUser } from "../../../helper/helper";
 import { useAppLocalizer } from "../../../hooks/useAppLocalizer";
 import AppWelcomeCard from "../../../components/card/AppWelcomeCard";
 import AppCard from "../../../components/card/AppCard";
-import FeatherIcon from "feather-icons-react";
-import * as AIIcons from "react-icons/ai";
 import * as PIIcons from "react-icons/pi";
 import * as LiaIcons from "react-icons/lia";
 import * as SIIcons from "react-icons/si";
-import * as FAIcons from "react-icons/fa";
 import * as IoIcons from "react-icons/io";
 import useSchoolOperations from "../../../hooks/useSchoolOperations";
 import { SchoolDashboardData } from "../../../models/schoolDashboard/SchoolDashboardData";

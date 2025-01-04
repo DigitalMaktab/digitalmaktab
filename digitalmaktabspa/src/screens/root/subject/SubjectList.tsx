@@ -9,6 +9,7 @@ import { Book } from "../../../models/Book";
 import * as AIIcons from "react-icons/ai";
 import useRootOperations from "../../../hooks/useRootOperations";
 import AppLibraryPdfPreview from "../../../components/pdf/AppLibraryPdfPreview";
+import settings from "../../../config/settings";
 
 const SubjectList = () => {
   const { t } = useAppLocalizer();
@@ -78,7 +79,7 @@ const SubjectList = () => {
           isVisible={showModal}
           onClose={() => setShowModal(false)}
           title={selectedRows[0].book.bookTitle}
-          pdfUrl={`http://192.168.8.142:5000/${selectedRows[0].book?.bookPath}`}
+          pdfUrl={`${settings.url}${selectedRows[0].book?.bookPath}`}
         />
       )}
     </AppCard>

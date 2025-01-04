@@ -82,6 +82,16 @@ const useMainOperations = () => {
   const fetchSchoolTypes = (page: number, pageSize: number, filters: any) =>
     fetchPaginatedData(mainApi.schoolTypeList, page, pageSize, filters);
 
+  const learningMaterialTypeList = useCallback(
+    (page: number, pageSize: number, filters: any) =>
+      fetchPaginatedData(
+        mainApi.learningMaterialTypeList,
+        page,
+        pageSize,
+        filters
+      ),
+    [fetchPaginatedData]
+  );
   return {
     data,
     status,
@@ -104,6 +114,7 @@ const useMainOperations = () => {
     subjectList,
     fetchActiveCalendarYear,
     fetchSchoolTypes,
+    learningMaterialTypeList,
   };
 };
 

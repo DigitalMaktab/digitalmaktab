@@ -401,51 +401,9 @@ namespace digitalmaktabapi.Controllers
             var schedules = await this.schoolRepository.GetSchedules(headerParams);
             var schedulesToReturn = this.mapper!.Map<ICollection<ScheduleDto>>(schedules);
             Response.AddPagintaion(schedules.CurrentPage, schedules.PageSize, schedules.TotalCount, schedules.TotalPages);
-            var flattenedSchedules = FlattenSchedules(schedulesToReturn);
+            var flattenedSchedules = Extensions.FlattenSchedules(schedulesToReturn, this.mainLocalizer);
             return Ok(flattenedSchedules);
         }
-
-
-        [NonAction]
-        public List<FlattenedScheduleDto> FlattenSchedules(IEnumerable<ScheduleDto> schedules)
-        {
-            var flattenedSchedules = new List<FlattenedScheduleDto>();
-
-            // Get all days of the week
-            var allDaysOfWeek = Enum.GetValues(typeof(Models.DayOfWeek)).Cast<Models.DayOfWeek>();
-
-            // Group schedules by DayOfWeek
-            var groupedByDay = schedules.GroupBy(s => s.DayOfWeek).ToDictionary(g => g.Key, g => g.ToList());
-
-            foreach (var day in allDaysOfWeek)
-            {
-                // Create a new FlattenedScheduleDto for the current day with additional null checks
-                var flattenedData = new FlattenedScheduleDto
-                {
-                    Day = this.mainLocalizer[day.ToString()].Value,
-                    Hour1 = groupedByDay.ContainsKey(day) && groupedByDay[day].FirstOrDefault(s => s.ScheduleTime == ScheduleTime.FIRST) != null ? GetSubjectName(groupedByDay[day].FirstOrDefault(s => s.ScheduleTime == ScheduleTime.FIRST)!) : string.Empty,
-                    Hour2 = groupedByDay.ContainsKey(day) && groupedByDay[day].FirstOrDefault(s => s.ScheduleTime == ScheduleTime.SECOND) != null ? GetSubjectName(groupedByDay[day].FirstOrDefault(s => s.ScheduleTime == ScheduleTime.SECOND)!) : string.Empty,
-                    Hour3 = groupedByDay.ContainsKey(day) && groupedByDay[day].FirstOrDefault(s => s.ScheduleTime == ScheduleTime.THIRD) != null ? GetSubjectName(groupedByDay[day].FirstOrDefault(s => s.ScheduleTime == ScheduleTime.THIRD)!) : string.Empty,
-                    Hour4 = groupedByDay.ContainsKey(day) && groupedByDay[day].FirstOrDefault(s => s.ScheduleTime == ScheduleTime.FOURTH) != null ? GetSubjectName(groupedByDay[day].FirstOrDefault(s => s.ScheduleTime == ScheduleTime.FOURTH)!) : string.Empty,
-                    Hour5 = groupedByDay.ContainsKey(day) && groupedByDay[day].FirstOrDefault(s => s.ScheduleTime == ScheduleTime.FIFTH) != null ? GetSubjectName(groupedByDay[day].FirstOrDefault(s => s.ScheduleTime == ScheduleTime.FIFTH)!) : string.Empty,
-                    Hour6 = groupedByDay.ContainsKey(day) && groupedByDay[day].FirstOrDefault(s => s.ScheduleTime == ScheduleTime.SIXTH) != null ? GetSubjectName(groupedByDay[day].FirstOrDefault(s => s.ScheduleTime == ScheduleTime.SIXTH)!) : string.Empty,
-                    Hour7 = groupedByDay.ContainsKey(day) && groupedByDay[day].FirstOrDefault(s => s.ScheduleTime == ScheduleTime.SEVENTH) != null ? GetSubjectName(groupedByDay[day].FirstOrDefault(s => s.ScheduleTime == ScheduleTime.SEVENTH)!) : string.Empty,
-                    Hour8 = groupedByDay.ContainsKey(day) && groupedByDay[day].FirstOrDefault(s => s.ScheduleTime == ScheduleTime.EIGHT) != null ? GetSubjectName(groupedByDay[day].FirstOrDefault(s => s.ScheduleTime == ScheduleTime.EIGHT)!) : string.Empty
-                };
-
-                flattenedSchedules.Add(flattenedData);
-            }
-
-            return flattenedSchedules;
-        }
-
-        // Helper method to safely get the subject name with null checks
-        private static string GetSubjectName(ScheduleDto schedule)
-        {
-            return schedule?.Course?.Subject?.SubjectName ?? string.Empty;
-        }
-
-
 
 
         [HttpGet("dashboard")]
@@ -474,7 +432,7 @@ namespace digitalmaktabapi.Controllers
         private async Task<School> PrepareSchoolEntity(SchoolForAddDto schoolForAddDto)
         {
             var school = this.mapper!.Map<School>(schoolForAddDto);
-            UploadResponse uploadResponse = await UploadLogo(schoolForAddDto.Logo, schoolForAddDto.Code);
+            UploadResponse uploadResponse = await Extensions.Upload(schoolForAddDto.Logo, schoolForAddDto.Code.ToString());
 
             if (uploadResponse.Status == Status.SUCCESS)
             {
@@ -487,22 +445,12 @@ namespace digitalmaktabapi.Controllers
         private async Task UpdateSchoolEntity(School school, SchoolForAddDto schoolForAddDto)
         {
             this.mapper!.Map(schoolForAddDto, school);
-            UploadResponse uploadResponse = await UploadLogo(schoolForAddDto.Logo, schoolForAddDto.Code);
+            UploadResponse uploadResponse = await Extensions.Upload(schoolForAddDto.Logo, schoolForAddDto.Code.ToString());
 
             if (uploadResponse.Status == Status.SUCCESS)
             {
                 school.Logo = uploadResponse.Path!;
             }
-        }
-
-        private static async Task<UploadResponse> UploadLogo(IFormFile? file, int code)
-        {
-            UploadResponse uploadResponse = new() { Status = Status.FAILURE };
-            if (file != null && file.Length > 0)
-            {
-                uploadResponse = await UploadService.Upload(file, code.ToString());
-            }
-            return uploadResponse;
         }
     }
 }

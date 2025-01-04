@@ -10,9 +10,11 @@ export interface InputProps {
   value?: string;
   required?: boolean;
   id?: string;
+  touched?: boolean;
   // setFieldValue?: FormikHelpers<any>["setFieldValue"];
   setFieldValue?: (field: string, value: any) => void;
   phoneNumber?: PhoneNumberValue;
+  setFieldTouched?: (field: string, value: boolean) => void;
 }
 
 export interface FileInputProps extends InputProps {

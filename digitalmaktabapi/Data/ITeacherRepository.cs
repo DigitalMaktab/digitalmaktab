@@ -20,5 +20,6 @@ namespace digitalmaktabapi.Data
         Task<Grade> GetGrade(Guid enrollmentId, Guid courseId, ExamType examType);
 
         Task<PagedList<Grade>> GetGrades(UserParams userParams);
+        Task<ICollection<CourseSection>> GetCourseSections(UserParams userParams);
     }
 }

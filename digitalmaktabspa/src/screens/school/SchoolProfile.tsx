@@ -9,6 +9,7 @@ import { SchoolForUpdateDto } from "../../dtos/SchoolForUpdateDto";
 import AppAddressForm from "../../components/form/AppAddressForm";
 import AppFormInput from "../../components/form/AppFormInput";
 import { PhoneNumberValue } from "../../components/properties/InputProps";
+import settings from "../../config/settings";
 
 const SchoolProfile = () => {
   const [school, setSchool] = useState<School>(getUser()!.school!);
@@ -29,7 +30,7 @@ const SchoolProfile = () => {
                       <AppImg
                         className="img-70 rounded-circle"
                         alt={school.schoolName}
-                        src={`http://0.0.0.0:5000/${school.logo}`}
+                        src={`${settings.url}${school.logo}`}
                       />
                     )}
                     <div className="flex-grow-1">

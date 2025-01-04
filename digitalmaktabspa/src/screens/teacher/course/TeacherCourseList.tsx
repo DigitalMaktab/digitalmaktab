@@ -14,6 +14,7 @@ const TeacherCourseList = () => {
       totalPages={totalPages}
       addRoute="/course-editor/new"
       rowLinkTemplate="/course-editor/{id}"
+      actions={[]}
     />
   );
 };

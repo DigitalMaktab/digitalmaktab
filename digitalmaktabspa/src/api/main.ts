@@ -107,6 +107,13 @@ const schoolTypeList = (paginationParams: {
   pageNumber: number;
   pageSize: number;
 }) => apiClient.get(`/main/schoolTypes`, { params: paginationParams });
+
+const learningMaterialTypeList = (paginationParams: {
+  pageNumber: number;
+  pageSize: number;
+}) =>
+  apiClient.get(`/main/learningMaterialTypes`, { params: paginationParams });
+
 const mainApi = {
   countryList,
   classList,
@@ -126,6 +133,7 @@ const mainApi = {
   subjectList,
   activeCalendarYear,
   schoolTypeList,
+  learningMaterialTypeList,
 };
 
 export default mainApi;

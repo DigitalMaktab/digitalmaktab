@@ -1,10 +1,12 @@
 {
     "appName": "مکتب دیجیتالی",
     "logo": "لوگو",
+    "comingSoon": "به زودی",
     "apiResponse": {
         "error": "خطایی رخ داد",
         "requestSent": "درخواست شما ارسال گردیده است",
-        "unknownError": "خطایی نا معلوم رخ داد"
+        "unknownError": "خطایی نا معلوم رخ داد",
+        "foreignKeyError": "عملیه انجام نشد زیرا این مورد با سایر رکوردها مرتبط است."
     },
     "close": {
         "label": "بستن"
@@ -163,6 +165,16 @@
             "label": "عمومیات",
             "menues": {
                 "dashboard": "داشبورد",
+                "calendarYear": {
+                    "label": "سال تعلیمی",
+                    "list": "لست سال تعمیلی",
+                    "add": "اضافه نمودن سال تعلیمی"
+                },
+                "subjects": {
+                    "label": "مضامین",
+                    "list": "لست مضامین",
+                    "add": "اضافه نمودن مضون"
+                },
                 "library": {
                     "label": "کتابخانه",
                     "onlineLibrary": "کتابخانه آنلان",
@@ -178,6 +190,11 @@
                     "label": "صنوف",
                     "list": "لیست صنف ها",
                     "add": "اضافه نمودن صنف"
+                },
+                "courses": {
+                    "label": "صنف درسی",
+                    "list": "صنوف درسی",
+                    "add": "اضافه نمودن صنف درسی"
                 },
                 "timeTable": {
                     "label": "جدول زمانی",
@@ -198,6 +215,21 @@
             "menues": {
                 "list": "لیست شاگرد ها",
                 "register": "ثبت شاگرد"
+            }
+        },
+        "footer": {
+            "menu": {
+                "settings": "تنظیمات",
+                "defaults": "پیش‌فرض‌ها",
+                "howToUseTheApp": "راهنمای کاربری",
+                "suggestions": "پیشنهادات",
+                "privacyPolicy": "خط‌مشی رازداری",
+                "about": "درباره",
+                "termsOfService": "شرایط استفاده",
+                "contactUs": "تماس با ما",
+                "feedback": "نظرات شما",
+                "faq": "پرسش‌های رایج",
+                "appVersion": "نسخه برنامه: ۱،۰،۰"
             }
         }
     },
@@ -269,7 +301,8 @@
         }
     },
     "addressForm": {
-        "title": "آدرس",
+        "title": "سکونت اصلی",
+        "secondaryAddressTitle": "سکونت فرعی",
         "street": {
             "label": "سرک",
             "placeholder": "سرک دوازدهم",
@@ -358,7 +391,10 @@
         "title": "شاخه صنف"
     },
     "shift": {
-        "label": "شیفت"
+        "label": "شیفت",
+        "shiftList": {
+            "label": "لیست شیفت‌ها"
+        }
     },
     "gender": {
         "label": "جنسیت",
@@ -367,6 +403,9 @@
         },
         "female": {
             "label": "مونث"
+        },
+        "genderList": {
+            "label": "لیست جنسیت‌ها"
         }
     },
     "teacher": {
@@ -400,6 +439,7 @@
     },
     "student": {
         "label": "شاگرد",
+        "title": "مشخصات شاگرد",
         "studentList": {
             "label": "لست شاگردان"
         },
@@ -435,6 +475,44 @@
         },
         "dateOfBirth": {
             "label": "تاریخ تولد"
+        },
+        "studentEditor": {
+            "label": "مشخصات شاگرد",
+            "tabs": {
+                "profile": {
+                    "label": "مشخصات"
+                },
+                "class": {
+                    "label": "صنف"
+                },
+                "schedules": {
+                    "lable": "تقسیم اوقات"
+                }
+            }
+        },
+        "relatives": {
+            "label": "اقارب"
+        },
+        "brotherName": {
+            "label": "اسم برادر"
+        },
+        "fUncleName": {
+            "label": "اسم کاکا"
+        },
+        "fCousinName": {
+            "label": "اسم پسر کاکا"
+        },
+        "mUncleName": {
+            "label": "اسم ماما"
+        },
+        "mCousinName": {
+            "label": "اسم پسر ماما"
+        },
+        "extraDetails": {
+            "label": "جزئیات اضافی"
+        },
+        "monthlyFee": {
+            "label": "فیس ماهانه"
         }
     },
     "calendarYear": {
@@ -444,6 +522,12 @@
         },
         "nativeYear": {
             "label": "هجری قمری"
+        },
+        "add": {
+            "label": "اضافه نمودن سال تعلیمی"
+        },
+        "list": {
+            "label": "لست سال تعلیمی"
         }
     },
     "enrollment": {
@@ -605,6 +689,9 @@
         },
         "addBook": {
             "label": "اضافه کردن کتاب"
+        },
+        "list": {
+            "label": "لست کتب"
         }
     },
     "report": {
@@ -649,6 +736,263 @@
         },
         "error": {
             "label": "در هنگام بارگذاری اطلاعات خطایی رخ داد."
+        },
+        "actions": {
+            "label": "عملیات"
         }
+    },
+    "status": {
+        "label": "حالت",
+        "active": {
+            "label": "فعال"
+        },
+        "inactive": {
+            "label": "غیر فعال"
+        }
+    },
+    "subject": {
+        "label": "مضمون",
+        "subjectName": {
+            "label": "اسم مضمون"
+        },
+        "add": {
+            "label": "اضافه نمودن مضمون"
+        },
+        "list": {
+            "label": "لست مضامین"
+        }
+    },
+    "course": {
+        "label": "مضمون صنف",
+        "total": {
+            "label": "تعداد مضامین صنف"
+        },
+        "add": {
+            "label": "اضافه کردن مضمون صنف"
+        },
+        "list": {
+            "label": "لست مضامین صنف"
+        },
+        "subjectAndClass": {
+            "label": "صنف و مضمون"
+        },
+        "courseEditor": {
+            "label": "ویرایش صنف درسی",
+            "tabs": {
+                "course": {
+                    "label": "صنف درسی"
+                },
+                "courseMaterial": {
+                    "label": "مواد درسی"
+                },
+                "assignments": {
+                    "label": "کار های خانگی"
+                },
+                "quizzes": {
+                    "label": "آزمون ها"
+                },
+                "exams": {
+                    "label": "امتحان ها"
+                },
+                "onlineClass": {
+                    "label": "صنف آنلاین"
+                }
+            }
+        }
+    },
+    "dayOfWeek": {
+        "label": "روز هفته"
+    },
+    "scheduleTime": {
+        "label": "ساعت",
+        "scheduleTimeList": {
+            "label": "لیست زمان‌بندی‌ها"
+        }
+    },
+    "nationalId": {
+        "title": "تذکره",
+        "electronicNationalIdNumber": {
+            "label": "نمره تذکره الکترونیکی",
+            "placeholder": "نمره تذکره الکترونیکی"
+        },
+        "nationalIdNumber": {
+            "label": "نمره تذکره",
+            "placeholder": "نمره تذکره"
+        },
+        "volume": {
+            "label": "جلد",
+            "placeholder": "جلد"
+        },
+        "page": {
+            "label": "صفحه",
+            "placeholder": "صفحه"
+        },
+        "registerNumber": {
+            "label": "نمره کتاب",
+            "placeholder": "نمره کتاب"
+        }
+    },
+    "bloodGroup": {
+        "label": "گروپ خون",
+        "bloodGroupList": {
+            "label": "لیست گروه‌های خونی"
+        }
+    },
+    "disabilityType": {
+        "label": "نوع معلولیت"
+    },
+    "isOrphan": {
+        "label": "یتیم است؟",
+        "isOrphanList": {
+            "label": "لیست یتیم‌ها"
+        }
+    },
+    "language": {
+        "label": "زبان مادری",
+        "languageList": {
+            "label": "لیست زبان‌ها"
+        }
+    },
+    "privacyPolicy": {
+        "header": {
+            "title": "پالیسی حریم خصوصی",
+            "subtitle": "بیاموزید که چگونه ما اطلاعات شما را با مسئولیت‌پذیری مدیریت می‌کنیم"
+        },
+        "intro": "در مکتب ما، ما به حریم خصوصی شما ارزش می‌دهیم. در زیر می‌توانید جزئیات روش‌های حفظ حریم خصوصی ما را بیابید.",
+        "personalData": {
+            "title": "جمع‌آوری معلومات شخصی",
+            "description": "ما معلومات شخصی مانند نام‌ها، ایمیل‌ها و معلومات تماس را برای ارائه خدمات بهتر جمع‌آوری می‌کنیم."
+        },
+        "dataUsage": {
+            "title": "چگونه از معلومات شما استفاده می‌کنیم",
+            "description": "معلومات شما برای بهبود عملیات مکتب، ارائه خدمات و تضمین یک محیط امن استفاده می‌شود."
+        },
+        "thirdParties": {
+            "title": "اشتراک‌گذاری با اشخاص ثالث",
+            "description": "ما معلومات شما را بدون رضایت شما با اشخاص ثالث به اشتراک نمی‌گذاریم، مگر طبق ضرورت‌های قانونی."
+        },
+        "dataRetention": {
+            "title": "پالیسی نگهداری معلومات",
+            "description": "ما معلومات شما را تا زمانی که برای اهداف ذکر شده در این پالیسی ضروری باشد، نگهداری می‌کنیم."
+        },
+        "rights": {
+            "title": "حقوق شما",
+            "description": "شما حق دارید که به معلومات خود دسترسی داشته باشید، آنها را به‌روز کنید یا حذف کنید. برای استفاده از این حقوق با ما تماس بگیرید."
+        },
+        "footer": {
+            "back": "بازگشت"
+        }
+    },
+    "country": {
+        "countryList": {
+            "label": "لیست کشورها"
+        },
+        "countryName": {
+            "label": "نام کشور"
+        }
+    },
+    "classType": {
+        "classTypeList": {
+            "label": "لیست انواع صنف"
+        },
+        "classTypeName": {
+            "label": "نام نوع صنف"
+        }
+    },
+    "disability": {
+        "disabilityList": {
+            "label": "لیست معلولیت‌ها"
+        }
+    },
+    "examType": {
+        "examTypeList": {
+            "label": "لیست انواع امتحان"
+        }
+    },
+    "month": {
+        "monthList": {
+            "label": "لیست ماه‌ها"
+        }
+    },
+    "day": {
+        "dayList": {
+            "label": "لیست روزها"
+        }
+    },
+    "addressType": {
+        "addressTypeList": {
+            "label": "لیست انواع آدرس"
+        }
+    },
+    "enum": {
+        "name": {
+            "label": "نام"
+        }
+    },
+    "schoolType": {
+        "label": "نوع مکتب",
+        "validation": {
+            "required": "نوع مکتب ضروری میباشد"
+        },
+        "schoolTypeList": {
+            "label": "لیست انواع مکتب"
+        }
+    },
+    "plyr": {
+        "play": "پخش",
+        "pause": "توقف",
+        "pip": "تصویر در تصویر",
+        "enterFullscreen": "تمام صفحه",
+        "exitFullscreen": "خروج از تمام صفحه",
+        "quality": "کیفیت",
+        "speed": "سرعت",
+        "normal": "عادی",
+        "subtitles": "زیرنویس",
+        "subtitlesOff": "خاموش کردن زیرنویس",
+        "mute": "بی صدا",
+        "unmute": "صدا دار",
+        "volume": "صدا",
+        "rewind": "عقب",
+        "fastForward": "جلو",
+        "settings": "تنظیمات"
+    },
+    "courseChapter": {
+        "label": "فصل صنف درسی",
+        "list": {
+            "label": "لیست فصل‌های صنف درسی"
+        },
+        "add": {
+            "label": "افزودن فصل صنف درسی"
+        },
+        "title": {
+            "label": "عنوان فصل"
+        },
+        "description": {
+            "label": "توضیحات"
+        }
+    },
+    "learningMaterial": {
+        "label": "مواد درسی",
+        "list": {
+            "label": "لیست مواد درسی"
+        },
+        "add": {
+            "label": "افزودن مواد درسی"
+        },
+        "title": {
+            "label": "عنوان مواد درسی"
+        },
+        "description": {
+            "label": "توضیحات مواد درسی"
+        },
+        "file": {
+            "label": "فایل مواد درسی"
+        },
+        "type": {
+            "label": "نوع مواد درسی"
+        }
+    },
+    "learningMaterialType": {
+        "label": "نوع مواد درسی"
     }
 }

@@ -47,6 +47,7 @@ import CourseList from "./screens/school/class/subject/SchoolCourseList";
 import SchoolCourseList from "./screens/school/class/subject/SchoolCourseList";
 import TeacherCourseList from "./screens/teacher/course/TeacherCourseList";
 import TeacherHome from "./screens/teacher/TeacherHome";
+import TeacherTimeTableList from "./screens/teacher/timetable/TeacherTimeTableList";
 
 // // Set up worker
 // import { pdfjs } from "react-pdf";
@@ -133,6 +134,10 @@ function App() {
                 <Route
                   path="teacher-course-list"
                   element={<TeacherCourseList />}
+                />
+                <Route
+                  path="teacher-timetable"
+                  element={<TeacherTimeTableList />}
                 />
               </Route>
             </Route>

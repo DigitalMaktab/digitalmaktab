@@ -1,6 +1,7 @@
 {
     "appName": "مکتب دیجیتالی",
     "logo": "لوگو",
+    "comingSoon": "به زودی",
     "apiResponse": {
         "error": "خطایی رخ داد",
         "requestSent": "درخواست شما ارسال گردیده است",
@@ -191,9 +192,9 @@
                     "add": "اضافه نمودن صنف"
                 },
                 "courses": {
-                    "label": "مضامین صنف",
-                    "list": "لست مضامین صنف",
-                    "add": "اضافه کردن مضمون صنف"
+                    "label": "صنف درسی",
+                    "list": "صنوف درسی",
+                    "add": "اضافه نمودن صنف درسی"
                 },
                 "timeTable": {
                     "label": "جدول زمانی",
@@ -774,6 +775,29 @@
         },
         "subjectAndClass": {
             "label": "صنف و مضمون"
+        },
+        "courseEditor": {
+            "label": "ویرایش صنف درسی",
+            "tabs": {
+                "course": {
+                    "label": "صنف درسی"
+                },
+                "courseMaterial": {
+                    "label": "مواد درسی"
+                },
+                "assignments": {
+                    "label": "کار های خانگی"
+                },
+                "quizzes": {
+                    "label": "آزمون ها"
+                },
+                "exams": {
+                    "label": "امتحان ها"
+                },
+                "onlineClass": {
+                    "label": "صنف آنلاین"
+                }
+            }
         }
     },
     "dayOfWeek": {
@@ -913,5 +937,62 @@
         "schoolTypeList": {
             "label": "لیست انواع مکتب"
         }
+    },
+    "plyr": {
+        "play": "پخش",
+        "pause": "توقف",
+        "pip": "تصویر در تصویر",
+        "enterFullscreen": "تمام صفحه",
+        "exitFullscreen": "خروج از تمام صفحه",
+        "quality": "کیفیت",
+        "speed": "سرعت",
+        "normal": "عادی",
+        "subtitles": "زیرنویس",
+        "subtitlesOff": "خاموش کردن زیرنویس",
+        "mute": "بی صدا",
+        "unmute": "صدا دار",
+        "volume": "صدا",
+        "rewind": "عقب",
+        "fastForward": "جلو",
+        "settings": "تنظیمات"
+    },
+    "courseChapter": {
+        "label": "فصل صنف درسی",
+        "list": {
+            "label": "لیست فصل‌های صنف درسی"
+        },
+        "add": {
+            "label": "افزودن فصل صنف درسی"
+        },
+        "title": {
+            "label": "عنوان فصل"
+        },
+        "description": {
+            "label": "توضیحات"
+        }
+    },
+    "learningMaterial": {
+        "label": "مواد درسی",
+        "list": {
+            "label": "لیست مواد درسی"
+        },
+        "add": {
+            "label": "افزودن مواد درسی"
+        },
+        "title": {
+            "label": "عنوان مواد درسی"
+        },
+        "description": {
+            "label": "توضیحات مواد درسی"
+        },
+        "file": {
+            "label": "فایل مواد درسی"
+        },
+        "type": {
+            "label": "نوع مواد درسی"
+        }
+    },
+    "learningMaterialType": {
+        "label": "نوع مواد درسی"
     }
 }

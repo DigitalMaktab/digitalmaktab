@@ -4,6 +4,7 @@
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
+    "typeRoots": ["node_modules/@types", "src/types"],
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "strict": true,

@@ -5,7 +5,10 @@ import { useTranslation } from "react-i18next";
 const AppFileInput: React.FC<FileInputProps> = ({
   name,
   label,
+  required = false,
   setFieldValue = () => {},
+  setFieldTouched = () => {},
+  touched,
   rest,
 }) => {
   const { t } = useTranslation();
@@ -13,12 +16,14 @@ const AppFileInput: React.FC<FileInputProps> = ({
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
+    setFieldTouched(name, true);
     if (files && files.length > 0) {
       const file = files[0];
       setFileName(file.name);
       setFieldValue(name, file);
     } else {
       setFileName("");
+      setFieldValue(name, null);
     }
   };
 
@@ -28,28 +33,26 @@ const AppFileInput: React.FC<FileInputProps> = ({
   };
   return (
     <div className="form-group">
-      <label className="col-form-label" htmlFor={name}>
-        {label}
+      <label className="form-label" htmlFor={name}>
+        {label} {required && "*"}
       </label>
-      <div>
-        <button
-          type="button"
-          style={{ textAlign: "start" }}
-          className="form-control"
-          onClick={handleButtonClick}
-        >
-          {fileName ? fileName : t("controls.fileInput.button")}
-        </button>
-        <input
-          className="form-control"
-          id={name}
-          type="file"
-          name={name}
-          style={{ display: "none" }}
-          {...rest}
-          onChange={handleFileChange}
-        />
-      </div>
+      <input
+        className="form-control"
+        id={name}
+        type="file"
+        name={name}
+        style={{ display: "none" }}
+        {...rest}
+        onChange={handleFileChange}
+      />
+      <button
+        type="button"
+        style={{ textAlign: "start" }}
+        className="form-control"
+        onClick={handleButtonClick}
+      >
+        {fileName ? fileName : t("controls.fileInput.button")}
+      </button>
     </div>
   );
 };

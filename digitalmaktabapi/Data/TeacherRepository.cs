@@ -168,5 +168,19 @@ namespace digitalmaktabapi.Data
             return await PagedList<Grade>.CreateAsync(grades, userParams.PageNumber, userParams.PageSize);
 
         }
+
+        public async Task<ICollection<CourseSection>> GetCourseSections(UserParams userParams)
+        {
+            if (!userParams.CourseId.HasValue)
+            {
+                return null;
+            }
+
+            return await this.context.CourseSections
+                .Include(a => a.Course)
+                .Include(a => a.LearningMaterials)
+                .Where(a => a.CourseId == userParams.CourseId)
+                .ToListAsync();
+        }
     }
 }

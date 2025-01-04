@@ -11,6 +11,7 @@ const AppFormCard: React.FC<FormCardProps> = ({
   onSubmit,
   validationSchema,
   children,
+  actions,
 }) => {
   const { t } = useTranslation();
   return (
@@ -23,12 +24,14 @@ const AppFormCard: React.FC<FormCardProps> = ({
         <AppCard
           title={title}
           showFooter={true}
+          actions={actions}
           footerChildren={
             <AppButton
               label={t("controls.saveButton.label")}
               type="submit"
               disabled={false}
-              className="btn-primary"
+              className="btn-xs"
+              icon="save"
             />
           }
         >

@@ -1,10 +1,12 @@
 {
     "appName": "Digital Maktab",
     "logo": "Logo",
+    "comingSoon": "Coming Soon",
     "apiResponse": {
         "error": "An error occured",
         "requestSent": "Request is alreay sent",
-        "unknownError": "Unknown error occured"
+        "unknownError": "Unknown error occured",
+        "foreignKeyError": "The operation could not be completed because the item is associated with other records."
     },
     "close": {
         "label": "Close"
@@ -163,6 +165,16 @@
             "label": "General",
             "menues": {
                 "dashboard": "Dashboard",
+                "calendarYear": {
+                    "label": "Calendar Year",
+                    "list": "Calendar Year List",
+                    "add": "Add Calendar Year"
+                },
+                "subjects": {
+                    "label": "Subjects",
+                    "list": "Subject List",
+                    "add": "Add Subject"
+                },
                 "library": {
                     "label": "Library",
                     "onlineLibrary": "Online Library",
@@ -178,6 +190,11 @@
                     "label": "Classes",
                     "list": "Class List",
                     "add": "Add Class"
+                },
+                "courses": {
+                    "label": "Courses",
+                    "list": "Course List",
+                    "add": "Add Course Subject"
                 },
                 "timeTable": {
                     "label": "Time Table",
@@ -198,6 +215,21 @@
             "menues": {
                 "list": "Student List",
                 "register": "Register Student"
+            }
+        },
+        "footer": {
+            "menu": {
+                "settings": "Settings",
+                "defaults": "Defaults",
+                "howToUseTheApp": "How to Use the App",
+                "suggestions": "Suggestions",
+                "privacyPolicy": "Privacy Policy",
+                "about": "About",
+                "termsOfService": "Terms of Service",
+                "contactUs": "Contact Us",
+                "feedback": "Feedback",
+                "faq": "Frequently asked Questions",
+                "appVersion": "Version: 1.0.0"
             }
         }
     },
@@ -270,6 +302,7 @@
     },
     "addressForm": {
         "title": "Address",
+        "secondaryAddressTitle": "Secondary Address",
         "street": {
             "label": "Street",
             "placeholder": "12th Street",
@@ -358,7 +391,10 @@
         "title": "Branch"
     },
     "shift": {
-        "label": "Shift"
+        "label": "Shift",
+        "shiftList": {
+            "label": "Shift List"
+        }
     },
     "gender": {
         "label": "Gender",
@@ -367,6 +403,9 @@
         },
         "female": {
             "label": "Female"
+        },
+        "genderList": {
+            "label": "Gender List"
         }
     },
     "teacher": {
@@ -400,6 +439,7 @@
     },
     "student": {
         "label": "Student",
+        "title": "Student Details",
         "studentList": {
             "label": "Student List"
         },
@@ -435,6 +475,44 @@
         },
         "dateOfBirth": {
             "label": "Date of Birth"
+        },
+        "studentEditor": {
+            "label": "Student Editor",
+            "tabs": {
+                "profile": {
+                    "label": "Profile"
+                },
+                "class": {
+                    "label": "Classes"
+                },
+                "schedules": {
+                    "lable": "Schedules"
+                }
+            }
+        },
+        "relatives": {
+            "label": "Relatives"
+        },
+        "brotherName": {
+            "label": "Brother Name"
+        },
+        "fUncleName": {
+            "label": "Father Side Uncle Name"
+        },
+        "fCousineName": {
+            "label": "Father Side Cousine Name"
+        },
+        "mUncleName": {
+            "label": "Mother Side Uncle Name"
+        },
+        "mCousineName": {
+            "label": "Mother Side Cousine Name"
+        },
+        "extraDetails": {
+            "label": "Extra Details"
+        },
+        "monthlyFee": {
+            "label": "Monthly Fee"
         }
     },
     "calendarYear": {
@@ -444,6 +522,12 @@
         },
         "nativeYear": {
             "label": "Native Year"
+        },
+        "add": {
+            "label": "Add Calendar Year"
+        },
+        "list": {
+            "label": "Calendar Years"
         }
     },
     "enrollment": {
@@ -605,6 +689,9 @@
         },
         "addBook": {
             "label": "Add Book"
+        },
+        "list": {
+            "label": "Book List"
         }
     },
     "report": {
@@ -649,6 +736,263 @@
         },
         "error": {
             "label": "An error occurred while loading the data."
+        },
+        "actions": {
+            "label": "Actions"
         }
+    },
+    "status": {
+        "label": "Status",
+        "active": {
+            "label": "Active"
+        },
+        "inactive": {
+            "label": "Inactive"
+        }
+    },
+    "subject": {
+        "label": "Subject",
+        "subjectName": {
+            "label": "Subject Name"
+        },
+        "add": {
+            "label": "Add Subject"
+        },
+        "list": {
+            "label": "Subject List"
+        }
+    },
+    "course": {
+        "label": "Course",
+        "total": {
+            "label": "Total Courses"
+        },
+        "add": {
+            "label": "Add Course"
+        },
+        "list": {
+            "label": "Course List"
+        },
+        "subjectAndClass": {
+            "label": "Class and Subject"
+        },
+        "courseEditor": {
+            "label": "Course",
+            "tabs": {
+                "course": {
+                    "label": "Course"
+                },
+                "courseMaterial": {
+                    "label": "Course Material"
+                },
+                "assignments": {
+                    "label": "Assignments"
+                },
+                "quizzes": {
+                    "label": "Quizzes"
+                },
+                "exams": {
+                    "label": "Exams"
+                },
+                "onlineClass": {
+                    "label": "Online Class"
+                }
+            }
+        }
+    },
+    "dayOfWeek": {
+        "label": "Day of Week"
+    },
+    "scheduleTime": {
+        "label": "Schedule Time",
+        "scheduleTimeList": {
+            "label": "Schedule Time List"
+        }
+    },
+    "nationalId": {
+        "title": "National ID",
+        "electronicNationalIdNumber": {
+            "label": "Electronic National ID Number",
+            "placeholder": "Electronic National ID Number"
+        },
+        "nationalIdNumber": {
+            "label": "National ID Number",
+            "placeholder": "National ID Number"
+        },
+        "volume": {
+            "label": "Volume",
+            "placeholder": "Volume"
+        },
+        "page": {
+            "label": "Page",
+            "placeholder": "Page"
+        },
+        "registerNumber": {
+            "label": "Register Number",
+            "placeholder": "Register Number"
+        }
+    },
+    "bloodGroup": {
+        "label": "Blood Group",
+        "bloodGroupList": {
+            "label": "Blood Group List"
+        }
+    },
+    "disabilityType": {
+        "label": "Disability Type"
+    },
+    "isOrphan": {
+        "label": "Is Orphan?",
+        "isOrphanList": {
+            "label": "Orphan List"
+        }
+    },
+    "language": {
+        "label": "Mother Tongue",
+        "languageList": {
+            "label": "Language List"
+        }
+    },
+    "privacyPolicy": {
+        "header": {
+            "title": "Privacy Policy",
+            "subtitle": "Learn how we handle your data responsibly"
+        },
+        "intro": "At our school, we value your privacy. Below, you can find the details of our privacy practices.",
+        "personalData": {
+            "title": "Personal Data Collection",
+            "description": "We collect personal data such as names, emails, and contact information to provide better services."
+        },
+        "dataUsage": {
+            "title": "How We Use Your Data",
+            "description": "Your data is used to improve school operations, provide services, and ensure a safe environment."
+        },
+        "thirdParties": {
+            "title": "Sharing with Third Parties",
+            "description": "We do not share your data with third parties without your consent, except as required by law."
+        },
+        "dataRetention": {
+            "title": "Data Retention Policy",
+            "description": "We retain your data for as long as necessary to fulfill the purposes outlined in this policy."
+        },
+        "rights": {
+            "title": "Your Rights",
+            "description": "You have the right to access, update, or delete your data. Contact us to exercise these rights."
+        },
+        "footer": {
+            "back": "Back"
+        }
+    },
+    "country": {
+        "countryList": {
+            "label": "Country List"
+        },
+        "countryName": {
+            "label": "Country Name"
+        }
+    },
+    "classType": {
+        "classTypeList": {
+            "label": "Class Type List"
+        },
+        "classTypeName": {
+            "label": "Class Type Name"
+        }
+    },
+    "disability": {
+        "disabilityList": {
+            "label": "Disability List"
+        }
+    },
+    "examType": {
+        "examTypeList": {
+            "label": "Exam Type List"
+        }
+    },
+    "month": {
+        "monthList": {
+            "label": "Month List"
+        }
+    },
+    "day": {
+        "dayList": {
+            "label": "Day List"
+        }
+    },
+    "addressType": {
+        "addressTypeList": {
+            "label": "Address Type List"
+        }
+    },
+    "enum": {
+        "name": {
+            "label": "Name"
+        }
+    },
+    "schoolType": {
+        "label": "School Types",
+        "validation": {
+            "required": "School Type is required"
+        },
+        "schoolTypeList": {
+            "label": "School Type List"
+        }
+    },
+    "plyr": {
+        "play": "Play",
+        "pause": "Pause",
+        "pip": "PIP",
+        "enterFullscreen": "Enter Fullscreen",
+        "exitFullscreen": "Exit Fullscreen",
+        "quality": "Quality",
+        "speed": "Speed",
+        "normal": "Normal",
+        "subtitles": "Subtitles",
+        "subtitlesOff": "Subtitles off",
+        "mute": "Mute",
+        "unmute": "Unmute",
+        "volume": "Volume",
+        "rewind": "Rewind",
+        "fastForward": "Forward",
+        "settings": "Settings"
+    },
+    "courseChapter": {
+        "label": "Course Chapter",
+        "list": {
+            "label": "Course Chapter List"
+        },
+        "add": {
+            "label": "Add Chapter Section"
+        },
+        "title": {
+            "label": "Chapter Title"
+        },
+        "description": {
+            "label": "Chapter Description"
+        }
+    },
+    "learningMaterial": {
+        "label": "Learning Material",
+        "list": {
+            "label": "Learning Material List"
+        },
+        "add": {
+            "label": "Add Learning Material"
+        },
+        "title": {
+            "label": "Material Title"
+        },
+        "description": {
+            "label": "Material Description"
+        },
+        "file": {
+            "label": "Material File"
+        },
+        "type": {
+            "label": "Material Type"
+        }
+    },
+    "learningMaterialType": {
+        "label": "Learning Material Type"
     }
 }

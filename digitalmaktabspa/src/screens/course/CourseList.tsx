@@ -10,6 +10,9 @@ import { Subject } from "../../models/Subject";
 import { Teacher } from "../../models/Teacher";
 import AppCard from "../../components/card/AppCard";
 import AppTable from "../../components/table/AppTable";
+import { Action } from "../../components/table/properties/TableActionPrps";
+import { useTableColumns } from "../../hooks/useTableColumns";
+import { useTableActions } from "../../hooks/useTableActions";
 
 const CourseList: React.FC<RoleSpecificTableProps<Course>> = ({
   titleKey,
@@ -19,40 +22,40 @@ const CourseList: React.FC<RoleSpecificTableProps<Course>> = ({
   addRoute,
   rowLinkTemplate,
   columns: additionalColumns = [],
+  actions: providedActions,
 }) => {
   const { t } = useAppLocalizer();
 
-  const mergedColumns: Column<Course>[] = useMemo(() => {
-    const defaultColumns: Column<Course>[] = [
-      {
-        header: "class.className.label",
-        accessor: "class",
-        render: (classValue: Class) =>
-          classValue.classNameValue + " " + classValue.branch.branchName,
-      },
-      {
-        header: "subject.subjectName.label",
-        accessor: "subject",
-        render: (subject: Subject) => subject.subjectName,
-      },
-      {
-        header: "teacher.firstName.label",
-        accessor: "teacher",
-        render: (teacher: Teacher) =>
-          teacher.firstName + " " + teacher.lastName,
-      },
-    ];
+  const defaultColumns: Column<Course>[] = [
+    {
+      header: "class.className.label",
+      accessor: "class",
+      render: (classValue: Class) =>
+        classValue.classNameValue + " " + classValue.branch.branchName,
+    },
+    {
+      header: "subject.subjectName.label",
+      accessor: "subject",
+      render: (subject: Subject) => subject.subjectName,
+    },
+    {
+      header: "teacher.firstName.label",
+      accessor: "teacher",
+      render: (teacher: Teacher) => teacher.firstName + " " + teacher.lastName,
+    },
+  ];
 
-    const columnMap = new Map<string, Column<Course>>();
+  const mergedColumns = useTableColumns(defaultColumns, additionalColumns);
 
-    // Add default columns first
-    defaultColumns.forEach((col) => columnMap.set(col.accessor, col));
+  const defaultActions: Action[] = [
+    {
+      label: t("course.add.label"),
+      route: addRoute,
+      icon: "plus",
+    },
+  ];
 
-    // Override or add additional columns
-    additionalColumns.forEach((col) => columnMap.set(col.accessor, col));
-
-    return Array.from(columnMap.values());
-  }, [additionalColumns]);
+  const tableActions = useTableActions(defaultActions, providedActions);
 
   return (
     <AppCard title={t(titleKey)}>
@@ -63,13 +66,7 @@ const CourseList: React.FC<RoleSpecificTableProps<Course>> = ({
         totalPages={totalPages}
         fetchPageData={fetchData}
         reportTitle={t(titleKey)}
-        actions={[
-          {
-            label: t("course.add.label"),
-            route: addRoute,
-            icon: "plus",
-          },
-        ]}
+        actions={tableActions}
       />
     </AppCard>
   );

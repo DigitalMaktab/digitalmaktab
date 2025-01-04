@@ -311,6 +311,20 @@ namespace digitalmaktabapi.Controllers
             return await GetEnumResponse<SchoolType>(id);
         }
 
+
+        [HttpGet("learningMaterialTypes")]
+        public async Task<ActionResult<IEnumerable<EnumsDto>>> GetLearningMaterialTypes()
+        {
+            var learningMaterialTypes = GetEnumList<LearningMaterialType>();
+            return await Task.FromResult(Ok(learningMaterialTypes));
+        }
+
+        [HttpGet("learningMaterialType/{id}")]
+        public async Task<ActionResult<EnumsDto>> GetLearningMaterialType(int id)
+        {
+            return await GetEnumResponse<LearningMaterialType>(id);
+        }
+
         // Helper methods
 
         private List<EnumsDto> GetEnumList<T>() where T : Enum

@@ -2141,6 +2141,12 @@ progress {
 .form-control[type=file] {
   overflow: hidden;
 }
+.form-control[type=button] {
+  font-size: 1rem;
+  line-height: 1.5rem;
+  height: 45px !important;
+  cursor: pointer;
+}
 .form-control[type=file]:not(:disabled):not([readonly]) {
   cursor: pointer;
 }
@@ -56685,4 +56691,89 @@ html[data-theme="dark"] {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+
+/* Override the play button */
+.plyr__control--overlaid {
+  background-color: rgba(0, 0, 0, 0.7) !important; /* Custom background color */
+  color: white !important;; /* Custom text color */
+  font-size: 1.5rem !important;; /* Adjust font size */
+}
+
+/* Change the controls bar color */
+.plyr__controls {
+  border-radius: 10px !important;; /* Rounded corners */
+}
+
+/* Style the progress bar */
+.plyr__progress input[type="range"] {
+  color: var(--theme-default) !important; /* Custom progress bar color */
+}
+
+/* Adjust the volume slider */
+.plyr__volume input[type="range"] {
+  color: var(--theme-default) !important; /* Custom slider color */
+}
+
+.plyr__control:hover {
+  background-color: var(--theme-default) !important;
+}
+
+.plyr__control[aria-expanded=true] {
+  background-color: var(--theme-default) !important;
+}
+
+.plyr__menu__container .plyr__control[role=menuitemradio] {
+  padding-left: 7px;
+  padding-left: calc(var(--plyr-control-spacing, 10px)* .7);
+}
+
+.plyr__control[role=menuitemradio][aria-checked=true]:before{
+  background: var(--theme-default) !important;
+}
+
+#app-online-class {
+  position: relative !important;
+  width: 100% !important;
+  height: 100% !important;
+  background-color: #f8f9fa !important; /* Optional: Match your app's background */
+}
+
+/* Zoom container isolation */
+#zoom-container {
+  position: absolute !important;
+  width: 100% !important;
+  height: 100% !important;
+  z-index: 1000 !important;
+  background-color: #fff !important; /* Optional: Customize Zoom background */
+}
+
+/* Reset Zoom styles for non-Zoom areas */
+#zmmtg-root {
+  all: unset !important; /* Reset inherited styles */
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.card-header {
+  padding-inline-end: 3rem !important; /* Add space for floating actions */
+  position: relative !important; /* Enable absolute positioning for actions */
+}
+
+.card-actions {
+  position: absolute !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  inset-inline-end: 1rem !important; /* Logical end position (RTL/LTR aware) */
+  display: flex !important;
+  gap: 0.5rem !important; /* Space between buttons */
+}
+
+
+.file-input-button {
+
 }

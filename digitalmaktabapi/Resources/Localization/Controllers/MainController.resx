@@ -448,4 +448,40 @@
         <value>Private</value>
         <comment>Private School</comment>
     </data>
+    <data name="VIDEO" xml:space="preserve">
+        <value>Video</value>
+        <comment>Learning Material Video</comment>
+    </data>
+    <data name="DOCUMENT" xml:space="preserve">
+        <value>Document</value>
+        <comment>Learning Material Document</comment>
+    </data>
+    <data name="AUDIO" xml:space="preserve">
+        <value>Audio</value>
+        <comment>Learning Material Audio</comment>
+    </data>
+    <data name="IMAGE" xml:space="preserve">
+        <value>Image</value>
+        <comment>Learning Material Type Image</comment>
+    </data>
+    <data name="PDF" xml:space="preserve">
+        <value>PDF</value>
+        <comment>Learning Material Type PDF</comment>
+    </data>
+    <data name="PRESENTATION" xml:space="preserve">
+        <value>Presentation</value>
+        <comment>Learning Material Type Presentation</comment>
+    </data>
+    <data name="SPREADSHEET" xml:space="preserve">
+        <value>Spreadsheet</value>
+        <comment>Learning Material Type Spreadsheet</comment>
+    </data>
+    <data name="LINK" xml:space="preserve">
+        <value>Link</value>
+        <comment>Learning Material Link</comment>
+    </data>
+    <data name="CODE" xml:space="preserve">
+        <value>Code</value>
+        <comment>Learning Material Type Code</comment>
+    </data>
 </root>

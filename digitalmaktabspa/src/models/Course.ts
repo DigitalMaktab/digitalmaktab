@@ -1,3 +1,4 @@
+import { CourseSection } from "./CourseSection";
 import { Base } from "./Base";
 import { Class } from "./Class";
 import { Subject } from "./Subject";
@@ -10,4 +11,5 @@ export interface Course extends Base {
   subject: Subject;
   teacherId: string;
   teacher: Teacher;
+  courseSections: CourseSection[];
 }

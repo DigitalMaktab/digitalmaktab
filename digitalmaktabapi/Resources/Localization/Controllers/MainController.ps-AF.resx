@@ -448,4 +448,44 @@
         <value>شخصي</value>
         <comment>شخصي ښوونځی</comment>
     </data>
+    <data name="PRIVATE" xml:space="preserve">
+        <value>شخصي</value>
+        <comment>شخصي ښوونځی</comment>
+    </data>
+    <data name="VIDEO" xml:space="preserve">
+        <value>ویډیو</value>
+        <comment>د زده کړې مواد ویډیو</comment>
+    </data>
+    <data name="DOCUMENT" xml:space="preserve">
+        <value>سند</value>
+        <comment>د زده کړې مواد سند</comment>
+    </data>
+    <data name="AUDIO" xml:space="preserve">
+        <value>غږیز</value>
+        <comment>د زده کړې مواد غږیز</comment>
+    </data>
+    <data name="IMAGE" xml:space="preserve">
+        <value>انځور</value>
+        <comment>د زده کړې مواد ډول انځور</comment>
+    </data>
+    <data name="PDF" xml:space="preserve">
+        <value>PDF</value>
+        <comment>د زده کړې مواد ډول PDF</comment>
+    </data>
+    <data name="PRESENTATION" xml:space="preserve">
+        <value>پریزنټیشن</value>
+        <comment>د زده کړې مواد ډول پریزنټیشن</comment>
+    </data>
+    <data name="SPREADSHEET" xml:space="preserve">
+        <value>سپریډشیټ</value>
+        <comment>د زده کړې مواد ډول سپریډشیټ</comment>
+    </data>
+    <data name="LINK" xml:space="preserve">
+        <value>لینک</value>
+        <comment>د زده کړې مواد لینک</comment>
+    </data>
+    <data name="CODE" xml:space="preserve">
+        <value>کوډ</value>
+        <comment>د زده کړې مواد ډول کوډ</comment>
+    </data>
 </root>

@@ -6,6 +6,7 @@ import { getUser } from "../helper/helper";
 import AppImg from "./AppImg";
 import { UserRole } from "../models/UserRole";
 import useUser from "../hooks/useUser";
+import settings from "../config/settings";
 
 const AppProfileDropdown: React.FC<DropdownItemProps> = ({
   dropdownKey,
@@ -47,7 +48,7 @@ const AppProfileDropdown: React.FC<DropdownItemProps> = ({
         <AppImg
           className="img-50 rounded-circle"
           alt={user.school.schoolName}
-          src={`http://0.0.0.0:5000/${user.school.logo}`}
+          src={`${settings.url}${user.school.logo}`}
         />
       );
     }

@@ -6,6 +6,7 @@
         "ps": "پښتو"
     },
     "logo": "لوگو",
+    "comingSoon": "به ځانګړې ورسره",
     "apiResponse": {
         "error": "یوه تېروتنه رامنځته شوه",
         "requestSent": "غوښتنه لا دمخه لیږل شوې",
@@ -191,9 +192,9 @@
                     "add": "صنف اضافه کړئ"
                 },
                 "courses": {
-                    "label": "د صنف مضامین",
-                    "list": "د صنف مضامینو لیست",
-                    "add": "د صنف مضمون اضافه کړئ"
+                    "label": "درسی صنف",
+                    "list": "د درسی صنفونه لیست",
+                    "add": "صنفی درس اضافه کړئ"
                 },
                 "timeTable": {
                     "label": "مهالوېش",
@@ -774,6 +775,29 @@
         },
         "subjectAndClass": {
             "label": "صنف او مضمون"
+        },
+        "courseEditor": {
+            "label": "د درسی صنف سمونګر",
+            "tabs": {
+                "course": {
+                    "label": "د درسی صنف"
+                },
+                "courseMaterial": {
+                    "label": "د درسی مواد"
+                },
+                "assignments": {
+                    "label": "وظایف"
+                },
+                "quizzes": {
+                    "label": "کویزونه"
+                },
+                "exams": {
+                    "label": "امتحانونه"
+                },
+                "onlineClass": {
+                    "label": "آنلاین صنف"
+                }
+            }
         }
     },
     "dayOfWeek": {
@@ -913,5 +937,56 @@
         "schoolTypeList": {
             "label": "د ښوونځي ډول لیست"
         }
+    },
+    "plyr": {
+        "play": "پیل",
+        "pause": "درول",
+        "pip": "تصویر په تصویر",
+        "enterFullscreen": "پوره پرده ته دننه شئ",
+        "exitFullscreen": "پوره پرده څخه ووځئ",
+        "quality": "کیفیت",
+        "speed": "چټکتیا",
+        "normal": "معمولي",
+        "subtitles": "سرلیکونه",
+        "subtitlesOff": "سرلیکونه بند",
+        "mute": "غلي",
+        "unmute": "غلي نه کول",
+        "volume": "غږ",
+        "rewind": "بیرته وګرځئ",
+        "fastForward": "مخکې لاړ شئ",
+        "settings": "تنظیمات"
+    },
+    "courseChapter": {
+        "label": "د درسي ټولګي فصل",
+        "list": {
+            "label": "د درسي ټولګي فصلونو لیست"
+        },
+        "add": {
+            "label": "د درسي ټولګي فصل اضافه کړئ"
+        }
+    },
+    "learningMaterial": {
+        "label": "د زده کوونکو مواد",
+        "list": {
+            "label": "د زده کوونکو مواد لیست"
+        },
+        "add": {
+            "label": "د زده کوونکو مواد اضافه کړئ"
+        },
+        "title": {
+            "label": "سرلیک"
+        },
+        "description": {
+            "label": "د زده کوونکو مواد توضیحات"
+        },
+        "file": {
+            "label": "د زده کره مواد مسوده"
+        },
+        "type": {
+            "label": "ډول"
+        }
+    },
+    "learningMaterialType": {
+        "label": "د زده کوونکو مواد ډول"
     }
 }

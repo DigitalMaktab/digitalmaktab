@@ -1,6 +1,7 @@
 {
     "appName": "Digital Maktab",
     "logo": "Logo",
+    "comingSoon": "Coming Soon",
     "apiResponse": {
         "error": "An error occured",
         "requestSent": "Request is alreay sent",
@@ -774,6 +775,29 @@
         },
         "subjectAndClass": {
             "label": "Class and Subject"
+        },
+        "courseEditor": {
+            "label": "Course",
+            "tabs": {
+                "course": {
+                    "label": "Course"
+                },
+                "courseMaterial": {
+                    "label": "Course Material"
+                },
+                "assignments": {
+                    "label": "Assignments"
+                },
+                "quizzes": {
+                    "label": "Quizzes"
+                },
+                "exams": {
+                    "label": "Exams"
+                },
+                "onlineClass": {
+                    "label": "Online Class"
+                }
+            }
         }
     },
     "dayOfWeek": {
@@ -913,5 +937,62 @@
         "schoolTypeList": {
             "label": "School Type List"
         }
+    },
+    "plyr": {
+        "play": "Play",
+        "pause": "Pause",
+        "pip": "PIP",
+        "enterFullscreen": "Enter Fullscreen",
+        "exitFullscreen": "Exit Fullscreen",
+        "quality": "Quality",
+        "speed": "Speed",
+        "normal": "Normal",
+        "subtitles": "Subtitles",
+        "subtitlesOff": "Subtitles off",
+        "mute": "Mute",
+        "unmute": "Unmute",
+        "volume": "Volume",
+        "rewind": "Rewind",
+        "fastForward": "Forward",
+        "settings": "Settings"
+    },
+    "courseChapter": {
+        "label": "Course Chapter",
+        "list": {
+            "label": "Course Chapter List"
+        },
+        "add": {
+            "label": "Add Chapter Section"
+        },
+        "title": {
+            "label": "Chapter Title"
+        },
+        "description": {
+            "label": "Chapter Description"
+        }
+    },
+    "learningMaterial": {
+        "label": "Learning Material",
+        "list": {
+            "label": "Learning Material List"
+        },
+        "add": {
+            "label": "Add Learning Material"
+        },
+        "title": {
+            "label": "Material Title"
+        },
+        "description": {
+            "label": "Material Description"
+        },
+        "file": {
+            "label": "Material File"
+        },
+        "type": {
+            "label": "Material Type"
+        }
+    },
+    "learningMaterialType": {
+        "label": "Learning Material Type"
     }
 }

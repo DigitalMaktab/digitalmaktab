@@ -1,5 +1,6 @@
 import { ResponseResult } from "../../../dtos/ResultEnum";
 import { UserRole } from "../../../models/UserRole";
+import { Action } from "./TableActionPrps";
 
 export interface Column<T> {
   header: string;
@@ -60,4 +61,5 @@ export interface RoleSpecificTableProps<T> {
   addRoute: string;
   rowLinkTemplate: string;
   columns?: Column<T>[];
+  actions?: Action[];
 }

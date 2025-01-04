@@ -1,0 +1,34 @@
+export interface VideoPlayerProps {
+  src: string;
+  contentType?: string;
+  poster?: string;
+  title?: string;
+  autoplay?: boolean;
+  loop?: boolean;
+  muted?: boolean;
+  playsinline?: boolean;
+  controls?: boolean;
+  className?: string;
+  onReady?: (player: any) => void;
+  onPlay?: (event: any) => void;
+  onPause?: (event: any) => void;
+  onEnd?: (event: any) => void;
+  onSeeked?: (event: any) => void;
+  onTimeUpdate?: (event: any) => void;
+  onEnterFullscreen?: (event: any) => void;
+  onExitFullscreen?: (event: any) => void;
+  onVolumeChange?: (event: any) => void;
+  onRateChange?: (event: any) => void;
+  onCaptionsEnabled?: (event: any) => void;
+  onCaptionsDisabled?: (event: any) => void;
+  onLanguageChange?: (event: any) => void;
+  onControlsHidden?: (event: any) => void;
+  onControlsShown?: (event: any) => void;
+  onQualityChange?: (event: any) => void;
+  onSpeedChange?: (event: any) => void;
+  onSourceChange?: (event: any) => void;
+  onPictureInPictureEnter?: (event: any) => void;
+  onPictureInPictureLeave?: (event: any) => void;
+  onFullscreenChange?: (event: any) => void;
+  onFullscreenError?: (event: any) => void;
+}

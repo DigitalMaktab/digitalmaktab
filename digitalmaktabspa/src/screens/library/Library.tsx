@@ -6,6 +6,7 @@ import AppCard from "../../components/card/AppCard";
 import { useAppLocalizer } from "../../hooks/useAppLocalizer";
 import AppTable from "../../components/table/AppTable";
 import AppLibraryPdfPreview from "../../components/pdf/AppLibraryPdfPreview";
+import settings from "../../config/settings";
 
 const Library = () => {
   const { t } = useAppLocalizer();
@@ -63,7 +64,7 @@ const Library = () => {
           isVisible={showModal}
           onClose={() => setShowModal(false)}
           title={selectedRows[0].bookTitle}
-          pdfUrl={`http://192.168.8.142:5000/${selectedRows[0].bookPath}`}
+          pdfUrl={`${settings.url}${selectedRows[0].bookPath}`}
         />
       )}
     </AppCard>

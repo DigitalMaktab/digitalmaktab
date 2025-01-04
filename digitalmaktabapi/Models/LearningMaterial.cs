@@ -12,9 +12,12 @@ namespace digitalmaktabapi.Models
         public required string Title { get; set; }
         public required string Description { get; set; }
         public string? FilePath { get; set; }
+        public string? FileName { get; set; }
+        public string? ContentType { get; set; }
+
         public required LearningMaterialType LearningMaterialType { get; set; }
         public string? ThumbnailPath { get; set; }
-        public required string CourseId { get; set; }
-        public required Course Course { get; set; }
+        public required Guid CourseSectionId { get; set; }
+        public required CourseSection CourseSection { get; set; }
     }
 }

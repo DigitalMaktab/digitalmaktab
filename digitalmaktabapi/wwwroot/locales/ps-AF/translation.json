@@ -1,13 +1,992 @@
 {
     "appName": "دیجیتالی مکتب",
     "languages": {
-        "en": "انگلیسی",
-        "fa": "دری",
-        "ps": "پشتو"
+        "en": "انګلیسي",
+        "fa": "دري",
+        "ps": "پښتو"
+    },
+    "logo": "لوگو",
+    "comingSoon": "به ځانګړې ورسره",
+    "apiResponse": {
+        "error": "یوه تېروتنه رامنځته شوه",
+        "requestSent": "غوښتنه لا دمخه لیږل شوې",
+        "unknownError": "نامعلومه تېروتنه رامنځته شوه",
+        "foreignKeyError": "عملیه بشپړ نشوه ځکه چې توکي له نورو ریکارډونو سره تړاو لري."
+    },
+    "close": {
+        "label": "بندول"
+    },
+    "slogan": {
+        "label": "زده کړه، جوړول، بدلون",
+        "learn": "زده کړه",
+        "create": "جوړول",
+        "change": "بدلون"
+    },
+    "controls": {
+        "fileInput": {
+            "button": "فایل غوره کړئ",
+            "placeholder": "هیڅ فایل نه دی غوره شوی"
+        },
+        "passwordInput": {
+            "show": "ښودل",
+            "hide": "پټول"
+        },
+        "wizard": {
+            "nextButton": {
+                "label": "بل"
+            },
+            "previousButton": {
+                "label": "مخکینی"
+            },
+            "finishButton": {
+                "label": "پای"
+            }
+        },
+        "select2": {
+            "loading": "بار کول...",
+            "errorLoading": "د پایلو بار کولو تېروتنه",
+            "inputTooLong": "مهرباني وکړئ {input} توري ړنګ کړئ",
+            "inputTooShort": "مهرباني وکړئ {remainingChars} یا زیات توري دننه کړئ",
+            "loadingMore": "نورې پایلې بار کول...",
+            "maximumSelected": "تاسو یوازې {maximum} توکي غوره کولی شئ",
+            "noResults": "هیڅ پایله ونه موندل شوه",
+            "searching": "لټون...",
+            "country": {
+                "label": "هیواد غوره کړئ"
+            },
+            "branch": {
+                "label": "څانګه غوره کړئ"
+            },
+            "classType": {
+                "label": "د صنف ډول غوره کړئ"
+            },
+            "shift": {
+                "label": "وخت غوره کړئ"
+            },
+            "className": {
+                "label": "د صنف نوم"
+            }
+        },
+        "saveButton": {
+            "label": "خوندي کول"
+        }
     },
     "auth": {
+        "email": {
+            "label": "بریښنالیک پته",
+            "placeholder": "info@email.com",
+            "validation": {
+                "required": "بریښنالیک اړین دی",
+                "invalid": "بریښنالیک ناسم دی"
+            }
+        },
+        "password": {
+            "label": "پټ نوم",
+            "placeholder": "*******",
+            "validation": {
+                "required": "پټ نوم اړین دی",
+                "atLeast8Chars": "پټ نوم باید لږترلږه ۸ توري ولري"
+            }
+        },
+        "login": {
+            "login": "ننوتل",
+            "headerText": "حساب ته ننوتل",
+            "headerLabel": "خپل بریښنالیک او پټ نوم دننه کړئ",
+            "rememberPassword": "پټ نوم په یاد ولرئ",
+            "forgotPassword": "پټ نوم مو هیر شوی؟",
+            "dontHaveAccount": "حساب نلرئ",
+            "createAccount": "حساب جوړ کړئ",
+            "unauthorized": "غیر مجاز پایله، ناسم بریښنالیک یا پټ نوم"
+        },
         "signup": {
-            "createAccount": "ایجاد حساب"
+            "createAccount": "حساب جوړ کړئ",
+            "specifications": "د راجستر کولو لپاره لاندې معلومات ورکړئ",
+            "about": {
+                "label": "په اړه",
+                "description": "د ښوونځي معلومات اضافه کړئ"
+            },
+            "address": {
+                "label": "پته",
+                "description": "د پتې معلومات اضافه کړئ"
+            },
+            "verify": {
+                "label": "تصدیق",
+                "description": "معلومات تصدیق کړئ"
+            },
+            "schoolName": {
+                "label": "د ښوونځي نوم",
+                "placeholder": "صبح امید ښوونځی",
+                "validation": {
+                    "required": "د ښوونځي نوم اړین دی"
+                }
+            },
+            "code": {
+                "label": "کوډ",
+                "placeholder": "12345",
+                "validation": {
+                    "required": "د ښوونځي کوډ اړین دی"
+                }
+            },
+            "phoneNumber": {
+                "label": "د اړیکې شمېره",
+                "placeholder": "787446099",
+                "validation": {
+                    "required": "د اړیکې شمېره اړینه ده"
+                }
+            },
+            "countryId": {
+                "label": "هیواد",
+                "placeholder": "AF",
+                "validation": {
+                    "required": "هیواد اړین دی"
+                }
+            },
+            "logo": {
+                "label": "لوګو",
+                "placeholder": "لوګو غوره کړئ"
+            }
         }
+    },
+    "header": {
+        "search": {
+            "placeholder": "هر څه ولټوئ..."
+        },
+        "user": {
+            "name": "وید وارن",
+            "role": "UI ډیزاینر",
+            "actions": {
+                "account": "حساب",
+                "logout": "وتل"
+            }
+        }
+    },
+    "sidebar": {
+        "general": {
+            "label": "عمومي",
+            "menues": {
+                "dashboard": "ډشبورډ",
+                "calendarYear": {
+                    "label": "کالنی کال",
+                    "list": "د کالنی کال لیست",
+                    "add": "کالنی کال اضافه کړئ"
+                },
+                "subjects": {
+                    "label": "مضامین",
+                    "list": "د مضامینو لیست",
+                    "add": "مضمون اضافه کړئ"
+                },
+                "library": {
+                    "label": "کتابتون",
+                    "onlineLibrary": "آنلاین کتابتون",
+                    "list": "د کتابونو لیست",
+                    "add": "کتاب اضافه کړئ"
+                },
+                "branches": {
+                    "label": "څانګې",
+                    "list": "د څانګو لیست",
+                    "add": "څانګه اضافه کړئ"
+                },
+                "classes": {
+                    "label": "صنفونه",
+                    "list": "د صنفونو لیست",
+                    "add": "صنف اضافه کړئ"
+                },
+                "courses": {
+                    "label": "درسی صنف",
+                    "list": "د درسی صنفونه لیست",
+                    "add": "صنفی درس اضافه کړئ"
+                },
+                "timeTable": {
+                    "label": "مهالوېش",
+                    "list": "مهالوېش",
+                    "add": "مهالوېش اضافه کړئ"
+                }
+            }
+        },
+        "teachers": {
+            "label": "ښوونکي",
+            "menues": {
+                "list": "د ښوونکو لیست",
+                "register": "ښوونکی راجستر کړئ"
+            }
+        },
+        "students": {
+            "label": "زده کوونکي",
+            "menues": {
+                "list": "د زده کوونکو لیست",
+                "register": "زده کوونکی راجستر کړئ"
+            }
+        },
+        "footer": {
+            "menu": {
+                "settings": "تنظیمات",
+                "defaults": "پرمختګونه",
+                "howToUseTheApp": "څنګه اپلیکیشن وکاروئ",
+                "suggestions": "وړاندیزونه",
+                "privacyPolicy": "د محرمیت تګلاره",
+                "about": "په اړه",
+                "termsOfService": "د خدمت شرایط",
+                "contactUs": "موږ سره اړیکه ونیسئ",
+                "feedback": "نظرونه",
+                "faq": "پرله پسې پوښتنې",
+                "appVersion": "نسخه: 1.0.0"
+            }
+        }
+    },
+    "breadcrumb": {
+        "title": "ډیفالټ ډشبورډ"
+    },
+    "public": {
+        "header": {
+            "back": "شاته",
+            "createAccount": {
+                "label": "حساب جوړ کړئ"
+            },
+            "home": {
+                "label": "کور"
+            },
+            "features": {
+                "label": "برخی"
+            }
+        },
+        "home": {
+            "kickStart": "خپل ښوونځي مدیریت سفر پیل کړئ!",
+            "details": "خپل ښوونځی په مؤثره توګه مدیریت کړئ، اړیکې ښه کړئ، او زده کوونکي او کارمندان ځواکمن کړئ—ټول په یوه ځواکمن سیسټم کې. نن ورځ خپل ښوونځي مدیریت ساده کړئ!"
+        },
+        "features": {
+            "description": "سیسټم د تعلیمي پروسو بشپړ مدیریت وړاندې کوي، چې اداري، علمي، او کتابتون اړوند کارونه پوښي",
+            "features": {
+                "schoolRegistry": {
+                    "title": "د ښوونځي راجستر",
+                    "description": "د ښوونځي راجستر د ښوونځي اړوند مهم معلومات مدیریت کوي، چې په کې د جوړښت، کارمندانو، او اداري جزئیات شامل دي."
+                },
+                "teacherRegistry": {
+                    "title": "د ښوونکو راجستر",
+                    "description": "د ښوونکو راجستر د ښوونکو پروفایلونه، وړتیاوې، او دندې مدیریت کوي، چې د کارمندانو معلوماتو سم تنظیم یقیني کوي."
+                },
+                "studentRegistry": {
+                    "title": "د زده کوونکو راجستر",
+                    "description": "د زده کوونکو راجستر د زده کوونکو معلومات په مؤثره توګه مدیریت کوي، چې په کې نوم لیکنه، شخصي جزئیات، علمي ریکارډونه، او حاضري شامل دي."
+                },
+                "classRegistry": {
+                    "title": "د صنفونو راجستر",
+                    "description": "د صنفونو راجستر د صنفونو مهالویش، مضامین، او د زده کوونکو دندې تنظیم او مدیریت کوي."
+                },
+                "subjects": {
+                    "title": "مضامین",
+                    "description": "د مضامینو ماډل د علمي مضامینو اړوند معلومات مدیریت کوي، چې په کې د کورس جزئیات، نصاب، او ټاکل شوي ښوونکي شامل دي."
+                },
+                "grades": {
+                    "title": "درجات",
+                    "description": "د درجاتو ماډل د زده کوونکو د فعالیتونو او ازموینو پایلو ثبت او تعقیب مدیریت کوي."
+                },
+                "attendance": {
+                    "title": "حاضري",
+                    "description": "د حاضري ماډل د زده کوونکو حاضري تعقیب او مدیریت کوي، چې د هغوی د شتون او غیرحاضري په اړه معلومات وړاندې کوي."
+                },
+                "library": {
+                    "title": "کتابتون",
+                    "description": "د کتابتون ماډل د کتابونو او منابعو کاتالوګ مدیریت کوي، چې په کې د افغانستان د معارف وزارت کتابونه شامل دي، او د پور او تعقیب اسانتیاوې وړاندې کوي."
+                }
+            }
+        },
+        "support": {
+            "title": "ملاتړ",
+            "description": "چټک ستونزې حل کول، او وقف شوي متخصصین د بې عیب تجربې لپاره",
+            "details": "موږ دا وړاندې کوو ځکه چې موږ فکر کوو چې غوره ملاتړ اړین دی",
+            "more": "زموږ بیاکتنې وګورئ د چټک او دقیق ملاتړ لپاره ترڅو ملاتړ یقیني کړئ. موږ د هر ډول ستونزو لپاره شپه او ورځ غوره مرسته وړاندې کوو. او موږ به هڅه وکړو چې تاسو سره د راتلونکو تازه معلوماتو لپاره وړیا مرسته وکړو."
+        },
+        "footer": {
+            "label": "دیجیتالی مکتب، ستاسو د ښوونځي لپاره یو باوري شریک."
+        }
+    },
+    "addressForm": {
+        "title": "پته",
+        "secondaryAddressTitle": "ثانوي پته",
+        "street": {
+            "label": "کوڅه",
+            "placeholder": "۱۲مه کوڅه",
+            "validation": {
+                "required": "کوڅه اړینه ده"
+            }
+        },
+        "village": {
+            "label": "پته ۲",
+            "placeholder": "اختیاري",
+            "validation": {
+                "required": "پته ۲ اړینه ده"
+            }
+        },
+        "region": {
+            "label": "سیمه",
+            "placeholder": "سیمه",
+            "validation": {
+                "required": "سیمه اړینه ده"
+            }
+        },
+        "postalCode": {
+            "label": "پوستي کوډ",
+            "placeholder": "۴۰۴۰",
+            "validation": {
+                "required": "پوستي کوډ اړین دی"
+            }
+        }
+    },
+    "profile": {
+        "label": "پروفایل",
+        "editProfile": {
+            "label": "پروفایل سمول"
+        }
+    },
+    "footer": {
+        "label": "په لاس جوړ شوی او د",
+        "copyright": "کاپی رایت ۲۰۲۴ © دیجیتالی مکتب"
+    },
+    "userRole": {
+        "admin": "ښوونځی",
+        "principal": "مدیر",
+        "headMaster": "سر ښوونکی",
+        "teacher": "ښوونکی",
+        "student": "زده کوونکی",
+        "rootUser": "اصلي کارونکی",
+        "unkown": "نامعلوم"
+    },
+    "class": {
+        "classList": {
+            "label": "د صنفونو لیست"
+        },
+        "addClass": {
+            "label": "صنف اضافه کړئ"
+        },
+        "title": "صنف",
+        "className": {
+            "label": "د صنف نوم",
+            "validation": {
+                "required": "د صنف نوم اړین دی"
+            }
+        },
+        "classType": {
+            "label": "د صنف ډول",
+            "validation": {
+                "required": "د صنف ډول اړین دی"
+            }
+        },
+        "shift": {
+            "label": "د صنف وخت"
+        }
+    },
+    "branch": {
+        "branchName": {
+            "label": "د څانګې نوم",
+            "validation": {
+                "required": "د څانګې نوم اړین دی"
+            }
+        },
+        "branchList": {
+            "label": "د څانګو لیست"
+        },
+        "addBranch": {
+            "label": "څانګه اضافه کړئ"
+        },
+        "title": "څانګه"
+    },
+    "shift": {
+        "label": "وخت",
+        "shiftList": {
+            "label": "د وخت لیست"
+        }
+    },
+    "gender": {
+        "label": "جنسیت",
+        "male": {
+            "label": "نارینه"
+        },
+        "female": {
+            "label": "ښځینه"
+        },
+        "genderList": {
+            "label": "د جنسیت لیست"
+        }
+    },
+    "teacher": {
+        "teacherName": "ناظر ښوونکی",
+        "teacherList": {
+            "label": "د ښوونکو لیست"
+        },
+        "registerTeacher": {
+            "label": "ښوونکی راجستر کړئ"
+        },
+        "firstName": {
+            "label": "د ښوونکي لومړی نوم"
+        },
+        "lastName": {
+            "label": "د ښوونکي تخلص"
+        },
+        "teacherEditor": {
+            "label": "د ښوونکي سمونګر",
+            "tabs": {
+                "profile": {
+                    "label": "پروفایل"
+                },
+                "classes": {
+                    "label": "صنفونه"
+                },
+                "schedules": {
+                    "lable": "مهالوېشونه"
+                }
+            }
+        }
+    },
+    "student": {
+        "label": "زده کوونکی",
+        "title": "د زده کوونکي جزئیات",
+        "studentList": {
+            "label": "د زده کوونکو لیست"
+        },
+        "registerStudent": {
+            "label": "زده کوونکی راجستر کړئ"
+        },
+        "firstNameNative": {
+            "label": "لومړی نوم"
+        },
+        "lastNameNative": {
+            "label": "تخلص"
+        },
+        "fatherNameNative": {
+            "label": "د پلار نوم"
+        },
+        "grandFatherNameNative": {
+            "label": "د نیکه نوم"
+        },
+        "firstNameEnglish": {
+            "label": "لومړی نوم په انګلیسي"
+        },
+        "lastNameEnglish": {
+            "label": "تخلص په انګلیسي"
+        },
+        "fatherNameEnglish": {
+            "label": "د پلار نوم په انګلیسي"
+        },
+        "grandFatherNameEnglish": {
+            "label": "د نیکه نوم په انګلیسي"
+        },
+        "asasNumber": {
+            "label": "اساس نمبر"
+        },
+        "dateOfBirth": {
+            "label": "د زیږون نیټه"
+        },
+        "studentEditor": {
+            "label": "د زده کوونکي سمونګر",
+            "tabs": {
+                "profile": {
+                    "label": "پروفایل"
+                },
+                "class": {
+                    "label": "صنفونه"
+                },
+                "schedules": {
+                    "lable": "مهالوېشونه"
+                }
+            }
+        },
+        "relatives": {
+            "label": "خپلوان"
+        },
+        "brotherName": {
+            "label": "د ورور نوم"
+        },
+        "fUncleName": {
+            "label": "د پلار د اړخ تره نوم"
+        },
+        "fCousineName": {
+            "label": "د پلار د اړخ د تره زوی نوم"
+        },
+        "mUncleName": {
+            "label": "د مور د اړخ تره نوم"
+        },
+        "mCousineName": {
+            "label": "د مور د اړخ د تره زوی نوم"
+        },
+        "extraDetails": {
+            "label": "اضافي جزئیات"
+        },
+        "monthlyFee": {
+            "label": "میاشتي فیس"
+        }
+    },
+    "calendarYear": {
+        "label": "کالنی کال",
+        "year": {
+            "label": "کال"
+        },
+        "nativeYear": {
+            "label": "اصلي کال"
+        },
+        "add": {
+            "label": "کالنی کال اضافه کړئ"
+        },
+        "list": {
+            "label": "کالنی کالونه"
+        }
+    },
+    "enrollment": {
+        "label": "راجستر",
+        "enrolled": {
+            "label": "راجستر شوی"
+        }
+    },
+    "pagination": {
+        "next": "بل",
+        "previous": "مخکینی"
+    },
+    "filters": {
+        "button": {
+            "label": "لټون",
+            "reset": "فلټرونه ریسیټ کړئ"
+        },
+        "show": {
+            "label": "فلټرونه ښکاره کړئ"
+        },
+        "hide": {
+            "label": "فلټرونه پټ کړئ"
+        },
+        "implementation": {
+            "required": "د ({{value}}) پلي کول اړین دي"
+        }
+    },
+    "unauthorized": {
+        "header": {
+            "label": "غیر مجاز لاسرسی"
+        },
+        "message": {
+            "label": "تاسو د دې پاڼې د لیدلو اجازه نلرئ."
+        },
+        "backToHome": {
+            "label": "کور ته بیرته"
+        }
+    },
+    "welcomeCard": {
+        "welcome": {
+            "label": "ښه راغلاست ({{value}})"
+        },
+        "text": {
+            "label": "ډشبورډ ته ښه راغلاست! د زده کړې، ښوونې، او ښوونځي مدیریت ملاتړ لپاره وسایل او منابعو ته لاسرسی."
+        }
+    },
+    "schoolDashboard": {
+        "totalStudents": "ټول زده کوونکي",
+        "totalTeachers": "ټول ښوونکي",
+        "totalClasses": "ټول صنفونه",
+        "totalBranches": "ټول صنفي څانګې"
+    },
+    "studentGenderChart": {
+        "label": "د جنسیت ویش"
+    },
+    "teacherGenderChart": {
+        "label": "د جنسیت ویش"
+    },
+    "classBranchChart": {
+        "label": "د صنف څانګې ویش"
+    },
+    "classEnrollmentChart": {
+        "label": "د صنف راجستر",
+        "classes": {
+            "label": "صنفونه"
+        },
+        "enrollment": {
+            "label": "د راجستر شمیر"
+        }
+    },
+    "phoneNumber": {
+        "label": "د اړیکې شمېره",
+        "number": {
+            "label": "شمېره"
+        }
+    },
+    "timetable": {
+        "label": "مهالوېش",
+        "addTimeTable": {
+            "label": "مهالوېش اضافه کړئ"
+        },
+        "dayOfWeek": {
+            "label": "د اونۍ ورځ"
+        },
+        "hour1": {
+            "label": "لومړۍ ساعت"
+        },
+        "hour2": {
+            "label": "دوهمه ساعت"
+        },
+        "hour3": {
+            "label": "دریمه ساعت"
+        },
+        "hour4": {
+            "label": "څلورمه ساعت"
+        },
+        "hour5": {
+            "label": "پنځمه ساعت"
+        },
+        "hour6": {
+            "label": "شپږمه ساعت"
+        },
+        "hour7": {
+            "label": "اوومه ساعت"
+        },
+        "hour8": {
+            "label": "اتمه ساعت"
+        }
+    },
+    "validation": {
+        "required": "فیلډ ({{value}}) اړین دی",
+        "invalidEmail": "بریښنالیک ناسم دی",
+        "invalidPhoneNumber": "ناسمه اړیکه شمېره"
+    },
+    "asyncSelect": {
+        "noOptionsMessage": {
+            "label": "هیڅ اختیار ونه موندل شو"
+        },
+        "loading": {
+            "label": "بار کول..."
+        }
+    },
+    "library": {
+        "label": "کتابتون",
+        "noImageAvailable": "هیڅ انځور نشته",
+        "booksPerPage": {
+            "label": "{{value}} کتابونه په هر پاڼه کې"
+        },
+        "onlineLibrary": {
+            "label": "آنلاین کتابتون",
+            "unkownAuthor": {
+                "label": "نامعلوم"
+            },
+            "note": {
+                "label": "یادونه: تاسو اړتیا لرئ چې حساب جوړ کړئ ترڅو د کتابونو بشپړ نسخه په Open Library ویب پاڼه کې ولولئ."
+            }
+        },
+        "search": {
+            "placeholder": "کتابونه ولټوئ",
+            "label": "لټون"
+        },
+        "noResultsFound": {
+            "label": "هیڅ پایله ونه موندل شوه"
+        },
+        "readButton": {
+            "label": "ولولئ"
+        }
+    },
+    "book": {
+        "label": "کتاب",
+        "author": "لیکوال",
+        "bookTitle": {
+            "label": "د کتاب سرلیک",
+            "placeholder": "صنف 1 جغرافیه"
+        },
+        "file": {
+            "label": "د کتاب مسوده",
+            "placeholder": "Dari.pdf"
+        },
+        "addBook": {
+            "label": "کتاب اضافه کړئ"
+        },
+        "list": {
+            "label": "د کتابونو لیست"
+        }
+    },
+    "report": {
+        "header": {
+            "leftText": {
+                "label": "140"
+            },
+            "centerTextTop": {
+                "label": "د معارف وزارت"
+            },
+            "centerTextBottom": {
+                "label": "ریاست (                   )"
+            }
+        },
+        "footer": {
+            "pageNumber": {
+                "label": "پاڼه {{currentPage}} د {{totalPages}} څخه"
+            }
+        },
+        "title": {
+            "label": "راپور"
+        },
+        "print": {
+            "label": "چاپ"
+        },
+        "subject": {
+            "label": "موضوع"
+        },
+        "author": {
+            "label": "لیکوال"
+        }
+    },
+    "table": {
+        "pageSize": {
+            "label": "د پاڼې اندازه"
+        },
+        "loading": {
+            "label": "بار کول..."
+        },
+        "noData": {
+            "label": "هیڅ معلومات شتون نلري"
+        },
+        "error": {
+            "label": "د معلوماتو بار کولو پر مهال یوه تېروتنه رامنځته شوه."
+        },
+        "actions": {
+            "label": "عملیات"
+        }
+    },
+    "status": {
+        "label": "حالت",
+        "active": {
+            "label": "فعال"
+        },
+        "inactive": {
+            "label": "غیرفعال"
+        }
+    },
+    "subject": {
+        "label": "مضمون",
+        "subjectName": {
+            "label": "د مضمون نوم"
+        },
+        "add": {
+            "label": "مضمون اضافه کړئ"
+        },
+        "list": {
+            "label": "د مضامینو لیست"
+        }
+    },
+    "course": {
+        "label": "د صنف مضمون",
+        "total": {
+            "label": "ټول صنفي مضامین"
+        },
+        "add": {
+            "label": "د صنف مضمون اضافه کړئ"
+        },
+        "list": {
+            "label": "د صنف مضامینو لیست"
+        },
+        "subjectAndClass": {
+            "label": "صنف او مضمون"
+        },
+        "courseEditor": {
+            "label": "د درسی صنف سمونګر",
+            "tabs": {
+                "course": {
+                    "label": "د درسی صنف"
+                },
+                "courseMaterial": {
+                    "label": "د درسی مواد"
+                },
+                "assignments": {
+                    "label": "وظایف"
+                },
+                "quizzes": {
+                    "label": "کویزونه"
+                },
+                "exams": {
+                    "label": "امتحانونه"
+                },
+                "onlineClass": {
+                    "label": "آنلاین صنف"
+                }
+            }
+        }
+    },
+    "dayOfWeek": {
+        "label": "د اونۍ ورځ"
+    },
+    "scheduleTime": {
+        "label": "د مهالویش وخت",
+        "scheduleTimeList": {
+            "label": "د مهالویش وخت لیست"
+        }
+    },
+    "nationalId": {
+        "title": "ملي پیژندپاڼه",
+        "electronicNationalIdNumber": {
+            "label": "الکترونیکي ملي پیژندپاڼه شمېره",
+            "placeholder": "الکترونیکي ملي پیژندپاڼه شمېره"
+        },
+        "nationalIdNumber": {
+            "label": "ملي پیژندپاڼه شمېره",
+            "placeholder": "ملي پیژندپاڼه شمېره"
+        },
+        "volume": {
+            "label": "جلد",
+            "placeholder": "جلد"
+        },
+        "page": {
+            "label": "پاڼه",
+            "placeholder": "پاڼه"
+        },
+        "registerNumber": {
+            "label": "راجستر شمېره",
+            "placeholder": "راجستر شمېره"
+        }
+    },
+    "bloodGroup": {
+        "label": "د وینې ګروپ",
+        "bloodGroupList": {
+            "label": "د وینې ګروپ لیست"
+        }
+    },
+    "disabilityType": {
+        "label": "د معلولیت ډول"
+    },
+    "isOrphan": {
+        "label": "یتیم دی؟",
+        "isOrphanList": {
+            "label": "د یتیمانو لیست"
+        }
+    },
+    "language": {
+        "label": "مورنۍ ژبه",
+        "languageList": {
+            "label": "د ژبو لیست"
+        }
+    },
+    "privacyPolicy": {
+        "header": {
+            "title": "د محرمیت تګلاره",
+            "subtitle": "زموږ د معلوماتو د مسؤلیت سره چلند زده کړئ"
+        },
+        "intro": "زموږ په ښوونځي کې، موږ ستاسو محرمیت ته ارزښت ورکوو. لاندې، تاسو کولی شئ زموږ د محرمیت کړنو جزئیات ومومئ.",
+        "personalData": {
+            "title": "د شخصي معلوماتو راټولول",
+            "description": "موږ شخصي معلومات لکه نومونه، بریښنالیکونه، او د اړیکې معلومات راټولوو ترڅو غوره خدمات وړاندې کړو."
+        },
+        "dataUsage": {
+            "title": "څنګه ستاسو معلومات کاروو",
+            "description": "ستاسو معلومات د ښوونځي عملیاتو ښه کولو، خدماتو وړاندې کولو، او خوندي چاپیریال یقیني کولو لپاره کارول کیږي."
+        },
+        "thirdParties": {
+            "title": "دریمې ډلې سره شریکول",
+            "description": "موږ ستاسو معلومات پرته له ستاسو د رضایت څخه دریمو ډلو سره نه شریکوو، پرته له دې چې د قانون له مخې اړین وي."
+        },
+        "dataRetention": {
+            "title": "د معلوماتو ساتنې تګلاره",
+            "description": "موږ ستاسو معلومات تر هغه وخته ساتو چې د دې پالیسۍ په اړه بیان شوي موخو پوره کولو لپاره اړین وي."
+        },
+        "rights": {
+            "title": "ستاسو حقوق",
+            "description": "تاسو حق لرئ چې خپل معلوماتو ته لاسرسی، تازه کول، یا حذف کړئ. د دې حقوقو د کارولو لپاره موږ سره اړیکه ونیسئ."
+        },
+        "footer": {
+            "back": "شاته"
+        }
+    },
+    "country": {
+        "countryList": {
+            "label": "د هیوادونو لیست"
+        },
+        "countryName": {
+            "label": "د هیواد نوم"
+        }
+    },
+    "classType": {
+        "classTypeList": {
+            "label": "د صنف ډول لیست"
+        },
+        "classTypeName": {
+            "label": "د صنف ډول نوم"
+        }
+    },
+    "disability": {
+        "disabilityList": {
+            "label": "د معلولیت لیست"
+        }
+    },
+    "examType": {
+        "examTypeList": {
+            "label": "د ازموینې ډول لیست"
+        }
+    },
+    "month": {
+        "monthList": {
+            "label": "د میاشتو لیست"
+        }
+    },
+    "day": {
+        "dayList": {
+            "label": "د ورځو لیست"
+        }
+    },
+    "addressType": {
+        "addressTypeList": {
+            "label": "د پتې ډول لیست"
+        }
+    },
+    "enum": {
+        "name": {
+            "label": "نوم"
+        }
+    },
+    "schoolType": {
+        "label": "د ښوونځي ډول",
+        "validation": {
+            "required": "د ښوونځي ډول اړین دی"
+        },
+        "schoolTypeList": {
+            "label": "د ښوونځي ډول لیست"
+        }
+    },
+    "plyr": {
+        "play": "پیل",
+        "pause": "درول",
+        "pip": "تصویر په تصویر",
+        "enterFullscreen": "پوره پرده ته دننه شئ",
+        "exitFullscreen": "پوره پرده څخه ووځئ",
+        "quality": "کیفیت",
+        "speed": "چټکتیا",
+        "normal": "معمولي",
+        "subtitles": "سرلیکونه",
+        "subtitlesOff": "سرلیکونه بند",
+        "mute": "غلي",
+        "unmute": "غلي نه کول",
+        "volume": "غږ",
+        "rewind": "بیرته وګرځئ",
+        "fastForward": "مخکې لاړ شئ",
+        "settings": "تنظیمات"
+    },
+    "courseChapter": {
+        "label": "د درسي ټولګي فصل",
+        "list": {
+            "label": "د درسي ټولګي فصلونو لیست"
+        },
+        "add": {
+            "label": "د درسي ټولګي فصل اضافه کړئ"
+        }
+    },
+    "learningMaterial": {
+        "label": "د زده کوونکو مواد",
+        "list": {
+            "label": "د زده کوونکو مواد لیست"
+        },
+        "add": {
+            "label": "د زده کوونکو مواد اضافه کړئ"
+        },
+        "title": {
+            "label": "سرلیک"
+        },
+        "description": {
+            "label": "د زده کوونکو مواد توضیحات"
+        },
+        "file": {
+            "label": "د زده کره مواد مسوده"
+        },
+        "type": {
+            "label": "ډول"
+        }
+    },
+    "learningMaterialType": {
+        "label": "د زده کوونکو مواد ډول"
     }
 }

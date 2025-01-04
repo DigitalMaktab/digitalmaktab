@@ -21,6 +21,7 @@ using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
@@ -28,8 +29,13 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using RestSharp;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Configuration
+    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+    .AddEnvironmentVariables();
 
 // Add services to the container.
 // Add Localization
@@ -91,10 +97,13 @@ builder.Services.AddSwaggerGen(a =>
 // Add DataContext
 // builder.Services.AddDbContext<DataContext>(x => x.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")).EnableSensitiveDataLogging());
 var connectionString = builder.Configuration.GetConnectionString("MySqlConnection");
+// builder.Services.AddDbContext<DataContext>(options =>
+//     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString),
+//     options => options.EnableStringComparisonTranslations())
+// );
+
 builder.Services.AddDbContext<DataContext>(options =>
-    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString),
-    options => options.EnableStringComparisonTranslations())
-);
+    options.UseNpgsql(connectionString));
 
 // Adding Cross Origin Resrouce Sharing Policy
 
@@ -127,6 +136,8 @@ builder.Services.AddScoped<IValidator<AttendanceAddDto>, AttendanceAddDtoValidat
 builder.Services.AddScoped<IValidator<AddGradeDto>, AddGradeDtoValidator>();
 builder.Services.AddScoped<IValidator<GradeAddDto>, GradeAddDtoValidator>();
 builder.Services.AddScoped<IValidator<AddRootUserDto>, AddRootUserDtoValidator>();
+builder.Services.AddScoped<IValidator<AddCourseSectionDto>, AddCourseSectionDtoValidator>();
+builder.Services.AddScoped<IValidator<AddLearningMaterialDto>, AddLearningMaterialDtoValidator>();
 
 // Add Data Seeder
 // Add Seeds
@@ -206,7 +217,62 @@ builder.Services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new 
 //     });
 // });
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowNgrok", builder =>
+    {
+        builder.WithOrigins("https://72a3-2001-4bb8-2cc-1aaa-1d6e-9c24-8ab3-95b9.ngrok-free.app")
+               .AllowAnyHeader()
+               .AllowAnyMethod();
+    });
+});
+
 builder.Services.AddCors();
+
+// Zoom settings
+// builder.Services.AddAuthentication(options =>
+// {
+//     options.DefaultScheme = "Cookie";
+//     options.DefaultChallengeScheme = "Zoom";
+
+// })
+// .AddCookie("Cookie")
+// .AddOAuth("Zoom", options =>
+// {
+//     options.ClientId = builder.Configuration.GetSection("ZoomSettings:ClientId").Value!;
+//     options.ClientSecret = builder.Configuration.GetSection("ZoomSettings:ClientSecrect").Value!;
+//     options.CallbackPath = "/oauth/callback";
+
+//     options.AuthorizationEndpoint = "https://zoom.us/oauth/authorize";
+//     options.TokenEndpoint = "https://zoom.us/oauth/token";
+//     options.SaveTokens = true;
+
+//     options.Scope.Add("meeting:write");
+//     options.Scope.Add("user:read");
+
+//     options.Events = new Microsoft.AspNetCore.Authentication.OAuth.OAuthEvents
+//     {
+//         OnCreatingTicket = async context =>
+//         {
+//             var request = new RestRequest("https://api.zoom.us/v2/users/me", Method.Get);
+//             request.AddHeader("Authorization", $"Bearer {context.AccessToken}");
+//             var client = new RestClient();
+//             var response = await client.ExecuteAsync(request);
+
+//             //TODO: Save user information if needed
+//         }
+//     };
+// });
+
+builder.Services.Configure<FormOptions>(options =>
+{
+    options.MultipartBodyLengthLimit = 1024 * 1024 * 1024; // Set limit to 1 GB
+});
+
+
+// Add Logging
+builder.Logging.AddConsole();
+builder.Logging.AddDebug();
 
 var app = builder.Build();
 
@@ -341,7 +407,14 @@ if (app.Environment.IsProduction())
     app.UseHttpsRedirection();
 }
 
+app.Use(async (context, next) =>
+{
+    context.Request.EnableBuffering(); // Enable buffering for large requests
+    await next();
+});
+
 app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+app.UseCors("AllowNgrok");
 
 app.UseIpRateLimiting();
 

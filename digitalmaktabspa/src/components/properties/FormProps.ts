@@ -3,7 +3,7 @@ export interface FormProps<T = any> {
   initialValues: T;
   onSubmit: (values: T) => void;
   validationSchema?: Yup.AnyObjectSchema;
-  children: React.ReactNode;
+  children?: React.ReactNode;
   reset?: boolean;
 }
 

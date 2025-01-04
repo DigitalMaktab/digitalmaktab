@@ -14,10 +14,11 @@ const AppFormInput: React.FC<FormInputProps> = memo(
     maxLength,
     required = false,
     phoneNumber,
+    touched,
     ...props
   }) => {
     const [field, meta] = useField(name);
-    const { setFieldValue } = useFormikContext();
+    const { setFieldValue, setFieldTouched } = useFormikContext();
 
     // Get error message if exists
     const error = meta.error && meta.touched ? meta.error : null;
@@ -33,8 +34,10 @@ const AppFormInput: React.FC<FormInputProps> = memo(
           minLength={minLength ?? undefined}
           maxLength={maxLength ?? undefined}
           required={required}
+          touched={touched}
           onBlur={field.onBlur}
           onChange={field.onChange}
+          setFieldTouched={setFieldTouched}
           phoneNumber={phoneNumber}
           aria-invalid={!!error}
           aria-describedby={error ? `${name}-error` : undefined}

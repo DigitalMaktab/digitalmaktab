@@ -16,6 +16,8 @@ type BaseEditorProps<T> = {
         formData: T;
         updateFormData: (data: Partial<T>) => void;
       }) => React.ReactNode);
+
+  actions?: React.ReactNode;
 };
 
 const AppBaseEditor = <T extends Record<string, any>>({
@@ -25,6 +27,7 @@ const AppBaseEditor = <T extends Record<string, any>>({
   onSubmit,
   title,
   children,
+  actions,
 }: BaseEditorProps<T>) => {
   const { t } = useAppLocalizer();
 
@@ -52,6 +55,7 @@ const AppBaseEditor = <T extends Record<string, any>>({
       initialValues={formData}
       onSubmit={submitData}
       validationSchema={validationSchema}
+      actions={actions}
     >
       {typeof children === "function"
         ? children({ formData, updateFormData })

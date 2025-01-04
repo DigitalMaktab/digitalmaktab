@@ -19,6 +19,8 @@ namespace digitalmaktabapi.Helpers.Mappers
             this.localizer = ServiceLocator.ServiceProvider!.GetService<IStringLocalizer<MainController>>()!;
             CreateMap<AttendanceAddDto, Attendance>();
             CreateMap<GradeAddDto, Grade>();
+            CreateMap<AddCourseSectionDto, CourseSection>();
+            CreateMap<AddLearningMaterialDto, LearningMaterial>();
 
             var customResolvers = new Dictionary<(Type Source, string SourceField), IMemberValueResolver<object, object, string, string>>
             {
@@ -28,7 +30,9 @@ namespace digitalmaktabapi.Helpers.Mappers
             MappingHelper.ApplyMappingConvention(this, typeof(Base), typeof(BaseDto), localizer, customResolvers,
                 (typeof(Teacher), typeof(TeacherDto)),
                 (typeof(Attendance), typeof(AttendanceDto)),
-                (typeof(Grade), typeof(GradeDto))
+                (typeof(Grade), typeof(GradeDto)),
+                (typeof(CourseSection), typeof(CourseSectionDto)),
+                (typeof(LearningMaterial), typeof(LearningMaterialDto))
             );
         }
     }

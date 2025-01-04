@@ -14,7 +14,9 @@ const AppInput: React.FC<
   value,
   required = false,
   setFieldValue,
+  setFieldTouched,
   phoneNumber,
+  touched,
   ...rest
 }) => {
   const [phoneInput, setPhoneInput] = useState<PhoneNumberValue>({
@@ -48,7 +50,10 @@ const AppInput: React.FC<
         name={name}
         label={label}
         id={name}
+        touched={touched}
         setFieldValue={setFieldValue}
+        setFieldTouched={setFieldTouched}
+        required={required}
         rest={rest}
       />
     );
@@ -76,6 +81,26 @@ const AppInput: React.FC<
         phonenumbervalue={phoneInput}
         countryIdName="phoneNumber.countryId"
       />
+    );
+  } else if (type === "textArea") {
+    return (
+      <div className="form-group">
+        <label className="form-label" htmlFor={name}>
+          {label} {required && "*"}
+        </label>
+        <textarea
+          className="form-control"
+          id={name}
+          cols={30}
+          rows={5}
+          maxLength={500}
+          wrap="hard"
+          name={name}
+          placeholder={placeholder}
+          defaultValue={value}
+          {...(rest as React.TextareaHTMLAttributes<HTMLTextAreaElement>)}
+        />
+      </div>
     );
   }
 

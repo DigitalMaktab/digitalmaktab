@@ -40,7 +40,7 @@ const AppSelect2: React.FC<Select2Props> = ({
     <div className="form-group">
       {label && showLable && (
         <label className="form-label" htmlFor={name}>
-          {label}
+          {label} {required && "*"}
         </label>
       )}
       <select

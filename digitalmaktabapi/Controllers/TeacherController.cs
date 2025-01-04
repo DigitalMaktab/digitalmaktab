@@ -9,6 +9,7 @@ using digitalmaktabapi.Dtos;
 using digitalmaktabapi.Headers;
 using digitalmaktabapi.Helpers;
 using digitalmaktabapi.Models;
+using digitalmaktabapi.Services.Upload;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
@@ -30,6 +31,8 @@ namespace digitalmaktabapi.Controllers
         private readonly ISchoolRepository schoolRepository = schoolRepository;
         private readonly IStudentRepository studentRepository = studentRepository;
         private readonly IStringLocalizer<MainController> mainLocalizer = mainLocalizer;
+
+        private readonly string LEARNING_MATERIALS_PATH = "/learningMaterials";
 
 
         [HttpGet]
@@ -62,7 +65,8 @@ namespace digitalmaktabapi.Controllers
             var schedules = await this.schoolRepository.GetSchedules(headerParams);
             var schedulesToReturn = this.mapper!.Map<ICollection<ScheduleDto>>(schedules);
             Response.AddPagintaion(schedules.CurrentPage, schedules.PageSize, schedules.TotalCount, schedules.TotalPages);
-            return Ok(schedulesToReturn);
+            var flattenedSchedules = Extensions.FlattenSchedules(schedulesToReturn, this.mainLocalizer);
+            return Ok(flattenedSchedules);
         }
 
         [HttpGet("students")]
@@ -152,6 +156,66 @@ namespace digitalmaktabapi.Controllers
             var gradesToReturn = this.mapper!.Map<ICollection<GradeDto>>(grades);
             Response.AddPagintaion(grades.CurrentPage, grades.PageSize, grades.TotalCount, grades.TotalPages);
             return Ok(gradesToReturn);
+        }
+
+
+        [RequestSizeLimit(1024 * 1024 * 1024)]
+        [RequestFormLimits(MultipartBodyLengthLimit = 1024 * 1024 * 1024)]
+        [HttpPost("addCourseSection")]
+        public async Task<IActionResult> AddCourseSection([FromForm] AddCourseSectionDto courseSectionDto)
+        {
+
+            var courseSection = this.mapper!.Map<CourseSection>(courseSectionDto);
+            courseSection.LearningMaterials = [];
+            courseSection.CreationUserId = this.Id;
+            courseSection.UpdateUserId = this.Id;
+
+            var schoolId = this.SchoolId;
+
+            var school = await this.schoolRepository.GetSchool(schoolId);
+
+            foreach (var materialDto in courseSectionDto.LearningMaterials)
+            {
+                var learningMaterial = this.mapper!.Map<LearningMaterial>(materialDto);
+                learningMaterial.CreationUserId = this.Id;
+                learningMaterial.UpdateUserId = this.Id;
+
+                if (materialDto.File != null)
+                {
+                    var uploadResponse = await Extensions.Upload(materialDto.File, school.Code.ToString() + LEARNING_MATERIALS_PATH);
+                    if (uploadResponse.Status == Status.SUCCESS)
+                    {
+                        learningMaterial.FilePath = uploadResponse.Path;
+                        learningMaterial.ContentType = materialDto.File.ContentType;
+                        learningMaterial.FileName = materialDto.File.FileName;
+                    }
+                }
+
+                if (materialDto.Thumbnail != null)
+                {
+                    var uploadResponse = await Extensions.Upload(materialDto.Thumbnail, school.Code.ToString() + LEARNING_MATERIALS_PATH);
+                    if (uploadResponse.Status == Status.SUCCESS)
+                    {
+                        learningMaterial.ThumbnailPath = uploadResponse.Path;
+                    }
+                }
+
+                courseSection.LearningMaterials.Add(learningMaterial);
+            }
+
+            this.repository.Add(courseSection);
+            await this.repository.SaveAll();
+            return Ok();
+        }
+
+        [HttpGet("courseSections")]
+        public async Task<IActionResult> GetCourseSections([FromQuery] CourseSectionParams courseSectionParams)
+        {
+            var headerParams = this.mapper!.Map<UserParams>(courseSectionParams);
+            headerParams.CalendarYearId = this.CalendarYearId;
+            var courseSections = await this.repository.GetCourseSections(headerParams);
+            var courseSectionsToReturn = this.mapper!.Map<ICollection<CourseSectionDto>>(courseSections);
+            return Ok(courseSectionsToReturn);
         }
 
 

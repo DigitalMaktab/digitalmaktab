@@ -36,8 +36,10 @@ namespace digitalmaktabapi.Models
         public required Teacher Teacher { get; set; }
 
         /// <summary>
-        /// Gets or sets the Learning Materials associated with this course.
+        /// Gets or sets the Course Sections associated with this course.
         /// </summary>
-        public required ICollection<LearningMaterial> LearningMaterials { get; set; } = [];
+        public required ICollection<CourseSection> CourseSections { get; set; } = [];
+
+
     }
 }

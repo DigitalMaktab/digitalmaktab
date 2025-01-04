@@ -172,6 +172,7 @@ namespace digitalmaktabapi.Data
             .ThenInclude(a => a.Subject)
             .Include(a => a.Course)
             .ThenInclude(a => a.Class)
+            .ThenInclude(a => a.Branch)
             .AsQueryable();
 
             if (userParams.ClassId.HasValue)

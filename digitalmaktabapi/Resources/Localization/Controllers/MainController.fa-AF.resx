@@ -448,4 +448,44 @@
         <value>خصوصی</value>
         <comment>مکتب خصوصی</comment>
     </data>
+    <data name="PRIVATE" xml:space="preserve">
+        <value>خصوصی</value>
+        <comment>مکتب خصوصی</comment>
+    </data>
+    <data name="VIDEO" xml:space="preserve">
+        <value>ویدیو</value>
+        <comment>مواد آموزشی ویدیو</comment>
+    </data>
+    <data name="DOCUMENT" xml:space="preserve">
+        <value>سند</value>
+        <comment>مواد آموزشی سند</comment>
+    </data>
+    <data name="AUDIO" xml:space="preserve">
+        <value>صوتی</value>
+        <comment>مواد آموزشی صوتی</comment>
+    </data>
+    <data name="IMAGE" xml:space="preserve">
+        <value>تصویر</value>
+        <comment>نوع مواد آموزشی تصویر</comment>
+    </data>
+    <data name="PDF" xml:space="preserve">
+        <value>PDF</value>
+        <comment>نوع مواد آموزشی PDF</comment>
+    </data>
+    <data name="PRESENTATION" xml:space="preserve">
+        <value>ارائه</value>
+        <comment>نوع مواد آموزشی ارائه</comment>
+    </data>
+    <data name="SPREADSHEET" xml:space="preserve">
+        <value>صفحه گسترده</value>
+        <comment>نوع مواد آموزشی صفحه گسترده</comment>
+    </data>
+    <data name="LINK" xml:space="preserve">
+        <value>لینک</value>
+        <comment>لینک مواد آموزشی</comment>
+    </data>
+    <data name="CODE" xml:space="preserve">
+        <value>کد</value>
+        <comment>نوع مواد آموزشی کد</comment>
+    </data>
 </root>

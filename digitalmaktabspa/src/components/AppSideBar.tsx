@@ -94,6 +94,12 @@ const AppSideBar: React.FC<AppSideBarProps> = ({ isOpen }) => {
             roles: [UserRole.ADMIN],
           },
           {
+            label: t("sidebar.general.menues.dashboard"),
+            icon: <AIIcons.AiOutlineHome className="stroke-icon" />,
+            link: "/teacher-dashboard",
+            roles: [UserRole.TEACHER],
+          },
+          {
             label: t("sidebar.general.menues.library.label"),
             icon: <AIIcons.AiOutlineBook className="stroke-icon" />,
             subMenu: [
@@ -161,6 +167,11 @@ const AppSideBar: React.FC<AppSideBarProps> = ({ isOpen }) => {
               {
                 label: t("sidebar.general.menues.timeTable.list"),
                 link: "/timetable",
+              },
+              {
+                label: t("sidebar.general.menues.timeTable.list"),
+                link: "/teacher-timetable",
+                roles: [UserRole.TEACHER],
               },
               {
                 label: t("sidebar.general.menues.timeTable.add"),

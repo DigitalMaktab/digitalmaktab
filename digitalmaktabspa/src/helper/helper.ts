@@ -159,6 +159,7 @@ const getValidationSchema = (
       type?: string;
       nested?: Record<string, any>;
       condition?: boolean | ((values: Record<string, any>) => boolean);
+      isArray?: boolean; // Indicates if the field is an array of objects
     }
   >,
   t: any
@@ -169,6 +170,7 @@ const getValidationSchema = (
       type?: string;
       nested?: Record<string, any>;
       condition?: boolean | ((values: Record<string, any>) => boolean);
+      isArray?: boolean;
     },
     values: Record<string, any>
   ) => {
@@ -180,14 +182,14 @@ const getValidationSchema = (
           : field.condition;
 
       if (!condition) {
-        // If the condition is not met, skip validation for this field
+        // Skip validation if condition is not met
         return Yup.mixed().notRequired();
       }
     }
 
     // Handle nested fields
     if (field.nested) {
-      return Yup.object(
+      const nestedSchema = Yup.object(
         Object.entries(field.nested).reduce((acc, [key, nestedField]) => {
           acc[key] = Yup.string().required(
             t("validation.required", { value: t(nestedField.label) })
@@ -195,20 +197,29 @@ const getValidationSchema = (
           return acc;
         }, {} as Record<string, Yup.StringSchema>)
       );
+
+      if (field.isArray) {
+        // Validate array of objects with nested fields
+        return Yup.array()
+          .of(nestedSchema)
+          .min(1, t("validation.arrayMin", { value: t(field.label) })) // Minimum one item in the array
+          .required(t("validation.required", { value: t(field.label) }));
+      }
+
+      return nestedSchema;
     }
 
-    // Default schema for string fields
+    // Default validation for string fields
     return Yup.string().required(
       t("validation.required", { value: t(field.label) })
     );
   };
 
-  // Build schema with Yup.lazy for conditional fields
+  // Build schema using Yup.lazy for conditional fields
   const schema = Object.entries(fields).reduce((acc, [key, field]) => {
     acc[key] = Yup.lazy((values: Record<string, any>) => {
-      // Ensure createFieldSchema always returns a valid Yup schema
       return createFieldSchema(field, values);
-    }) as unknown as Yup.Schema<any>; // Cast to unknown first, then to Yup.Schema
+    }) as unknown as Yup.Schema<any>; // Casting to Yup.Schema
     return acc;
   }, {} as Record<string, Yup.AnySchema>);
 

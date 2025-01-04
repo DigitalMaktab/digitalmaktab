@@ -10,6 +10,9 @@ using Newtonsoft.Json.Serialization;
 using digitalmaktabapi.Models;
 using FluentValidation;
 using Microsoft.Extensions.Localization;
+using digitalmaktabapi.Dtos;
+using digitalmaktabapi.Services.Upload;
+using digitalmaktabapi.Data;
 
 namespace digitalmaktabapi.Helpers
 {
@@ -156,5 +159,58 @@ namespace digitalmaktabapi.Helpers
                 .Must(file => file == null || allowedExtensions.Contains(Path.GetExtension(file.FileName).ToLower()))
                 .WithMessage(localizer["AllowedFileTypes", string.Join(", ", allowedExtensions)]);
         }
+
+
+        public static List<FlattenedScheduleDto> FlattenSchedules(IEnumerable<ScheduleDto> schedules, IStringLocalizer localizer)
+        {
+            var flattenedSchedules = new List<FlattenedScheduleDto>();
+
+            // Get all days of the week
+            var allDaysOfWeek = Enum.GetValues(typeof(Models.DayOfWeek)).Cast<Models.DayOfWeek>();
+
+            // Group schedules by DayOfWeek
+            var groupedByDay = schedules.GroupBy(s => s.DayOfWeek).ToDictionary(g => g.Key, g => g.ToList());
+
+            foreach (var day in allDaysOfWeek)
+            {
+                // Create a new FlattenedScheduleDto for the current day with additional null checks
+                var flattenedData = new FlattenedScheduleDto
+                {
+                    Day = localizer[day.ToString()].Value,
+                    Hour1 = groupedByDay.ContainsKey(day) && groupedByDay[day].FirstOrDefault(s => s.ScheduleTime == ScheduleTime.FIRST) != null ? GetSubjectName(groupedByDay[day].FirstOrDefault(s => s.ScheduleTime == ScheduleTime.FIRST)!) : string.Empty,
+                    Hour2 = groupedByDay.ContainsKey(day) && groupedByDay[day].FirstOrDefault(s => s.ScheduleTime == ScheduleTime.SECOND) != null ? GetSubjectName(groupedByDay[day].FirstOrDefault(s => s.ScheduleTime == ScheduleTime.SECOND)!) : string.Empty,
+                    Hour3 = groupedByDay.ContainsKey(day) && groupedByDay[day].FirstOrDefault(s => s.ScheduleTime == ScheduleTime.THIRD) != null ? GetSubjectName(groupedByDay[day].FirstOrDefault(s => s.ScheduleTime == ScheduleTime.THIRD)!) : string.Empty,
+                    Hour4 = groupedByDay.ContainsKey(day) && groupedByDay[day].FirstOrDefault(s => s.ScheduleTime == ScheduleTime.FOURTH) != null ? GetSubjectName(groupedByDay[day].FirstOrDefault(s => s.ScheduleTime == ScheduleTime.FOURTH)!) : string.Empty,
+                    Hour5 = groupedByDay.ContainsKey(day) && groupedByDay[day].FirstOrDefault(s => s.ScheduleTime == ScheduleTime.FIFTH) != null ? GetSubjectName(groupedByDay[day].FirstOrDefault(s => s.ScheduleTime == ScheduleTime.FIFTH)!) : string.Empty,
+                    Hour6 = groupedByDay.ContainsKey(day) && groupedByDay[day].FirstOrDefault(s => s.ScheduleTime == ScheduleTime.SIXTH) != null ? GetSubjectName(groupedByDay[day].FirstOrDefault(s => s.ScheduleTime == ScheduleTime.SIXTH)!) : string.Empty,
+                    Hour7 = groupedByDay.ContainsKey(day) && groupedByDay[day].FirstOrDefault(s => s.ScheduleTime == ScheduleTime.SEVENTH) != null ? GetSubjectName(groupedByDay[day].FirstOrDefault(s => s.ScheduleTime == ScheduleTime.SEVENTH)!) : string.Empty,
+                    Hour8 = groupedByDay.ContainsKey(day) && groupedByDay[day].FirstOrDefault(s => s.ScheduleTime == ScheduleTime.EIGHT) != null ? GetSubjectName(groupedByDay[day].FirstOrDefault(s => s.ScheduleTime == ScheduleTime.EIGHT)!) : string.Empty
+                };
+
+                flattenedSchedules.Add(flattenedData);
+            }
+
+            return flattenedSchedules;
+        }
+
+        public static async Task<UploadResponse> Upload(IFormFile? file, string path)
+        {
+            UploadResponse uploadResponse = new() { Status = Status.FAILURE };
+            if (file != null && file.Length > 0)
+            {
+                uploadResponse = await UploadService.Upload(file, path);
+            }
+            return uploadResponse;
+        }
+
+        // Helper method to safely get the subject name with null checks
+        private static string GetSubjectName(ScheduleDto schedule)
+        {
+            return schedule?.Course?.Subject?.SubjectName + "(" +
+                   (schedule?.Course?.Class != null ? schedule.Course.Class.ClassNameValue : string.Empty) + "-" +
+                   (schedule?.Course?.Class?.Branch?.BranchName ?? string.Empty) + ")" ?? string.Empty;
+        }
+
+
     }
 }
