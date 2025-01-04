@@ -8,8 +8,8 @@ const settings = {
     url: "http://192.168.8.142:5000/",
   },
   prod: {
-    apiUrl: "http://www.digitalmaktab.com//api", // Replace 192.168.8.142 with your actual external IP or domain
-    url: "http://www.digitalmaktab.com/", // Replace 192.168.8.142 with your actual external IP or domain
+    apiUrl: "https://www.digitalmaktab.com/api", // Replace 192.168.8.142 with your actual external IP or domain
+    url: "https://www.digitalmaktab.com/", // Replace 192.168.8.142 with your actual external IP or domain
   },
 };
 
