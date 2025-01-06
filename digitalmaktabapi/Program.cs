@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Globalization;
 using System.Net;
 using System.Text;
@@ -33,10 +34,72 @@ using RestSharp;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Load environment variables from .env in development
+if (builder.Environment.IsDevelopment())
+{
+    DotNetEnv.Env.Load();
+}
+
 builder.Configuration
     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
     .AddEnvironmentVariables();
 
+
+// Replace placeholders in configuration with environment variable values
+void ReplacePlaceholders(IConfiguration config, string parentKey = "")
+{
+    foreach (var child in config.GetChildren())
+    {
+        string key = string.IsNullOrEmpty(parentKey) ? child.Key : $"{parentKey}:{child.Key}";
+        if (child.Value != null && child.Value.StartsWith("${") && child.Value.EndsWith("}"))
+        {
+            string envVarName = child.Value.TrimStart(new char[] { '$', '{' }).TrimEnd(new char[] { '}', ' ' });
+            string envVarValue = Environment.GetEnvironmentVariable(envVarName) ?? string.Empty;
+
+            if (!string.IsNullOrWhiteSpace(envVarValue))
+            {
+                builder.Configuration[key] = envVarValue;
+            }
+            else
+            {
+                Console.WriteLine($"Warning: Environment variable '{envVarName}' is not set.");
+            }
+        }
+
+        ReplacePlaceholders(child, key);
+    }
+}
+
+// Perform the replacement
+ReplacePlaceholders(builder.Configuration);
+// Validate and fetch all required environment variables
+string[] requiredVariables =
+[
+    "CONNECTION_STRING_DEFAULT",
+    "CONNECTION_STRING",
+    "APP_TOKEN",
+    "APP_ISSUER",
+    "APP_AUDIENCE",
+    "MAIL_SERVER",
+    "MAIL_PORT",
+    "MAIL_USERNAME",
+    "MAIL_PASSWORD",
+    "SENDGRID_API_KEY",
+    "MAIL_FAILSAFE_CODE",
+    "ZOOM_ACCOUNT_ID",
+    "ZOOM_CLIENT_ID",
+    "ZOOM_CLIENT_SECRET",
+    "ZOOM_SECRET_TOKEN",
+    "ZOOM_VERIFICATION_TOKEN"
+];
+
+foreach (var variable in requiredVariables)
+{
+    if (string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable(variable)))
+    {
+        throw new InvalidOperationException($"Environment variable {variable} is not set.");
+    }
+}
 // Add services to the container.
 // Add Localization
 builder.Services.AddLocalization(options => options.ResourcesPath = "Resources/Localization");
@@ -96,7 +159,8 @@ builder.Services.AddSwaggerGen(a =>
 
 // Add DataContext
 // builder.Services.AddDbContext<DataContext>(x => x.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")).EnableSensitiveDataLogging());
-var connectionString = builder.Configuration.GetConnectionString("MySqlConnection");
+var connectionString = builder.Configuration.GetConnectionString("Connection");
+Console.WriteLine($"Final Connection String: {connectionString}");
 // builder.Services.AddDbContext<DataContext>(options =>
 //     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString),
 //     options => options.EnableStringComparisonTranslations())

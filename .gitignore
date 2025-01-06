@@ -21,6 +21,7 @@ digitalmaktabspa/.env.local
 digitalmaktabspa/.env.development.local
 digitalmaktabspa/.env.test.local
 digitalmaktabspa/.env.production.local
+.env*
 
 digitalmaktabspa/npm-debug.log*
 digitalmaktabspa/yarn-debug.log*
@@ -30,6 +31,7 @@ digitalmaktabspa/yarn-error.log*
 # DigitalMaktab API
 
 # digitalmaktabapi/appsettings*.json
+digitalmaktabapi/appsettings.Development.json
 digitalmaktabapi/bin
 digitalmaktabapi/Resources/*/
 !digitalmaktabapi/Resources/Reports
