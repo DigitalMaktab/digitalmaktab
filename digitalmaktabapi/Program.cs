@@ -160,7 +160,6 @@ builder.Services.AddSwaggerGen(a =>
 // Add DataContext
 // builder.Services.AddDbContext<DataContext>(x => x.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")).EnableSensitiveDataLogging());
 var connectionString = builder.Configuration.GetConnectionString("Connection");
-Console.WriteLine($"Final Connection String: {connectionString}");
 // builder.Services.AddDbContext<DataContext>(options =>
 //     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString),
 //     options => options.EnableStringComparisonTranslations())
