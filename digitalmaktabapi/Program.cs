@@ -90,7 +90,10 @@ string[] requiredVariables =
     "ZOOM_CLIENT_ID",
     "ZOOM_CLIENT_SECRET",
     "ZOOM_SECRET_TOKEN",
-    "ZOOM_VERIFICATION_TOKEN"
+    "ZOOM_VERIFICATION_TOKEN",
+    "ROOT_USER_PASSWORD",
+    "ROOT_USER_FIRST_NAME",
+    "ROOT_USER_LAST_NAME"
 ];
 
 foreach (var variable in requiredVariables)
@@ -418,7 +421,7 @@ else
 
 
 
-Seeder.SeedCountries(app);
+Seeder.SeedData(app);
 
 // Enable CORS
 // app.UseCors("AllowLocalhost");

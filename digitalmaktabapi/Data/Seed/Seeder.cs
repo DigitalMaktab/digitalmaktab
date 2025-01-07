@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using digitalmaktabapi.Helpers;
 using digitalmaktabapi.Models;
 using Newtonsoft.Json;
 
@@ -12,7 +13,7 @@ namespace digitalmaktabapi.Data.Seed
     public class Seeder
     {
 
-        public static void SeedCountries(WebApplication app)
+        public static void SeedData(WebApplication app)
         {
             try
             {
@@ -50,15 +51,42 @@ namespace digitalmaktabapi.Data.Seed
                         context.SaveChanges();
                     }
                 }
+
+                if (!context.Users.Any())
+                {
+                    // Seed Root User
+                    var rootUserPassword = app.Configuration["RootUserPassword"];
+                    if (string.IsNullOrEmpty(rootUserPassword))
+                    {
+                        throw new ArgumentNullException(nameof(app), "Root user password is not configured.");
+                    }
+
+                    Extensions.CreatePasswordHash(rootUserPassword, out byte[] passwordHash, out byte[] passwordSalt);
+
+                    var rootUser = new User
+                    {
+                        Id = Guid.NewGuid(),
+                        Email = "root@digitalmaktab.com",
+                        UserRole = UserRole.ROOT_USER,
+                        CreationDate = DateTime.UtcNow,
+                        UpdateDate = DateTime.UtcNow,
+                        CreationUserId = Guid.Empty,
+                        UpdateUserId = Guid.Empty,
+                        FirstName = app.Configuration["RootUserFirstName"] ?? "DefaultFirstName",
+                        LastName = app.Configuration["RootUserLastName"] ?? "DefaultLastName",
+                        Status = true,
+                        PasswordHash = passwordHash,
+                        PasswordSalt = passwordSalt
+                    };
+                    context.Users.Add(rootUser);
+                    context.SaveChanges();
+                }
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
             }
         }
-
-        // Seed the root user.
-
 
     }
 }
