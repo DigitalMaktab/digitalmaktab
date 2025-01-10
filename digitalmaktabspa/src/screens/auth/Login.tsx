@@ -83,7 +83,6 @@ const Login = () => {
                       label={t("auth.email.label")}
                       placeholder={t("auth.email.placeholder")}
                     />
-
                     <AppFormInput
                       name="password"
                       type="password"
@@ -117,7 +116,7 @@ const Login = () => {
                         {t("auth.login.createAccount")}
                       </Link>
                     </p>
-                    <ReturnToPublicHome />
+                    <ReturnToPublicHome /> SAYS HI
                   </AppForm>
                 </div>
               </div>
