@@ -116,7 +116,7 @@ const Login = () => {
                         {t("auth.login.createAccount")}
                       </Link>
                     </p>
-                    <ReturnToPublicHome /> SAYS HI
+                    <ReturnToPublicHome />
                   </AppForm>
                 </div>
               </div>
