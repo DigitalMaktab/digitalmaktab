@@ -994,5 +994,8 @@
     },
     "learningMaterialType": {
         "label": "نوع مواد درسی"
+    },
+    "returnToHome": {
+        "label": "برگشت به صفحه اصلی"
     }
 }

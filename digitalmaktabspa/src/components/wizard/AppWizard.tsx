@@ -7,6 +7,7 @@ import AppWizardFormSection from "./AppWizardFormSection";
 import AppWizardNavigation from "./AppWizardNavigation";
 import { Link } from "react-router-dom";
 import AppForm from "../form/AppForm";
+import ReturnToPublicHome from "../ReturnToPublicHome";
 
 const AppWizard: React.FC<WizardProps> = ({ steps, formProps }) => {
   const { t } = useTranslation();
@@ -81,6 +82,7 @@ const AppWizard: React.FC<WizardProps> = ({ steps, formProps }) => {
                       {t("auth.login.login")}
                     </Link>
                   </p>
+                  <ReturnToPublicHome />
                 </AppForm>
               </div>
             </div>

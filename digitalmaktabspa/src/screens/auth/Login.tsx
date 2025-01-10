@@ -10,6 +10,7 @@ import useAuth from "../../hooks/useAuth";
 import { ResponseResult } from "../../dtos/ResultEnum";
 import { AuthContext } from "../../helper/auth/AuthProvider";
 import { UserRole } from "../../models/UserRole";
+import ReturnToPublicHome from "../../components/ReturnToPublicHome";
 
 const Login = () => {
   const { t } = useTranslation();
@@ -107,14 +108,16 @@ const Login = () => {
                         label={t("auth.login.login")}
                         type="submit"
                         disabled={false}
+                        icon="log-in"
                       />
                     </div>
                     <p className="mt-4 mb-0 text-center">
-                      {t("auth.login.dontHaveAccount")}
+                      {t("auth.login.dontHaveAccount")}{" "}
                       <Link className="ms-2" to="/signup">
                         {t("auth.login.createAccount")}
                       </Link>
                     </p>
+                    <ReturnToPublicHome />
                   </AppForm>
                 </div>
               </div>

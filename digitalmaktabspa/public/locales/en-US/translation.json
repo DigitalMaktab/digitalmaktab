@@ -994,5 +994,8 @@
     },
     "learningMaterialType": {
         "label": "Learning Material Type"
+    },
+    "returnToHome": {
+        "label": "Go to Home"
     }
 }
