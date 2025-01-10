@@ -988,5 +988,8 @@
     },
     "learningMaterialType": {
         "label": "د زده کوونکو مواد ډول"
+    },
+    "returnToHome": {
+        "label": "بیرته اصلي پاڼې ته"
     }
 }
