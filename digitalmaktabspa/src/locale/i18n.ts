@@ -15,7 +15,7 @@ i18n
     },
     backend: {
       // Path to load translations
-      loadPath: "/locales/{{lng}}/translation.json", // Ensure the correct public path
+      loadPath: "/locales/{{lng}}/translation.json?v=" + new Date().getTime(), // Ensure the correct public path
     },
     detection: {
       // Detection options
