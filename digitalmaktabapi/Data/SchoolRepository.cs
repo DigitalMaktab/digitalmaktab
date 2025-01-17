@@ -92,7 +92,7 @@ namespace digitalmaktabapi.Data
             {
                 entities = entities.Where(
                                 a =>
-                                a.Branch.BranchName.Contains(classParams.SearchTerm, StringComparison.CurrentCultureIgnoreCase)
+                                a.Branch.BranchName.Contains(classParams.SearchTerm)
                             );
             }
 
@@ -123,7 +123,7 @@ namespace digitalmaktabapi.Data
             {
                 entities = entities.Where(
                                 a =>
-                                a.Subject.SubjectName.Contains(classParams.SearchTerm, StringComparison.CurrentCultureIgnoreCase)
+                                a.Subject.SubjectName.Contains(classParams.SearchTerm)
                             );
             }
 

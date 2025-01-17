@@ -27,6 +27,7 @@ namespace digitalmaktabapi.Controllers
         [HttpGet("books")]
         public async Task<IActionResult> GetBooks([FromQuery] UserParams userParams)
         {
+            var schoolId = this.SchoolId != Guid.Empty ? this.SchoolId : Guid.Empty;
             var books = await this.rootRepository.GetBooks(this.SchoolId, userParams);
             var booksToReturn = this.mapper!.Map<ICollection<BookDto>>(books);
             Response.AddPagintaion(books.CurrentPage, books.PageSize, books.TotalCount, books.TotalPages);

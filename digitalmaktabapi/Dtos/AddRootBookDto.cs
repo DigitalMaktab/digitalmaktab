@@ -22,7 +22,7 @@ namespace digitalmaktabapi.Dtos
             RuleFor(a => a.BookTitle).NotEmpty();
             RuleFor(a => a.File)
             .NotNull()
-            .ValidateFile(maxSize: 10 * 1024 * 1024, localizer, allowedExtensions: [".pdf"]);
+            .ValidateFile(maxSize: 20 * 1024 * 1024, localizer, allowedExtensions: [".pdf"]);
         }
     }
 }

@@ -62,14 +62,14 @@ namespace digitalmaktabapi.Data
             if (!userParams.SearchTerm.IsEmpty() && userParams.SearchTerm != null)
             {
                 teachers = teachers.Where(
-                                a => a.FirstName.Contains(userParams.SearchTerm, StringComparison.CurrentCultureIgnoreCase) ||
-                                a.LastName.Contains(userParams.SearchTerm, StringComparison.CurrentCultureIgnoreCase)
+                                a => a.FirstName.Contains(userParams.SearchTerm) ||
+                                a.LastName.Contains(userParams.SearchTerm)
                             );
             }
 
             if (!userParams.Email.IsEmpty() && userParams.Email != null)
             {
-                teachers = teachers.Where(a => a.Email.Contains(userParams.Email, StringComparison.CurrentCultureIgnoreCase));
+                teachers = teachers.Where(a => a.Email.ToLower().Contains(userParams.Email.ToLower()));
             }
 
             return await PagedList<Teacher>.CreateAsync(teachers, userParams.PageNumber, userParams.PageSize);

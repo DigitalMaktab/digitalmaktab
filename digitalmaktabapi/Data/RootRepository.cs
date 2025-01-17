@@ -58,10 +58,10 @@ namespace digitalmaktabapi.Data
                     .Any(a => a.ClassId == userParams.ClassId));
             }
 
-            if (userParams.SearchTerm != null)
+            if (!string.IsNullOrEmpty(userParams.SearchTerm))
             {
-                entities = entities.Where(
-                    a => a.BookTitle.Contains(userParams.SearchTerm, StringComparison.CurrentCultureIgnoreCase));
+                string searchTerm = userParams.SearchTerm.ToLower();
+                entities = entities.Where(b => b.BookTitle.ToLower().Contains(searchTerm));
             }
             return await PagedList<Book>.CreateAsync(entities, userParams.PageNumber, userParams.PageSize);
         }
@@ -82,7 +82,7 @@ namespace digitalmaktabapi.Data
             if (userParams.SearchTerm != null)
             {
                 entities = entities.Where(
-                    a => a.SubjectName.Contains(userParams.SearchTerm, StringComparison.CurrentCultureIgnoreCase));
+                    a => a.SubjectName.Contains(userParams.SearchTerm));
             }
             return await PagedList<Subject>.CreateAsync(entities, userParams.PageNumber, userParams.PageSize);
         }

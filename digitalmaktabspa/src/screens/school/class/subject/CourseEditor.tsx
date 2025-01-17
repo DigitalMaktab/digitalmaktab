@@ -19,6 +19,7 @@ import { useFormData } from "../../../../hooks/useFormData";
 import AppTab from "../../../../components/tab/AppTab";
 import CourseMaterial from "./CourseMaterial";
 import { UserRole } from "../../../../models/UserRole";
+import ZoomMeeting from "../../../../components/zoom/onlineClass/AppZoomClass";
 
 const CourseEditor: React.FC<EditorProps> = ({ initialData }) => {
   const { id } = useParams<{ id: string }>();
@@ -122,7 +123,11 @@ const CourseEditor: React.FC<EditorProps> = ({ initialData }) => {
 
   const assignmentsTabContent = <div>Assignments</div>;
   const quizzesTabContent = <div>Quizzes</div>;
-  const onlineClassTabContent = <div>{t("comingSoon")}</div>;
+  const onlineClassTabContent = (
+    <div>
+      <ZoomMeeting />
+    </div>
+  );
 
   const courseMaterialTabContent = <CourseMaterial id={id} />;
 

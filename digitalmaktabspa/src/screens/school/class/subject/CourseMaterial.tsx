@@ -287,7 +287,7 @@ const CourseMaterial: React.FC<EditorProps> = ({ id, initialData }) => {
           {selectedMaterial ? (
             <VideoPlayer src={selectedMaterial.filePath} />
           ) : (
-            <p>Please select a material to view.</p>
+            <p></p>
           )}
         </div>
       </div>
