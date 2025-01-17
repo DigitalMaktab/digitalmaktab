@@ -296,39 +296,39 @@ builder.Services.AddCors(options =>
 builder.Services.AddCors();
 
 // Zoom settings
-// builder.Services.AddAuthentication(options =>
-// {
-//     options.DefaultScheme = "Cookie";
-//     options.DefaultChallengeScheme = "Zoom";
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultScheme = "Cookie";
+    options.DefaultChallengeScheme = "Zoom";
 
-// })
-// .AddCookie("Cookie")
-// .AddOAuth("Zoom", options =>
-// {
-//     options.ClientId = builder.Configuration.GetSection("ZoomSettings:ClientId").Value!;
-//     options.ClientSecret = builder.Configuration.GetSection("ZoomSettings:ClientSecrect").Value!;
-//     options.CallbackPath = "/oauth/callback";
+})
+.AddCookie("Cookie")
+.AddOAuth("Zoom", options =>
+{
+    options.ClientId = builder.Configuration.GetSection("ZoomSettings:ClientId").Value!;
+    options.ClientSecret = builder.Configuration.GetSection("ZoomSettings:ClientSecrect").Value!;
+    options.CallbackPath = "/oauth/callback";
 
-//     options.AuthorizationEndpoint = "https://zoom.us/oauth/authorize";
-//     options.TokenEndpoint = "https://zoom.us/oauth/token";
-//     options.SaveTokens = true;
+    options.AuthorizationEndpoint = "https://zoom.us/oauth/authorize";
+    options.TokenEndpoint = "https://zoom.us/oauth/token";
+    options.SaveTokens = true;
 
-//     options.Scope.Add("meeting:write");
-//     options.Scope.Add("user:read");
+    options.Scope.Add("meeting:write");
+    options.Scope.Add("user:read");
 
-//     options.Events = new Microsoft.AspNetCore.Authentication.OAuth.OAuthEvents
-//     {
-//         OnCreatingTicket = async context =>
-//         {
-//             var request = new RestRequest("https://api.zoom.us/v2/users/me", Method.Get);
-//             request.AddHeader("Authorization", $"Bearer {context.AccessToken}");
-//             var client = new RestClient();
-//             var response = await client.ExecuteAsync(request);
+    options.Events = new Microsoft.AspNetCore.Authentication.OAuth.OAuthEvents
+    {
+        OnCreatingTicket = async context =>
+        {
+            var request = new RestRequest("https://api.zoom.us/v2/users/me", Method.Get);
+            request.AddHeader("Authorization", $"Bearer {context.AccessToken}");
+            var client = new RestClient();
+            var response = await client.ExecuteAsync(request);
 
-//             //TODO: Save user information if needed
-//         }
-//     };
-// });
+            //TODO: Save user information if needed
+        }
+    };
+});
 
 builder.Services.Configure<FormOptions>(options =>
 {
