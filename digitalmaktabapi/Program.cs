@@ -34,6 +34,8 @@ using RestSharp;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var configuration = builder.Configuration;
+
 // Load environment variables from .env in development
 if (builder.Environment.IsDevelopment())
 {
@@ -53,7 +55,7 @@ void ReplacePlaceholders(IConfiguration config, string parentKey = "")
         string key = string.IsNullOrEmpty(parentKey) ? child.Key : $"{parentKey}:{child.Key}";
         if (child.Value != null && child.Value.StartsWith("${") && child.Value.EndsWith("}"))
         {
-            string envVarName = child.Value.TrimStart(new char[] { '$', '{' }).TrimEnd(new char[] { '}', ' ' });
+            string envVarName = child.Value.TrimStart(new char[] { '$', '{' }).TrimEnd(['}', ' ']);
             string envVarValue = Environment.GetEnvironmentVariable(envVarName) ?? string.Empty;
 
             if (!string.IsNullOrWhiteSpace(envVarValue))
@@ -77,6 +79,7 @@ string[] requiredVariables =
 [
     "CONNECTION_STRING_DEFAULT",
     "CONNECTION_STRING",
+    "LOCAL_CONNECTION_STRING",
     "APP_TOKEN",
     "APP_ISSUER",
     "APP_AUDIENCE",
@@ -161,12 +164,16 @@ builder.Services.AddSwaggerGen(a =>
 });
 
 // Add DataContext
-// builder.Services.AddDbContext<DataContext>(x => x.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")).EnableSensitiveDataLogging());
-var connectionString = builder.Configuration.GetConnectionString("Connection");
-// builder.Services.AddDbContext<DataContext>(options =>
-//     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString),
-//     options => options.EnableStringComparisonTranslations())
-// );
+string connectionString;
+
+if (builder.Environment.IsDevelopment())
+{
+    connectionString = configuration.GetConnectionString("LocalConnection") ?? throw new InvalidOperationException("LocalConnection string is not set.");
+}
+else
+{
+    connectionString = configuration.GetConnectionString("Connection") ?? throw new InvalidOperationException("Connection string is not set.");
+}
 
 builder.Services.AddDbContext<DataContext>(options =>
     options.UseNpgsql(connectionString));
@@ -296,39 +303,39 @@ builder.Services.AddCors(options =>
 builder.Services.AddCors();
 
 // Zoom settings
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultScheme = "Cookie";
-    options.DefaultChallengeScheme = "Zoom";
+// builder.Services.AddAuthentication(options =>
+// {
+//     options.DefaultScheme = "Cookie";
+//     options.DefaultChallengeScheme = "Zoom";
 
-})
-.AddCookie("Cookie")
-.AddOAuth("Zoom", options =>
-{
-    options.ClientId = builder.Configuration.GetSection("ZoomSettings:ClientId").Value!;
-    options.ClientSecret = builder.Configuration.GetSection("ZoomSettings:ClientSecrect").Value!;
-    options.CallbackPath = "/oauth/callback";
+// })
+// .AddCookie("Cookie")
+// .AddOAuth("Zoom", options =>
+// {
+//     options.ClientId = builder.Configuration.GetSection("ZoomSettings:ClientId").Value!;
+//     options.ClientSecret = builder.Configuration.GetSection("ZoomSettings:ClientSecrect").Value!;
+//     options.CallbackPath = "/oauth/callback";
 
-    options.AuthorizationEndpoint = "https://zoom.us/oauth/authorize";
-    options.TokenEndpoint = "https://zoom.us/oauth/token";
-    options.SaveTokens = true;
+//     options.AuthorizationEndpoint = "https://zoom.us/oauth/authorize";
+//     options.TokenEndpoint = "https://zoom.us/oauth/token";
+//     options.SaveTokens = true;
 
-    options.Scope.Add("meeting:write");
-    options.Scope.Add("user:read");
+//     options.Scope.Add("meeting:write");
+//     options.Scope.Add("user:read");
 
-    options.Events = new Microsoft.AspNetCore.Authentication.OAuth.OAuthEvents
-    {
-        OnCreatingTicket = async context =>
-        {
-            var request = new RestRequest("https://api.zoom.us/v2/users/me", Method.Get);
-            request.AddHeader("Authorization", $"Bearer {context.AccessToken}");
-            var client = new RestClient();
-            var response = await client.ExecuteAsync(request);
+//     options.Events = new Microsoft.AspNetCore.Authentication.OAuth.OAuthEvents
+//     {
+//         OnCreatingTicket = async context =>
+//         {
+//             var request = new RestRequest("https://api.zoom.us/v2/users/me", Method.Get);
+//             request.AddHeader("Authorization", $"Bearer {context.AccessToken}");
+//             var client = new RestClient();
+//             var response = await client.ExecuteAsync(request);
 
-            //TODO: Save user information if needed
-        }
-    };
-});
+//             //TODO: Save user information if needed
+//         }
+//     };
+// });
 
 builder.Services.Configure<FormOptions>(options =>
 {
