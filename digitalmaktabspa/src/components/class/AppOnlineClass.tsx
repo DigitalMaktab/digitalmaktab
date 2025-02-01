@@ -92,6 +92,22 @@ const AppOnlineClass = () => {
       console.log("🔗 Connected to SignalR");
       await newConnection.invoke("JoinClass", classId);
 
+      newConnection.on("ExistingUsers", (users: string[]) => {
+        users.forEach((userId) => {
+          const peer = new Peer({ initiator: true, trickle: false, stream });
+
+          peer.on("signal", (signal) => {
+            newConnection.invoke("SendOffer", userId, JSON.stringify(signal));
+          });
+
+          peer.on("stream", (peerStream) => {
+            addVideoStream(userId, peerStream);
+          });
+
+          setPeers((prev) => ({ ...prev, [userId]: peer }));
+        });
+      });
+
       setConnection(newConnection);
       setJoined(true);
     } catch (error) {

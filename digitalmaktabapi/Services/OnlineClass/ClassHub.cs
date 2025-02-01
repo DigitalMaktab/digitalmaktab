@@ -31,6 +31,12 @@ namespace digitalmaktabapi.Services.OnlineClass
             }
 
             await Groups.AddToGroupAsync(Context.ConnectionId, classId);
+
+            // Notify the new user of existing users in the class
+            var existingUsers = Classes[classId].Where(id => id != Context.ConnectionId).ToList();
+            await Clients.Caller.SendAsync("ExistingUsers", existingUsers);
+
+            // Notify others that a new user has joined
             await Clients.Group(classId).SendAsync("UserJoined", Context.ConnectionId);
         }
 
