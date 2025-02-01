@@ -3,6 +3,9 @@ import * as signalR from "@microsoft/signalr";
 import Peer from "simple-peer";
 import settings from "../../config/settings";
 
+import process from "process";
+window.process = process;
+
 const AppOnlineClass = () => {
   const [connection, setConnection] = useState<signalR.HubConnection | null>(
     null
@@ -64,7 +67,13 @@ const AppOnlineClass = () => {
 
       newConnection.on("ReceiveOffer", (userId, offer) => {
         console.log(`📡 Received offer from ${userId}`);
+
         const peer = new Peer({ initiator: false, trickle: false, stream });
+
+        setPeers((prev) => {
+          const newPeers = { ...prev, [userId]: peer }; // ✅ Ensure peer is stored
+          return newPeers;
+        });
 
         peer.signal(JSON.parse(offer));
 
@@ -75,17 +84,20 @@ const AppOnlineClass = () => {
         peer.on("stream", (peerStream) => {
           addVideoStream(userId, peerStream);
         });
-
-        setPeers((prev) => ({ ...prev, [userId]: peer }));
       });
 
       newConnection.on("ReceiveAnswer", (userId, answer) => {
         console.log(`✅ Received answer from ${userId}`);
-        if (peers[userId]) {
-          peers[userId].signal(JSON.parse(answer));
-        } else {
-          console.log(`🚨 Peer not found for ${userId}, unable to signal!`);
-        }
+
+        setPeers((prev) => {
+          if (!prev[userId]) {
+            console.warn(`🚨 Peer not found for ${userId}, waiting...`);
+            return prev;
+          }
+
+          prev[userId].signal(JSON.parse(answer)); // ✅ Only signal if peer exists
+          return { ...prev };
+        });
       });
 
       newConnection.on("UserLeft", (userId) => {
@@ -106,8 +118,18 @@ const AppOnlineClass = () => {
           });
 
           peer.on("stream", (peerStream) => {
+            console.log(`📡 Received remote stream from ${userId}`);
             addVideoStream(userId, peerStream);
           });
+
+          // ✅ New Debugging Log
+          setTimeout(() => {
+            if (!userVideos[userId]) {
+              console.log(
+                `🚨 Warning: No video stream found for ${userId} even after offer received!`
+              );
+            }
+          }, 3000);
 
           setPeers((prev) => ({ ...prev, [userId]: peer }));
         });
@@ -137,20 +159,25 @@ const AppOnlineClass = () => {
   const addVideoStream = (userId: string, stream: MediaStream) => {
     console.log(`📷 Adding video stream for ${userId}`);
 
-    setUserVideos((prev) => {
-      return { ...prev, [userId]: stream };
-    });
+    setUserVideos((prev) => ({ ...prev, [userId]: stream }));
 
-    // Debug the stream assignment
     setTimeout(() => {
       const videoElement = document.querySelector(
         `video[data-user-id="${userId}"]`
       );
       if (videoElement) {
-        console.log(
-          `✅ Found video element for ${userId}, assigning stream...`
-        );
-        (videoElement as HTMLVideoElement).srcObject = stream;
+        console.log(`✅ Found video element for ${userId}, setting stream...`);
+
+        const htmlVideoElement = videoElement as HTMLVideoElement;
+        if (!htmlVideoElement.srcObject) {
+          htmlVideoElement.srcObject = stream;
+
+          htmlVideoElement.onloadedmetadata = () => {
+            htmlVideoElement.play().catch((err) => {
+              console.warn(`🚨 Autoplay blocked for ${userId}:`, err);
+            });
+          };
+        }
       } else {
         console.log(`🚨 Video element for ${userId} not found!`);
       }
@@ -208,8 +235,11 @@ const AppOnlineClass = () => {
                 }}
                 ref={(video) => {
                   if (video && video.srcObject !== stream) {
-                    console.log(`🎥 Updating video element for ${userId}`);
+                    console.log(
+                      `🎥 Forcing video element update for ${userId}`
+                    );
                     video.srcObject = stream;
+                    video.play(); // ✅ Ensure playback starts
                   }
                 }}
               />
