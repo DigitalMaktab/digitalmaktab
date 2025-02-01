@@ -55,6 +55,7 @@ const AppOnlineClass = () => {
         });
 
         peer.on("stream", (peerStream) => {
+          console.log(`📷 Adding video stream for ${userId}`);
           addVideoStream(userId, peerStream);
         });
 
@@ -80,7 +81,11 @@ const AppOnlineClass = () => {
 
       newConnection.on("ReceiveAnswer", (userId, answer) => {
         console.log(`✅ Received answer from ${userId}`);
-        peers[userId]?.signal(JSON.parse(answer));
+        if (peers[userId]) {
+          peers[userId].signal(JSON.parse(answer));
+        } else {
+          console.log(`🚨 Peer not found for ${userId}, unable to signal!`);
+        }
       });
 
       newConnection.on("UserLeft", (userId) => {
@@ -110,6 +115,9 @@ const AppOnlineClass = () => {
 
       setConnection(newConnection);
       setJoined(true);
+      newConnection.onclose(() => console.log("❌ Disconnected from SignalR"));
+      newConnection.onreconnecting(() => console.log("🔄 Reconnecting..."));
+      newConnection.onreconnected(() => console.log("✅ Reconnected!"));
     } catch (error) {
       console.error("🚨 Error joining class: ", error);
     }
@@ -128,7 +136,25 @@ const AppOnlineClass = () => {
 
   const addVideoStream = (userId: string, stream: MediaStream) => {
     console.log(`📷 Adding video stream for ${userId}`);
-    setUserVideos((prev) => ({ ...prev, [userId]: stream }));
+
+    setUserVideos((prev) => {
+      return { ...prev, [userId]: stream };
+    });
+
+    // Debug the stream assignment
+    setTimeout(() => {
+      const videoElement = document.querySelector(
+        `video[data-user-id="${userId}"]`
+      );
+      if (videoElement) {
+        console.log(
+          `✅ Found video element for ${userId}, assigning stream...`
+        );
+        (videoElement as HTMLVideoElement).srcObject = stream;
+      } else {
+        console.log(`🚨 Video element for ${userId} not found!`);
+      }
+    }, 500);
   };
 
   const removeVideoStream = (userId: string) => {
@@ -167,14 +193,22 @@ const AppOnlineClass = () => {
                 border: "2px solid red",
               }}
             />
+
             {Object.entries(userVideos).map(([userId, stream]) => (
               <video
                 key={userId}
+                data-user-id={userId}
                 autoPlay
                 playsInline
-                style={{ width: "200px", height: "150px", margin: "5px" }}
+                style={{
+                  width: "200px",
+                  height: "150px",
+                  margin: "5px",
+                  border: "2px solid blue",
+                }}
                 ref={(video) => {
-                  if (video && !video.srcObject) {
+                  if (video && video.srcObject !== stream) {
+                    console.log(`🎥 Updating video element for ${userId}`);
                     video.srcObject = stream;
                   }
                 }}
