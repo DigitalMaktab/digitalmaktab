@@ -13,6 +13,7 @@ using digitalmaktabapi.Services;
 using digitalmaktabapi.Services.Auth;
 using digitalmaktabapi.Services.DMCryptography;
 using digitalmaktabapi.Services.Mail;
+using digitalmaktabapi.Services.OnlineClass;
 using digitalmaktabapi.Services.PDF;
 using digitalmaktabapi.Services.Providers;
 using DinkToPdf;
@@ -129,6 +130,13 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
     options.DefaultRequestCulture = new RequestCulture("en-US");
     options.SupportedCultures = supportedCultures;
     options.SupportedUICultures = supportedCultures;
+});
+// ✅ **Add SignalR**
+builder.Services.AddSignalR(options =>
+{
+    options.EnableDetailedErrors = true; // Helps in debugging
+    options.MaximumReceiveMessageSize = 1024 * 1024; // 1MB max message size
+    options.KeepAliveInterval = TimeSpan.FromSeconds(30);
 });
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -250,13 +258,12 @@ builder.Services.AddScoped<ITeacherRepository, TeacherRepository>();
 
 // Add CSRF Protection
 builder.Services.AddAntiforgery(options => options.HeaderName = "X-CSRF-TOKEN");
-// Register IMemoryCache
+// ✅ **Enable Memory Cache & Rate Limiting**
 builder.Services.AddMemoryCache();
-// Add rate limiting
 builder.Services.AddInMemoryRateLimiting();
-builder.Services.Configure<IpRateLimitOptions>(builder.Configuration.GetSection("IpRateLimiting"));
-// Add Rate limiters
+builder.Services.Configure<IpRateLimitOptions>(configuration.GetSection("IpRateLimiting"));
 builder.Services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
+
 
 // Add Logging information
 builder.Services.AddSingleton<ILoggerFactory, LoggerFactory>();
@@ -265,42 +272,28 @@ builder.Services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new 
 
 
 // Add Cors Service
-// builder.Services.AddCors(options =>
-// {
-//     options.AddPolicy("AllowLocalhost",
-//         builder => builder
-//             .WithOrigins("http://localhost:3000")
-//             .AllowAnyHeader()
-//             .AllowAnyMethod());
-
-//     options.AddPolicy("AllowNgrok",
-//         builder => builder
-//             .WithOrigins("https://113c-2001-4bb8-2c0-56cb-acd1-2e70-a9ed-fb6e.ngrok-free.app")
-//             .AllowAnyHeader()
-//             .AllowAnyMethod());
-// });
 
 // builder.Services.AddCors(options =>
 // {
-//     options.AddPolicy("AllowAll", policy =>
+//     options.AddPolicy("AllowNgrok", builder =>
 //     {
-//         policy.AllowAnyOrigin()
-//               .AllowAnyHeader()
-//               .AllowAnyMethod();
+//         builder.WithOrigins("https://72a3-2001-4bb8-2cc-1aaa-1d6e-9c24-8ab3-95b9.ngrok-free.app")
+//                .AllowAnyHeader()
+//                .AllowAnyMethod();
 //     });
 // });
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowNgrok", builder =>
+    options.AddPolicy("AllowAll", policy =>
     {
-        builder.WithOrigins("https://72a3-2001-4bb8-2cc-1aaa-1d6e-9c24-8ab3-95b9.ngrok-free.app")
-               .AllowAnyHeader()
-               .AllowAnyMethod();
+        policy
+            .SetIsOriginAllowed(origin => true) // ✅ Allow any origin (for testing)
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowCredentials(); // ✅ Needed for WebSockets
     });
 });
-
-builder.Services.AddCors();
 
 // Zoom settings
 // builder.Services.AddAuthentication(options =>
@@ -419,6 +412,9 @@ else
     });
 }
 
+// ✅ **Enable WebSockets (Fix for 405 Error)**
+app.UseWebSockets();
+
 // Add Cross-Site Scripting (XSS) Prevention
 // app.Use(async (context, next) =>
 // {
@@ -429,12 +425,6 @@ else
 
 
 Seeder.SeedData(app);
-
-// Enable CORS
-// app.UseCors("AllowLocalhost");
-// app.UseCors("AllowNgrok");
-
-// app.UseCors("AllowAll");
 
 // Static files and SPA fallback
 app.UseDefaultFiles();
@@ -486,15 +476,18 @@ app.Use(async (context, next) =>
     await next();
 });
 
-app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
-app.UseCors("AllowNgrok");
+// ✅ **Apply CORS before Authentication**
+app.UseCors("AllowAll");
 
-app.UseIpRateLimiting();
+// ✅ **Use Routing (Required for SignalR)**
+app.UseRouting();
 
-
+// ✅ **Enable Authentication & Authorization**
 app.UseAuthentication();
 app.UseAuthorization();
 
+// ✅ **Register Controllers and SignalR Hub**
 app.MapControllers();
+app.MapHub<ClassHub>("/classhub");
 
 app.Run();
