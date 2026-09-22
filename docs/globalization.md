@@ -1,25 +1,66 @@
-# Globalization Design
+# Platform & Extensibility Architecture
 
 **Status:** Draft — target architecture, not yet implemented.
-**Author:** initial version, 2026-09-23.
-**Scope:** evolve Digital Maktab from an Afghanistan-only platform to a multi-country platform where new countries can be added with minimal core changes.
+**Last revised:** 2026-09-23.
+**Supersedes:** the previous "Globalization Design" draft (same file, earlier version).
+**Scope:** evolve Digital Maktab from a single Afghan school-management app into a **platform** where new countries and individual schools can extend behavior through code (SDK / plugins) or through configuration (admin UI), across both a hosted SaaS and self-hosted deployments.
 
 ---
 
-## 1. Motivation
+## 1. Vision
 
-The product today assumes Afghan defaults everywhere — the Solar Hijri calendar, the Afghan grade structure (up to grade 14), the Tazkira national-ID format, Dari and Pashto only, phone numbers in `+93`, and an implicit Afghani currency for fees. These assumptions are baked into enums, hardcoded seed defaults, and controller logic.
+Three concentric ways to extend the platform, in order of investment:
 
-The goal is to let a new country (Pakistan, Iran, Tajikistan, an East African country, …) be onboarded by:
+1. **Platform code (`Core`)** — the reusable universal model. Built by the platform team. Changes only when the platform releases a new version.
+2. **Country modules** — code extensions delivering country-specific behavior (calendar systems, national-ID formats, curriculum, regulatory reports). Built by the platform team or accredited country partners. Shipped as .NET NuGet packages + npm packages.
+3. **School plugins** — code extensions for a single school (or a district / diocese / franchise). Built by the school's own dev team or an integrator. Same SDK as country modules; scope is one school by convention.
 
-1. Seeding a `Country` row with its config,
-2. Optionally adding a small country module for behavior that genuinely differs (calendar, national ID, curriculum),
+And, alongside code, a fourth path for schools without a dev team:
 
-without touching core code paths that already work for Afghanistan.
+4. **Runtime configuration** — admins define custom fields, custom roles, custom fee categories through the UI. Stored as JSONB with definition metadata. No code required.
 
-## 2. Where Afghanistan currently leaks
+A new country needs a country module. A big school with a dev team writes a plugin. A small school clicks admin config. The same product serves all three.
 
-### 2.1 Data model
+## 2. Deployment models — supported from day one
+
+**Both** SaaS and self-hosted are first-class deployment targets. The SDK is the shared substrate; the two topologies differ in tenancy, plugin trust, and operational responsibility.
+
+### 2.1 SaaS multi-tenant
+
+A hosted platform, run by the Digital Maktab team, that serves many schools.
+
+- **Tenancy:** many schools in one deployment. All requests carry a school identity resolved from the JWT. Data isolated by `SchoolId` in every query (repository-level filter + optional Postgres RLS as defense in depth).
+- **Country modules:** ship as trusted first-party or accredited third-party packages. Statically referenced by the host.
+- **School plugins:** initially, **only vetted plugins from trusted publishers** run in the SaaS host. Uploaded → code-reviewed → deployed alongside next release. Sandboxing for arbitrary third-party plugins is a future goal (see §7); until it exists, don't run untrusted school code on shared infrastructure.
+- **Frontend:** one hosted SPA bundle. Country + trusted school plugin frontends composed via Vite Module Federation, loaded at runtime based on the logged-in school.
+
+### 2.2 Self-hosted
+
+A single school (or district) runs their own instance. Fully trusted code, no sandboxing needed.
+
+- **Tenancy:** typically single-tenant. Multi-tenant possible if a district runs one instance for many schools.
+- **Country modules:** operator picks which country modules to include in their build.
+- **School plugins:** operator's own dev team writes them in-tree or as separate projects, statically referenced. Full trust, direct DB access, everything.
+- **Frontend:** operator forks the SPA (or uses the published `@digitalmaktab/core-ui` package) and composes their plugins at build time.
+
+### 2.3 Same SDK, different rules
+
+The .NET and TypeScript SDK contracts are identical for both deployment models. What differs is **trust and lifecycle**:
+
+| Concern | SaaS | Self-hosted |
+|---|---|---|
+| Plugin loading | Static reference or curated `plugins/` folder | Static reference (fork or npm install) |
+| Trust model | Vetted publishers only (until sandbox exists) | Full trust |
+| Data isolation | Repository filters + RLS | Not needed (single tenant) or app-layer |
+| Upgrade cadence | Rolling, coordinated across all tenants | On operator's schedule |
+| Migrations | Platform-managed | Operator-managed |
+| Support surface | Platform team owns | Operator team owns |
+
+## 3. Where Afghanistan leaks today
+
+Snapshot of Afghan-specific assumptions currently embedded in the code, seed data, and SPA — the migration surface for §8.
+
+### 3.1 Data model
 
 | Location | Afghan assumption |
 |---|---|
@@ -28,254 +69,585 @@ without touching core code paths that already work for Afghanistan.
 | `Models/NationalId.cs` | Fields (`Volume`, `Page`, `RegisterNumber`, `ElectronicNationalIdNumber`) are Tazkira-shaped |
 | `Models/ClassName.cs` | Grades `FIRST..FOURTEENTH` — assumes Afghan 12/14-year structure |
 | `Models/Address.cs` | `Village` field reads oddly in urban Western contexts |
-| `Models/Fee.cs` | `Amount` is bare `decimal` — no `Currency` |
+| `Models/Fee.cs` | `Amount` is a bare `decimal` — no `Currency` |
+| `Models/Student.cs` | Native/Father/Grandfather naming convention hardcoded on the aggregate |
 
-### 2.2 Configuration & seed
+### 3.2 Configuration & seed
 
 | Location | Afghan assumption |
 |---|---|
 | `Program.cs:122-133` | `SupportedCultures = { "en-US", "fa-AF", "ps-AF" }` — hardcoded list |
-| `appsettings.json`, `.env` | `ROOT_USER_*`, mail templates, ZoomSettings — no country binding |
 | `Services/Import/StudentImportService.cs:108` | `context.Countries.FirstOrDefaultAsync(c => c.CountryCode == "AF")` — literal fallback |
 | `Services/Import/TeacherImportService.cs:88` | Same `"AF"` literal |
 | `Data/Seed/Seeder.cs` | Seeds country phone codes but no per-country config beyond dial code |
 
-### 2.3 UI / SPA
+### 3.3 SPA
 
 | Location | Afghan assumption |
 |---|---|
-| `digitalmaktabspa/src/locale/i18n.ts` | `supportedLngs: ["en-US","fa-AF","ps-AF"]` — hardcoded |
-| `public/locales/{en-US,fa-AF,ps-AF}/translation.json` | Only three language files exist |
-| Signup form | Requires an Afghan-shaped phone/address without asking for country |
-
-### 2.4 Documentation / branding
-
-| Location | Afghan assumption |
-|---|---|
-| `README.md` | "A Digital System for all Schools in Afghanistan." — Library "Afghanistan MOE Books" |
-| Email templates in resx | Afghan-context greetings |
+| `src/locale/i18n.ts` | `supportedLngs: ["en-US","fa-AF","ps-AF"]` hardcoded |
+| `screens/school/student/StudentEditor.tsx` | Renders Afghan-only fields; no dynamic composition |
 
 ---
 
-## 3. Target architecture
+## 4. Solution & project structure
 
-Hybrid: **config-in-DB** for the cheap things, **strategy pattern (interfaces + implementations)** for the concerns that genuinely need code.
+Split the current single `digitalmaktabapi` project into a multi-project solution. Country modules and school plugins are **their own .NET projects** referencing SDK NuGets.
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│  Core (country-agnostic)                                    │
-│                                                             │
-│  • Models: School, Branch, Class, Course, Student, Teacher, │
-│    Enrollment, Fee, Attendance, Grade, CalendarYear, …      │
-│  • Repositories, controllers, generic services              │
-│  • Interfaces: ICalendarProvider, INationalIdValidator,     │
-│    IGradeStructureProvider, ICurriculumProvider, …          │
-│  • Country entity + config columns                          │
-└─────────────────────────────────────────────────────────────┘
-                            ▲                    ▲
-                            │                    │
-                       resolves at            resolves at
-                       School.Country          School.Country
-                            │                    │
-      ┌─────────────────────┴──┐          ┌──────┴──────────────┐
-      │  Countries/Afghanistan │          │  Countries/Pakistan │
-      │                        │          │                     │
-      │  • SolarHijriCalendar  │          │  • GregorianCalendar│
-      │  • TazkiraValidator    │          │  • CNICValidator    │
-      │  • MoEAfCurriculum     │          │  • FBiseCurriculum  │
-      │  • fa-AF, ps-AF resx   │          │  • ur-PK, en-PK resx│
-      │  • Books/MOE-Af/*.pdf  │          │  • Books/FBISE/*.pdf│
-      └────────────────────────┘          └─────────────────────┘
+DigitalMaktab.sln
+├── src/
+│   ├── DigitalMaktab.Core.Abstractions/            ← stable interfaces, minimal surface, SemVer-strict
+│   │   ├── Extensibility/           (IPlugin, ICountryModule, ISchoolPluginBuilder, extension points)
+│   │   ├── Countries/               (ICalendarProvider, INationalIdValidator, ICurriculumProvider)
+│   │   ├── Domain/                  (aggregate abstractions, marker interfaces)
+│   │   └── DigitalMaktab.Core.Abstractions.csproj
+│   │
+│   ├── DigitalMaktab.Core/                          ← implementation of universal aggregates
+│   │   ├── Models/                  (Student, Teacher, School, Country, Class, …)
+│   │   ├── Data/                    (DataContext, generic repos, Core migrations)
+│   │   ├── Services/                (Auth, Mail, PDF, Upload, generic Import base)
+│   │   ├── Controllers/             (universal endpoints)
+│   │   ├── Extensibility/
+│   │   │   ├── Runtime custom-field framework  (Models, Services, Validator)
+│   │   │   ├── PluginLoader/                    (discovers & wires plugins at startup)
+│   │   │   └── EventBus/                        (domain events for plugin hooks)
+│   │   └── DigitalMaktab.Core.csproj → references Abstractions
+│   │
+│   ├── DigitalMaktab.SDK/                           ← developer ergonomics, base classes
+│   │   ├── PluginBase.cs, CountryModuleBase.cs
+│   │   ├── EntityExtensionBuilder<TCore, TExtension>
+│   │   ├── Testing/                (in-memory fixtures for plugin authors)
+│   │   └── DigitalMaktab.SDK.csproj → references Abstractions
+│   │
+│   ├── DigitalMaktab.Country.Afghanistan/           ← reference country module
+│   │   ├── Models/                  (AfghanStudentDetails, AfghanTeacherDetails, TazkiraDocument, …)
+│   │   ├── Providers/               (SolarHijriCalendarProvider, AfghanistanCurriculum)
+│   │   ├── Validators/TazkiraValidator.cs
+│   │   ├── EntityConfigurations/    (EF Core mappings for TPT extensions)
+│   │   ├── Migrations/              (owns its own schema)
+│   │   ├── Resources/               (fa-AF, ps-AF resx + MOE PDFs)
+│   │   ├── AfghanistanCountryModule.cs → services.AddAfghanistanModule()
+│   │   └── DigitalMaktab.Country.Afghanistan.csproj → references Abstractions + SDK
+│   │
+│   ├── DigitalMaktab.Country.Pakistan/              ← future
+│   │
+│   ├── DigitalMaktab.Api/                           ← thin ASP.NET Core host
+│   │   ├── Program.cs               (.AddCore().AddAfghanistanModule().AddPluginLoader() …)
+│   │   ├── appsettings.json
+│   │   └── DigitalMaktab.Api.csproj → references Core + selected Country modules
+│   │
+│   └── DigitalMaktab.Api.SaaS/                      ← SaaS-specific host (optional companion to .Api)
+│       ├── Program.cs               (adds tenant resolution, RLS setup, plugin curation)
+│       └── DigitalMaktab.Api.SaaS.csproj
+│
+├── plugins/                                          ← self-hosted operators drop their plugins here
+│   └── (empty by default — populated at deploy time)
+│
+├── samples/
+│   └── KabulHighSchool.Plugin/                       ← reference school plugin
+│       ├── KabulStudentExtras.cs
+│       ├── TransportRoutesController.cs
+│       ├── KabulBusRouteAssigner.cs
+│       ├── KabulHighSchoolPlugin.cs → ISchoolPlugin
+│       └── Migrations/
+│
+└── tests/
+    ├── DigitalMaktab.Core.Tests/
+    ├── DigitalMaktab.Country.Afghanistan.Tests/
+    ├── DigitalMaktab.SDK.Tests/
+    └── KabulHighSchool.Plugin.Tests/
 ```
 
-## 4. What becomes what
+**Frontend companion structure (SPA + published packages):**
 
-### 4.1 Config on `Country` (DB, no code needed to add a country's basics)
+```
+digitalmaktabspa/                                   ← app repository (existing)
+  src/                                              ← host application
+
+digitalmaktabspa-packages/                          ← published npm packages
+  packages/
+    @digitalmaktab/core-ui                          ← reusable components (AppCard, AppTable, AppModal, …)
+    @digitalmaktab/plugin-sdk                       ← definePlugin(), extension points, types
+    @digitalmaktab/testing                          ← Storybook helpers, mock providers
+  countries/
+    @digitalmaktab/country-afghanistan-ui           ← Afghan-specific form components
+  plugins/
+    @kabul-high-school/spa-plugin                   ← sample school plugin
+```
+
+Module Federation (Vite) at runtime for SaaS; static composition (fork or npm install) for self-hosted.
+
+## 5. Extension architecture — four layers
+
+Every extensible aggregate follows the same four-layer shape. Storage strategy differs deliberately per layer because the layers have wildly different characteristics.
+
+### 5.1 The four layers
+
+| Layer | Storage | # variants | Fields per variant | Change frequency | Query patterns |
+|---|---|---|---|---|---|
+| **1. Core (platform code)** | Native columns on the aggregate | 1 | ~15 | Platform release | Everywhere; heavy |
+| **2. Country plugin (code, per-country module)** | **TPT** — native columns in `AfghanStudentDetails` joined 1:1 to `Student.Id` | 3–20 | ~10–30 | Country onboarding / regulation change | Country-scoped reports |
+| **3. School plugin (code, per-school project)** | **TPT** — native columns in plugin-owned tables joined 1:1 to core aggregates | 10–1000s | ~5–50 | Plugin release cycle | School-scoped |
+| **4. Runtime custom fields (admin config)** | **JSONB column** on the core aggregate + `CustomFieldDefinition` table | 100s–1000s | ~5–20 | At admin will | Almost always `WHERE SchoolId = ?` first |
+
+### 5.2 Why TPT at country and school-plugin layers
+
+Perf wins over JSONB by 30–50% for country-specific field access. Native columns, native indexes, native FKs, native uniqueness constraints, native `EXPLAIN`. Adding a new country or plugin is a migration in that module's own migration assembly — not a change to Core. See §6 for the Postgres details.
+
+### 5.3 Why JSONB at the runtime config layer
+
+You cannot have one table per school (hundreds of schools = hundreds of tables). Runtime custom fields are defined by admins, so a fixed schema is impossible. School-scoped queries narrow to a small row set before any JSON extraction, keeping the impact bounded. Hot custom fields can be materialized via Postgres generated columns on request.
+
+### 5.4 Data model illustration
 
 ```csharp
-public class Country : Base
+// DigitalMaktab.Core - the universal Student aggregate
+public class Student : Base
 {
-    public required string CountryName { get; set; }
-    public required string CountryCode { get; set; }        // ISO 3166-1 alpha-2
-    public required string CountryPhoneCode { get; set; }
-    public ICollection<City> Cities { get; set; }
-
-    // NEW: per-country configuration
-    public required CalendarSystem CalendarSystem { get; set; }   // SOLAR_HIJRI, GREGORIAN, ISLAMIC
-    public required string DefaultLanguageCode { get; set; }      // e.g. "fa-AF", "en-PK"
-    public required ICollection<CountryLanguage> Languages { get; set; }
-    public required string CurrencyCode { get; set; }             // ISO 4217, e.g. "AFN", "PKR"
-    public required string CurrencySymbol { get; set; }
-    public required int GradeCount { get; set; }                  // 12, 14, 13…
-    public string? MoeName { get; set; }                          // display: "Ministry of Education"
-    public string? MoeBooksResourcePath { get; set; }             // where seeded books live
-}
-
-public enum CalendarSystem { GREGORIAN, SOLAR_HIJRI, ISLAMIC }
-
-public class CountryLanguage : Base
-{
+    public required Guid SchoolId { get; set; }
     public required Guid CountryId { get; set; }
-    public required Country Country { get; set; }
-    public required string LanguageCode { get; set; }             // "fa-AF"
-    public required string DisplayName { get; set; }              // "دری" (native rendering)
-    public required bool IsDefault { get; set; }
-    public required bool IsRtl { get; set; }
+    public required Guid CalendarYearId { get; set; }
+    public required Guid JoiningClassId { get; set; }
+    public required string FirstName { get; set; }
+    public required string LastName { get; set; }
+    public required DateTime DateOfBirth { get; set; }
+    public required Gender Gender { get; set; }
+    public required string Email { get; set; }
+    public required byte[] PasswordHash { get; set; }
+    public required byte[] PasswordSalt { get; set; }
+    public required UserRole UserRole { get; set; }
+    public required bool Status { get; set; }
+
+    [Column(TypeName = "jsonb")]
+    public JsonDocument? SchoolCustomData { get; set; }   // runtime config layer
+}
+
+// DigitalMaktab.Country.Afghanistan - country layer TPT extension
+public class AfghanStudentDetails : Base
+{
+    public required Guid StudentId { get; set; }          // 1:1 FK to Student.Id
+    public required Student Student { get; set; }
+    public required string FirstNameNative { get; set; }
+    public required string LastNameNative { get; set; }
+    public required string FatherNameNative { get; set; }
+    public required string GrandFatherNameNative { get; set; }
+    public required int AsasNumber { get; set; }
+    public TazkiraDocument? NationalId { get; set; }
+    public IsOrphan IsOrphan { get; set; }
+    public Language MotherTongue { get; set; }
+}
+
+// KabulHighSchool.Plugin - school plugin layer TPT extension
+public class KabulStudentExtras : Base
+{
+    public required Guid StudentId { get; set; }          // 1:1 FK to Student.Id
+    public required Student Student { get; set; }
+    public BusRoute? AssignedBusRoute { get; set; }
+    public required Guid? AssignedBusRouteId { get; set; }
+    public string? ScholarshipCode { get; set; }
+    public string? SecondaryParentEmail { get; set; }
 }
 ```
 
-### 4.2 `School` binds to `Country`
+Each extension owns its own table + migration. Core stays untouched. Queries that only need Core fields skip the joins.
+
+### 5.5 Runtime custom-field framework (for schools without a dev team)
+
+Alongside the plugin layer, an admin-facing custom-field system covers schools that don't want to (or can't) ship code.
 
 ```csharp
-public class School : Base
+public class CustomFieldDefinition : Base
 {
-    // … existing fields
-    public required Guid CountryId { get; set; }
-    public required Country Country { get; set; }
+    public required Guid SchoolId { get; set; }
+    public required string EntityType { get; set; }         // "Student", "Teacher", "Class", …
+    public required string FieldKey { get; set; }           // "busRoute", "scholarshipCode"
+    public required string DisplayNameEn { get; set; }
+    public string? DisplayNameNative { get; set; }
+    public required CustomFieldType DataType { get; set; }  // TEXT, NUMBER, DATE, BOOLEAN, DROPDOWN
+    public string? DropdownOptions { get; set; }
+    public required bool IsRequired { get; set; }
+    public required bool ShowInList { get; set; }
+    public required int SortOrder { get; set; }
 }
 ```
 
-`Address.PhoneNumber.CountryId` already exists — good. But `School.CountryId` needs to be added so *every* country-driven decision (calendar, language, currency, ID validator) can resolve from one place regardless of address changes.
+Runtime flow:
+1. Admin defines fields via UI.
+2. SPA loads definitions before rendering entity forms.
+3. Universal fields + country plugin fields + school plugin fields + custom fields render together.
+4. Custom values persist to the JSONB column on the aggregate.
 
-### 4.3 Strategy interfaces (code, one implementation per country)
+The plugin and admin-config approaches **coexist per school**. A school might have both a plugin (advanced features) and custom fields (long-tail attributes).
 
-```csharp
-public interface ICalendarProvider
-{
-    CalendarSystem System { get; }
-    string FormatYear(DateOnly gregorian);                        // "1405" or "2026"
-    DateOnly ParseYear(string native);
-    DateOnly StartOfAcademicYear(int gregorianYear);
-    DayOfWeek FirstDayOfWeek { get; }                             // Saturday in AF, Monday in PK
-}
+### 5.6 Per-entity classification
 
-public interface INationalIdValidator
-{
-    bool IsValid(NationalIdDocument document, out string? errorKey);
-    NationalIdDocument Parse(string raw);
-    string Format(NationalIdDocument document);
-}
+Not everything needs every layer. Realistic classification:
 
-public interface IGradeStructureProvider
-{
-    IReadOnlyList<GradeLevel> AllGrades();                        // per country
-    string DisplayName(GradeLevel g, string cultureCode);
-}
+| Entity | Core | Country plugin | School plugin | Runtime config |
+|---|:---:|:---:|:---:|:---:|
+| Student | ✓ | ✓ | ✓ | ✓ |
+| Teacher | ✓ | ✓ | ✓ | ✓ |
+| Class | ✓ | ✓ | ✓ | ✓ |
+| Subject | ✓ | ✓ | ✓ | ✓ |
+| Course | ✓ | ✓ | ✓ | ✓ |
+| Grade | ✓ | ✓ | ✓ | ✓ |
+| Attendance | ✓ | ✓ | ✓ | ✓ |
+| Fee | ✓ | ✓ | ✓ | ✓ |
+| Enrollment | ✓ | ✓ | ✓ | ✓ |
+| Schedule | ✓ | ✓ | ✓ | ✓ |
+| CalendarYear | ✓ | ✓ | — | — |
+| Address | ✓ | ✓ | — | — |
+| Country | ✓ | — | — | — |
+| Branch | ✓ | — | ✓ | ✓ |
+| UserRole | ✓ | — | ✓ (custom roles) | ✓ |
 
-public interface ICurriculumProvider
-{
-    IReadOnlyList<StandardSubject> StandardSubjects(GradeLevel g);
-    string? BookPath(StandardSubject s);
-}
-```
+## 6. Storage & performance principles
 
-`NationalIdDocument` becomes a discriminated shape rather than the current Afghan-only property bag — either a polymorphic entity (TPH) or a JSON column keyed by `Country.NationalIdSchemaVersion`.
+### 6.1 Postgres feature usage
 
-### 4.4 DI resolution
+- **TPT joins:** 1:1 by primary key — Postgres B-tree lookup ~2–5μs per row. Negligible for realistic queries.
+- **JSONB:** Postgres binary JSON. Native operators (`->`, `->>`, `@>`) and GIN indexes. Field access ~5μs uncached.
+- **Generated columns:** materialise hot JSON fields as native columns for fast indexing without schema migrations for admins:
+  ```sql
+  ALTER TABLE "Student" ADD COLUMN "BusRoute" text
+    GENERATED ALWAYS AS ("SchoolCustomData"->>'busRoute') STORED;
+  ```
+- **Row-Level Security (RLS):** in SaaS, enable Postgres RLS on every tenant table. Even if a repository forgets to filter by `SchoolId`, the DB refuses to leak. Defense in depth.
 
-Two viable patterns:
+### 6.2 Query patterns (applied at every layer)
 
-**A. Country-keyed registration (simple):**
+- **Always project.** List views select a `StudentListDto` with the columns actually shown — not the full entity graph.
+- **Avoid N+1.** Bulk operations preload lookups into memory. `context.Students.Where(...).Select(s => s.Email).ToHashSetAsync()` — one query, not N.
+- **Batch writes.** `AddRange` + one `SaveChangesAsync` per import. The current student import runs ~1500 queries for 501 rows; batched it's 3.
+- **`AsNoTracking()`** for read-only queries.
 
-```csharp
-services.AddScoped<ICalendarProvider, SolarHijriCalendarProvider>();
-services.AddScoped<ICalendarProvider, GregorianCalendarProvider>();
-services.AddScoped<ICalendarProviderResolver>();  // picks by School.Country.CalendarSystem
-```
+### 6.3 Indexes
 
-Consumers ask for `ICalendarProviderResolver.For(school)` rather than `ICalendarProvider` directly.
+- Every FK gets an index (EF Core adds these for navigations; verify for owned entities and JSONB).
+- Uniqueness at DB level, not just app logic. `UNIQUE (SchoolId, Email)` on Student/Teacher/User.
+- Composite indexes for common filter patterns — e.g. `(SchoolId, CalendarYearId, JoiningClassId)`.
+- Generated column + index for any JSONB field used in reports.
 
-**B. Keyed services (.NET 8 native):**
+### 6.4 Bulk operations
 
-```csharp
-services.AddKeyedScoped<ICalendarProvider, SolarHijriCalendarProvider>(CalendarSystem.SOLAR_HIJRI);
-services.AddKeyedScoped<ICalendarProvider, GregorianCalendarProvider>(CalendarSystem.GREGORIAN);
-```
+- Import services: single transaction with batched inserts. Preload all `Exists()` checks into a HashSet, `AddRange`, one `SaveChangesAsync`.
+- Very large imports (>10k rows): `Npgsql.NpgsqlBinaryImporter` via `COPY`.
+- Pure data seeding: bypass EF for raw SQL when EF's overhead is unnecessary.
 
-Consumers use `[FromKeyedServices(CalendarSystem.SOLAR_HIJRI)]`. Cleaner but requires the key to be known at the injection site — which usually means resolving through a factory anyway.
+### 6.5 Caching
 
-**Recommendation:** pattern A (explicit resolver) — simpler for downstream code and works with existing DI.
+- Reference data (Country, CountryLanguage, CalendarYear, CustomFieldDefinition, plugin manifests) cached in memory with change notifications.
+- SPA IndexedDB cache in `api/client.ts` needs cache-tag invalidation on mutations — currently it's too aggressive and can serve stale data after writes.
 
-## 5. Folder layout
+### 6.6 Cross-layer report boundaries
 
-```
-digitalmaktabapi/
-  Controllers/                    # unchanged (country-agnostic)
-  Models/                         # unchanged (core entities)
-  Data/                           # unchanged (generic repos)
-  Services/
-    Import/                       # unchanged (uses ICurriculumProvider for defaults)
-    Calendar/
-      ICalendarProvider.cs
-      CalendarProviderResolver.cs
-    NationalId/
-      INationalIdValidator.cs
-      NationalIdValidatorResolver.cs
-    Curriculum/
-      ICurriculumProvider.cs
-      CurriculumProviderResolver.cs
-  Countries/                      # NEW — one folder per country
-    Afghanistan/
-      SolarHijriCalendarProvider.cs
-      TazkiraValidator.cs
-      AfghanistanCurriculum.cs
-      AfghanistanCountryModule.cs   # registers all above with DI
-      Resources/
-        Books/*.pdf
-        Localization/*.resx
-    Pakistan/                      # future — same shape
-      GregorianCalendarProvider.cs
-      CNICValidator.cs
-      …
-```
-
-Each `<Country>CountryModule.cs` exposes one extension method `services.AddAfghanistanModule()` called from `Program.cs`. That's the only file `Program.cs` needs to touch to onboard a new country.
-
-## 6. Migration plan for existing Afghan data
-
-The DB currently has one school (`Test School`), 10 seeded students, 4 teachers, 6 classes, 30 enrollments, etc., all assumed Afghan. Migration steps:
-
-1. **Add columns to `Country` with defaults** — a data migration seeds `CalendarSystem`, `DefaultLanguageCode`, `CurrencyCode`, `GradeCount` for every existing country row using best-guess defaults (Afghanistan → SOLAR_HIJRI/fa-AF/AFN/14; others → GREGORIAN/en-US/USD/12 as placeholder until reviewed).
-2. **Add `School.CountryId`** — data migration backfills every existing School with the Afghanistan country ID. Column NOT NULL after backfill.
-3. **`CountryLanguage` seed** — populate from the current `SupportedCultures` list, tagged to Afghanistan.
-4. **Extract Solar Hijri arithmetic into `AfghanistanCalendarProvider`** — no consumers change yet (still one implementation).
-5. **Convert `NationalId` to polymorphic shape** — Afghan schools keep Tazkira fields; new field `NationalIdSchema` on Country tells the client which form to render.
-6. **Un-hardcode `"AF"`** — imports look up `School.Country.CountryCode` instead of the literal.
-7. **Introduce `Countries/Afghanistan/` folder** — move calendar/validator/curriculum in. Add `AfghanistanCountryModule` registration.
-8. **Remove `SupportedCultures` hardcoding in `Program.cs`** — derive from union of all `CountryLanguage` rows.
-
-Each step is independently deployable and reversible. No breaking change for the existing school until step 5 (NationalId shape change), which can be blue-green migrated behind a feature flag.
-
-## 7. Suggested phasing
-
-| Phase | Deliverable | Est. effort |
-|---|---|---|
-| **1. Foundations** | Country config columns, School.CountryId, un-hardcode "AF" defaults, seed AF row | 1-2 days |
-| **2. Calendar strategy** | ICalendarProvider + resolver + AfghanistanCalendarProvider + stub GregorianCalendarProvider | 1 day |
-| **3. Language config** | CountryLanguage table + seed, drive `SupportedCultures` and SPA i18n `supportedLngs` from DB | 1-2 days |
-| **4. Countries/ folder** | Reshape file layout, move existing Afghan-specific classes, add `AddAfghanistanModule()` extension | 1 day |
-| **5. Currency on Fees** | Add `Fee.CurrencyCode`, default from school country, display formatted amounts in reports | 1 day |
-| **6. National ID rework** | Polymorphic `NationalIdDocument`, INationalIdValidator, Tazkira as one implementation | 3-4 days |
-| **7. Grade structure** | IGradeStructureProvider, remove ClassName hard enum, drive grades from country config | 2-3 days |
-| **8. First non-AF country** | Add `Countries/Pakistan/` end-to-end, verify school onboarding without core changes | 3-5 days |
-
-**Total for a first non-Afghan school running end-to-end:** ~3 weeks of focused work.
-
-## 8. Open questions
-
-- **`ClassName` as enum vs entity.** The enum works for Afghanistan's fixed 1–14 grades. Pakistan has "Nursery" and "Prep" that don't map to integers. Do we (a) extend the enum with more values, (b) replace it with a `GradeLevel` entity per country, or (c) keep the enum and translate through `IGradeStructureProvider`? **Recommendation:** (b) — entity per country, but with a well-known code (`grade-1`, `grade-2`, `nursery`, `prep`) so cross-country reporting stays tractable.
-- **Zoom vs alternatives per country.** Zoom is US-based and blocked/expensive in some countries. Do we abstract online-class into `IOnlineClassProvider`? Probably yes when we add a second country, not before.
-- **Currency display and FX.** Do fees for a Pakistani school need to be readable in AFN by a global admin? Probably not — display in school's currency, no FX conversion in v1.
-- **Multi-country root users.** Can a ROOT_USER manage schools in multiple countries? If yes, some root screens need country selection.
-- **Resx locations for country modules.** ASP.NET Core's `IStringLocalizer` uses a global resources path. If Pakistan's Urdu strings live in `Countries/Pakistan/Resources/`, we'll need to either configure multiple resource providers or centralize under `Resources/Localization/<country>/`.
-- **Data migration for existing prod schools.** If Digital Maktab is already live, we need a plan for zero-downtime migration through phases 1-5.
-
-## 9. What this doc is *not*
-
-- Not a commitment to ship every phase — pick what makes sense as needs arise.
-- Not a rewrite. Every phase is additive; existing Afghan behavior keeps working throughout.
-- Not final on interface shapes — the sketches above will get refined as we implement the first strategy (probably `ICalendarProvider`).
+- Country-scoped reports live in country modules — no attempt to unify Afghan and Pakistani detail tables.
+- School plugin reports live in the plugin — no attempt to reach into another school's tables.
+- Cross-school reports on runtime custom fields are inherently expensive — publish nightly snapshot aggregates for platform dashboards; do not query JSONB at scale.
 
 ---
 
-*Next step, once this doc is reviewed:* start Phase 1 (Foundations) — add Country config columns and un-hardcode the `"AF"` defaults. That's the smallest change that unblocks every subsequent phase.
+## 7. The SDK contract
+
+Every extension point is a public API commitment. Breaking one breaks every plugin in the world. The SDK follows strict SemVer: patch for bugfixes, minor for additions, major for breaking changes with a deprecation window.
+
+### 7.1 Backend SDK — `DigitalMaktab.SDK`
+
+**Plugin identity:**
+
+```csharp
+public interface IPlugin
+{
+    string PluginCode { get; }           // globally unique, e.g. "kabul-high-school"
+    Version SdkVersion { get; }          // which SDK version the plugin was built against
+    void Configure(IPluginBuilder builder);
+}
+
+public interface ICountryModule : IPlugin
+{
+    string CountryCode { get; }          // ISO 3166-1 alpha-2
+}
+
+public interface ISchoolPlugin : IPlugin
+{
+    string SchoolCode { get; }           // globally unique per platform deployment
+}
+```
+
+**Extension points exposed by `IPluginBuilder`:**
+
+```csharp
+public interface IPluginBuilder
+{
+    // Entity extensions (1:1 TPT)
+    IPluginBuilder ExtendEntity<TCore, TExtension>()
+        where TCore : Base
+        where TExtension : Base, ICoreEntityExtension<TCore>;
+
+    // Controllers
+    IPluginBuilder AddController<TController>() where TController : ControllerBase;
+
+    // Services (register or override)
+    IPluginBuilder AddService<TInterface, TImpl>() where TImpl : TInterface;
+    IPluginBuilder DecorateService<TInterface, TDecorator>() where TDecorator : TInterface;
+
+    // Country-specific providers (country modules only)
+    IPluginBuilder ProvideCalendar<T>() where T : ICalendarProvider;
+    IPluginBuilder ProvideNationalIdValidator<T>() where T : INationalIdValidator;
+    IPluginBuilder ProvideCurriculum<T>() where T : ICurriculumProvider;
+
+    // Domain event subscriptions
+    IPluginBuilder OnEvent<TEvent, THandler>()
+        where TEvent : IDomainEvent
+        where THandler : IEventHandler<TEvent>;
+
+    // Lifecycle hooks
+    IPluginBuilder BeforeSave<TEntity, THook>() where THook : IBeforeSave<TEntity>;
+    IPluginBuilder AfterSave<TEntity, THook>() where THook : IAfterSave<TEntity>;
+
+    // EF Core plumbing
+    IPluginBuilder RegisterEntityConfiguration(IEntityTypeConfiguration configuration);
+    IPluginBuilder RegisterMigrationAssembly(Assembly assembly);
+
+    // Localization
+    IPluginBuilder AddResourceAssembly(Assembly assembly);
+}
+```
+
+**Sample school plugin:**
+
+```csharp
+public class KabulHighSchoolPlugin : ISchoolPlugin
+{
+    public string PluginCode => "kabul-high-school";
+    public string SchoolCode => "kabul-high";
+    public Version SdkVersion => new(1, 0, 0);
+
+    public void Configure(IPluginBuilder builder)
+    {
+        builder.ExtendEntity<Student, KabulStudentExtras>();
+        builder.AddController<TransportRoutesController>();
+        builder.AddService<IBusRouteAssigner, KabulBusRouteAssigner>();
+        builder.OnEvent<StudentEnrolled, AssignBusRouteOnEnrollment>();
+        builder.BeforeSave<Fee, EnforceScholarshipDiscount>();
+        builder.RegisterMigrationAssembly(typeof(KabulHighSchoolPlugin).Assembly);
+        builder.AddResourceAssembly(typeof(KabulHighSchoolPlugin).Assembly);
+    }
+}
+```
+
+**Scoping.** School plugin services and controllers are only wired for requests where `School.PluginCode == plugin.SchoolCode`. The `IPluginScopeResolver` in Core handles this — plugins don't manually check.
+
+### 7.2 Frontend SDK — `@digitalmaktab/plugin-sdk`
+
+```ts
+import { definePlugin } from "@digitalmaktab/plugin-sdk";
+import KabulBusRouteField from "./components/KabulBusRouteField";
+import TransportRoutesScreen from "./screens/TransportRoutesScreen";
+
+export default definePlugin({
+  pluginCode: "kabul-high-school",
+  schoolCode: "kabul-high",
+  sdkVersion: "1.0.0",
+
+  extendForm: {
+    student: [
+      { slot: "after-address", component: KabulBusRouteField, order: 100 },
+    ],
+  },
+
+  addTableColumn: {
+    studentList: [
+      { header: "table.kabul.busRoute", accessor: "kabul.busRoute", order: 50 },
+    ],
+  },
+
+  addMenuItem: [
+    { path: "/transport", labelKey: "menu.kabul.transport", roles: ["ADMIN"] },
+  ],
+
+  addRoute: [
+    { path: "/transport/routes", component: TransportRoutesScreen, roles: ["ADMIN"] },
+  ],
+
+  translations: {
+    "en-US": { "menu.kabul.transport": "Transport", "table.kabul.busRoute": "Bus Route" },
+    "fa-AF": { "menu.kabul.transport": "ترانسپورت", "table.kabul.busRoute": "مسیر بس" },
+    "ps-AF": { "menu.kabul.transport": "ترانسپورت", "table.kabul.busRoute": "د بس لار" },
+  },
+});
+```
+
+**Discovery.** In SaaS, plugins load at runtime via Vite Module Federation, keyed by the logged-in school. In self-hosted, plugins are `npm install`ed and statically composed at build time.
+
+### 7.3 Versioning & compatibility
+
+- **`DigitalMaktab.Core.Abstractions`** is the SemVer-strict contract. Major bumps are rare, painful, and always come with a migration guide.
+- **`DigitalMaktab.Core`** implementation can change freely as long as it honors the Abstractions contract.
+- **`DigitalMaktab.SDK`** is minor-versioned to reflect added helpers; never adds new required extension points without a major bump.
+- Plugins declare `SdkVersion`. Host checks compatibility at load time and refuses incompatible plugins with a clear error.
+- Deprecation cycle: mark for one minor, remove in next major. Include a compiler-warning attribute.
+
+## 8. Multi-tenancy & isolation (SaaS)
+
+### 8.1 Tenant identity
+
+Every authenticated request carries `SchoolId` from the JWT. `ITenantContext` (scoped) exposes it. Repositories use it as the default filter for every query touching tenant data.
+
+### 8.2 Data isolation
+
+Two-layer defense:
+- **App layer:** every repository accepts `SchoolId` and filters on it. Reviewed via code review + tests.
+- **DB layer:** Postgres RLS enabled on every tenant table. Policy: `USING ("SchoolId" = current_setting('app.tenant_id')::uuid)`. Even if an app-layer filter is missed, the DB refuses.
+
+### 8.3 Plugin isolation (SaaS-only concern)
+
+Plugins run in-process with full trust in v1. Isolation guarantees are:
+- **Data:** plugin services obtain `SchoolId` from `ITenantContext` — cannot easily reach other tenants' data if they use provided repositories.
+- **Code:** plugins loaded via `AssemblyLoadContext` for unload/reload; not for security.
+
+**What v1 does NOT provide:**
+- Resource limits (CPU, memory) per plugin.
+- Prevention of malicious plugins reading DB directly, calling external APIs, etc.
+
+Therefore, in v1 SaaS: **only vetted plugins from trusted publishers run in the SaaS host.** Untrusted third-party plugins are self-hosted only.
+
+Sandboxing options for a future SaaS third-party plugin marketplace:
+- **WASM plugins** (WebAssembly with limited API surface — like Envoy filters, Shopify Functions)
+- **DSL** (a restricted scripting language with governor limits — like Salesforce Apex)
+- **Per-plugin OS sandbox** (each plugin in its own process/container, with well-defined IPC — expensive)
+
+None are cheap. Marketplace with untrusted plugins is a Phase F or later concern.
+
+## 9. Deployment topologies
+
+### 9.1 SaaS multi-tenant
+
+```
+                           ┌──────────────────────────────┐
+                           │  digitalmaktab.com           │
+                           │                              │
+Requests ─── LB ─── Kestrel ─┼──── DigitalMaktab.Api.SaaS ─┼── Postgres (RLS-partitioned)
+                           │      ├─ Core                 │
+                           │      ├─ Country.Afghanistan  │
+                           │      ├─ Country.Pakistan     │
+                           │      ├─ VettedPlugin.A       │
+                           │      └─ VettedPlugin.B       │
+                           │  SPA (CDN) + Module Federation for plugins
+                           └──────────────────────────────┘
+```
+
+### 9.2 Self-hosted (single school)
+
+```
+                     ┌────────────────────────────────┐
+                     │  school.example.edu            │
+Requests ─── Kestrel ─┼── DigitalMaktab.Api           ─┼── Postgres (single tenant)
+                     │      ├─ Core                    │
+                     │      ├─ Country.Afghanistan     │
+                     │      └─ SchoolPlugin (in-tree)  │
+                     │  SPA served by Kestrel or CDN
+                     └────────────────────────────────┘
+```
+
+### 9.3 Self-hosted (district — small multi-tenant)
+
+Same as SaaS shape but operated by the district; RLS enabled, only district schools inside.
+
+## 10. Localization strategy
+
+- **Core resx** — cross-cutting strings (buttons, generic errors).
+- **Country module resx** — country-specific strings (calendar labels, validation errors, MOE curriculum names). `IStringLocalizer<T>` resolves from the country's assembly.
+- **School plugin resx / translations** — plugin ships its own resx and JSON. Plugin's translation contributions merged into the SPA i18n bundle at runtime (SaaS) or build time (self-hosted).
+- **Supported cultures** — derived from the union of all `CountryLanguage` rows at startup, not hardcoded in `Program.cs`.
+
+## 11. EF Core migrations across projects
+
+- **Core** owns migrations for universal tables.
+- **Each country module** owns its migrations in its own assembly (`optionsBuilder.UseNpgsql(cs, x => x.MigrationsAssembly("DigitalMaktab.Country.Afghanistan"))`).
+- **Each school plugin** owns its migrations.
+- **Host startup** runs Core migrations first, then country modules, then loaded plugins — each in its own migration table (`__EFMigrationsHistory_<assembly>`).
+- Plugin uninstall: their tables remain (no destructive drops in v1) — operator's decision to clean up manually.
+
+## 12. Migration plan from current state
+
+Each step is independently deployable and reversible.
+
+1. **Split the API into Core + Api + Country.Afghanistan projects.** Move existing code — no logic change. Solution builds identically. ~1 day.
+2. **Extract `DigitalMaktab.Core.Abstractions`.** Move interfaces (repositories, base, upcoming extension points) into a stable package. ~half day.
+3. **Add country config columns to `Country`.** `CalendarSystem`, `DefaultLanguageCode`, `CurrencyCode`, `GradeCount`. Data seed backfills Afghanistan values. ~half day.
+4. **Add `School.CountryId` FK.** Backfill existing schools with Afghanistan's Id. Set NOT NULL. ~half day.
+5. **Introduce `ICalendarProvider` + `SolarHijriCalendarProvider`.** First strategy interface, one implementation. Prove the resolver pattern. ~1 day.
+6. **Extract Afghan Student/Teacher fields into TPT tables.** `AfghanStudentDetails`, `AfghanTeacherDetails`. Shadow-write to both old and new columns until verified, then drop old columns from Core. ~2 days.
+7. **Add `SchoolCustomData jsonb` columns.** Plumbing only, no admin UI yet. ~half day.
+8. **Un-hardcode `"AF"` in imports and `SupportedCultures` in `Program.cs`.** Derive from data. ~half day.
+9. **Build `DigitalMaktab.SDK` and `IPluginBuilder`.** First cut of the extension-point contract. Country modules use it internally as validation of the API. ~2–3 days.
+10. **Extract country resx into the Afghanistan module.** Move Afghan strings out of Core's resx files. ~half day.
+11. **Introduce plugin loader.** Static plugin discovery (`services.AddSchoolPlugin<KabulHighSchoolPlugin>()`). Not runtime dynamic yet. ~1 day.
+12. **Add stub `DigitalMaktab.Country.Pakistan` project.** Proves the pattern for a second country. ~half day.
+13. **Reference `KabulHighSchool.Plugin` sample.** End-to-end school plugin as executable documentation of the SDK. ~2 days.
+14. **Runtime custom-field framework (v1).** `CustomFieldDefinition` CRUD + JSONB persistence + backend validation. Admin UI is Phase D. ~2 days.
+15. **Vite Module Federation for SPA plugins.** Runtime plugin loading in the SPA. ~2–3 days.
+16. **Admin UI for custom fields.** ~1 week.
+17. **Multi-tenancy hardening.** Postgres RLS policies, `ITenantContext`, per-tenant DB metrics. Only needed for SaaS deployment. ~1 week.
+
+## 13. Phasing (realistic timeline)
+
+Each phase is shippable. Later phases depend on earlier.
+
+### Phase A — Foundation (~1 week)
+
+Steps 1–5 above. Multi-project split, country config columns, first strategy interface. Behavior unchanged; foundations only.
+
+### Phase B — TPT extraction & SDK v1 (~2 weeks)
+
+Steps 6–11. Afghan fields moved into TPT tables. First cut of the SDK with `IPluginBuilder`. Reference country module & sample school plugin as executable specs.
+
+### Phase C — Runtime config layer (~1 week)
+
+Steps 7 revisited + 14. `SchoolCustomData` populated via a first-cut admin API. No dynamic form rendering yet — just plumbing.
+
+### Phase D — Frontend plugins (~2–3 weeks)
+
+Step 15 + Vite Module Federation setup for `@digitalmaktab/*` packages. Runtime plugin loading in SPA. Sample school plugin renders a real screen.
+
+### Phase E — Admin UI for custom fields (~1 week)
+
+Step 16. Schools without dev teams get a working experience.
+
+### Phase F — Multi-tenancy hardening & SaaS deployment (~2–3 weeks)
+
+Step 17. Postgres RLS, `ITenantContext`, tenant-scoped metrics. Deploy first SaaS instance.
+
+### Phase G — Sandboxed third-party plugin marketplace (deferred, months of work)
+
+Only if there's demand for arbitrary third-party plugins in the SaaS host. Not before Phases A–F are stable.
+
+**Total to first non-Afghan school running in production, self-hosted, with a plugin:** ~2 months of focused work.
+**Total to a hosted SaaS with tenant isolation and vetted plugins:** ~4 months.
+**Total to an open plugin marketplace with untrusted plugins:** at least 12+ months beyond that; consider carefully whether it's needed.
+
+## 14. Open questions
+
+- **`ClassName` as enum vs entity.** Enum works for Afghanistan's 1–14 grades but not for Pakistani "Nursery"/"Prep". Replace with a `GradeLevel` entity keyed by country, with cross-country codes (`grade-1`, `nursery`).
+- **Zoom vs alternatives per country.** Abstract into `IOnlineClassProvider` when the second country arrives.
+- **Currency & FX.** Display in school's currency; no conversion in v1. Global admin dashboards accept mixed-currency reality.
+- **Multi-country root users.** If a root user manages schools across countries, screens need a country selector; otherwise root users are country-scoped. Recommendation: country-scoped by default, "super admin" flag for cross-country.
+- **Data residency.** Some countries mandate in-country data. Regional deployments become required if this hits. Design DBs to be shardable by country from day one — don't put `AfghanStudentDetails` in the same DB as `PakistaniStudentDetails` unless RLS + region rules allow it.
+- **Plugin trust in SaaS.** Vetted-publisher-only in v1. Marketplace with untrusted plugins requires sandboxing (WASM / DSL / OS isolation) — years of work.
+- **Plugin data on uninstall.** When a plugin is disabled or a school migrates off it, do we drop the plugin's tables or leave them? Recommendation: leave, operator cleans up manually. Never drop tenant data automatically.
+- **Cross-plugin dependencies.** Can plugin A require plugin B? If yes, we need a manifest system and load ordering. If no (recommended for v1), plugins compose only through Core's extension points.
+- **Custom field schema deletion.** When an admin deletes a `CustomFieldDefinition`, keep the JSON values (soft delete, 30-day undelete) or purge? Recommendation: soft delete, purge after 30 days.
+- **SPA plugin loading order.** Module Federation loads plugins lazily. If a plugin registers a menu item, it must load before the menu renders. Solution: a manifest fetched at login that lists plugin URLs, then Promise.all before initial render.
+
+## 15. What this doc is *not*
+
+- Not a commitment to ship every phase — each phase gate on real customer need.
+- Not a rewrite. Every step is additive; existing Afghan behavior keeps working throughout.
+- Not final on SDK interface shapes — expect refinement through Phases B–D.
+- Not a security audit. Multi-tenant plugin sandboxing (Phase G) needs a proper threat model and third-party review before shipping.
+
+---
+
+*Next step, once this doc is reviewed:* start **Phase A**. First concrete change is the solution split — create `DigitalMaktab.Core`, `DigitalMaktab.Api`, `DigitalMaktab.Country.Afghanistan`, `DigitalMaktab.Core.Abstractions`, and `DigitalMaktab.SDK` csproj files, move existing files, wire references. No logic changes in that first commit.
