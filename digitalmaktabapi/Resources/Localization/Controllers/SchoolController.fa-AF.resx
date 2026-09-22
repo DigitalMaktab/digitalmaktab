@@ -164,4 +164,76 @@
         <value>این مضمون برای سال جاری قبلاً ثبت شده است.</value>
         <comment>کورس قبلاً ثبت شده است.</comment>
     </data>
+    <data name="ImportEmptyFile" xml:space="preserve">
+        <value>هیچ فایلی بارگذاری نشده است.</value>
+        <comment>No file uploaded to the import endpoint</comment>
+    </data>
+    <data name="ImportInvalidExtension" xml:space="preserve">
+        <value>فقط فایل‌های .xlsx پشتیبانی می‌شوند.</value>
+        <comment>File extension is not .xlsx</comment>
+    </data>
+    <data name="ImportEmptySheet" xml:space="preserve">
+        <value>ورق بارگذاری‌شده خالی است.</value>
+        <comment>Uploaded xlsx sheet has no rows</comment>
+    </data>
+    <data name="ImportMissingRequiredColumn" xml:space="preserve">
+        <value>ستون الزامی «{0}» در سطر عناوین وجود ندارد.</value>
+        <comment>One of the required header columns was not found</comment>
+    </data>
+    <data name="ImportUnknownClassName" xml:space="preserve">
+        <value>نام صنف «{0}» شناخته نشد. ورق «Reference» را ببینید.</value>
+        <comment>ClassName value does not match any enum member</comment>
+    </data>
+    <data name="ImportClassNotFound" xml:space="preserve">
+        <value>صنف «{0}» در شاخه «{1}» برای سال جاری تقویمی وجود ندارد.</value>
+        <comment>ClassName + BranchName pair does not match any class in the active year</comment>
+    </data>
+    <data name="ImportEmailRequired" xml:space="preserve">
+        <value>ایمیل الزامی است.</value>
+        <comment>Email column is blank</comment>
+    </data>
+    <data name="ImportEmailExists" xml:space="preserve">
+        <value>شاگردی با ایمیل «{0}» قبلاً ثبت شده است.</value>
+        <comment>Duplicate student email</comment>
+    </data>
+    <data name="ImportInvalidEnum" xml:space="preserve">
+        <value>مقدار «{0}» برای {1} نامعتبر است.</value>
+        <comment>Enum value not recognized (Gender, MotherTongue, etc.)</comment>
+    </data>
+    <data name="ImportInvalidDate" xml:space="preserve">
+        <value>تاریخ «{0}» نامعتبر است. از قالب YYYY-MM-DD استفاده کنید.</value>
+        <comment>DateOfBirth failed to parse</comment>
+    </data>
+    <data name="ImportInvalidInteger" xml:space="preserve">
+        <value>«{0}» یک عدد صحیح معتبر برای {1} نیست.</value>
+        <comment>int.TryParse failed</comment>
+    </data>
+    <data name="ImportUnexpectedError" xml:space="preserve">
+        <value>خطای غیرمنتظره: {0}</value>
+        <comment>Fallback wrapper for unhandled exceptions during row processing</comment>
+    </data>
+    <data name="ImportCountryAfNotSeeded" xml:space="preserve">
+        <value>کشور «AF» در دیتابیس ثبت نشده — امکان وارد کردن وجود ندارد.</value>
+        <comment>Afghanistan country row missing from seeded data</comment>
+    </data>
+    <data name="ImportTemplateSectionAvailableClasses" xml:space="preserve">
+        <value>صنف‌های موجود برای سال جاری تقویمی</value>
+        <comment>xlsx template — Reference sheet section title</comment>
+    </data>
+    <data name="ImportTemplateColumnClassName" xml:space="preserve">
+        <value>نام صنف</value>
+        <comment>xlsx template — column label</comment>
+    </data>
+    <data name="ImportTemplateColumnBranchName" xml:space="preserve">
+        <value>نام شاخه</value>
+        <comment>xlsx template — column label</comment>
+    </data>
+    <data name="ImportTeacherEmailExists" xml:space="preserve">
+        <value>معلمی با ایمیل «{0}» قبلاً ثبت شده است.</value>
+        <comment>Duplicate teacher email during import</comment>
+    </data>
+    <data name="ImportTeacherRoleNotAllowed" xml:space="preserve">
+        <value>نقش کاربری «{0}» برای وارد کردن معلم مجاز نیست. از TEACHER، PRINCIPAL یا HEAD_MASTER استفاده کنید.</value>
+        <comment>UserRole in teacher import must be TEACHER/PRINCIPAL/HEAD_MASTER</comment>
+    </data>
 </root>

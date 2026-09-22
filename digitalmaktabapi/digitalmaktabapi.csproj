@@ -9,6 +9,7 @@
   <ItemGroup>
     <PackageReference Include="AspNetCoreRateLimit" Version="5.0.0" />
     <PackageReference Include="AutoMapper" Version="13.0.1" />
+    <PackageReference Include="ClosedXML" Version="0.104.2" />
     <PackageReference Include="DinkToPdf" Version="1.0.8" />
     <PackageReference Include="DotCommon.ImageUtility" Version="5.1.2" />
     <PackageReference Include="DotNetEnv" Version="3.1.1" />

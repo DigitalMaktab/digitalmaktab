@@ -10,6 +10,7 @@ using digitalmaktabapi.Dtos.SchoolDashboard;
 using digitalmaktabapi.Headers;
 using digitalmaktabapi.Helpers;
 using digitalmaktabapi.Models;
+using digitalmaktabapi.Services.Import;
 using digitalmaktabapi.Services.Mail;
 using digitalmaktabapi.Services.Upload;
 using Microsoft.AspNetCore.Authorization;
@@ -28,7 +29,9 @@ namespace digitalmaktabapi.Controllers
         IMapper mapper,
         IStringLocalizer<SchoolController> localizer,
         IStringLocalizer<MainController> mainLocalizer,
-        IMailService mailService
+        IMailService mailService,
+        StudentImportService studentImportService,
+        TeacherImportService teacherImportService
         ) : BaseController(mapper, localizer)
     {
         private readonly ISchoolRepository schoolRepository = schoolRepository;
@@ -36,6 +39,8 @@ namespace digitalmaktabapi.Controllers
         private readonly ITeacherRepository teacherRepository = teacherRepository;
         private readonly IStringLocalizer<MainController> mainLocalizer = mainLocalizer;
         private readonly IMailService mailService = mailService;
+        private readonly StudentImportService studentImportService = studentImportService;
+        private readonly TeacherImportService teacherImportService = teacherImportService;
 
         [HttpGet]
         public async Task<IActionResult> GetSchool()
@@ -146,6 +151,30 @@ namespace digitalmaktabapi.Controllers
             return Ok(studentsToReturn);
         }
 
+        [HttpGet("importTemplate/students")]
+        public async Task<IActionResult> GetStudentImportTemplate()
+        {
+            var bytes = await this.studentImportService.BuildTemplateAsync(this.SchoolId, this.CalendarYearId);
+            return File(bytes,
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                "student-import-template.xlsx");
+        }
+
+        [HttpPost("import/students")]
+        public async Task<IActionResult> ImportStudents(IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+                return BadRequest(new { message = this.localizer!["ImportEmptyFile"].Value });
+            var ext = Path.GetExtension(file.FileName).ToLowerInvariant();
+            if (ext != ".xlsx")
+                return BadRequest(new { message = this.localizer!["ImportInvalidExtension"].Value });
+
+            using var stream = file.OpenReadStream();
+            var result = await this.studentImportService.ImportAsync(
+                stream, this.SchoolId, this.CalendarYearId, this.Id);
+            return Ok(result);
+        }
+
 
         [HttpGet("student/{studentId}")]
         public async Task<IActionResult> GetStudent(Guid studentId)
@@ -227,6 +256,29 @@ namespace digitalmaktabapi.Controllers
             var teachersToReturn = this.mapper!.Map<ICollection<TeacherDto>>(teachers);
             Response.AddPagintaion(teachers.CurrentPage, teachers.PageSize, teachers.TotalCount, teachers.TotalPages);
             return Ok(teachersToReturn);
+        }
+
+        [HttpGet("importTemplate/teachers")]
+        public IActionResult GetTeacherImportTemplate()
+        {
+            var bytes = this.teacherImportService.BuildTemplate();
+            return File(bytes,
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                "teacher-import-template.xlsx");
+        }
+
+        [HttpPost("import/teachers")]
+        public async Task<IActionResult> ImportTeachers(IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+                return BadRequest(new { message = this.localizer!["ImportEmptyFile"].Value });
+            var ext = Path.GetExtension(file.FileName).ToLowerInvariant();
+            if (ext != ".xlsx")
+                return BadRequest(new { message = this.localizer!["ImportInvalidExtension"].Value });
+
+            using var stream = file.OpenReadStream();
+            var result = await this.teacherImportService.ImportAsync(stream, this.SchoolId, this.Id);
+            return Ok(result);
         }
 
 

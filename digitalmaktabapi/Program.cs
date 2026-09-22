@@ -11,6 +11,7 @@ using digitalmaktabapi.Helpers;
 using digitalmaktabapi.Models;
 using digitalmaktabapi.Services;
 using digitalmaktabapi.Services.Auth;
+using digitalmaktabapi.Services.Import;
 using digitalmaktabapi.Services.DMCryptography;
 using digitalmaktabapi.Services.Mail;
 using digitalmaktabapi.Services.OnlineClass;
@@ -198,6 +199,8 @@ builder.Services.AddTransient<ReportService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<TokenService>();
 builder.Services.AddScoped<CryptographyService>();
+builder.Services.AddScoped<StudentImportService>();
+builder.Services.AddScoped<TeacherImportService>();
 
 // Add Validation
 // Adding Fluent Validation

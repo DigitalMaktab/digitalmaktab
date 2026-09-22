@@ -164,4 +164,76 @@
         <value>دا مضمون د روان کال لپاره مخکې ثبت شوی دی.</value>
         <comment>مضمون مخکې ثبت شوی دی.</comment>
     </data>
+    <data name="ImportEmptyFile" xml:space="preserve">
+        <value>هیڅ فایل نه دی اپلوډ شوی.</value>
+        <comment>No file uploaded to the import endpoint</comment>
+    </data>
+    <data name="ImportInvalidExtension" xml:space="preserve">
+        <value>یوازې د .xlsx فایلونه ملاتړ کیږي.</value>
+        <comment>File extension is not .xlsx</comment>
+    </data>
+    <data name="ImportEmptySheet" xml:space="preserve">
+        <value>اپلوډ شوې پاڼه خالي ده.</value>
+        <comment>Uploaded xlsx sheet has no rows</comment>
+    </data>
+    <data name="ImportMissingRequiredColumn" xml:space="preserve">
+        <value>اړین کالم «{0}» د سرلیک کتار کې نشته.</value>
+        <comment>One of the required header columns was not found</comment>
+    </data>
+    <data name="ImportUnknownClassName" xml:space="preserve">
+        <value>د ټولګي نوم «{0}» نه پیژندل کیږي. د «Reference» پاڼه وګورئ.</value>
+        <comment>ClassName value does not match any enum member</comment>
+    </data>
+    <data name="ImportClassNotFound" xml:space="preserve">
+        <value>د روان کلیز کال لپاره په «{1}» څانګه کې «{0}» ټولګی نشته.</value>
+        <comment>ClassName + BranchName pair does not match any class in the active year</comment>
+    </data>
+    <data name="ImportEmailRequired" xml:space="preserve">
+        <value>برېښنالیک اړین دی.</value>
+        <comment>Email column is blank</comment>
+    </data>
+    <data name="ImportEmailExists" xml:space="preserve">
+        <value>له «{0}» برېښنالیک سره زده کوونکی مخکې راجستر شوی.</value>
+        <comment>Duplicate student email</comment>
+    </data>
+    <data name="ImportInvalidEnum" xml:space="preserve">
+        <value>د {1} لپاره «{0}» ارزښت ناسم دی.</value>
+        <comment>Enum value not recognized (Gender, MotherTongue, etc.)</comment>
+    </data>
+    <data name="ImportInvalidDate" xml:space="preserve">
+        <value>«{0}» نېټه ناسمه ده. YYYY-MM-DD فارمټ وکاروئ.</value>
+        <comment>DateOfBirth failed to parse</comment>
+    </data>
+    <data name="ImportInvalidInteger" xml:space="preserve">
+        <value>«{0}» د {1} لپاره سم بشپړ عدد نه دی.</value>
+        <comment>int.TryParse failed</comment>
+    </data>
+    <data name="ImportUnexpectedError" xml:space="preserve">
+        <value>ناڅاپي تېروتنه: {0}</value>
+        <comment>Fallback wrapper for unhandled exceptions during row processing</comment>
+    </data>
+    <data name="ImportCountryAfNotSeeded" xml:space="preserve">
+        <value>«AF» هېواد په ډیټابیس کې نه دی ثبت شوی — راوړل ناممکن دي.</value>
+        <comment>Afghanistan country row missing from seeded data</comment>
+    </data>
+    <data name="ImportTemplateSectionAvailableClasses" xml:space="preserve">
+        <value>د روان کلیز کال لپاره موجود ټولګي</value>
+        <comment>xlsx template — Reference sheet section title</comment>
+    </data>
+    <data name="ImportTemplateColumnClassName" xml:space="preserve">
+        <value>د ټولګي نوم</value>
+        <comment>xlsx template — column label</comment>
+    </data>
+    <data name="ImportTemplateColumnBranchName" xml:space="preserve">
+        <value>د څانګې نوم</value>
+        <comment>xlsx template — column label</comment>
+    </data>
+    <data name="ImportTeacherEmailExists" xml:space="preserve">
+        <value>له «{0}» برېښنالیک سره ښوونکی مخکې راجستر شوی.</value>
+        <comment>Duplicate teacher email during import</comment>
+    </data>
+    <data name="ImportTeacherRoleNotAllowed" xml:space="preserve">
+        <value>د کارن نقش «{0}» د ښوونکي راوړلو لپاره جواز نه لري. له TEACHER، PRINCIPAL یا HEAD_MASTER څخه یو وکاروئ.</value>
+        <comment>UserRole in teacher import must be TEACHER/PRINCIPAL/HEAD_MASTER</comment>
+    </data>
 </root>

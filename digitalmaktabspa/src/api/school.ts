@@ -93,6 +93,29 @@ const courseList = (
 
 const addSchedule = (schedule: Schedule) =>
   apiClient.post("/school/addSchedule", schedule);
+
+const downloadStudentImportTemplate = () =>
+  apiClient.get("/school/importTemplate/students", { responseType: "blob" });
+
+const importStudents = (file: File) => {
+  const formData = new FormData();
+  formData.append("file", file);
+  return apiClient.post("/school/import/students", formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+};
+
+const downloadTeacherImportTemplate = () =>
+  apiClient.get("/school/importTemplate/teachers", { responseType: "blob" });
+
+const importTeachers = (file: File) => {
+  const formData = new FormData();
+  formData.append("file", file);
+  return apiClient.post("/school/import/teachers", formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+};
+
 // Export all school-related API functions in a single object
 const school = {
   registerSchool,
@@ -110,6 +133,10 @@ const school = {
   addCourse,
   courseList,
   addSchedule,
+  downloadStudentImportTemplate,
+  importStudents,
+  downloadTeacherImportTemplate,
+  importTeachers,
 };
 
 export default school;

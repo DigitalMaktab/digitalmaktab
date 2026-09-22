@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import useSchoolOperations from "../../../hooks/useSchoolOperations";
 import { Column } from "../../../components/table/properties/TableProps";
@@ -8,11 +8,14 @@ import AppTable from "../../../components/table/AppTable";
 import useUser from "../../../hooks/useUser";
 import { SchoolType } from "../../../models/SchoolType";
 import { Class } from "../../../models/Class";
+import BulkImportModal from "../../../components/import/BulkImportModal";
+import schoolApi from "../../../api/school";
 
 const StudentList = () => {
   const { t } = useTranslation();
   const { studentList, data, totalPages } = useSchoolOperations();
   const user = useUser();
+  const [showImportModal, setShowImportModal] = useState(false);
 
   const columns: Column<Student>[] = useMemo(
     () => [
@@ -93,7 +96,21 @@ const StudentList = () => {
             route: "/student-editor/new",
             icon: "plus",
           },
+          {
+            label: t("student.import.button"),
+            onClick: () => setShowImportModal(true),
+            icon: "upload",
+          },
         ]}
+      />
+      <BulkImportModal
+        isVisible={showImportModal}
+        onClose={() => setShowImportModal(false)}
+        translationPrefix="student.import"
+        downloadTemplate={schoolApi.downloadStudentImportTemplate}
+        importFile={schoolApi.importStudents}
+        templateFileName="student-import-template.xlsx"
+        passwordsFileName="student-passwords.csv"
       />
     </AppCard>
   );

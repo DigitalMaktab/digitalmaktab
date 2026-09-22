@@ -435,6 +435,27 @@
                     "lable": "Schedules"
                 }
             }
+        },
+        "import": {
+            "button": "Import from Excel",
+            "modalTitle": "Import Teachers from Excel",
+            "step1": "Download the template — it lists the accepted UserRole and Gender values in the Reference sheet.",
+            "step2": "Fill one row per teacher. Leave optional columns blank if unknown.",
+            "step3": "Upload the filled file below.",
+            "downloadTemplate": "Download Template",
+            "fileInputLabel": "Excel file (.xlsx)",
+            "uploadButton": "Upload & Import",
+            "uploading": "Uploading…",
+            "downloadTemplateFailed": "Failed to download template.",
+            "uploadFailed": "Upload failed. Check the file and try again.",
+            "summary": "{{created}} created, {{skipped}} skipped, out of {{total}} data rows.",
+            "errorsTitle": "Errors",
+            "errorRow": "Row",
+            "errorField": "Field",
+            "errorMessage": "Message",
+            "passwordsTitle": "Generated passwords ({{count}})",
+            "passwordsNote": "Distribute these to teachers. They can change their password after their first login.",
+            "passwordsDownload": "Download passwords (CSV)"
         }
     },
     "student": {
@@ -513,6 +534,27 @@
         },
         "monthlyFee": {
             "label": "Monthly Fee"
+        },
+        "import": {
+            "button": "Import from Excel",
+            "modalTitle": "Import Students from Excel",
+            "step1": "Download the template — it lists your school's classes and branches in the Reference sheet so you can look up valid values.",
+            "step2": "Fill one row per student. Leave optional columns blank if unknown.",
+            "step3": "Upload the filled file below.",
+            "downloadTemplate": "Download Template",
+            "fileInputLabel": "Excel file (.xlsx)",
+            "uploadButton": "Upload & Import",
+            "uploading": "Uploading…",
+            "downloadTemplateFailed": "Failed to download template.",
+            "uploadFailed": "Upload failed. Check the file and try again.",
+            "summary": "{{created}} created, {{skipped}} skipped, out of {{total}} data rows.",
+            "errorsTitle": "Errors",
+            "errorRow": "Row",
+            "errorField": "Field",
+            "errorMessage": "Message",
+            "passwordsTitle": "Generated passwords ({{count}})",
+            "passwordsNote": "Distribute these to students. They can change their password after their first login.",
+            "passwordsDownload": "Download passwords (CSV)"
         }
     },
     "calendarYear": {

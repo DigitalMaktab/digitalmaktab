@@ -164,4 +164,76 @@
         <value>This Course is already registered for this calendar year.</value>
         <comment>Course is already registered. </comment>
     </data>
+    <data name="ImportEmptyFile" xml:space="preserve">
+        <value>No file uploaded.</value>
+        <comment>No file uploaded to the import endpoint</comment>
+    </data>
+    <data name="ImportInvalidExtension" xml:space="preserve">
+        <value>Only .xlsx files are supported.</value>
+        <comment>File extension is not .xlsx</comment>
+    </data>
+    <data name="ImportEmptySheet" xml:space="preserve">
+        <value>The uploaded sheet is empty.</value>
+        <comment>Uploaded xlsx sheet has no rows</comment>
+    </data>
+    <data name="ImportMissingRequiredColumn" xml:space="preserve">
+        <value>Required column '{0}' is missing from the header row.</value>
+        <comment>One of the required header columns was not found</comment>
+    </data>
+    <data name="ImportUnknownClassName" xml:space="preserve">
+        <value>Unknown ClassName '{0}'. See the Reference sheet.</value>
+        <comment>ClassName value does not match any enum member</comment>
+    </data>
+    <data name="ImportClassNotFound" xml:space="preserve">
+        <value>No class '{0}' in branch '{1}' for the active calendar year.</value>
+        <comment>ClassName + BranchName pair does not match any class in the active year</comment>
+    </data>
+    <data name="ImportEmailRequired" xml:space="preserve">
+        <value>Email is required.</value>
+        <comment>Email column is blank</comment>
+    </data>
+    <data name="ImportEmailExists" xml:space="preserve">
+        <value>A student with email '{0}' already exists.</value>
+        <comment>Duplicate student email</comment>
+    </data>
+    <data name="ImportInvalidEnum" xml:space="preserve">
+        <value>Invalid value '{0}' for {1}.</value>
+        <comment>Enum value not recognized (Gender, MotherTongue, etc.)</comment>
+    </data>
+    <data name="ImportInvalidDate" xml:space="preserve">
+        <value>Invalid date '{0}'. Use YYYY-MM-DD.</value>
+        <comment>DateOfBirth failed to parse</comment>
+    </data>
+    <data name="ImportInvalidInteger" xml:space="preserve">
+        <value>'{0}' is not a valid integer for {1}.</value>
+        <comment>int.TryParse failed</comment>
+    </data>
+    <data name="ImportUnexpectedError" xml:space="preserve">
+        <value>Unexpected error: {0}</value>
+        <comment>Fallback wrapper for unhandled exceptions during row processing</comment>
+    </data>
+    <data name="ImportCountryAfNotSeeded" xml:space="preserve">
+        <value>Country 'AF' is not seeded — cannot import.</value>
+        <comment>Afghanistan country row missing from seeded data</comment>
+    </data>
+    <data name="ImportTemplateSectionAvailableClasses" xml:space="preserve">
+        <value>Available Classes for the active calendar year</value>
+        <comment>xlsx template — Reference sheet section title</comment>
+    </data>
+    <data name="ImportTemplateColumnClassName" xml:space="preserve">
+        <value>ClassName</value>
+        <comment>xlsx template — column label</comment>
+    </data>
+    <data name="ImportTemplateColumnBranchName" xml:space="preserve">
+        <value>BranchName</value>
+        <comment>xlsx template — column label</comment>
+    </data>
+    <data name="ImportTeacherEmailExists" xml:space="preserve">
+        <value>A teacher with email '{0}' already exists.</value>
+        <comment>Duplicate teacher email during import</comment>
+    </data>
+    <data name="ImportTeacherRoleNotAllowed" xml:space="preserve">
+        <value>UserRole '{0}' is not allowed for teacher import. Use TEACHER, PRINCIPAL, or HEAD_MASTER.</value>
+        <comment>UserRole in teacher import must be TEACHER/PRINCIPAL/HEAD_MASTER</comment>
+    </data>
 </root>
