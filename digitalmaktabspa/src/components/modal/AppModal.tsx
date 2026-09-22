@@ -37,7 +37,11 @@ const AppModal: React.FC<AppModalProps> = ({
       aria-hidden="true"
       onClick={onClose}
     >
-      <div className={modalClassName} role="document">
+      <div
+        className={modalClassName}
+        role="document"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="modal-content">
           {modalHeader && (
             <div className="modal-header">

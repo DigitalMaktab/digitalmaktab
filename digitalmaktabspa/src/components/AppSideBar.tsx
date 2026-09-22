@@ -7,8 +7,8 @@ import React, {
 } from "react";
 import { AppSideBarProps } from "./properties/ToggleSideBarProps";
 
-import AppMenuMainTitle from "./menu/AppMenuMainTitle";
-import AppMenuItem from "./menu/AppMenuItem";
+import AppMenuMainTitle from "./Menu/AppMenuMainTitle";
+import AppMenuItem from "./Menu/AppMenuItem";
 import FeatherIcon from "feather-icons-react";
 import * as AIIcons from "react-icons/ai";
 import * as PIIcons from "react-icons/pi";

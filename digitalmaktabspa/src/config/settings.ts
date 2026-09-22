@@ -1,8 +1,8 @@
 const settings = {
   dev: {
-    apiUrl: "http://192.168.8.142:5000/api",
+    apiUrl: "http://localhost:5000/api",
     url: "http://localhost:5000/",
-    signalRUrl: "http://192.168.8.142:5000/",
+    signalRUrl: "http://localhost:5000/",
   },
   staging: {
     apiUrl: "http://localhost:5000/api",
