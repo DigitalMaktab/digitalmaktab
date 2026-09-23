@@ -4,7 +4,15 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <!-- Namespaces here remain digitalmaktabapi.Models / .Headers so the split
+         with DigitalMaktab.Core stays purely structural. Rename is a later step. -->
     <RootNamespace>DigitalMaktab.Core.Abstractions</RootNamespace>
   </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Entity POCOs live here and use [Table] / [Column] / [ForeignKey] attributes.
+         PagedList<T> uses IQueryable extensions from EF Core. -->
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.8" />
+  </ItemGroup>
 
 </Project>
