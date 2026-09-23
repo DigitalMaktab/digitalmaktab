@@ -17,6 +17,8 @@ using digitalmaktabapi.Services.Mail;
 using digitalmaktabapi.Services.OnlineClass;
 using digitalmaktabapi.Services.PDF;
 using digitalmaktabapi.Services.Providers;
+using digitalmaktabapi.Countries;
+using DigitalMaktab.Country.Afghanistan;
 using DinkToPdf;
 using DinkToPdf.Contracts;
 using FluentValidation;
@@ -205,6 +207,12 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<TokenService>();
 builder.Services.AddScoped<CryptographyService>();
 builder.Services.AddScoped<StudentImportService>();
+
+// Country strategy providers (Phase A step 5 of docs/globalization.md).
+// Order matters: Core defaults first, country modules second so modules
+// override the default for their CalendarSystem.
+builder.Services.AddCoreCalendarProviders();
+builder.Services.AddAfghanistanModule();
 builder.Services.AddScoped<TeacherImportService>();
 
 // Add Validation
@@ -433,6 +441,26 @@ app.UseWebSockets();
 
 
 Seeder.SeedData(app);
+
+// Log which calendar providers are wired — quick ops signal that the
+// country modules registered correctly. Also verifies DI resolution works.
+using (var startupScope = app.Services.CreateScope())
+{
+    var resolver = startupScope.ServiceProvider.GetRequiredService<DigitalMaktab.Core.Abstractions.Countries.ICalendarProviderResolver>();
+    foreach (CalendarSystem cs in Enum.GetValues<CalendarSystem>())
+    {
+        try
+        {
+            var provider = resolver.For(cs);
+            var today = DateOnly.FromDateTime(DateTime.UtcNow);
+            Console.WriteLine($"[startup] Calendar provider for {cs}: {provider.GetType().Name} (today = {provider.FormatYear(today)})");
+        }
+        catch (InvalidOperationException)
+        {
+            Console.WriteLine($"[startup] Calendar provider for {cs}: (not registered)");
+        }
+    }
+}
 
 // Static files and SPA fallback
 app.UseDefaultFiles();

@@ -12,4 +12,9 @@
     <ProjectReference Include="..\DigitalMaktab.SDK\DigitalMaktab.SDK.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- IServiceCollection lives here. Small, DI-only surface — no runtime deps. -->
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.2" />
+  </ItemGroup>
+
 </Project>
