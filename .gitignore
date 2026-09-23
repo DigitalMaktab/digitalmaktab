@@ -3,6 +3,9 @@
 .vscode
 .editorconfig
 
+# Claude Code runtime state (session-local, not for git)
+.claude/
+
 # DigitalMaktab Single Page Application
 # dependencies
 digitalmaktabspa/.vscode
