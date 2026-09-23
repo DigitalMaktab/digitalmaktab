@@ -159,11 +159,11 @@ Every consuming repo has `../.nuget-local` in its `NuGet.config` package sources
 
 ## Known gaps
 
-1. **`AddScheduleDto.cs` mis-classified DTO** — still lives in `src/DigitalMaktab.Core/Models/` in the core repo. Move to `Dtos/` when convenient.
+1. ~~**`AddScheduleDto.cs` mis-classified DTO**~~ — **closed** by `digitalmaktab-core` commit `39bfdbc` (moved to `Dtos/`, namespace updated to `digitalmaktabapi.Dtos`).
 2. **Repository interfaces (`IStudentRepository` etc.)** are in `Core/Data/`, not Abstractions. Moving them requires either generic-ifying (`IRepository<T>`) or moving the DTOs they reference (`SchoolDashboardDto`). Deferred to Phase B.
 3. **Namespaces still `digitalmaktabapi.*`** across all extracted repos. Rename to `DigitalMaktab.Core.*`, `DigitalMaktab.Api.*`, etc. is a separate follow-up commit per repo.
 4. **`digitalmaktab-desktop`** currently has one commit (its extraction commit) — its subtree only picked up the "chore: add desktop app scaffold" ancestor because that's the only history that touched `digitalmaktabdesktop/` in the monorepo.
-5. **CI on api repo doesn't build a Docker image yet** — Dockerfile is there, workflow only builds the .NET. Add a docker-build job when you're ready to deploy.
+5. ~~**CI on api repo doesn't build a Docker image yet**~~ — **closed** by `digitalmaktab-api` commit `9b2bf7f` (docker job builds + pushes to ghcr.io on main).
 6. **No published version yet** — everything is at `0.1.0-alpha`. First real cut = tag `v0.1.0` (or whatever) in `digitalmaktab-core`, let the workflow publish.
 
 ## Undoing
