@@ -19,6 +19,12 @@ namespace digitalmaktabapi.Models
         public required int Code { get; set; }
         public required SchoolType SchoolType { get; set; }
         public required UserRole UserRole { get; set; }
+
+        // Every school belongs to a country. Country drives calendar, language, currency,
+        // and country-module resolution (Phase A step 4 of docs/globalization.md).
+        public required Guid CountryId { get; set; }
+        public required Country Country { get; set; }
+
         public ICollection<Student> Students { get; set; } = [];
         public ICollection<Branch> Branches { get; set; } = [];
     }

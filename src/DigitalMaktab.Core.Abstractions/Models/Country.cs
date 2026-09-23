@@ -14,6 +14,13 @@ namespace digitalmaktabapi.Models
         public required string CountryPhoneCode { get; set; }
         public required ICollection<City> Cities { get; set; }
 
+        // Per-country configuration (Phase A step 3 of docs/globalization.md).
+        // Defaults are applied via DataContext.OnModelCreating so existing rows migrate cleanly.
+        public required CalendarSystem CalendarSystem { get; set; }
+        public required string DefaultLanguageCode { get; set; }
+        public required string CurrencyCode { get; set; }
+        public required int GradeCount { get; set; }
+
         [NotMapped]
         public required int CId { get; set; }
     }

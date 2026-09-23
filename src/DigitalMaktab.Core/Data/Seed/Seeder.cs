@@ -40,6 +40,25 @@ namespace digitalmaktabapi.Data.Seed
                             country.Id = guid;
                             country.UpdateUserId = guid;
                             country.CreationUserId = guid;
+
+                            // Per-country config. Afghanistan gets specific values;
+                            // everything else falls back to placeholder defaults that
+                            // should be reviewed as each country is actually onboarded.
+                            if (country.CountryCode == "AF")
+                            {
+                                country.CalendarSystem = CalendarSystem.SOLAR_HIJRI;
+                                country.DefaultLanguageCode = "fa-AF";
+                                country.CurrencyCode = "AFN";
+                                country.GradeCount = 14;
+                            }
+                            else
+                            {
+                                country.CalendarSystem = CalendarSystem.GREGORIAN;
+                                country.DefaultLanguageCode = "en-US";
+                                country.CurrencyCode = "USD";
+                                country.GradeCount = 12;
+                            }
+
                             if (null != allStates)
                             {
                                 ICollection<City> cities = allStates.Where(s => s.CId == country.CId).ToList();

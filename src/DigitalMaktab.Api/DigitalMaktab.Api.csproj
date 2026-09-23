@@ -16,6 +16,11 @@
   <ItemGroup>
     <!-- CORS package was previously in the API project. -->
     <PackageReference Include="Microsoft.AspNetCore.Cors" Version="2.2.0" />
+    <!-- Required by `dotnet ef` tooling when running from the startup project. -->
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.8">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
   </ItemGroup>
 
 </Project>

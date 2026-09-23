@@ -102,6 +102,31 @@ namespace digitalmaktabapi.Data
             .HasOne(a => a.Book)
                 .WithOne(a => a.Subject)
                 .HasForeignKey<Book>(a => a.SubjectId);
+
+            // Country configuration defaults (Phase A step 3 of docs/globalization.md).
+            // These let the migration add columns to existing rows without a manual backfill
+            // for the non-Afghan default case. Afghanistan-specific values are set by the
+            // migration's explicit UPDATE.
+            modelBuilder.Entity<Country>()
+                .Property(c => c.CalendarSystem)
+                .HasDefaultValue(CalendarSystem.GREGORIAN);
+            modelBuilder.Entity<Country>()
+                .Property(c => c.DefaultLanguageCode)
+                .HasDefaultValue("en-US");
+            modelBuilder.Entity<Country>()
+                .Property(c => c.CurrencyCode)
+                .HasDefaultValue("USD");
+            modelBuilder.Entity<Country>()
+                .Property(c => c.GradeCount)
+                .HasDefaultValue(12);
+
+            // School.Country FK (Phase A step 4). Restrict delete to prevent
+            // orphaning schools if a country row is (accidentally) removed.
+            modelBuilder.Entity<School>()
+                .HasOne(s => s.Country)
+                .WithMany()
+                .HasForeignKey(s => s.CountryId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }
