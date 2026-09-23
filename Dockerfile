@@ -8,28 +8,31 @@ EXPOSE 443
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# Copy the API project file
-COPY ["digitalmaktabapi/digitalmaktabapi.csproj", "digitalmaktabapi/"]
+# Copy all project files first for restore layer caching
+COPY ["DigitalMaktab.sln", "./"]
+COPY ["src/DigitalMaktab.Core.Abstractions/DigitalMaktab.Core.Abstractions.csproj", "src/DigitalMaktab.Core.Abstractions/"]
+COPY ["src/DigitalMaktab.SDK/DigitalMaktab.SDK.csproj", "src/DigitalMaktab.SDK/"]
+COPY ["src/DigitalMaktab.Core/DigitalMaktab.Core.csproj", "src/DigitalMaktab.Core/"]
+COPY ["src/DigitalMaktab.Country.Afghanistan/DigitalMaktab.Country.Afghanistan.csproj", "src/DigitalMaktab.Country.Afghanistan/"]
+COPY ["src/DigitalMaktab.Api/DigitalMaktab.Api.csproj", "src/DigitalMaktab.Api/"]
 
-# Restore dependencies
-RUN dotnet restore "digitalmaktabapi/digitalmaktabapi.csproj"
+# Restore dependencies for the whole solution
+RUN dotnet restore "DigitalMaktab.sln"
 
-# Copy the entire API project
-COPY digitalmaktabapi/ digitalmaktabapi/
+# Copy the full source tree
+COPY src/ src/
 
-WORKDIR "/src/digitalmaktabapi"
+WORKDIR "/src/src/DigitalMaktab.Api"
 
-# Build and publish the API project
-RUN dotnet publish "digitalmaktabapi.csproj" -c Release -o /app/publish
+# Build and publish the API host (produces digitalmaktabapi.dll — assembly name preserved)
+RUN dotnet publish "DigitalMaktab.Api.csproj" -c Release -o /app/publish
 
 # Stage 3: Final image
 FROM base AS final
 WORKDIR /app
 
-# Copy the published output
+# Copy the published output — Resources is included automatically because Core.csproj
+# marks it as <Content CopyToOutputDirectory>.
 COPY --from=build /app/publish .
-
-# Ensure the Resources directory is included
-COPY digitalmaktabapi/Resources /app/Resources
 
 ENTRYPOINT ["dotnet", "digitalmaktabapi.dll"]

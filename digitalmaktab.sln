@@ -1,25 +1,55 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.5.002.0
+VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "digitalmaktabapi", "digitalmaktabapi\digitalmaktabapi.csproj", "{26E52B91-1F4F-41C3-9438-47BF9D31CB8A}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{731C37C0-88B9-45DF-96DB-5E29750B782B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DigitalMaktab.Core.Abstractions", "src\DigitalMaktab.Core.Abstractions\DigitalMaktab.Core.Abstractions.csproj", "{47C202BE-566D-44FD-A5D0-2ABB0140E26B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DigitalMaktab.SDK", "src\DigitalMaktab.SDK\DigitalMaktab.SDK.csproj", "{B75AAB41-C6FC-4FCA-A7B7-5EBAB873953A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DigitalMaktab.Core", "src\DigitalMaktab.Core\DigitalMaktab.Core.csproj", "{8FF5DCC7-65FD-40AD-952C-F82FAA65B099}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DigitalMaktab.Country.Afghanistan", "src\DigitalMaktab.Country.Afghanistan\DigitalMaktab.Country.Afghanistan.csproj", "{3DFC2637-A294-460C-872F-E6F12905061B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DigitalMaktab.Api", "src\DigitalMaktab.Api\DigitalMaktab.Api.csproj", "{54521DA2-A106-4CD5-ADD7-4983F8D0FD9E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
-	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{26E52B91-1F4F-41C3-9438-47BF9D31CB8A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{26E52B91-1F4F-41C3-9438-47BF9D31CB8A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{26E52B91-1F4F-41C3-9438-47BF9D31CB8A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{26E52B91-1F4F-41C3-9438-47BF9D31CB8A}.Release|Any CPU.Build.0 = Release|Any CPU
-	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
-	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {992D2560-58CC-4626-8F91-7EF4B4A1CEF2}
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{47C202BE-566D-44FD-A5D0-2ABB0140E26B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{47C202BE-566D-44FD-A5D0-2ABB0140E26B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{47C202BE-566D-44FD-A5D0-2ABB0140E26B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{47C202BE-566D-44FD-A5D0-2ABB0140E26B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B75AAB41-C6FC-4FCA-A7B7-5EBAB873953A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B75AAB41-C6FC-4FCA-A7B7-5EBAB873953A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B75AAB41-C6FC-4FCA-A7B7-5EBAB873953A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B75AAB41-C6FC-4FCA-A7B7-5EBAB873953A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8FF5DCC7-65FD-40AD-952C-F82FAA65B099}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8FF5DCC7-65FD-40AD-952C-F82FAA65B099}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8FF5DCC7-65FD-40AD-952C-F82FAA65B099}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8FF5DCC7-65FD-40AD-952C-F82FAA65B099}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3DFC2637-A294-460C-872F-E6F12905061B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3DFC2637-A294-460C-872F-E6F12905061B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3DFC2637-A294-460C-872F-E6F12905061B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3DFC2637-A294-460C-872F-E6F12905061B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{54521DA2-A106-4CD5-ADD7-4983F8D0FD9E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{54521DA2-A106-4CD5-ADD7-4983F8D0FD9E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{54521DA2-A106-4CD5-ADD7-4983F8D0FD9E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{54521DA2-A106-4CD5-ADD7-4983F8D0FD9E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{47C202BE-566D-44FD-A5D0-2ABB0140E26B} = {731C37C0-88B9-45DF-96DB-5E29750B782B}
+		{B75AAB41-C6FC-4FCA-A7B7-5EBAB873953A} = {731C37C0-88B9-45DF-96DB-5E29750B782B}
+		{8FF5DCC7-65FD-40AD-952C-F82FAA65B099} = {731C37C0-88B9-45DF-96DB-5E29750B782B}
+		{3DFC2637-A294-460C-872F-E6F12905061B} = {731C37C0-88B9-45DF-96DB-5E29750B782B}
+		{54521DA2-A106-4CD5-ADD7-4983F8D0FD9E} = {731C37C0-88B9-45DF-96DB-5E29750B782B}
 	EndGlobalSection
 EndGlobal

@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>DigitalMaktab.Country.Afghanistan</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DigitalMaktab.Core.Abstractions\DigitalMaktab.Core.Abstractions.csproj" />
+    <ProjectReference Include="..\DigitalMaktab.SDK\DigitalMaktab.SDK.csproj" />
+  </ItemGroup>
+
+</Project>
