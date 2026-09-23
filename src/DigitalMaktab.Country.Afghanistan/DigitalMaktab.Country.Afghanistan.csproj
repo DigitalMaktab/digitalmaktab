@@ -7,6 +7,20 @@
     <RootNamespace>DigitalMaktab.Country.Afghanistan</RootNamespace>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <PackageId>DigitalMaktab.Country.Afghanistan</PackageId>
+    <Version>0.1.0-alpha</Version>
+    <Authors>Digital Maktab</Authors>
+    <Company>Digital Maktab</Company>
+    <Description>Afghanistan country module for the Digital Maktab platform. Solar Hijri calendar, Tazkira national ID, Afghan curriculum, Dari/Pashto localization.</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/DigitalMaktab/digitalmaktab-country-afghanistan</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>digitalmaktab;country;afghanistan;solar-hijri</PackageTags>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\DigitalMaktab.Core.Abstractions\DigitalMaktab.Core.Abstractions.csproj" />
     <ProjectReference Include="..\DigitalMaktab.SDK\DigitalMaktab.SDK.csproj" />

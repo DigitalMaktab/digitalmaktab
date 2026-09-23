@@ -7,6 +7,20 @@
     <RootNamespace>DigitalMaktab.SDK</RootNamespace>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <PackageId>DigitalMaktab.SDK</PackageId>
+    <Version>0.1.0-alpha</Version>
+    <Authors>Digital Maktab</Authors>
+    <Company>Digital Maktab</Company>
+    <Description>Developer helpers (base classes, DI extensions) for building country modules and school plugins on the Digital Maktab platform.</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/DigitalMaktab/digitalmaktab-core</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>digitalmaktab;sdk;plugin</PackageTags>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\DigitalMaktab.Core.Abstractions\DigitalMaktab.Core.Abstractions.csproj" />
   </ItemGroup>

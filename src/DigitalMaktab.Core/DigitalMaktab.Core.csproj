@@ -10,6 +10,20 @@
     <RootNamespace>digitalmaktabapi</RootNamespace>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <PackageId>DigitalMaktab.Core</PackageId>
+    <Version>0.1.0-alpha</Version>
+    <Authors>Digital Maktab</Authors>
+    <Company>Digital Maktab</Company>
+    <Description>Core universal implementation for the Digital Maktab platform — controllers, repositories, services, migrations. Referenced by the API host.</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/DigitalMaktab/digitalmaktab-core</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>digitalmaktab;school;education</PackageTags>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
+
   <!-- Controllers, MVC, SignalR, static file serving all live here. -->
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />

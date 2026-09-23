@@ -9,6 +9,21 @@
     <RootNamespace>DigitalMaktab.Core.Abstractions</RootNamespace>
   </PropertyGroup>
 
+  <!-- NuGet package metadata. Consumed by country modules and by the Api host. -->
+  <PropertyGroup>
+    <PackageId>DigitalMaktab.Core.Abstractions</PackageId>
+    <Version>0.1.0-alpha</Version>
+    <Authors>Digital Maktab</Authors>
+    <Company>Digital Maktab</Company>
+    <Description>Stable interfaces and entity POCOs for the Digital Maktab platform. Reference this from country modules and school plugins.</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/DigitalMaktab/digitalmaktab-core</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>digitalmaktab;school;education;afghanistan</PackageTags>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
+
   <ItemGroup>
     <!-- Entity POCOs live here and use [Table] / [Column] / [ForeignKey] attributes.
          PagedList<T> uses IQueryable extensions from EF Core. -->
