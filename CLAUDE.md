@@ -103,9 +103,15 @@ into the running `npm start`. The ritual per-cycle when you touch
 either:
 
 ```bash
-# 1. Backend Core → repack + refresh NuGet cache
+# 1. Backend Core: pack BOTH .Abstractions and .Core (they're separate
+#    NuGet packages — .Core references .Abstractions transitively, but
+#    the API consumes them independently, so leaving .Abstractions
+#    stale after editing a POCO throws
+#    "Could not load type DigitalMaktab.Core.Models.<X>" at API
+#    startup).
+cd digitalmaktab-core && dotnet pack src/DigitalMaktab.Core.Abstractions/DigitalMaktab.Core.Abstractions.csproj -c Release -o ../.nuget-local
 cd digitalmaktab-core && dotnet pack src/DigitalMaktab.Core/DigitalMaktab.Core.csproj -c Release -o ../.nuget-local
-rm -rf ~/.nuget/packages/digitalmaktab.core
+rm -rf ~/.nuget/packages/digitalmaktab.core ~/.nuget/packages/digitalmaktab.core.abstractions
 cd ../digitalmaktab-api && dotnet restore --force
 
 # 2. spa-core → build + pack + hand-swap into the SPA's node_modules
@@ -120,7 +126,12 @@ rm -rf ../digitalmaktab-spa/node_modules/@digitalmaktab/spa-country-afghanistan 
 mkdir -p /tmp/dm-country && cd /tmp/dm-country && tar -xzf ../../.npm-local/digitalmaktab-spa-country-afghanistan-0.1.0-alpha.tgz
 mv package ../digitalmaktab-spa/node_modules/@digitalmaktab/spa-country-afghanistan
 
-# 4. Type-check the SPA
+# 4. Clear CRA's webpack cache — it memoizes module-resolution maps
+#    from the last dev-server run, so a new export in spa-core
+#    reads as "not exported" until the cache is dropped.
+rm -rf ../digitalmaktab-spa/node_modules/.cache
+
+# 5. Type-check the SPA
 cd ../digitalmaktab-spa && npx tsc --noEmit
 ```
 
