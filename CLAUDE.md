@@ -109,10 +109,22 @@ either:
 #    stale after editing a POCO throws
 #    "Could not load type DigitalMaktab.Core.Models.<X>" at API
 #    startup).
-cd digitalmaktab-core && dotnet pack src/DigitalMaktab.Core.Abstractions/DigitalMaktab.Core.Abstractions.csproj -c Release -o ../.nuget-local
-cd digitalmaktab-core && dotnet pack src/DigitalMaktab.Core/DigitalMaktab.Core.csproj -c Release -o ../.nuget-local
-rm -rf ~/.nuget/packages/digitalmaktab.core ~/.nuget/packages/digitalmaktab.core.abstractions
-cd ../digitalmaktab-api && dotnet restore --force
+#
+#    CRITICAL: `dotnet pack` may reuse a stale bin/ DLL if MSBuild's
+#    incremental cache thinks the assembly is current — the packed
+#    nupkg then contains an OLD DLL and startup throws
+#    "Method 'Foo' does not have an implementation" (a
+#    TypeLoadException at DI registration). Force a clean rebuild
+#    before pack whenever an interface member changes: `dotnet clean
+#    -c Release && dotnet build -c Release && dotnet pack --no-build`.
+#    Same for the country .NET package below.
+cd digitalmaktab-core && dotnet clean -c Release && dotnet build -c Release
+cd digitalmaktab-core && dotnet pack src/DigitalMaktab.Core.Abstractions/DigitalMaktab.Core.Abstractions.csproj -c Release --no-build -o ../.nuget-local
+cd digitalmaktab-core && dotnet pack src/DigitalMaktab.Core/DigitalMaktab.Core.csproj -c Release --no-build -o ../.nuget-local
+cd ../digitalmaktab-country-afghanistan && dotnet clean -c Release && dotnet build -c Release && dotnet pack -c Release --no-build -o ../.nuget-local
+rm -rf ~/.nuget/packages/digitalmaktab.core ~/.nuget/packages/digitalmaktab.core.abstractions ~/.nuget/packages/digitalmaktab.country.afghanistan
+dotnet nuget locals http-cache --clear
+cd ../digitalmaktab-api && dotnet restore --force --no-cache
 
 # 2. spa-core → build + pack + hand-swap into the SPA's node_modules
 cd ../digitalmaktab-spa-core && npm run build && npm pack --pack-destination ../.npm-local
