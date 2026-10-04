@@ -27,10 +27,12 @@ Status key: `[ ]` not started · `[~]` in progress · `[x]` shipped.
   principal accounts are seeded.)
 - [ ] **Payment gateway integration** — Stripe / local provider for
   online fee payment; receipt generated on webhook confirmation.
+  (Blocked: needs live provider credentials + webhook URL to
+  verify end-to-end. Skipping until creds are available.)
 
 ## Academic
 
-- [ ] **Exam scheduling** — admin builds an exam timetable per class;
+- [x] **Exam scheduling** — admin builds an exam timetable per class;
   conflicts (same student / same room / same proctor) flagged.
 - [ ] **Grade appeal flow** — student / parent submits an appeal on a
   specific grade; teacher responds; principal arbitrates.
