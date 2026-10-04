@@ -15,7 +15,7 @@ Status key: `[ ]` not started · `[~]` in progress · `[x]` shipped.
   the parent a printable invoice showing total due + breakdown.
 - [x] **Scholarships + discounts** — per-student discount rule
   (percentage or fixed), applied automatically at fee materialization.
-- [ ] **Dues reminders** — scheduled job that emails parents of
+- [x] **Dues reminders** — scheduled job that emails parents of
   unpaid / partial fees past a configurable grace window.
 - [ ] **Multi-fee bulk payment** — parent pays several months at once
   with a single transaction and one combined receipt.
