@@ -8,7 +8,7 @@ Status key: `[ ]` not started · `[~]` in progress · `[x]` shipped.
 
 ## Finance
 
-- [ ] **Fee receipt PDF** — download a signed receipt for any paid /
+- [x] **Fee receipt PDF** — download a signed receipt for any paid /
   partial fee row (admin + parent + student). Reuses existing
   jsPDF pipeline + school branding.
 - [ ] **Fee invoice PDF (upfront)** — before payment, admin can hand
