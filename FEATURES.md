@@ -47,8 +47,11 @@ Status key: `[ ]` not started · `[~]` in progress · `[x]` shipped.
   a follow-up; renderer gates on it the moment that panel ships.
   Report-card callers in SPA need to pass the fetched settings
   prop in a follow-up pass to activate the hiding behaviour.)
-- [ ] **Transcript export** — multi-year academic record for a
+- [x] **Transcript export** — multi-year academic record for a
   departing student, printable + PDF.
+  (v1 ships the endpoint + shared /transcript/:studentId screen;
+  row-level buttons on StudentList / ChildrenList + student
+  dashboard quick-link are a follow-up pass.)
 - [ ] **Assignment plagiarism flag** — simple hash-match on text
   submissions across the same class.
 - [ ] **Quiz question bank** — teachers maintain a reusable pool of
