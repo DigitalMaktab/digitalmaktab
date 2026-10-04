@@ -34,8 +34,10 @@ Status key: `[ ]` not started · `[~]` in progress · `[x]` shipped.
 
 - [x] **Exam scheduling** — admin builds an exam timetable per class;
   conflicts (same student / same room / same proctor) flagged.
-- [ ] **Grade appeal flow** — student / parent submits an appeal on a
+- [x] **Grade appeal flow** — student / parent submits an appeal on a
   specific grade; teacher responds; principal arbitrates.
+  (v1 ships propose → decide; principal arbitration layer is a
+  follow-up once that role is used in production.)
 - [ ] **Report card customization** — admin picks which columns
   appear (per-term vs cumulative, teacher comments, attendance %),
   with per-grade thresholds configurable per school.
