@@ -13,7 +13,7 @@ Status key: `[ ]` not started · `[~]` in progress · `[x]` shipped.
   jsPDF pipeline + school branding.
 - [x] **Fee invoice PDF (upfront)** — before payment, admin can hand
   the parent a printable invoice showing total due + breakdown.
-- [ ] **Scholarships + discounts** — per-student discount rule
+- [x] **Scholarships + discounts** — per-student discount rule
   (percentage or fixed), applied automatically at fee materialization.
 - [ ] **Dues reminders** — scheduled job that emails parents of
   unpaid / partial fees past a configurable grace window.
