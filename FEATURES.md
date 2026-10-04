@@ -11,7 +11,7 @@ Status key: `[ ]` not started · `[~]` in progress · `[x]` shipped.
 - [x] **Fee receipt PDF** — download a signed receipt for any paid /
   partial fee row (admin + parent + student). Reuses existing
   jsPDF pipeline + school branding.
-- [ ] **Fee invoice PDF (upfront)** — before payment, admin can hand
+- [x] **Fee invoice PDF (upfront)** — before payment, admin can hand
   the parent a printable invoice showing total due + breakdown.
 - [ ] **Scholarships + discounts** — per-student discount rule
   (percentage or fixed), applied automatically at fee materialization.
