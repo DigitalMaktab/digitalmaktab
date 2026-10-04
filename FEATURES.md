@@ -17,8 +17,10 @@ Status key: `[ ]` not started · `[~]` in progress · `[x]` shipped.
   (percentage or fixed), applied automatically at fee materialization.
 - [x] **Dues reminders** — scheduled job that emails parents of
   unpaid / partial fees past a configurable grace window.
-- [ ] **Multi-fee bulk payment** — parent pays several months at once
+- [x] **Multi-fee bulk payment** — parent pays several months at once
   with a single transaction and one combined receipt.
+  (v1 ships admin-side only; parent self-service waits for the
+  payment-gateway bullet.)
 - [ ] **Fee waiver workflow** — teacher / admin proposes a waiver;
   principal / root approves; audit trail per waiver.
 - [ ] **Payment gateway integration** — Stripe / local provider for
