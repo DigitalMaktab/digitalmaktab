@@ -21,8 +21,10 @@ Status key: `[ ]` not started · `[~]` in progress · `[x]` shipped.
   with a single transaction and one combined receipt.
   (v1 ships admin-side only; parent self-service waits for the
   payment-gateway bullet.)
-- [ ] **Fee waiver workflow** — teacher / admin proposes a waiver;
+- [x] **Fee waiver workflow** — teacher / admin proposes a waiver;
   principal / root approves; audit trail per waiver.
+  (v1 lets ADMIN act as approver; move to PrincipalPolicy once
+  principal accounts are seeded.)
 - [ ] **Payment gateway integration** — Stripe / local provider for
   online fee payment; receipt generated on webhook confirmation.
 
