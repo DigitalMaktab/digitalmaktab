@@ -38,9 +38,15 @@ Status key: `[ ]` not started · `[~]` in progress · `[x]` shipped.
   specific grade; teacher responds; principal arbitrates.
   (v1 ships propose → decide; principal arbitration layer is a
   follow-up once that role is used in production.)
-- [ ] **Report card customization** — admin picks which columns
+- [x] **Report card customization** — admin picks which columns
   appear (per-term vs cumulative, teacher comments, attendance %),
   with per-grade thresholds configurable per school.
+  (v1 wires the admin editor + per-school settings row; renderer
+  honours ShowAttendance + ShowTeacherComments immediately.
+  ShowCumulative flag is reserved — the cumulative-average panel is
+  a follow-up; renderer gates on it the moment that panel ships.
+  Report-card callers in SPA need to pass the fetched settings
+  prop in a follow-up pass to activate the hiding behaviour.)
 - [ ] **Transcript export** — multi-year academic record for a
   departing student, printable + PDF.
 - [ ] **Assignment plagiarism flag** — simple hash-match on text
