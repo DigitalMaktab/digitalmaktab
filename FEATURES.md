@@ -25,10 +25,23 @@ Status key: `[ ]` not started · `[~]` in progress · `[x]` shipped.
   principal / root approves; audit trail per waiver.
   (v1 lets ADMIN act as approver; move to PrincipalPolicy once
   principal accounts are seeded.)
-- [ ] **Payment gateway integration** — Stripe / local provider for
+- [x] **Payment gateway integration** — Stripe / local provider for
   online fee payment; receipt generated on webhook confirmation.
-  (Blocked: needs live provider credentials + webhook URL to
-  verify end-to-end. Skipping until creds are available.)
+  (v1 ships IPaymentProvider + NoopPaymentProvider (logs the
+  intended checkout + returns a dev-sandbox redirect URL) mirroring
+  the IPush / ISms shape. New endpoint POST /fees/{feeId}/checkout
+  is open to PARENT / STUDENT / ADMIN and returns the provider's
+  hosted-checkout URL for the SPA to redirect to. New webhook sink
+  POST /api/payments/webhook (PaymentWebhookController) accepts a
+  provider-agnostic payload gated by both a shared-secret header
+  (Payment:WebhookSecret) + the provider's own signature check
+  (IPaymentProvider.VerifyWebhookSignature), is idempotent on the
+  provider session id, inserts a Payment row with method=CARD, and
+  fires FEE_PAID to the student + any linked parents (same code
+  path admin RecordPayment uses, so the receipt arrives via the
+  existing persisted-notification + SignalR + push + SMS fan-out).
+  Swapping to a real Stripe / HesabPay / local-card adapter is a
+  one-line DI change — zero call-site rewrites.)
 
 ## Academic
 
