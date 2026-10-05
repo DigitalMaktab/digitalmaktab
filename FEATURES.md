@@ -93,8 +93,13 @@ Status key: `[ ]` not started · `[~]` in progress · `[x]` shipped.
   low-stock badge on the admin screen, and per-item history. Push
   alerts to admin when stock crosses the threshold is a follow-up —
   wire into NotificationService in a future cycle.)
-- [ ] **School calendar + holidays** — publishable calendar with
+- [x] **School calendar + holidays** — publishable calendar with
   holidays, exams, PTM days; feeds student / parent dashboards.
+  (v1 ships a dedicated Holiday entity + admin CRUD, plus a
+  /school-calendar aggregator that returns holidays + school events +
+  exams in a date range. Shared read-only month-grid screen mounted
+  for admin / teacher / student / parent at /school-calendar. PTM
+  slot-booking stays on its own Communication-section bullet.)
 
 ## Communication
 
