@@ -209,9 +209,16 @@ Status key: `[ ]` not started · `[~]` in progress · `[x]` shipped.
   preserved. Printable certificate renders at
   /withdrawal-certificate/:id via window.print — PDF generation
   via jsPDF is a follow-up polish.)
-- [ ] **Graduation batch** — year-end bulk-promote operation moves
+- [x] **Graduation batch** — year-end bulk-promote operation moves
   every student up one class; final-year class produces a graduation
   roster + certificate run.
+  (v1 ships GraduationController with promote-class (bulk re-
+  enrollment onto a pre-existing destination class), graduate-class
+  (bulk WITHDRAWAL rows with reason="Graduation" + Student.Status
+  flipped inactive), and a printable roster endpoint. Admin
+  /graduation screen stacks the three actions and prints the roster.
+  Destination class must be created ahead of time via the existing
+  class flow — this cycle does not auto-create classes.)
 - [ ] **Alumni directory** — graduated students stay in a read-only
   alumni table; alumni-only announcements + reunions.
 
