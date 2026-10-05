@@ -401,6 +401,31 @@ Status key: `[ ]` not started · `[~]` in progress · `[x]` shipped.
 
 ---
 
+- [~] **Globalization §12 step 6 — TPT split for Student/Teacher** —
+  Afghan-specific Student + Teacher fields move out of Core entities
+  into country-owned TPT tables (`AfghanStudentDetails`,
+  `AfghanTeacherDetails`) so Core stays universal.
+  (Step 6a shipped: `IStudentExtensionHook` in Core.Abstractions +
+  `ModelConfigurationRegistry` so Core DataContext scans country-
+  module assemblies for IEntityTypeConfiguration without a hard dep.
+  `AfghanStudentDetails` TPT entity + migration (table in Core
+  migrations as a transitional staging; §11 move to Afghan
+  migrations is a 6c cleanup). `AfghanStudentExtensionHook`
+  shadow-writes every Student insert/update into AfghanStudentDetails
+  via the Core-owned DataContext — SchoolController awaits every
+  registered hook whose CountryCode matches the school's country.
+  Core knows nothing about Afghanistan; the registry + hook contract
+  are country-agnostic.
+
+  Pending step 6b: Teacher TPT (AfghanTeacherDetails + hook) — same
+  shape, but since current Teacher entity doesn't yet hold the Afghan
+  fields, 6b lands them directly on the TPT row instead of walking
+  through a shadow-write.
+  Pending step 6c: migrate the migration into the Afghan assembly
+  (§11), update MinistryReportService to prefer the TPT row over
+  Student's duplicated columns, backfill endpoint for existing
+  students, drop the duplicated columns from Core.Student.)
+
 - [~] **Afghan Ministry of Education xlsx reports** — StudentFileInfo
   + TeacherFileInfo auto-filled from the school's roster, dedicated
   endpoint per form, Afghan-only.
