@@ -152,8 +152,13 @@ Status key: `[ ]` not started · `[~]` in progress · `[x]` shipped.
   upcoming with a status badge. Parent attaches a text proof note
   (card number / URL); file-upload proof + scheduled reminder
   notifications are follow-ups.)
-- [ ] **Counseling appointments** — student / parent books a slot
+- [x] **Counseling appointments** — student / parent books a slot
   with the school counselor; private note on the appointment.
+  (v1 ships CounselingAppointment with REQUESTED → CONFIRMED /
+  DECLINED / CANCELLED / COMPLETED lifecycle; any TEACHER acts as
+  counselor; private note writable only by counselor / admin and
+  hidden from parent / student. Shared /counseling screen with
+  role-aware actions. Dedicated counselor role is a follow-up.)
 
 ## Admin productivity
 
