@@ -234,8 +234,16 @@ Status key: `[ ]` not started · `[~]` in progress · `[x]` shipped.
   FCM / APNs so parents get push outside the browser tab.
 - [ ] **Offline mode for teacher attendance / grades** — teacher's
   tablet caches the roster; the write queues until network returns.
-- [ ] **Progressive Web App** — install the SPA to home screen with
+- [x] **Progressive Web App** — install the SPA to home screen with
   the dashboard preloaded for the current role.
+  (v1 ships a vanilla service worker that cache-firsts the static
+  shell (HTML/CSS/JS/icons/manifest) and network-only skips every
+  /api/* request so classroom data never serves from cache. On
+  prod hostnames the SW is registered post-load; localhost + file://
+  skip so CRA dev hot-reload stays sane. Manifest.json enhanced
+  with description, scope, maskable icons, orientation + theme
+  color so install prompts render cleanly on Chrome / Safari.
+  Role-specific dashboard preload is a follow-up polish.)
 
 ## Analytics + insights
 
