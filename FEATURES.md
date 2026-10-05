@@ -200,8 +200,15 @@ Status key: `[ ]` not started · `[~]` in progress · `[x]` shipped.
   v1 — admin creates the Student record and pastes the id into the
   Mark-converted modal to close the loop. Automated promotion is a
   follow-up: Admission form doesn't collect every Student field.)
-- [ ] **Transfer / withdrawal** — mark a student inactive with a
+- [x] **Transfer / withdrawal** — mark a student inactive with a
   reason; preserve historical data; transfer certificate PDF generated.
+  (v1 ships WithdrawalKind enum + StudentWithdrawal entity; admin
+  records at /withdrawals which also flips Student.Status to false
+  so the row drops out of active queries. Historical data stays
+  because the withdrawal row and the student record are both
+  preserved. Printable certificate renders at
+  /withdrawal-certificate/:id via window.print — PDF generation
+  via jsPDF is a follow-up polish.)
 - [ ] **Graduation batch** — year-end bulk-promote operation moves
   every student up one class; final-year class produces a graduation
   roster + certificate run.
