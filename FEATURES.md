@@ -380,6 +380,24 @@ Status key: `[ ]` not started · `[~]` in progress · `[x]` shipped.
   RetentionUntil = now + 30 days. The retention sweep that would
   hard-delete after the window is a planned follow-up hosted
   service.)
+- [x] **Solar Hijri (Jalali) date picker when country = Afghanistan**
+  — swap the native Gregorian `<input type="date">` for a full Jalali
+  day-grid dropdown so Afghan admins/teachers pick in their own
+  calendar.
+  (v1 ships `AfghanDatePicker` in `-spa-country-afghanistan` and
+  mounts it on `afghanistanModule.calendar.DatePicker`. Jalali↔
+  Gregorian conversion is zero-dep: Gregorian→Jalali via
+  `Intl.DateTimeFormat(...-u-ca-persian)`, Jalali→Gregorian via a
+  seed-and-walk (±2 iter) around March 20 of (jy + 621). Grid is
+  RTL, weekdays start Saturday, today is outlined, selected is
+  filled, today / clear chips at the bottom, labels adapt to fa /
+  ps / en. `AppLocalDatePicker` in spa-core now renders
+  `calendar.DatePicker` when the active country supplies one and
+  falls back to the native `<input type="date">` + echo for
+  Gregorian locales — zero screen-level changes required. Server-
+  side SignalR `KeepAliveInterval` lowered from 30s → 15s and
+  `ClientTimeoutInterval` bumped to 60s in the same cycle so the
+  "server timeout" reconnect loop stops firing in idle tabs.)
 
 ---
 
