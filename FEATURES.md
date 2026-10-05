@@ -257,8 +257,14 @@ Status key: `[ ]` not started · `[~]` in progress · `[x]` shipped.
   KPI tiles + aging table + top-overdue table. Due-date aging uses
   the fee's Month-of-year as a proxy until a dedicated DueDate
   column lands.)
-- [ ] **Teacher dashboard — class performance** — grade distribution,
+- [x] **Teacher dashboard — class performance** — grade distribution,
   attendance trend, assignment completion rate per class.
+  (v1 ships GET /dashboard/class-performance/{classId} returning
+  per-course grade distribution bucketed to a 100-point scale,
+  attendance-trend sparkline-data over the last 14 days, and overall
+  assignment completion rate (submissions ÷ assignments × enrolled).
+  Teacher sees only classes they teach; admin sees any. SPA screen
+  at /class-performance on admin + teacher layouts.)
 - [ ] **Parent dashboard — child-vs-class percentile** — show their
   child's grades / attendance against the (anonymized) class
   distribution.
