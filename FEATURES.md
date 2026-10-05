@@ -247,8 +247,16 @@ Status key: `[ ]` not started · `[~]` in progress · `[x]` shipped.
 
 ## Analytics + insights
 
-- [ ] **Admin dashboard — financial health** — KPI tiles for monthly
+- [x] **Admin dashboard — financial health** — KPI tiles for monthly
   collection vs expected, aging buckets, top overdue parents.
+  (v1 ships GET /dashboard/financial-health computing all four KPIs
+  (collected-this-month from Payments, expected-this-month from
+  Fees, outstanding total, four aging buckets 0-30/31-60/61-90/90+)
+  server-side plus top-N overdue parents by rolled-up balance across
+  linked students. Admin screen at /financial-health renders three
+  KPI tiles + aging table + top-overdue table. Due-date aging uses
+  the fee's Month-of-year as a proxy until a dedicated DueDate
+  column lands.)
 - [ ] **Teacher dashboard — class performance** — grade distribution,
   attendance trend, assignment completion rate per class.
 - [ ] **Parent dashboard — child-vs-class percentile** — show their
