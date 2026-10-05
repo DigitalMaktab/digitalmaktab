@@ -294,9 +294,19 @@ Status key: `[ ]` not started · `[~]` in progress · `[x]` shipped.
   endpoint rules added for login (10/min), password reset request
   (5/15m) + confirm (10/15m), message send (60/min), and public
   admission submit (5/10m). General rules remain env-driven.)
-- [ ] **GDPR / data-export + delete** — parent requests export of
+- [x] **GDPR / data-export + delete** — parent requests export of
   their child's full record as a zip; admin honors delete requests
   with a soft-delete + retention window.
+  (v1 ships GdprRequest entity with REQUESTED → APPROVED/FULFILLED/
+  REJECTED lifecycle. Parent / student self-service at
+  /gdpr-requests submits EXPORT or DELETE with optional reason;
+  admin screen at /gdpr-requests lists + fulfills with a decision
+  note. EXPORT fulfillment streams a per-student zip (student +
+  enrollments + grades + attendances + fees + payments + manifest);
+  DELETE fulfillment flips Student.Status inactive and stamps
+  RetentionUntil = now + 30 days. The retention sweep that would
+  hard-delete after the window is a planned follow-up hosted
+  service.)
 
 ---
 
