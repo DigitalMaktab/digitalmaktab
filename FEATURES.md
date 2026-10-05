@@ -404,7 +404,19 @@ Status key: `[ ]` not started · `[~]` in progress · `[x]` shipped.
 - [~] **Afghan Ministry of Education xlsx reports** — StudentFileInfo
   + TeacherFileInfo auto-filled from the school's roster, dedicated
   endpoint per form, Afghan-only.
-  (Phase 1 shipped: `IMinistryReportService` + `AfghanMinistryReport-
+  (Phase 2a shipped: Student entity grew FatherOccupation /
+  RelativeContactPhone / StudentStatus (reusing the dormant
+  StudentStatus enum: PRESENT / PERMANENT_ABSENT / TEMPORARY / SAMI).
+  Migration 20261005160000_AddStudentMinistryFields appends 3
+  nullable columns. All 3 fields propagate through
+  Add/Update/StudentDto via AutoMapper convention — zero mapper
+  edits. StudentEditor collects them in the admin editor, so Afghan
+  admins see those 3 cells fill in the next xlsx download. Sidebar
+  entries added under a new "Ministry Reports" section (admin-only,
+  unconditional — Phase 3 moves to country-module extension pipeline
+  with proper AF-gating).
+
+  Phase 1 shipped: `IMinistryReportService` + `AfghanMinistryReport-
   Service` + `MinistryReportsController` in the Afghan .NET package
   so the ASP.NET surface is country-owned (API Program.cs registers
   the assembly as an ApplicationPart — adding a country adds its own
