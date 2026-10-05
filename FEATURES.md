@@ -121,8 +121,12 @@ Status key: `[ ]` not started · `[~]` in progress · `[x]` shipped.
   absence alerts, emergency closures. Pluggable provider.
 - [ ] **Direct voice / video call from message thread** — adds a call
   button that spins up a `ClassHub`-backed room between two users.
-- [ ] **Broadcast to parents of one class** — teacher composes once,
+- [x] **Broadcast to parents of one class** — teacher composes once,
   the message fans out to every linked parent of that class.
+  (v1 ships a MessageController broadcast endpoint that fans one
+  message per unique parent, scoped to classes the teacher owns —
+  admin can broadcast to any class. Teacher + admin SPA screen at
+  /class-broadcast with live recipient-count preview + confirm.)
 
 ## Student wellbeing
 
