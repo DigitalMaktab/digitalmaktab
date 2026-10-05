@@ -70,9 +70,12 @@ Status key: `[ ]` not started · `[~]` in progress · `[x]` shipped.
 
 ## Operations
 
-- [ ] **Teacher leave + substitute flow** — teacher requests leave,
+- [x] **Teacher leave + substitute flow** — teacher requests leave,
   admin approves + optionally assigns a substitute to each affected
   class; students / parents notified.
+  (v1 ships the request → approve/reject lifecycle with a single
+  substitute teacher per leave range. Per-schedule substitute
+  assignment + student/parent push notifications are a follow-up.)
 - [ ] **Transport (bus routes)** — define routes + stops + bus
   numbers; assign students; drivers see their daily roster.
 - [ ] **Hostel / dormitory** — rooms + capacity + occupants; monthly
