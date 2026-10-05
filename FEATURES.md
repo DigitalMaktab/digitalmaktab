@@ -167,9 +167,14 @@ Status key: `[ ]` not started · `[~]` in progress · `[x]` shipped.
   (Shipped: StudentImportService wired through SchoolController +
   SPA import button on StudentList — already present when cycle 124
   audited; the earlier "partial" note was stale.)
-- [ ] **Full-school backup + restore** — admin triggers a snapshot
+- [x] **Full-school backup + restore** — admin triggers a snapshot
   (student / teacher / fee / grade / attendance tables) as a zip
   that root can re-import into a fresh instance.
+  (v1 ships the snapshot: /backup/export streams a zip with one JSON
+  file per core table — students, teachers, parents, classes,
+  courses, enrollments, grades, fees, payments, attendances — plus a
+  manifest.json. Restore flow is a planned follow-up — the inverse
+  needs FK-safe ordering + idempotency which is its own cycle.)
 - [x] **Data export per entity** — any list screen → "Export full
   table" that respects the current filter and streams the full
   dataset (not just the paged rows) as csv / excel.
