@@ -429,10 +429,18 @@ Status key: `[ ]` not started · `[~]` in progress · `[x]` shipped.
   report never see a null join; admin writes field values directly
   via a dedicated Afghan endpoint (follow-up).
 
-  Pending step 6c: migrate the migration into the Afghan assembly
-  (§11), update MinistryReportService to prefer the TPT row over
-  Student's duplicated columns, backfill endpoint for existing
-  students, drop the duplicated columns from Core.Student.)
+  Shipped alongside 6a/6b: `AfghanMinistryReportService` left-joins
+  both TPT tables and prefers TPT values over mirrored Core columns
+  (Student) / over blank markers (Teacher). Admin backfill endpoint
+  `POST /api/afghanistan/ministry-reports/backfill-student-details`
+  copies existing Student rows into AfghanStudentDetails for pre-6a
+  deployments. New `AfghanTeacherDetailsController` with GET + PUT
+  under `/api/afghanistan/teacher-details/{teacherId}` lets admins
+  fill the Phase 2b Teacher columns (SPA editor tab is a follow-up).
+
+  Pending step 6c: move both migrations into the Afghan assembly
+  (§11); drop the duplicated columns from Core.Student once every
+  consumer reads from the TPT row.)
 
 - [~] **Afghan Ministry of Education xlsx reports** — StudentFileInfo
   + TeacherFileInfo auto-filled from the school's roster, dedicated
