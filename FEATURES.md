@@ -109,8 +109,14 @@ Status key: `[ ]` not started · `[~]` in progress · `[x]` shipped.
   parent-side pick-teacher + book flow. One active booking per
   parent per teacher. Admin can open windows on behalf of a teacher
   via ?teacherId=; dedicated admin surface is a follow-up.)
-- [ ] **School newsletter / digest** — periodic auto-generated roll-up
+- [x] **School newsletter / digest** — periodic auto-generated roll-up
   of announcements + events + student highlights, emailed to parents.
+  (v1 ships NewsletterDigest entity + admin "generate from activity"
+  that snapshots announcements + events + holidays in a period into a
+  Markdown body, plus admin "compose" for hand-written issues.
+  Shared reader screen for admin + parent at /newsletter. Scheduled
+  auto-generation hosted service + email send are follow-ups that
+  need SMTP creds.)
 - [ ] **SMS gateway for critical alerts** — one-time password resets,
   absence alerts, emergency closures. Pluggable provider.
 - [ ] **Direct voice / video call from message thread** — adds a call
