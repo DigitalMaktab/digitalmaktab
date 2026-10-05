@@ -144,8 +144,14 @@ Status key: `[ ]` not started · `[~]` in progress · `[x]` shipped.
   / principal / head-master edit at /health-records; student and
   parent read-only. Dedicated nurse role is a follow-up — teachers
   are deliberately excluded for medical privacy.)
-- [ ] **Vaccination tracker** — per-student vaccine schedule with
+- [x] **Vaccination tracker** — per-student vaccine schedule with
   reminders; parents can upload proof.
+  (v1 ships VaccineRecord with scheduled + administered dates;
+  admin schedules + marks administered at /vaccinations; student
+  self-view and parent children-aggregate flag done / overdue /
+  upcoming with a status badge. Parent attaches a text proof note
+  (card number / URL); file-upload proof + scheduled reminder
+  notifications are follow-ups.)
 - [ ] **Counseling appointments** — student / parent books a slot
   with the school counselor; private note on the appointment.
 
