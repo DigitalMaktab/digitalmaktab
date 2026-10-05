@@ -162,9 +162,11 @@ Status key: `[ ]` not started · `[~]` in progress · `[x]` shipped.
 
 ## Admin productivity
 
-- [ ] **Bulk student import — csv / excel** — admin uploads a sheet,
+- [x] **Bulk student import — csv / excel** — admin uploads a sheet,
   the backend creates every row with validation + a review step.
-  (Partial: assignment + grade imports exist; extend to students.)
+  (Shipped: StudentImportService wired through SchoolController +
+  SPA import button on StudentList — already present when cycle 124
+  audited; the earlier "partial" note was stale.)
 - [ ] **Full-school backup + restore** — admin triggers a snapshot
   (student / teacher / fee / grade / attendance tables) as a zip
   that root can re-import into a fresh instance.
