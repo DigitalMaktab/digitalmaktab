@@ -417,10 +417,18 @@ Status key: `[ ]` not started · `[~]` in progress · `[x]` shipped.
   Core knows nothing about Afghanistan; the registry + hook contract
   are country-agnostic.
 
-  Pending step 6b: Teacher TPT (AfghanTeacherDetails + hook) — same
-  shape, but since current Teacher entity doesn't yet hold the Afghan
-  fields, 6b lands them directly on the TPT row instead of walking
-  through a shadow-write.
+  Step 6b shipped: `AfghanTeacherDetails` TPT + `ITeacherExtensionHook`
+  + `AfghanTeacherExtensionHook` + migration + 3 new enums in
+  Core.Abstractions (MaritalStatus, TeacherEmploymentType,
+  TeacherEducationLevel). TPT row carries every Afghan-specific
+  Teacher field (Dari+English name chain, marital status, Tazkira
+  NationalId, SecondaryAddress, Bast code/grade/step, Position,
+  EmploymentType, HireDate, EducationLevel) — Core.Teacher stays
+  universal from day one, no shadow-write dance. Hook creates a
+  blank TPT row after RegisterTeacher so the admin editor + Ministry
+  report never see a null join; admin writes field values directly
+  via a dedicated Afghan endpoint (follow-up).
+
   Pending step 6c: migrate the migration into the Afghan assembly
   (§11), update MinistryReportService to prefer the TPT row over
   Student's duplicated columns, backfill endpoint for existing
