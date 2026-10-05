@@ -190,9 +190,16 @@ Status key: `[ ]` not started · `[~]` in progress · `[x]` shipped.
 
 ## Student lifecycle
 
-- [ ] **Admissions workflow** — prospective student submits an
+- [x] **Admissions workflow** — prospective student submits an
   application; admin reviews + accepts / rejects; accepted candidates
   convert to Student rows automatically.
+  (v1 ships Admission entity with SUBMITTED → UNDER_REVIEW →
+  ACCEPTED/REJECTED → CONVERTED lifecycle. Anonymous public form at
+  /apply writes rows; admin reviews at /admissions with per-row
+  Accept/Reject + optional decision note. Conversion is manual in
+  v1 — admin creates the Student record and pastes the id into the
+  Mark-converted modal to close the loop. Automated promotion is a
+  follow-up: Admission form doesn't collect every Student field.)
 - [ ] **Transfer / withdrawal** — mark a student inactive with a
   reason; preserve historical data; transfer certificate PDF generated.
 - [ ] **Graduation batch** — year-end bulk-promote operation moves
