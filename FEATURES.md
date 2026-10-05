@@ -117,8 +117,19 @@ Status key: `[ ]` not started · `[~]` in progress · `[x]` shipped.
   Shared reader screen for admin + parent at /newsletter. Scheduled
   auto-generation hosted service + email send are follow-ups that
   need SMTP creds.)
-- [ ] **SMS gateway for critical alerts** — one-time password resets,
+- [x] **SMS gateway for critical alerts** — one-time password resets,
   absence alerts, emergency closures. Pluggable provider.
+  (v1 ships ISmsProvider + NoopSmsProvider (logs the intended SMS
+  so devs see "an SMS would have fired" without any handset leak)
+  mirroring the IPushProvider shape. NotificationService resolves
+  recipient user ids to phone numbers via Teacher/Parent/Student
+  union and auto-fans-out for a hardcoded SmsCritical set —
+  PASSWORD_RESET + ATTENDANCE_ABSENT — so routine chat/announcement
+  traffic never costs an SMS send. Program.cs registers the Noop as
+  a singleton; a real Twilio / Infobip / Afghan Wireless adapter
+  swaps in via DI with zero call-site changes when provider creds
+  land. Emergency-closure channel reuses the same abstraction once
+  the announcement flow opts into the critical set.)
 - [x] **Direct voice / video call from message thread** — adds a call
   button that spins up a `ClassHub`-backed room between two users.
   (v1 ships /call/:otherUserRole/:otherUserId that mounts
