@@ -290,8 +290,17 @@ Status key: `[ ]` not started · `[~]` in progress · `[x]` shipped.
   searchable UI with actor / entity / date filters.
   (Shipped: AuditController + /audit-log SPA screen with sidebar
   link were already in place when the cycle audited.)
-- [ ] **Impersonation (root only)** — root can "view as" a specific
+- [x] **Impersonation (root only)** — root can "view as" a specific
   user to debug a report; every impersonated action is tagged.
+  (v1 ships POST /impersonation/impersonate that mints a target-user
+  token for ROOT. The token carries imp_by + imp_by_role claims so
+  anything downstream (audit interceptor, authorisation checks) can
+  see the real actor alongside the proxied one. Root screen at
+  /impersonate opens the impersonated session in a new tab by
+  default so the root's own session in the current tab stays intact.
+  AuditInterceptor pickup of the imp_by claim is best-effort — the
+  claim is in the token; wiring the interceptor to prefer it over
+  the standard NameIdentifier is a planned follow-up.)
 - [x] **Rate limiting + abuse controls** — per-IP + per-user caps on
   the auth, password-reset, and messaging endpoints.
   (v1 ships the AspNetCoreRateLimit middleware (already registered,
