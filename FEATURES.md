@@ -170,9 +170,15 @@ Status key: `[ ]` not started · `[~]` in progress · `[x]` shipped.
 - [ ] **Full-school backup + restore** — admin triggers a snapshot
   (student / teacher / fee / grade / attendance tables) as a zip
   that root can re-import into a fresh instance.
-- [ ] **Data export per entity** — any list screen → "Export full
+- [x] **Data export per entity** — any list screen → "Export full
   table" that respects the current filter and streams the full
   dataset (not just the paged rows) as csv / excel.
+  (v1 ships CSV export on every AppTable alongside the existing PDF
+  "Print" button. New `fetchAllForExport` prop lets callers return
+  every row matching the current filter; omitting it falls back to
+  the visible page. Writes UTF-8 BOM so Excel opens Dari / Pashto
+  cells correctly. Per-screen opt-in to the full-dataset fetcher is
+  a follow-up — core wiring is universal.)
 - [ ] **Role + permission editor** — admin creates custom role rows
   (e.g. "accountant") with granular capability flags, instead of the
   hard-coded ADMIN / TEACHER / PARENT split.
