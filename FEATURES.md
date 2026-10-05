@@ -76,8 +76,11 @@ Status key: `[ ]` not started · `[~]` in progress · `[x]` shipped.
   (v1 ships the request → approve/reject lifecycle with a single
   substitute teacher per leave range. Per-schedule substitute
   assignment + student/parent push notifications are a follow-up.)
-- [ ] **Transport (bus routes)** — define routes + stops + bus
+- [x] **Transport (bus routes)** — define routes + stops + bus
   numbers; assign students; drivers see their daily roster.
+  (v1 ships admin CRUD for routes, nested stops, and student
+  assignments. Each student can ride one route at a time. Driver
+  self-service dashboard is a follow-up — needs a driver UserRole.)
 - [ ] **Hostel / dormitory** — rooms + capacity + occupants; monthly
   rent flow mirrors fee pipeline; warden announcements.
 - [ ] **Inventory** — track consumables (chalk, textbooks on hand,
