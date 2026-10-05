@@ -265,9 +265,16 @@ Status key: `[ ]` not started · `[~]` in progress · `[x]` shipped.
   assignment completion rate (submissions ÷ assignments × enrolled).
   Teacher sees only classes they teach; admin sees any. SPA screen
   at /class-performance on admin + teacher layouts.)
-- [ ] **Parent dashboard — child-vs-class percentile** — show their
+- [x] **Parent dashboard — child-vs-class percentile** — show their
   child's grades / attendance against the (anonymized) class
   distribution.
+  (v1 ships GET /dashboard/child-vs-class/{studentId} computing
+  per-course percentile (portion of classmates with a strictly
+  lower average) + the student's attendance rate vs the class
+  median over the last 30 days. Response is anonymized — only the
+  target student's id is ever read out; classmate data is folded
+  into aggregates. Parent screen at /child-vs-class with child
+  picker, per-course table, and attendance comparison bars.)
 - [ ] **Cross-school benchmarks (root view)** — root sees aggregated
   anonymized metrics across all schools on the platform.
 
