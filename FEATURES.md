@@ -87,8 +87,12 @@ Status key: `[ ]` not started · `[~]` in progress · `[x]` shipped.
   one-active-room-per-student enforcement. Monthly rent flow + warden
   announcement channel are a follow-up — the fee pipeline can host
   rent once a HostelRent fee kind lands.)
-- [ ] **Inventory** — track consumables (chalk, textbooks on hand,
+- [x] **Inventory** — track consumables (chalk, textbooks on hand,
   lab chemicals); low-stock alerts to admin.
+  (v1 ships item CRUD, signed +/− transactions with running quantity,
+  low-stock badge on the admin screen, and per-item history. Push
+  alerts to admin when stock crosses the threshold is a follow-up —
+  wire into NotificationService in a future cycle.)
 - [ ] **School calendar + holidays** — publishable calendar with
   holidays, exams, PTM days; feeds student / parent dashboards.
 
