@@ -275,8 +275,14 @@ Status key: `[ ]` not started · `[~]` in progress · `[x]` shipped.
   target student's id is ever read out; classmate data is folded
   into aggregates. Parent screen at /child-vs-class with child
   picker, per-course table, and attendance comparison bars.)
-- [ ] **Cross-school benchmarks (root view)** — root sees aggregated
+- [x] **Cross-school benchmarks (root view)** — root sees aggregated
   anonymized metrics across all schools on the platform.
+  (v1 ships GET /root/benchmarks returning one row per school with
+  student/teacher/parent counts, 30-day collected total, average
+  grade across all student rows, and attendance events per enrolled
+  student. Grand-total row uses student-weighted means for rate
+  metrics so a two-student school doesn't equal a 2000-student one.
+  Root screen at /benchmarks mounted under RootHome.)
 
 ## Platform
 
