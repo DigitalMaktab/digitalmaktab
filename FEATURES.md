@@ -130,9 +130,13 @@ Status key: `[ ]` not started · `[~]` in progress · `[x]` shipped.
 
 ## Student wellbeing
 
-- [ ] **Discipline / incident log** — teacher logs an incident per
+- [x] **Discipline / incident log** — teacher logs an incident per
   student (type, date, note, severity); shows on student profile;
   parent sees their child's log only.
+  (v1 ships IncidentLog entity with LOW/MEDIUM/HIGH severity, teacher
+  / admin per-student history + log at /incident-log, parent-only
+  all-children view at /children-incidents. Admin-only delete for
+  corrections. Surfacing on the student profile card is a follow-up.)
 - [ ] **Health records** — allergies, blood group, chronic conditions,
   medication-on-file. Admin + nurse-role access only.
 - [ ] **Vaccination tracker** — per-student vaccine schedule with
