@@ -280,8 +280,10 @@ Status key: `[ ]` not started · `[~]` in progress · `[x]` shipped.
 
 ## Platform
 
-- [ ] **Audit log viewer** — surface the existing `Audit` table in a
+- [x] **Audit log viewer** — surface the existing `Audit` table in a
   searchable UI with actor / entity / date filters.
+  (Shipped: AuditController + /audit-log SPA screen with sidebar
+  link were already in place when the cycle audited.)
 - [ ] **Impersonation (root only)** — root can "view as" a specific
   user to debug a report; every impersonated action is tagged.
 - [ ] **Rate limiting + abuse controls** — per-IP + per-user caps on
