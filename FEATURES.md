@@ -81,8 +81,12 @@ Status key: `[ ]` not started · `[~]` in progress · `[x]` shipped.
   (v1 ships admin CRUD for routes, nested stops, and student
   assignments. Each student can ride one route at a time. Driver
   self-service dashboard is a follow-up — needs a driver UserRole.)
-- [ ] **Hostel / dormitory** — rooms + capacity + occupants; monthly
+- [x] **Hostel / dormitory** — rooms + capacity + occupants; monthly
   rent flow mirrors fee pipeline; warden announcements.
+  (v1 ships hostels + rooms + occupant check-in/out with capacity +
+  one-active-room-per-student enforcement. Monthly rent flow + warden
+  announcement channel are a follow-up — the fee pipeline can host
+  rent once a HostelRent fee kind lands.)
 - [ ] **Inventory** — track consumables (chalk, textbooks on hand,
   lab chemicals); low-stock alerts to admin.
 - [ ] **School calendar + holidays** — publishable calendar with
