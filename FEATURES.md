@@ -56,8 +56,11 @@ Status key: `[ ]` not started · `[~]` in progress · `[x]` shipped.
   submissions across the same class.
   (v1 is exact SHA-256 of raw file bytes — catches
   download-rename-resubmit. Fuzzy / shingling match is a follow-up.)
-- [ ] **Quiz question bank** — teachers maintain a reusable pool of
+- [x] **Quiz question bank** — teachers maintain a reusable pool of
   questions tagged by subject + difficulty; quiz draws from it.
+  (v1 ships the per-school pool CRUD. 'Draw N from bank into a quiz'
+  wiring is a follow-up — the Quiz authoring flow needs a 'from
+  bank' option that queries by filter.)
 - [ ] **Co-curricular activities + grades** — track clubs, sports,
   participation; roll into report card as a separate panel.
 
