@@ -52,8 +52,10 @@ Status key: `[ ]` not started · `[~]` in progress · `[x]` shipped.
   (v1 ships the endpoint + shared /transcript/:studentId screen;
   row-level buttons on StudentList / ChildrenList + student
   dashboard quick-link are a follow-up pass.)
-- [ ] **Assignment plagiarism flag** — simple hash-match on text
+- [x] **Assignment plagiarism flag** — simple hash-match on text
   submissions across the same class.
+  (v1 is exact SHA-256 of raw file bytes — catches
+  download-rename-resubmit. Fuzzy / shingling match is a follow-up.)
 - [ ] **Quiz question bank** — teachers maintain a reusable pool of
   questions tagged by subject + difficulty; quiz draws from it.
 - [ ] **Co-curricular activities + grades** — track clubs, sports,
