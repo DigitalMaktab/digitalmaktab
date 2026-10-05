@@ -256,8 +256,18 @@ Status key: `[ ]` not started · `[~]` in progress · `[x]` shipped.
   the tab is backgrounded — so a parent gets pinged even with the
   browser minimized, without FCM creds. Real FCM/APNS provider
   implementation is a documented follow-up when creds land.)
-- [ ] **Offline mode for teacher attendance / grades** — teacher's
+- [x] **Offline mode for teacher attendance / grades** — teacher's
   tablet caches the roster; the write queues until network returns.
+  (v1 ships an IndexedDB-backed offline queue in spa-core
+  (`enqueueOffline` / `drainOffline`) + a `useOfflineSync` hook that
+  wires `online`/`offline` events + a 15s poll fallback to auto-drain
+  when the browser reports back online. TeacherAttendance snapshots
+  the roster + the day's marks into the existing api-cache DB so an
+  offline open still renders the grid, routes Save through
+  `navigator.onLine` → direct API call OR enqueue, and shows an
+  inline banner with pending-batch count + manual "Sync now"
+  button. Grades flow reuses the same primitives in a follow-up —
+  spa-core already exports the hook so it's a one-screen wiring.)
 - [x] **Progressive Web App** — install the SPA to home screen with
   the dashboard preloaded for the current role.
   (v1 ships a vanilla service worker that cache-firsts the static
