@@ -137,8 +137,13 @@ Status key: `[ ]` not started · `[~]` in progress · `[x]` shipped.
   / admin per-student history + log at /incident-log, parent-only
   all-children view at /children-incidents. Admin-only delete for
   corrections. Surfacing on the student profile card is a follow-up.)
-- [ ] **Health records** — allergies, blood group, chronic conditions,
+- [x] **Health records** — allergies, blood group, chronic conditions,
   medication-on-file. Admin + nurse-role access only.
+  (v1 ships one HealthRecord per student with blood group + allergies +
+  chronic conditions + medications + emergency contact + notes. Admin
+  / principal / head-master edit at /health-records; student and
+  parent read-only. Dedicated nurse role is a follow-up — teachers
+  are deliberately excluded for medical privacy.)
 - [ ] **Vaccination tracker** — per-student vaccine schedule with
   reminders; parents can upload proof.
 - [ ] **Counseling appointments** — student / parent books a slot
