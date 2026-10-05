@@ -103,8 +103,12 @@ Status key: `[ ]` not started · `[~]` in progress · `[x]` shipped.
 
 ## Communication
 
-- [ ] **Parent-teacher meeting scheduling** — admin opens a window;
+- [x] **Parent-teacher meeting scheduling** — admin opens a window;
   parents book a slot per teacher; teachers see their day's slots.
+  (v1 ships teacher-side open-window + manage-day screen and
+  parent-side pick-teacher + book flow. One active booking per
+  parent per teacher. Admin can open windows on behalf of a teacher
+  via ?teacherId=; dedicated admin surface is a follow-up.)
 - [ ] **School newsletter / digest** — periodic auto-generated roll-up
   of announcements + events + student highlights, emailed to parents.
 - [ ] **SMS gateway for critical alerts** — one-time password resets,
