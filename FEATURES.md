@@ -401,6 +401,34 @@ Status key: `[ ]` not started · `[~]` in progress · `[x]` shipped.
 
 ---
 
+- [~] **Afghan Ministry of Education xlsx reports** — StudentFileInfo
+  + TeacherFileInfo auto-filled from the school's roster, dedicated
+  endpoint per form, Afghan-only.
+  (Phase 1 shipped: `IMinistryReportService` + `AfghanMinistryReport-
+  Service` + `MinistryReportsController` in the Afghan .NET package
+  so the ASP.NET surface is country-owned (API Program.cs registers
+  the assembly as an ApplicationPart — adding a country adds its own
+  controllers automatically). ClosedXML builds both xlsx deliverables
+  from scratch with the Ministry header block (province / district /
+  school name / school code / year or program) + per-row data for
+  every active student / teacher. Columns backed by existing entity
+  fields fill directly (Dari+English name chain for students, Asas
+  number, DOB, gender, class/shift/type pulled from the active
+  enrollment, both addresses, NationalId tazkira info, blood group,
+  disability, orphan, mother tongue, relative names); columns waiting
+  on entity extensions ship with an inline Excel comment naming the
+  Student / Teacher field that needs adding (father occupation,
+  relative phone, student-status enum, teacher grandfather + English
+  name chain, marital status, tazkira, secondary address, Bast /
+  Qadam / position / employment type / hire date / education level).
+  SPA screens at `/ministry-reports/student-file-info` +
+  `/ministry-reports/teacher-file-info` (admin layout) with download
+  button that blob-fetches the endpoint and triggers browser
+  download. Phase 2 adds the missing entity fields + admin edit UI
+  so every cell auto-fills. Phase 3 wires sidebar entries via the
+  country-module extension pipeline so no shell edit is needed when
+  Afghanistan is removed.)
+
 **Loop convention**: each cycle picks one bullet from this list,
 ships it end-to-end (backend + Core + SPA + spa-core + translations
 in en-US + fa-AF + ps-AF + commits per repo), and flips its checkbox
