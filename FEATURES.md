@@ -286,8 +286,14 @@ Status key: `[ ]` not started · `[~]` in progress · `[x]` shipped.
   link were already in place when the cycle audited.)
 - [ ] **Impersonation (root only)** — root can "view as" a specific
   user to debug a report; every impersonated action is tagged.
-- [ ] **Rate limiting + abuse controls** — per-IP + per-user caps on
+- [x] **Rate limiting + abuse controls** — per-IP + per-user caps on
   the auth, password-reset, and messaging endpoints.
+  (v1 ships the AspNetCoreRateLimit middleware (already registered,
+  wiring was missing): app.UseIpRateLimiting() is now active before
+  authentication so unauthenticated spam gets blocked on IP. Per-
+  endpoint rules added for login (10/min), password reset request
+  (5/15m) + confirm (10/15m), message send (60/min), and public
+  admission submit (5/10m). General rules remain env-driven.)
 - [ ] **GDPR / data-export + delete** — parent requests export of
   their child's full record as a zip; admin honors delete requests
   with a soft-delete + retention window.
