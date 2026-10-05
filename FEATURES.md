@@ -61,8 +61,12 @@ Status key: `[ ]` not started · `[~]` in progress · `[x]` shipped.
   (v1 ships the per-school pool CRUD. 'Draw N from bank into a quiz'
   wiring is a follow-up — the Quiz authoring flow needs a 'from
   bank' option that queries by filter.)
-- [ ] **Co-curricular activities + grades** — track clubs, sports,
+- [x] **Co-curricular activities + grades** — track clubs, sports,
   participation; roll into report card as a separate panel.
+  (v1 ships CRUD for activities, roster enroll/unenroll, inline grade
+  letter + comment per participant. Rolling into the printable report
+  card is a follow-up — needs a "co-curricular" panel added to the
+  ReportCard template.)
 
 ## Operations
 
