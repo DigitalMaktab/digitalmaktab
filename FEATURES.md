@@ -184,9 +184,16 @@ Status key: `[ ]` not started · `[~]` in progress · `[x]` shipped.
   the visible page. Writes UTF-8 BOM so Excel opens Dari / Pashto
   cells correctly. Per-screen opt-in to the full-dataset fetcher is
   a follow-up — core wiring is universal.)
-- [ ] **Role + permission editor** — admin creates custom role rows
+- [x] **Role + permission editor** — admin creates custom role rows
   (e.g. "accountant") with granular capability flags, instead of the
   hard-coded ADMIN / TEACHER / PARENT split.
+  (v1 ships CustomRole entity + admin CRUD at /custom-roles with a
+  27-token capability picker (students.read / fees.write /
+  gdpr.review / etc.). Admin can design the role matrix now;
+  endpoint-level enforcement is a documented follow-up that
+  requires migrating [Authorize(Roles)] attributes to a dynamic
+  policy that reads the capability list off the user's assigned
+  CustomRole.)
 
 ## Student lifecycle
 
