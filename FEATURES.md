@@ -119,8 +119,15 @@ Status key: `[ ]` not started · `[~]` in progress · `[x]` shipped.
   need SMTP creds.)
 - [ ] **SMS gateway for critical alerts** — one-time password resets,
   absence alerts, emergency closures. Pluggable provider.
-- [ ] **Direct voice / video call from message thread** — adds a call
+- [x] **Direct voice / video call from message thread** — adds a call
   button that spins up a `ClassHub`-backed room between two users.
+  (v1 ships /call/:otherUserRole/:otherUserId that mounts
+  AppOnlineClass with a deterministic room id derived from the
+  sorted (self, other) ids so both sides land in the same room
+  without a server-side CallSession row. Call button on
+  MessageThreadScreen opens the room in a new tab so the thread
+  stays open behind it. Reuses the existing WebRTC + ClassHub
+  signaling + waiting-room surface — zero new backend code.)
 - [x] **Broadcast to parents of one class** — teacher composes once,
   the message fans out to every linked parent of that class.
   (v1 ships a MessageController broadcast endpoint that fans one
