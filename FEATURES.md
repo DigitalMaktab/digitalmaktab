@@ -219,8 +219,14 @@ Status key: `[ ]` not started · `[~]` in progress · `[x]` shipped.
   /graduation screen stacks the three actions and prints the roster.
   Destination class must be created ahead of time via the existing
   class flow — this cycle does not auto-create classes.)
-- [ ] **Alumni directory** — graduated students stay in a read-only
+- [x] **Alumni directory** — graduated students stay in a read-only
   alumni table; alumni-only announcements + reunions.
+  (v1 ships GET /alumni which treats "StudentWithdrawal with
+  reason=Graduation" as the alumni source — no new table, zero
+  write cost at graduation time. Admin screen at /alumni with
+  server-side name search + final-class + branch resolved from
+  the student's last Enrollment. Alumni-only announcement audience
+  + reunion scheduling are documented as follow-ups.)
 
 ## Mobile + offline
 
