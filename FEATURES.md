@@ -237,8 +237,18 @@ Status key: `[ ]` not started · `[~]` in progress · `[x]` shipped.
 
 ## Mobile + offline
 
-- [ ] **Mobile push notifications** — hook `NotificationService` into
+- [x] **Mobile push notifications** — hook `NotificationService` into
   FCM / APNs so parents get push outside the browser tab.
+  (v1 ships the scaffolding: DeviceToken entity + per-user token
+  registry endpoints (/push/register-device), IPushProvider
+  abstraction with a NoopPushProvider that logs (swap in an FCM/
+  APNS adapter via DI when creds arrive), NotificationService hook
+  that calls provider.SendAsync on every notify. SPA requests
+  browser Notification permission on login and mirrors every
+  SignalR ReceiveNotification into a native OS notification when
+  the tab is backgrounded — so a parent gets pinged even with the
+  browser minimized, without FCM creds. Real FCM/APNS provider
+  implementation is a documented follow-up when creds land.)
 - [ ] **Offline mode for teacher attendance / grades** — teacher's
   tablet caches the roster; the write queues until network returns.
 - [x] **Progressive Web App** — install the SPA to home screen with
