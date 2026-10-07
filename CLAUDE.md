@@ -99,53 +99,26 @@ The SPA imports translations + grading via the country module system:
 
 Because packages are consumed via **tarball install** (not `npm link`),
 changes to `spa-core` or `spa-country-afghanistan` do NOT hot-reload
-into the running `npm start`. The ritual per-cycle when you touch
-either:
+into the running `npm start`. Use the automation scripts:
 
 ```bash
-# 1. Backend Core: pack BOTH .Abstractions and .Core (they're separate
-#    NuGet packages — .Core references .Abstractions transitively, but
-#    the API consumes them independently, so leaving .Abstractions
-#    stale after editing a POCO throws
-#    "Could not load type DigitalMaktab.Core.Models.<X>" at API
-#    startup).
-#
-#    CRITICAL: `dotnet pack` may reuse a stale bin/ DLL if MSBuild's
-#    incremental cache thinks the assembly is current — the packed
-#    nupkg then contains an OLD DLL and startup throws
-#    "Method 'Foo' does not have an implementation" (a
-#    TypeLoadException at DI registration). Force a clean rebuild
-#    before pack whenever an interface member changes: `dotnet clean
-#    -c Release && dotnet build -c Release && dotnet pack --no-build`.
-#    Same for the country .NET package below.
-cd digitalmaktab-core && dotnet clean -c Release && dotnet build -c Release
-cd digitalmaktab-core && dotnet pack src/DigitalMaktab.Core.Abstractions/DigitalMaktab.Core.Abstractions.csproj -c Release --no-build -o ../.nuget-local
-cd digitalmaktab-core && dotnet pack src/DigitalMaktab.Core/DigitalMaktab.Core.csproj -c Release --no-build -o ../.nuget-local
-cd ../digitalmaktab-country-afghanistan && dotnet clean -c Release && dotnet build -c Release && dotnet pack -c Release --no-build -o ../.nuget-local
-rm -rf ~/.nuget/packages/digitalmaktab.core ~/.nuget/packages/digitalmaktab.core.abstractions ~/.nuget/packages/digitalmaktab.country.afghanistan
-dotnet nuget locals http-cache --clear
-cd ../digitalmaktab-api && dotnet restore --force --no-cache
-
-# 2. spa-core → build + pack + hand-swap into the SPA's node_modules
-cd ../digitalmaktab-spa-core && npm run build && npm pack --pack-destination ../.npm-local
-rm -rf ../digitalmaktab-spa/node_modules/@digitalmaktab/spa-core /tmp/dm-extract
-mkdir -p /tmp/dm-extract && cd /tmp/dm-extract && tar -xzf ../../.npm-local/digitalmaktab-spa-core-0.1.0-alpha.tgz
-mv package ../digitalmaktab-spa/node_modules/@digitalmaktab/spa-core
-
-# 3. spa-country-afghanistan → same pattern
-cd ../digitalmaktab-spa-country-afghanistan && npm run build && npm pack --pack-destination ../.npm-local
-rm -rf ../digitalmaktab-spa/node_modules/@digitalmaktab/spa-country-afghanistan /tmp/dm-country
-mkdir -p /tmp/dm-country && cd /tmp/dm-country && tar -xzf ../../.npm-local/digitalmaktab-spa-country-afghanistan-0.1.0-alpha.tgz
-mv package ../digitalmaktab-spa/node_modules/@digitalmaktab/spa-country-afghanistan
-
-# 4. Clear CRA's webpack cache — it memoizes module-resolution maps
-#    from the last dev-server run, so a new export in spa-core
-#    reads as "not exported" until the cache is dropped.
-rm -rf ../digitalmaktab-spa/node_modules/.cache
-
-# 5. Type-check the SPA
-cd ../digitalmaktab-spa && npx tsc --noEmit
+./scripts/sync-dotnet.sh   # Core.Abstractions + Core + Afghan .NET → API
+./scripts/sync-spa.sh      # spa-core + spa-country-afghanistan → SPA
+./scripts/sync-all.sh      # both of the above in order
 ```
+
+The scripts replay the full pack-and-swap ritual (clean+build+pack
+each affected project, wipe the NuGet / npm caches those three
+packages live in, swap the fresh tarballs into every consumer's
+`node_modules`, clear CRA's webpack cache). They exit on first error
+so a half-swap never silently lands.
+
+CRITICAL (encoded in `sync-dotnet.sh`): `dotnet pack` may reuse a
+stale `bin/` DLL if MSBuild's incremental cache thinks the assembly is
+current — the packed nupkg then contains an OLD DLL and startup throws
+`TypeLoadException` at DI registration. The script always runs
+`dotnet clean -c Release && dotnet build -c Release` before each pack
+to defeat this.
 
 **Then — CRITICAL — the human must restart the dev servers.** CRA's
 `react-scripts start` does not watch node_modules for JSON changes, so
