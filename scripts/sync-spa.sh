@@ -34,6 +34,13 @@ swap_package() {
   tar -xzf "$tarball" -C "$staging"
   mv "$staging/package" "$target"
   rm -rf "$staging"
+  # Bump every extracted file's mtime to NOW. npm pack writes
+  # deterministic epoch-ish timestamps (Oct 26 1985 by default), so
+  # webpack's mtime-based invalidation sees the swap as OLDER than
+  # anything it already cached and happily keeps serving the stale
+  # module. Previously this forced the user to Ctrl+C + restart
+  # `npm start` after every sync — the touch sidesteps that.
+  find "$target" -exec touch {} +
 }
 
 echo "==> Building spa-core"
@@ -63,4 +70,5 @@ swap_package "$COUNTRY_TGZ" \
 echo "==> Clearing CRA webpack cache"
 rm -rf "$SPA_DIR/node_modules/.cache"
 
-echo "==> Done. Restart 'npm start' in digitalmaktab-spa to pick up the swap."
+echo "==> Done. CRA will re-bundle automatically (mtimes bumped above);"
+echo "    hard-refresh the browser if it serves a cached chunk."
