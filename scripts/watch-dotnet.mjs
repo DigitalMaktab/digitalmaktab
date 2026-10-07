@@ -27,6 +27,7 @@ const WATCHED = [
   join(PROJECTS, "digitalmaktab-country-afghanistan"),
 ];
 const SYNC_SCRIPT = join(ROOT, "scripts/sync-dotnet.sh");
+const RESTART_SCRIPT = join(ROOT, "scripts/restart-api.sh");
 
 // Ignore bin/, obj/, .DS_Store, VS temp files, and the sync's own
 // output path.
@@ -50,12 +51,18 @@ const runSync = () => {
     running = false;
     if (code !== 0) {
       console.error(`[${new Date().toLocaleTimeString()}] sync FAILED (exit ${code})`);
-    } else {
-      console.log(
-        `[${new Date().toLocaleTimeString()}] sync ok · restart 'dotnet run' in digitalmaktab-api to pick up the new DLLs`
-      );
+      if (pending) runSync();
+      return;
     }
-    if (pending) runSync();
+    console.log(`[${new Date().toLocaleTimeString()}] sync ok · restarting API`);
+    // If dev-api.sh is supervising, the SIGTERM here is caught by
+    // the wrapper's loop and a fresh dotnet run starts on its own.
+    // If the user runs dotnet directly, this still kills it — the
+    // script's hint tells them to switch to dev-api.sh.
+    const restart = spawn(RESTART_SCRIPT, [], { stdio: "inherit" });
+    restart.on("exit", () => {
+      if (pending) runSync();
+    });
   });
 };
 
