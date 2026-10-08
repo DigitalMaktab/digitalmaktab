@@ -70,6 +70,9 @@ run_check "resx orphans   · check-resx.sh (no unused keys)" \
 # forgot to run install-hooks.sh after cloning gets no pre-commit
 # protection. Verify both pre-commit AND post-merge point at the
 # shared scripts.
+run_check "secret-scan     · check-secrets.sh executable" \
+  "test -x '$ROOT/scripts/check-secrets.sh'"
+
 run_check "hooks installed · pre-commit + post-merge symlinks" \
   "for repo in digitalmaktab digitalmaktab-core digitalmaktab-api \
       digitalmaktab-country-afghanistan digitalmaktab-spa-core \

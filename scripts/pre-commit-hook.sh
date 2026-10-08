@@ -32,6 +32,12 @@ run_dotnet_build() {
   (cd "$REPO_ROOT" && dotnet build -c "$config" >/dev/null)
 }
 
+run_secret_scan() {
+  if [ -x "$MONOREPO/scripts/check-secrets.sh" ]; then
+    "$MONOREPO/scripts/check-secrets.sh"
+  fi
+}
+
 run_i18n_check() {
   if [ -x "$MONOREPO/scripts/check-i18n.sh" ]; then
     echo "pre-commit: check-i18n.sh --strict"
@@ -48,6 +54,10 @@ run_i18n_parity_check() {
     "$MONOREPO/scripts/check-i18n-parity.sh" --strict
   fi
 }
+
+# Secret scan runs in EVERY repo — a stray credential is the one
+# commit-time check that must never be skipped by dispatch logic.
+run_secret_scan
 
 case "$REPO_NAME" in
   digitalmaktab-spa-core|digitalmaktab-spa-country-afghanistan)
