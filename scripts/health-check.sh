@@ -76,6 +76,9 @@ run_check "secret-scan     · check-secrets.sh executable" \
 run_check "enum sync       · every TS ↔ C# enum pair agrees" \
   "'$ROOT/scripts/check-enum-sync.sh' > /dev/null"
 
+run_check "pkg versions    · @digitalmaktab/* deps match owners" \
+  "'$ROOT/scripts/check-pkg-versions.sh' > /dev/null"
+
 run_check "hooks installed · pre-commit + post-merge symlinks" \
   "for dir in $PROJECTS/digitalmaktab $PROJECTS/digitalmaktab-*; do
      [ -d \"\$dir/.git\" ] || continue;

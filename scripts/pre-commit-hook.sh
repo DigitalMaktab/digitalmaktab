@@ -47,6 +47,14 @@ run_enum_sync() {
   fi
 }
 
+run_pkg_version_sync() {
+  # Enforce @digitalmaktab/* dep version strings in every consumer
+  # package.json match the owning package's own version.
+  if [ -x "$MONOREPO/scripts/check-pkg-versions.sh" ]; then
+    "$MONOREPO/scripts/check-pkg-versions.sh"
+  fi
+}
+
 run_i18n_check() {
   if [ -x "$MONOREPO/scripts/check-i18n.sh" ]; then
     echo "pre-commit: check-i18n.sh --strict"
@@ -67,6 +75,12 @@ run_i18n_parity_check() {
 # Secret scan runs in EVERY repo — a stray credential is the one
 # commit-time check that must never be skipped by dispatch logic.
 run_secret_scan
+
+# @digitalmaktab/* version-drift check runs in EVERY repo too —
+# any package.json edit touching a scoped dep (upstream or
+# downstream of the edit) can land the drift, so there's no
+# clean dispatch split; just run it everywhere.
+run_pkg_version_sync
 
 case "$REPO_NAME" in
   digitalmaktab-spa-core)
