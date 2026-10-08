@@ -82,6 +82,9 @@ run_check "pkg versions    · @digitalmaktab/* deps match owners" \
 run_check "ratelimit routes · appsettings rules map to live routes" \
   "'$ROOT/scripts/check-ratelimit-routes.sh' > /dev/null"
 
+run_check "hosted health   · every BackgroundService opts into tracker" \
+  "'$ROOT/scripts/check-hosted-service-health.sh' > /dev/null"
+
 run_check "dev-up          · dev-up.sh executable" \
   "test -x '$ROOT/scripts/dev-up.sh'"
 

@@ -64,6 +64,17 @@ run_ratelimit_routes_check() {
   fi
 }
 
+run_hosted_service_health_check() {
+  # Enforce that every *BackgroundService.cs in Core opts into the
+  # IHostedServiceHealthTracker (ctor injection + RecordRun call).
+  # A new service missing either silently falls off the admin
+  # service-health dashboard — the exact silent-death this guard
+  # exists to prevent.
+  if [ -x "$MONOREPO/scripts/check-hosted-service-health.sh" ]; then
+    "$MONOREPO/scripts/check-hosted-service-health.sh"
+  fi
+}
+
 run_i18n_check() {
   if [ -x "$MONOREPO/scripts/check-i18n.sh" ]; then
     echo "pre-commit: check-i18n.sh --strict"
@@ -119,6 +130,7 @@ case "$REPO_NAME" in
     run_dotnet_build Release
     run_i18n_parity_check
     run_enum_sync
+    run_hosted_service_health_check
     ;;
   digitalmaktab-country-afghanistan)
     run_dotnet_build Release
