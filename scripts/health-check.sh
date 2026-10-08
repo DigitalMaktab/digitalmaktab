@@ -60,6 +60,25 @@ run_check "spa (shell)    · tsc --noEmit" \
 run_check "i18n coverage  · check-i18n.sh --strict" \
   "'$ROOT/scripts/check-i18n.sh' --strict"
 
+run_check "i18n parity    · check-i18n-parity.sh --strict" \
+  "'$ROOT/scripts/check-i18n-parity.sh' --strict"
+
+run_check "resx orphans   · check-resx.sh (no unused keys)" \
+  "'$ROOT/scripts/check-resx.sh' | grep -qE 'unreferenced keys:\s+0'"
+
+# Hooks must be symlinked in every sibling repo — otherwise a dev who
+# forgot to run install-hooks.sh after cloning gets no pre-commit
+# protection. Verify both pre-commit AND post-merge point at the
+# shared scripts.
+run_check "hooks installed · pre-commit + post-merge symlinks" \
+  "for repo in digitalmaktab digitalmaktab-core digitalmaktab-api \
+      digitalmaktab-country-afghanistan digitalmaktab-spa-core \
+      digitalmaktab-spa-sdk digitalmaktab-spa-country-afghanistan \
+      digitalmaktab-spa; do
+     test -L \"$PROJECTS/\$repo/.git/hooks/pre-commit\" || exit 1;
+     test -L \"$PROJECTS/\$repo/.git/hooks/post-merge\" || exit 1;
+   done"
+
 echo
 echo "===== summary ====="
 echo "  passed: ${#PASS[@]}"
