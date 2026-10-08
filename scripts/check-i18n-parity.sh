@@ -90,8 +90,26 @@ AFGHAN_EXEMPT_PREFIXES = (
     "calendar.month.",
 )
 
+# Prefixes that are LEGITIMATELY present only in Afghan locales
+# (country-specific terminology — the shell doesn't ship these
+# strings because the fields don't exist on Core.Student/Teacher,
+# only on the Afghan TPT extension). The advisory block below
+# skips these when flagging "possibly missing from en-US" so the
+# signal stays signal.
+COUNTRY_ONLY_PREFIXES = (
+    "afghanStudentDetails.",
+    "afghanTeacherDetails.",
+    "country.afghanistan.",
+    "ministry.",
+    "ministryReports.",
+    "sidebar.ministryReports.",
+)
+
 def is_exempt(key):
     return any(key.startswith(p) for p in AFGHAN_EXEMPT_PREFIXES)
+
+def is_country_only(key):
+    return any(key.startswith(p) for p in COUNTRY_ONLY_PREFIXES)
 
 frontend_issues = []  # (bucket-label, locale, key)
 if core_en and country_fa is not None:
@@ -109,6 +127,18 @@ if country_fa is not None and country_ps is not None:
     for missing in sorted(country_ps - country_fa):
         if is_exempt(missing): continue
         frontend_issues.append(("country keys (fa-AF ↔ ps-AF)", "fa-AF", missing))
+
+# Advisory (non-blocking) — keys shared between BOTH Afghan locales
+# that en-US doesn't carry. The parity rule allows country packages
+# to add their own terminology; this advisory catches the case where
+# a UI string was added to the Afghan bundles but someone forgot to
+# add the en-US fallback. Known country-only prefixes
+# (COUNTRY_ONLY_PREFIXES) are skipped so the signal stays signal.
+advisory_only_in_afghan = []
+if core_en and country_fa is not None and country_ps is not None:
+    for missing in sorted((country_fa & country_ps) - core_en):
+        if is_country_only(missing) or is_exempt(missing): continue
+        advisory_only_in_afghan.append(missing)
 
 # ------------------------------------------------------------------
 # Backend: .resx trios. {name}.resx is the base (en-US); the Dari
@@ -180,6 +210,17 @@ print(f"  frontend issues:          {len(frontend_issues)}")
 print(f"  backend issues:           {len(backend_issues)}")
 print(f"  resx duplicate keys:      {len(duplicate_issues)}")
 print(f"  json parse errors:        {len(parse_errors)}")
+print(f"  advisory (only in Afghan): {len(advisory_only_in_afghan)}  (not blocking — review for en-US gaps)")
+
+if advisory_only_in_afghan:
+    print()
+    print("Advisory — keys in BOTH fa-AF + ps-AF but NOT en-US (first 20):")
+    print("  (legitimate country-specific keys should be added to COUNTRY_ONLY_PREFIXES in this script;")
+    print("   anything else is probably an accidental en-US gap — see auditLog incident 2026-10)")
+    for k in advisory_only_in_afghan[:20]:
+        print(f"  - {k}")
+    if len(advisory_only_in_afghan) > 20:
+        print(f"  … and {len(advisory_only_in_afghan) - 20} more")
 
 if parse_errors:
     print()
