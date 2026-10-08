@@ -74,12 +74,10 @@ run_check "secret-scan     · check-secrets.sh executable" \
   "test -x '$ROOT/scripts/check-secrets.sh'"
 
 run_check "hooks installed · pre-commit + post-merge symlinks" \
-  "for repo in digitalmaktab digitalmaktab-core digitalmaktab-api \
-      digitalmaktab-country-afghanistan digitalmaktab-spa-core \
-      digitalmaktab-spa-sdk digitalmaktab-spa-country-afghanistan \
-      digitalmaktab-spa; do
-     test -L \"$PROJECTS/\$repo/.git/hooks/pre-commit\" || exit 1;
-     test -L \"$PROJECTS/\$repo/.git/hooks/post-merge\" || exit 1;
+  "for dir in $PROJECTS/digitalmaktab $PROJECTS/digitalmaktab-*; do
+     [ -d \"\$dir/.git\" ] || continue;
+     test -L \"\$dir/.git/hooks/pre-commit\" || exit 1;
+     test -L \"\$dir/.git/hooks/post-merge\" || exit 1;
    done"
 
 echo
