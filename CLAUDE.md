@@ -72,15 +72,20 @@ create GitHub remotes on their own.
    `AppTable`'s built-ins are missing something, extend `AppTable`.
 
 3. **Translate everything (GOLDEN — human has asked repeatedly).**
-   Every new string, both frontend AND backend, must land in all three
+   Every new string, on every tier, must land in all three
    supported locales:
    - Frontend base (en-US) → `digitalmaktab-spa-core/src/locales/en-US/translation.json`
    - Frontend country locales →
      `digitalmaktab-spa-country-afghanistan/src/locales/{fa-AF,ps-AF}/translation.json`
      (and any additional country modules that ship translations)
+   - Mobile locales → `digitalmaktab-mobile-country-afghanistan/src/locales/{en-US,fa-AF,ps-AF}/translation.json`
+     (mobile ships all three in one package — no core/country split
+     like the SPA has). `check-mobile-i18n.sh` enforces coverage.
    - Backend → `Resources/Localization/Controllers/*.resx` +
      `.fa-AF.resx` + `.ps-AF.resx` per controller.
    Never leave a screen rendering a raw key like `foo.bar.label`.
+   `check-i18n-parity.sh --strict` runs in pre-commit on every
+   repo and refuses the commit on any gap.
 
 4. **Per-controller / per-screen localizer.** Never dump every string
    into `MainController` on the backend. Each controller gets its own
