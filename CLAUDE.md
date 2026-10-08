@@ -147,6 +147,14 @@ a pull in `digitalmaktab-spa-core` auto-runs `sync-spa.sh`. Skip
 with `SKIP_AUTO_SYNC=1 git pull` for a fast pull without the pack
 cycle.
 
+**One-command local dev**: `./scripts/dev-up.sh` starts the API,
+SPA shell, and both watchers (`watch-dotnet.mjs` + `watch-spa.mjs`)
+under one supervisor. Each child's output gets a `[label]` prefix
+so the multiplexed stream stays legible; Ctrl+C tears every child
+down cleanly (process-group kill). All-or-nothing: a child dying
+on its own tears the rest down too so you never end up with 'the
+watcher is dead but you still see the stale shell.'
+
 CRITICAL (encoded in `sync-dotnet.sh`): `dotnet pack` may reuse a
 stale `bin/` DLL if MSBuild's incremental cache thinks the assembly is
 current — the packed nupkg then contains an OLD DLL and startup throws
