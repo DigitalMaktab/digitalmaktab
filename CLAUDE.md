@@ -9,12 +9,16 @@ and follow every rule. Golden rules are non-negotiable.
 Working tree is a set of sibling directories under
 `/Users/dahee/Desktop/projects/`:
 
-- `digitalmaktab/` — this monorepo stub (mostly docs).
+- `digitalmaktab/` — this monorepo stub (scripts + docs).
 - `digitalmaktab-core/` — backend .NET packages
   (`DigitalMaktab.Core.Abstractions`, `DigitalMaktab.Core`,
   `DigitalMaktab.Core.SDK`). Packed as NuGet packages.
 - `digitalmaktab-api/` — ASP.NET Core web host that consumes the Core
   NuGet packages.
+- `digitalmaktab-country-afghanistan/` — Afghanistan backend country
+  module (`DigitalMaktab.Country.Afghanistan`). TPT extensions on
+  Core.Student / Core.Teacher + Ministry report generation. Packed
+  as a NuGet package.
 - `digitalmaktab-spa-core/` — shared React/TypeScript component library
   (`@digitalmaktab/spa-core`). Packed as an npm tarball.
 - `digitalmaktab-spa-country-afghanistan/` — Afghanistan country module
@@ -24,6 +28,17 @@ Working tree is a set of sibling directories under
   (`digitalmaktab-spa-country-<name>/`) follow the same shape.
 - `digitalmaktab-spa-sdk/` — thin SPA SDK layer.
 - `digitalmaktab-spa/` — the shell CRA app.
+- `digitalmaktab-desktop/` — Electron report generator (standalone
+  app, no coupling to the API — reads exported data). Its own
+  package.json + tsc.
+- `digitalmaktab-docs/` — cross-repo markdown docs
+  (globalization.md, MULTI-REPO.md, HOWTO-ADD-COUNTRY*.md, etc.).
+  No build.
+
+Repo discovery is automated — `scripts/install-hooks.sh` and
+`scripts/health-check.sh` enumerate siblings matching `digitalmaktab`
+or `digitalmaktab-*` with a `.git/`, so a new country package or
+microservice slots in on next bootstrap with zero config edits.
 
 **Multi-repo commit rule (GOLDEN):** commit locally in every affected
 repo. Do NOT push to any remote unless the human explicitly asks — they
