@@ -39,22 +39,43 @@ run_i18n_check() {
   fi
 }
 
+# Parity check runs in any repo that owns a translation surface —
+# a change to en-US alone or an Afghan locale alone silently
+# violates the golden "translate everything" rule and this blocks it.
+run_i18n_parity_check() {
+  if [ -x "$MONOREPO/scripts/check-i18n-parity.sh" ]; then
+    echo "pre-commit: check-i18n-parity.sh --strict"
+    "$MONOREPO/scripts/check-i18n-parity.sh" --strict
+  fi
+}
+
 case "$REPO_NAME" in
-  digitalmaktab-spa-core|digitalmaktab-spa-sdk|digitalmaktab-spa-country-afghanistan)
+  digitalmaktab-spa-core|digitalmaktab-spa-country-afghanistan)
+    run_tsc
+    run_i18n_parity_check
+    ;;
+  digitalmaktab-spa-sdk)
     run_tsc
     ;;
   digitalmaktab-spa)
     run_tsc
     run_i18n_check
     ;;
-  digitalmaktab-core|digitalmaktab-country-afghanistan)
+  digitalmaktab-core)
     run_dotnet_build Release
+    run_i18n_parity_check
+    ;;
+  digitalmaktab-country-afghanistan)
+    run_dotnet_build Release
+    run_i18n_parity_check
     ;;
   digitalmaktab-api)
     run_dotnet_build Debug
     ;;
   digitalmaktab)
-    # Monorepo stub holds docs + scripts — nothing to build.
+    # Monorepo stub holds docs + scripts — parity runs here too so
+    # a tweak to the script surfaces any resulting drift immediately.
+    run_i18n_parity_check
     ;;
   *)
     echo "pre-commit: unknown repo $REPO_NAME, skipping checks"

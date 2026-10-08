@@ -1,0 +1,182 @@
+#!/usr/bin/env bash
+# check-i18n-parity.sh — enforce the golden rule that every string
+# lands in all three supported locales (en-US + fa-AF + ps-AF),
+# both frontend (translation.json) and backend (.resx trios).
+#
+# Catches the common mistake of adding a key to one locale (usually
+# en-US) and forgetting the Dari + Pashto variants — the UI then
+# silently falls back to English for Afghan users.
+#
+# Scope:
+#   frontend:
+#     digitalmaktab-spa-core/src/locales/<lang>/translation.json
+#     digitalmaktab-spa-country-afghanistan/src/locales/<lang>/translation.json
+#     (each repo's bundles must have matching key sets across every
+#     locale shipped from that repo)
+#   backend:
+#     digitalmaktab-core/src/DigitalMaktab.Core/Resources/Localization/
+#       Controllers/<Name>.resx (+ .fa-AF.resx + .ps-AF.resx)
+#     digitalmaktab-country-afghanistan/Resources/Localization/
+#       Controllers/<Name>.resx (+ .fa-AF.resx + .ps-AF.resx)
+#
+# Usage: ./scripts/check-i18n-parity.sh [--strict]
+#   default: prints the diff and exits 0 (CI-friendly summary)
+#   --strict: exits 1 if any locale is missing any key
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+PROJECTS="$(cd "$ROOT/.." && pwd)"
+STRICT=0
+if [ "${1:-}" = "--strict" ]; then STRICT=1; fi
+
+python3 - "$PROJECTS" "$STRICT" <<'PY'
+import json, os, re, sys, pathlib
+from collections import defaultdict
+
+projects = pathlib.Path(sys.argv[1])
+strict = sys.argv[2] == "1"
+
+# ------------------------------------------------------------------
+# Frontend: the SPA merges spa-core en-US + spa-country-afghanistan
+# {fa-AF, ps-AF}. The real rule:
+#   1. Every spa-core en-US key must appear in BOTH fa-AF and ps-AF
+#      (so Afghan users can see every shell string translated).
+#   2. fa-AF and ps-AF must have the same key set (Dari ↔ Pashto
+#      parity — a key only in one is almost always an oversight).
+# Keys that exist in fa-AF/ps-AF but not en-US are legitimate — the
+# country package can add Afghan-specific terminology or override
+# shell terms.
+# ------------------------------------------------------------------
+
+def flatten(d, prefix=""):
+    out = {}
+    for k, v in d.items():
+        key = f"{prefix}{k}"
+        if isinstance(v, dict):
+            out.update(flatten(v, key + "."))
+        else:
+            out[key] = v
+    return out
+
+def load_bundle(path):
+    if not path.exists():
+        return None
+    try:
+        return set(flatten(json.loads(path.read_text())).keys())
+    except Exception as e:
+        print(f"  WARN  failed to parse {path}: {e}", file=sys.stderr)
+        return set()
+
+core_en = load_bundle(projects / "digitalmaktab-spa-core/src/locales/en-US/translation.json")
+country_fa = load_bundle(projects / "digitalmaktab-spa-country-afghanistan/src/locales/fa-AF/translation.json")
+country_ps = load_bundle(projects / "digitalmaktab-spa-country-afghanistan/src/locales/ps-AF/translation.json")
+
+# Some key families legitimately diverge between en-US and the Afghan
+# locales. Keys matching any prefix below are allowed to be present in
+# en-US without a corresponding entry in fa-AF/ps-AF (and vice versa).
+# Keep this list TINY — every exception is a hiding place for real
+# missing-translation bugs.
+AFGHAN_EXEMPT_PREFIXES = (
+    # Calendar month names: en-US uses Gregorian (january…december);
+    # Afghan locales use Jalali (hamal…hoot). Different leaf names
+    # under the same parent path by design.
+    "calendar.month.",
+)
+
+def is_exempt(key):
+    return any(key.startswith(p) for p in AFGHAN_EXEMPT_PREFIXES)
+
+frontend_issues = []  # (bucket-label, locale, key)
+if core_en and country_fa is not None:
+    for missing in sorted(core_en - country_fa):
+        if is_exempt(missing): continue
+        frontend_issues.append(("shell strings (spa-core en-US)", "fa-AF", missing))
+if core_en and country_ps is not None:
+    for missing in sorted(core_en - country_ps):
+        if is_exempt(missing): continue
+        frontend_issues.append(("shell strings (spa-core en-US)", "ps-AF", missing))
+if country_fa is not None and country_ps is not None:
+    for missing in sorted(country_fa - country_ps):
+        if is_exempt(missing): continue
+        frontend_issues.append(("country keys (fa-AF ↔ ps-AF)", "ps-AF", missing))
+    for missing in sorted(country_ps - country_fa):
+        if is_exempt(missing): continue
+        frontend_issues.append(("country keys (fa-AF ↔ ps-AF)", "fa-AF", missing))
+
+# ------------------------------------------------------------------
+# Backend: .resx trios. {name}.resx is the base (en-US); the Dari
+# (.fa-AF.resx) and Pashto (.ps-AF.resx) siblings must carry the
+# same <data name="..."> set.
+# ------------------------------------------------------------------
+
+backend_sources = [
+    projects / "digitalmaktab-core/src/DigitalMaktab.Core/Resources/Localization/Controllers",
+    projects / "digitalmaktab-country-afghanistan/Resources/Localization/Controllers",
+]
+
+name_pat = re.compile(r'<data\s+name="([^"]+)"')
+
+def extract_keys(path):
+    try:
+        return set(name_pat.findall(path.read_text()))
+    except Exception:
+        return set()
+
+backend_issues = []  # (base-path, missing-locale, key)
+for src in backend_sources:
+    if not src.exists():
+        continue
+    for base in sorted(src.glob("*.resx")):
+        name = base.stem
+        # Skip culture-suffixed files (they're the siblings).
+        if "." in name:
+            continue
+        locales = {
+            "en-US": base,
+            "fa-AF": src / f"{name}.fa-AF.resx",
+            "ps-AF": src / f"{name}.ps-AF.resx",
+        }
+        per_locale = {loc: extract_keys(p) for loc, p in locales.items() if p.exists()}
+        if len(per_locale) < 2:
+            continue
+        all_keys = set().union(*per_locale.values())
+        for locale, keys in per_locale.items():
+            for missing in sorted(all_keys - keys):
+                backend_issues.append((str(base.relative_to(projects)), locale, missing))
+
+# ------------------------------------------------------------------
+# Report
+# ------------------------------------------------------------------
+
+print("i18n parity check")
+print(f"  frontend bundles scanned: core-en={bool(core_en)} fa={country_fa is not None} ps={country_ps is not None}")
+print(f"  backend sources scanned:  {len(backend_sources)}")
+print(f"  frontend issues:          {len(frontend_issues)}")
+print(f"  backend issues:           {len(backend_issues)}")
+
+def group_report(issues, header, max_each=40):
+    if not issues:
+        return
+    grouped = defaultdict(lambda: defaultdict(list))  # source -> locale -> [keys]
+    for src, locale, key in issues:
+        grouped[src][locale].append(key)
+    print()
+    print(header)
+    for src in sorted(grouped):
+        print(f"  {src}")
+        for locale in sorted(grouped[src]):
+            keys = grouped[src][locale]
+            shown = keys[:max_each]
+            overflow = len(keys) - len(shown)
+            print(f"    missing in {locale} ({len(keys)}):")
+            for k in shown:
+                print(f"      - {k}")
+            if overflow > 0:
+                print(f"      … and {overflow} more")
+
+group_report(frontend_issues, "Frontend (translation.json)")
+group_report(backend_issues,  "Backend (.resx trios)")
+
+if strict and (frontend_issues or backend_issues):
+    sys.exit(1)
+PY
