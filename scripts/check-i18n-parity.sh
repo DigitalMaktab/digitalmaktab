@@ -122,10 +122,28 @@ def extract_keys(path):
     except Exception:
         return set()
 
+def find_duplicate_keys(path):
+    # Resx silently keeps the LAST occurrence of a duplicate
+    # <data name="..."> — a merge conflict can hide translation
+    # losses. Return list of (name, count) for names seen >1 times.
+    try:
+        names = name_pat.findall(path.read_text())
+    except Exception:
+        return []
+    seen = {}
+    for n in names:
+        seen[n] = seen.get(n, 0) + 1
+    return [(n, c) for n, c in seen.items() if c > 1]
+
 backend_issues = []  # (base-path, missing-locale, key)
+duplicate_issues = []  # (file-path, key, count)
 for src in backend_sources:
     if not src.exists():
         continue
+    # Duplicate-key sweep covers every resx (base + culture siblings).
+    for resx in sorted(src.glob("*.resx")):
+        for key, count in find_duplicate_keys(resx):
+            duplicate_issues.append((str(resx.relative_to(projects)), key, count))
     for base in sorted(src.glob("*.resx")):
         name = base.stem
         # Skip culture-suffixed files (they're the siblings).
@@ -153,6 +171,7 @@ print(f"  frontend bundles scanned: core-en={bool(core_en)} fa={country_fa is no
 print(f"  backend sources scanned:  {len(backend_sources)}")
 print(f"  frontend issues:          {len(frontend_issues)}")
 print(f"  backend issues:           {len(backend_issues)}")
+print(f"  resx duplicate keys:      {len(duplicate_issues)}")
 
 def group_report(issues, header, max_each=40):
     if not issues:
@@ -177,6 +196,13 @@ def group_report(issues, header, max_each=40):
 group_report(frontend_issues, "Frontend (translation.json)")
 group_report(backend_issues,  "Backend (.resx trios)")
 
-if strict and (frontend_issues or backend_issues):
+if duplicate_issues:
+    print()
+    print("Resx duplicate keys (last entry silently wins — fix now)")
+    for path, key, count in sorted(duplicate_issues):
+        print(f"  {path}")
+        print(f"    × {key} (×{count})")
+
+if strict and (frontend_issues or backend_issues or duplicate_issues):
     sys.exit(1)
 PY
