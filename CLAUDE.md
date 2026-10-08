@@ -34,6 +34,17 @@ Working tree is a set of sibling directories under
 - `digitalmaktab-docs/` — cross-repo markdown docs
   (globalization.md, MULTI-REPO.md, HOWTO-ADD-COUNTRY*.md, etc.).
   No build.
+- `digitalmaktab-mobile-sdk/` — type-only extension contract for
+  the React Native apps (`@digitalmaktab/mobile-sdk`). Mirror of
+  the spa-sdk shape but for RN.
+- `digitalmaktab-mobile-country-afghanistan/` — Afghan country
+  module for the RN apps (`@digitalmaktab/mobile-country-afghanistan`):
+  Solar Hijri calendar, Afghan grading, en-US + fa-AF + ps-AF
+  translations, teal brand palette.
+- `digitalmaktab-mobile-parent/` — React Native (Expo) parent app
+  consuming `-mobile-sdk` + `-mobile-country-afghanistan`.
+- `digitalmaktab-mobile-student/` — React Native (Expo) student
+  app, same consumer shape as the parent app.
 
 Repo discovery is automated — `scripts/install-hooks.sh` and
 `scripts/health-check.sh` enumerate siblings matching `digitalmaktab`
