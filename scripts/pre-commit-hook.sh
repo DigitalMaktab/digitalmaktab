@@ -38,6 +38,12 @@ run_secret_scan() {
   fi
 }
 
+run_notification_type_sync() {
+  if [ -x "$MONOREPO/scripts/check-notification-type-sync.sh" ]; then
+    "$MONOREPO/scripts/check-notification-type-sync.sh"
+  fi
+}
+
 run_i18n_check() {
   if [ -x "$MONOREPO/scripts/check-i18n.sh" ]; then
     echo "pre-commit: check-i18n.sh --strict"
@@ -60,7 +66,12 @@ run_i18n_parity_check() {
 run_secret_scan
 
 case "$REPO_NAME" in
-  digitalmaktab-spa-core|digitalmaktab-spa-country-afghanistan)
+  digitalmaktab-spa-core)
+    run_tsc
+    run_i18n_parity_check
+    run_notification_type_sync
+    ;;
+  digitalmaktab-spa-country-afghanistan)
     run_tsc
     run_i18n_parity_check
     ;;
@@ -74,6 +85,7 @@ case "$REPO_NAME" in
   digitalmaktab-core)
     run_dotnet_build Release
     run_i18n_parity_check
+    run_notification_type_sync
     ;;
   digitalmaktab-country-afghanistan)
     run_dotnet_build Release
