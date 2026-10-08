@@ -58,13 +58,20 @@ def flatten(d, prefix=""):
             out[key] = v
     return out
 
+parse_errors = []  # (path, exception-message) — fatal in --strict
+
 def load_bundle(path):
     if not path.exists():
         return None
     try:
         return set(flatten(json.loads(path.read_text())).keys())
     except Exception as e:
-        print(f"  WARN  failed to parse {path}: {e}", file=sys.stderr)
+        # Previously this printed a WARN and continued with an empty
+        # set — a corrupted bundle would then look like "every en-US
+        # key is missing" which drowns the actual parse error in the
+        # resulting flood of parity false-positives. Capture + report
+        # it as its own blocking issue instead.
+        parse_errors.append((str(path), str(e)))
         return set()
 
 core_en = load_bundle(projects / "digitalmaktab-spa-core/src/locales/en-US/translation.json")
@@ -172,6 +179,14 @@ print(f"  backend sources scanned:  {len(backend_sources)}")
 print(f"  frontend issues:          {len(frontend_issues)}")
 print(f"  backend issues:           {len(backend_issues)}")
 print(f"  resx duplicate keys:      {len(duplicate_issues)}")
+print(f"  json parse errors:        {len(parse_errors)}")
+
+if parse_errors:
+    print()
+    print("JSON parse errors (fix these FIRST — downstream parity output is unreliable while bundles don't parse):")
+    for p, err in parse_errors:
+        print(f"  {p}")
+        print(f"    × {err}")
 
 def group_report(issues, header, max_each=40):
     if not issues:
@@ -203,6 +218,6 @@ if duplicate_issues:
         print(f"  {path}")
         print(f"    × {key} (×{count})")
 
-if strict and (frontend_issues or backend_issues or duplicate_issues):
+if strict and (frontend_issues or backend_issues or duplicate_issues or parse_errors):
     sys.exit(1)
 PY
