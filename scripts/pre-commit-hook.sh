@@ -62,6 +62,13 @@ run_i18n_check() {
   fi
 }
 
+run_mobile_i18n_check() {
+  if [ -x "$MONOREPO/scripts/check-mobile-i18n.sh" ]; then
+    echo "pre-commit: check-mobile-i18n.sh --strict"
+    "$MONOREPO/scripts/check-mobile-i18n.sh" --strict
+  fi
+}
+
 # Parity check runs in any repo that owns a translation surface —
 # a change to en-US alone or an Afghan locale alone silently
 # violates the golden "translate everything" rule and this blocks it.
@@ -110,6 +117,9 @@ case "$REPO_NAME" in
     ;;
   digitalmaktab-api)
     run_dotnet_build Debug
+    ;;
+  digitalmaktab-mobile-parent|digitalmaktab-mobile-student|digitalmaktab-mobile-country-afghanistan|digitalmaktab-mobile-sdk)
+    run_mobile_i18n_check
     ;;
   digitalmaktab)
     # Monorepo stub holds docs + scripts — parity runs here too so

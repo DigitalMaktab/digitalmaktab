@@ -82,6 +82,9 @@ run_check "pkg versions    · @digitalmaktab/* deps match owners" \
 run_check "dev-up          · dev-up.sh executable" \
   "test -x '$ROOT/scripts/dev-up.sh'"
 
+run_check "mobile i18n     · check-mobile-i18n.sh --strict" \
+  "'$ROOT/scripts/check-mobile-i18n.sh' --strict > /dev/null"
+
 run_check "hooks installed · pre-commit + post-merge symlinks" \
   "for dir in $PROJECTS/digitalmaktab $PROJECTS/digitalmaktab-*; do
      [ -d \"\$dir/.git\" ] || continue;
