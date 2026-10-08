@@ -113,6 +113,14 @@ packages live in, swap the fresh tarballs into every consumer's
 `node_modules`, clear CRA's webpack cache). They exit on first error
 so a half-swap never silently lands.
 
+**Auto-sync on `git pull`.** `scripts/install-hooks.sh` wires a
+`post-merge` hook into every repo that invokes the right sync
+script when a pull brings in files other repos consume. So a
+`git pull` in `digitalmaktab-core` auto-runs `sync-dotnet.sh`;
+a pull in `digitalmaktab-spa-core` auto-runs `sync-spa.sh`. Skip
+with `SKIP_AUTO_SYNC=1 git pull` for a fast pull without the pack
+cycle.
+
 CRITICAL (encoded in `sync-dotnet.sh`): `dotnet pack` may reuse a
 stale `bin/` DLL if MSBuild's incremental cache thinks the assembly is
 current — the packed nupkg then contains an OLD DLL and startup throws
