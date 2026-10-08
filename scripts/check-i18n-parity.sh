@@ -78,6 +78,22 @@ core_en = load_bundle(projects / "digitalmaktab-spa-core/src/locales/en-US/trans
 country_fa = load_bundle(projects / "digitalmaktab-spa-country-afghanistan/src/locales/fa-AF/translation.json")
 country_ps = load_bundle(projects / "digitalmaktab-spa-country-afghanistan/src/locales/ps-AF/translation.json")
 
+# Mobile tree ships all three locales in the SAME package (no
+# core/country split like the SPA has). Different package, same
+# three-way parity rule: every key in any one must be in the other
+# two. Auto-discover each mobile country package.
+mobile_bundles = {}  # package-name → {locale → key-set}
+for mdir in sorted(projects.glob("digitalmaktab-mobile-country-*")):
+    locales_dir = mdir / "src/locales"
+    if not locales_dir.exists(): continue
+    bundles = {}
+    for sub in ("en-US", "fa-AF", "ps-AF"):
+        b = load_bundle(locales_dir / sub / "translation.json")
+        if b is not None:
+            bundles[sub] = b
+    if len(bundles) >= 2:
+        mobile_bundles[mdir.name] = bundles
+
 # Some key families legitimately diverge between en-US and the Afghan
 # locales. Keys matching any prefix below are allowed to be present in
 # en-US without a corresponding entry in fa-AF/ps-AF (and vice versa).
@@ -127,6 +143,19 @@ if country_fa is not None and country_ps is not None:
     for missing in sorted(country_ps - country_fa):
         if is_exempt(missing): continue
         frontend_issues.append(("country keys (fa-AF ↔ ps-AF)", "fa-AF", missing))
+
+# Mobile tree: strict three-way parity within each country package.
+# Unlike the SPA — where en-US lives in spa-core and the Afghan
+# country package ships only fa/ps + a thin en-US override — the
+# mobile country package ships all three locales side-by-side, so
+# the simpler rule 'every key must be in every locale' applies.
+for pkg_name, bundles in mobile_bundles.items():
+    all_keys = set().union(*bundles.values())
+    label = f"mobile ({pkg_name})"
+    for locale, keys in bundles.items():
+        for missing in sorted(all_keys - keys):
+            if is_exempt(missing): continue
+            frontend_issues.append((label, locale, missing))
 
 # Advisory (non-blocking) — keys shared between BOTH Afghan locales
 # that en-US doesn't carry. The parity rule allows country packages
@@ -205,6 +234,7 @@ for src in backend_sources:
 
 print("i18n parity check")
 print(f"  frontend bundles scanned: core-en={bool(core_en)} fa={country_fa is not None} ps={country_ps is not None}")
+print(f"  mobile packages scanned:  {len(mobile_bundles)}")
 print(f"  backend sources scanned:  {len(backend_sources)}")
 print(f"  frontend issues:          {len(frontend_issues)}")
 print(f"  backend issues:           {len(backend_issues)}")
