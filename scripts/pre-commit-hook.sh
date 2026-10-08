@@ -55,6 +55,15 @@ run_pkg_version_sync() {
   fi
 }
 
+run_ratelimit_routes_check() {
+  # Enforce IpRateLimiting rule endpoints in appsettings.json match
+  # live controller routes — catches typo'd paths that silently
+  # fall through to the general '*' bucket.
+  if [ -x "$MONOREPO/scripts/check-ratelimit-routes.sh" ]; then
+    "$MONOREPO/scripts/check-ratelimit-routes.sh"
+  fi
+}
+
 run_i18n_check() {
   if [ -x "$MONOREPO/scripts/check-i18n.sh" ]; then
     echo "pre-commit: check-i18n.sh --strict"
@@ -117,6 +126,7 @@ case "$REPO_NAME" in
     ;;
   digitalmaktab-api)
     run_dotnet_build Debug
+    run_ratelimit_routes_check
     ;;
   digitalmaktab-mobile-parent|digitalmaktab-mobile-student|digitalmaktab-mobile-country-afghanistan|digitalmaktab-mobile-sdk)
     run_mobile_i18n_check

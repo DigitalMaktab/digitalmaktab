@@ -79,6 +79,9 @@ run_check "enum sync       · every TS ↔ C# enum pair agrees" \
 run_check "pkg versions    · @digitalmaktab/* deps match owners" \
   "'$ROOT/scripts/check-pkg-versions.sh' > /dev/null"
 
+run_check "ratelimit routes · appsettings rules map to live routes" \
+  "'$ROOT/scripts/check-ratelimit-routes.sh' > /dev/null"
+
 run_check "dev-up          · dev-up.sh executable" \
   "test -x '$ROOT/scripts/dev-up.sh'"
 
