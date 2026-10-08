@@ -38,9 +38,12 @@ run_secret_scan() {
   fi
 }
 
-run_notification_type_sync() {
-  if [ -x "$MONOREPO/scripts/check-notification-type-sync.sh" ]; then
-    "$MONOREPO/scripts/check-notification-type-sync.sh"
+run_enum_sync() {
+  # Broader generalisation of the old notification-type-only check:
+  # walks every TS enum in spa-core and diffs it against its C#
+  # counterpart.
+  if [ -x "$MONOREPO/scripts/check-enum-sync.sh" ]; then
+    "$MONOREPO/scripts/check-enum-sync.sh"
   fi
 }
 
@@ -69,7 +72,7 @@ case "$REPO_NAME" in
   digitalmaktab-spa-core)
     run_tsc
     run_i18n_parity_check
-    run_notification_type_sync
+    run_enum_sync
     ;;
   digitalmaktab-spa-country-afghanistan)
     run_tsc
@@ -85,7 +88,7 @@ case "$REPO_NAME" in
   digitalmaktab-core)
     run_dotnet_build Release
     run_i18n_parity_check
-    run_notification_type_sync
+    run_enum_sync
     ;;
   digitalmaktab-country-afghanistan)
     run_dotnet_build Release

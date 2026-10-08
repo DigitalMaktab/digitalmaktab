@@ -73,8 +73,8 @@ run_check "resx orphans   · check-resx.sh (no unused keys)" \
 run_check "secret-scan     · check-secrets.sh executable" \
   "test -x '$ROOT/scripts/check-secrets.sh'"
 
-run_check "notif-type sync · C# ↔ TS enum ordinals agree" \
-  "'$ROOT/scripts/check-notification-type-sync.sh' > /dev/null"
+run_check "enum sync       · every TS ↔ C# enum pair agrees" \
+  "'$ROOT/scripts/check-enum-sync.sh' > /dev/null"
 
 run_check "hooks installed · pre-commit + post-merge symlinks" \
   "for dir in $PROJECTS/digitalmaktab $PROJECTS/digitalmaktab-*; do
