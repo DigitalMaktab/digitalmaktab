@@ -85,6 +85,9 @@ run_check "ratelimit routes · appsettings rules map to live routes" \
 run_check "hosted health   · every BackgroundService opts into tracker" \
   "'$ROOT/scripts/check-hosted-service-health.sh' > /dev/null"
 
+run_check "abstractions    · Core.Abstractions doesn't import Core" \
+  "'$ROOT/scripts/check-abstractions-isolation.sh' > /dev/null"
+
 run_check "dev-up          · dev-up.sh executable" \
   "test -x '$ROOT/scripts/dev-up.sh'"
 

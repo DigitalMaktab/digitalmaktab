@@ -75,6 +75,14 @@ run_hosted_service_health_check() {
   fi
 }
 
+run_abstractions_isolation_check() {
+  # Guard the layering of Core.Abstractions — must not reference
+  # DigitalMaktab.Core.<anything-but-Models-or-Abstractions>.
+  if [ -x "$MONOREPO/scripts/check-abstractions-isolation.sh" ]; then
+    "$MONOREPO/scripts/check-abstractions-isolation.sh"
+  fi
+}
+
 run_i18n_check() {
   if [ -x "$MONOREPO/scripts/check-i18n.sh" ]; then
     echo "pre-commit: check-i18n.sh --strict"
@@ -131,6 +139,7 @@ case "$REPO_NAME" in
     run_i18n_parity_check
     run_enum_sync
     run_hosted_service_health_check
+    run_abstractions_isolation_check
     ;;
   digitalmaktab-country-afghanistan)
     run_dotnet_build Release
