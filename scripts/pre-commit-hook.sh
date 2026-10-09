@@ -83,6 +83,15 @@ run_abstractions_isolation_check() {
   fi
 }
 
+run_no_raw_alerts_check() {
+  # Guard the SPA against raw `<div className="alert alert-X">`
+  # banners. All inline alerts must route through AppAlert so
+  # dark-theme + RTL + spacing stay centralised.
+  if [ -x "$MONOREPO/scripts/check-no-raw-alerts.sh" ]; then
+    "$MONOREPO/scripts/check-no-raw-alerts.sh"
+  fi
+}
+
 run_i18n_check() {
   if [ -x "$MONOREPO/scripts/check-i18n.sh" ]; then
     echo "pre-commit: check-i18n.sh --strict"
@@ -133,6 +142,7 @@ case "$REPO_NAME" in
   digitalmaktab-spa)
     run_tsc
     run_i18n_check
+    run_no_raw_alerts_check
     ;;
   digitalmaktab-core)
     run_dotnet_build Release
