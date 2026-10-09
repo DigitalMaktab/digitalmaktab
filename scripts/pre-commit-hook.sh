@@ -92,6 +92,16 @@ run_no_raw_alerts_check() {
   fi
 }
 
+run_no_raw_textareas_check() {
+  # Guard the SPA against raw `<textarea>` elements. All multi-line
+  # text fields route through AppFormInput type="textArea" (inside
+  # a Formik form) or AppTextArea (controlled, non-Formik use) so
+  # label chrome + required asterisk + Bootstrap tokens stay shared.
+  if [ -x "$MONOREPO/scripts/check-no-raw-textareas.sh" ]; then
+    "$MONOREPO/scripts/check-no-raw-textareas.sh"
+  fi
+}
+
 run_i18n_check() {
   if [ -x "$MONOREPO/scripts/check-i18n.sh" ]; then
     echo "pre-commit: check-i18n.sh --strict"
@@ -143,6 +153,7 @@ case "$REPO_NAME" in
     run_tsc
     run_i18n_check
     run_no_raw_alerts_check
+    run_no_raw_textareas_check
     ;;
   digitalmaktab-core)
     run_dotnet_build Release
