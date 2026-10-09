@@ -102,6 +102,18 @@ run_no_raw_textareas_check() {
   fi
 }
 
+run_no_raw_selects_check() {
+  # Guard the SPA against raw `<select>` elements. All dropdowns
+  # route through AppFormSelect (inside AppForm, with a Formik-aware
+  # child), AppEnumFilterSelect (standalone enum / scope filter), or
+  # a typed select wrapper. Formik useField helpers rendering a raw
+  # select annotate the site with `raw-select-exception` and the
+  # guard skips them.
+  if [ -x "$MONOREPO/scripts/check-no-raw-selects.sh" ]; then
+    "$MONOREPO/scripts/check-no-raw-selects.sh"
+  fi
+}
+
 run_i18n_check() {
   if [ -x "$MONOREPO/scripts/check-i18n.sh" ]; then
     echo "pre-commit: check-i18n.sh --strict"
@@ -154,6 +166,7 @@ case "$REPO_NAME" in
     run_i18n_check
     run_no_raw_alerts_check
     run_no_raw_textareas_check
+    run_no_raw_selects_check
     ;;
   digitalmaktab-core)
     run_dotnet_build Release
