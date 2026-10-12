@@ -97,6 +97,9 @@ run_check "mobile i18n     · check-mobile-i18n.sh --strict" \
 run_check "scripts syntax  · bash -n every scripts/*.sh" \
   "for f in '$ROOT'/scripts/*.sh; do bash -n \"\$f\" || exit 1; done"
 
+run_check "core UI reuse   · no native controls in SPA/country screens" \
+  "node '$ROOT/scripts/check-core-components.mjs'"
+
 run_check "hooks installed · pre-commit + post-merge symlinks" \
   "for dir in $PROJECTS/digitalmaktab $PROJECTS/digitalmaktab-*; do
      [ -d \"\$dir/.git\" ] || continue;

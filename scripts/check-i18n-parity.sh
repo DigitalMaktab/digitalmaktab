@@ -113,6 +113,7 @@ AFGHAN_EXEMPT_PREFIXES = (
 # skips these when flagging "possibly missing from en-US" so the
 # signal stays signal.
 COUNTRY_ONLY_PREFIXES = (
+    "afghanDatePicker.",
     "afghanStudentDetails.",
     "afghanTeacherDetails.",
     "country.afghanistan.",

@@ -154,15 +154,17 @@ case "$REPO_NAME" in
     run_i18n_parity_check
     run_enum_sync
     ;;
-  digitalmaktab-spa-country-afghanistan)
+  digitalmaktab-spa-country-*)
     run_tsc
     run_i18n_parity_check
+    node "$MONOREPO/scripts/check-core-components.mjs"
     ;;
   digitalmaktab-spa-sdk)
     run_tsc
     ;;
   digitalmaktab-spa)
     run_tsc
+    node "$MONOREPO/scripts/check-core-components.mjs"
     run_i18n_check
     run_no_raw_alerts_check
     run_no_raw_textareas_check
@@ -190,6 +192,7 @@ case "$REPO_NAME" in
     # Monorepo stub holds docs + scripts — parity runs here too so
     # a tweak to the script surfaces any resulting drift immediately.
     run_i18n_parity_check
+    node "$MONOREPO/scripts/check-core-components.mjs"
     ;;
   *)
     echo "pre-commit: unknown repo $REPO_NAME, skipping checks"
