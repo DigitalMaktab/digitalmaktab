@@ -100,6 +100,9 @@ run_check "scripts syntax  · bash -n every scripts/*.sh" \
 run_check "core UI reuse   · no native controls in SPA/country screens" \
   "node '$ROOT/scripts/check-core-components.mjs'"
 
+run_check "table PDFs      · multilingual export and print settings" \
+  "node '$ROOT/scripts/check-pdf-exports.cjs'"
+
 run_check "hooks installed · pre-commit + post-merge symlinks" \
   "for dir in $PROJECTS/digitalmaktab $PROJECTS/digitalmaktab-*; do
      [ -d \"\$dir/.git\" ] || continue;
