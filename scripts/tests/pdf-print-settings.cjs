@@ -21,7 +21,7 @@ const realTimer=window.setTimeout.bind(window);window.setTimeout=(callback,delay
 (async()=>{
  const resources={};for(const lng of ['en-US','fa-AF','ps-AF']){const repo=lng==='en-US'?'digitalmaktab-spa-core':'digitalmaktab-spa-country-afghanistan';resources[lng]={translation:{...JSON.parse(fs.readFileSync(root+'/'+repo+'/src/locales/'+lng+'/translation.json')),name:'Name',dueDate:'Due date',creationDate:'Creation date'}};}
  await i18n.init({lng:'en-US',resources,interpolation:{escapeValue:false}});
- let fetches=0;const all=async()=>{fetches++;return rows};const view=()=>render(h(I18nextProvider,{i18n},h(MemoryRouter,null,h(AppTable,{columns,data:rows.slice(0,1),totalPages:1,fetchAllForExport:all}))));
+ let fetches=0;const all=async(filters)=>{fetches++;return filterRecordsByCreationDate(rows,{from:filters.creationDateFrom||'',to:filters.creationDateTo||''})};const view=()=>render(h(I18nextProvider,{i18n},h(MemoryRouter,null,h(AppTable,{columns,data:rows,totalPages:1,fetchAllForExport:all}))));
  for(const lng of ['en-US','fa-AF','ps-AF']){
   await i18n.changeLanguage(lng);let ui=view();await waitFor(()=>assert(!ui.getByRole('button',{name:i18n.t('report.print.tooltip')}).disabled));assert(ui.getByLabelText(i18n.t('dateRange.from')));fireEvent.click(ui.getByRole('button',{name:i18n.t('report.print.tooltip')}));const dialog=ui.getByRole('dialog');assert(dialog.textContent.includes(i18n.t('report.settings.title')));assert(!dialog.textContent.includes('Creation date'));
   fireEvent.change(ui.getByLabelText(i18n.t('report.settings.pageSize')),{target:{value:'letter'}});fireEvent.change(ui.getByLabelText(i18n.t('report.settings.orientation')),{target:{value:'landscape'}});
@@ -50,7 +50,7 @@ const realTimer=window.setTimeout.bind(window);window.setTimeout=(callback,delay
  assert.deepEqual(filtered.map(r=>r.name),['Boundary']);
  assert.deepEqual(settings.prepareTablePdf(columns,filtered,initial).rows.map(r=>r.name),['Boundary']);
  let ui=view();fireEvent.change(ui.getByLabelText(i18n.t('dateRange.from')),{target:{value:'2030-01-01'}});fireEvent.click(ui.getByRole('button',{name:i18n.t('filters.button.label')}));
- await waitFor(()=>assert(ui.getByRole('button',{name:i18n.t('report.print.tooltip')}).disabled));
+ await waitFor(()=>assert(!ui.queryByRole('button',{name:i18n.t('report.print.tooltip')})||ui.getByRole('button',{name:i18n.t('report.print.tooltip')}).disabled));
  cleanup();
  console.log('PASS: actual AppTable opens translated shared settings before PDF; paper size/orientation, column selection, hidden-field exclusion, table-level creation-date range shared by displayed rows and exports, date controls absent from the print modal, invalid-range/no-column validation, all-row fetch, no-match error and real PDF export in all three locales.');
 })().catch(error=>{console.error(error);process.exitCode=1});

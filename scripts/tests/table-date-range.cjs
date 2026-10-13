@@ -12,47 +12,61 @@ const view=props=>render(h(I18nextProvider,{i18n},h(MemoryRouter,null,h(AppTable
 const change=(ui,from,to)=>{fireEvent.change(ui.getByLabelText(i18n.t('dateRange.from')),{target:{value:from}});fireEvent.change(ui.getByLabelText(i18n.t('dateRange.to')),{target:{value:to}});fireEvent.click(ui.getByRole('button',{name:i18n.t('filters.button.label')}))};
 (async()=>{
  await i18n.init({lng:'en-US',resources:{'en-US':{translation:JSON.parse(fs.readFileSync(core+'/locales/en-US/translation.json'))}},interpolation:{escapeValue:false}});
- let ui=view({data:[earlier,...matching],showExport:false,showPagination:false,showPageSizer:false});assert(ui.getByLabelText(i18n.t('dateRange.from')));assert(!ui.queryByRole('button',{name:i18n.t('report.print.tooltip')}));change(ui,'2026-10-13','2026-10-13');await waitFor(()=>assert(!ui.queryByText('Outside')));assert.equal(ui.container.querySelectorAll('tbody tr').length,12);fireEvent.click(ui.getAllByRole('button',{name:i18n.t('filters.button.reset')})[0]);assert(ui.getByText('Outside'));cleanup();
- const calls=[];const pageRows=[[earlier,...matching.slice(0,6)],matching.slice(6)];
- const fetchPageData=async(page,size)=>{calls.push([page,size]);return {status:2,data:pageRows[page-1],headers:{pagination:JSON.stringify({totalPages:2})}}};
- ui=view({data:pageRows[0],totalPages:2,fetchPageData,showExport:false});await waitFor(()=>assert(ui.getByText('Outside')));change(ui,'2026-10-13','2026-10-13');await waitFor(()=>assert(ui.getByText('Match 9')));assert(!ui.queryByText('Outside'));assert(!ui.queryByText('Match 10'));assert(calls.some(([page,size])=>page===2&&size===50));const count=calls.length;
- fireEvent.click(ui.getByRole('button',{name:'Go to page 2'}));await waitFor(()=>assert(ui.getByText('Match 11')));assert(!ui.queryByText('Match 0'));assert.equal(calls.length,count);cleanup();
- // Dates share the actual panel, apply state, count and reset with mapped text criteria.
- const queries=[];const searchLoader=async(page,size,filters)=>{
-   queries.push({page,size,filters});
-   const records=[earlier,...matching].filter(row=>!filters.searchTerm||row.name.includes(filters.searchTerm));
-   return {status:2,data:records,headers:{pagination:JSON.stringify({totalPages:1})}};
+ const all=[earlier,...matching];
+ let ui=view({data:all,showExport:false,showPagination:false,showPageSizer:false});
+ assert(ui.getByLabelText(i18n.t('dateRange.from')));assert(!ui.queryByText(i18n.t('table.creationDateRange.label')));
+ change(ui,'2026-10-13','2026-10-13');assert(!ui.queryByText('Outside'));assert.equal(ui.container.querySelectorAll('tbody tr').length,12);
+ fireEvent.click(ui.getAllByRole('button',{name:i18n.t('filters.button.reset')})[0]);assert(ui.getByText('Outside'));cleanup();
+ const queries=[];
+ const records=all.map(row=>({...row,title:row.name}));
+ const fetchPageData=async(page,size,filters)=>{
+   queries.push({page,size,filters:{...filters}});
+   const matches=records.filter(row=>(!filters.creationDateFrom||row.creationDate.slice(0,10)>=filters.creationDateFrom)&&(!filters.creationDateTo||row.creationDate.slice(0,10)<=filters.creationDateTo)&&(!filters.searchTerm||row.title.includes(filters.searchTerm)));
+   return {status:2,data:matches.slice((page-1)*size,page*size),headers:{pagination:JSON.stringify({totalPages:Math.ceil(matches.length/size),totalCount:matches.length})}};
  };
- ui=view({data:[earlier,...matching],showExport:false,fetchPageData:searchLoader,
-   columns:[{header:'Name',accessor:'name'},{header:'Title',accessor:'title',filter:{type:'text'}}]});
- await waitFor(()=>assert(ui.getByText('Outside')));
- assert(ui.getByLabelText(i18n.t('dateRange.from')).closest('.filter-form'));
- const initialQueries=queries.length;
+ ui=view({data:records,totalPages:2,fetchPageData,showExport:false,columns:[{header:'Name',accessor:'name'},{header:'Title',accessor:'title',filter:{type:'text'},hidden:true}]});
+ await waitFor(()=>assert(ui.getByText('Outside')));assert.equal(queries.length,1);
  fireEvent.change(ui.getByLabelText(i18n.t('dateRange.from')),{target:{value:'2026-10-13'}});
  fireEvent.change(ui.getByLabelText(i18n.t('dateRange.to')),{target:{value:'2026-10-13'}});
- assert(ui.getByText('Outside'));assert.equal(queries.length,initialQueries);
+ assert(ui.getByText('Outside'));assert.equal(queries.length,1);
  fireEvent.click(ui.getByRole('button',{name:i18n.t('filters.button.label')}));
- await waitFor(()=>assert(!ui.queryByText('Outside')));
- const hideDateLabel=i18n.t('filters.hide.label')+' (1)';fireEvent.click(ui.getByRole('button',{name:hideDateLabel}));
- assert(!ui.queryByLabelText(i18n.t('dateRange.from')));assert(ui.getByText('Match 0'));
- fireEvent.click(ui.getByRole('button',{name:i18n.t('filters.show.label')+' (1)'}));
- assert.equal(ui.getByLabelText(i18n.t('dateRange.from')).value,'2026-10-13');
- const beforeTyping=queries.length;fireEvent.change(ui.getByLabelText('Title'),{target:{value:'11'}});
- assert.equal(ui.getByLabelText('Title').value,'11');assert.equal(queries.length,beforeTyping);
- fireEvent.keyDown(ui.getByLabelText('Title'),{key:'Enter'});
- await waitFor(()=>assert(!ui.queryByText('Match 0')));assert(ui.getByText('Match 11'));
- assert.equal(queries.at(-1).filters.searchTerm,'11');assert(!('creationDateFrom' in queries.at(-1).filters));
- assert(!('creationDateTo' in queries.at(-1).filters));
+ await waitFor(()=>assert(!ui.queryByText('Outside')));assert.equal(queries.length,2);
+ assert.deepEqual(queries.at(-1),{page:1,size:10,filters:{creationDateFrom:'2026-10-13',creationDateTo:'2026-10-13'}});
+ assert(!queries.some(query=>query.size===50));
+ fireEvent.click(ui.getByRole('button',{name:'Go to page 2'}));await waitFor(()=>assert(ui.getByText('Match 11')));assert.equal(queries.length,3);assert.equal(queries.at(-1).page,2);assert.equal(queries.at(-1).filters.creationDateFrom,'2026-10-13');
+ fireEvent.click(ui.getByRole('button',{name:i18n.t('filters.hide.label')+' (1)'}));assert(!ui.queryByLabelText(i18n.t('dateRange.from')));
+ fireEvent.click(ui.getByRole('button',{name:i18n.t('filters.show.label')+' (1)'}));assert.equal(ui.getByLabelText(i18n.t('dateRange.from')).value,'2026-10-13');
+ const beforeTyping=queries.length;fireEvent.change(ui.getByLabelText('Title'),{target:{value:'11'}});assert.equal(queries.length,beforeTyping);
+ fireEvent.keyDown(ui.getByLabelText('Title'),{key:'Enter'});await waitFor(()=>assert(ui.getByText('Match 11')));
+ await waitFor(()=>assert.equal(queries.length,beforeTyping+1));assert.equal(queries.at(-1).page,1);assert.deepEqual(queries.at(-1).filters,{creationDateFrom:'2026-10-13',creationDateTo:'2026-10-13',searchTerm:'11'});
  assert(ui.getByRole('button',{name:i18n.t('filters.hide.label')+' (2)'}));
- fireEvent.click(ui.getAllByRole('button',{name:i18n.t('filters.button.reset')})[0]);
- await waitFor(()=>assert(ui.getByText('Outside')));
- assert.equal(ui.getByLabelText('Title').value,'');assert.equal(ui.getByLabelText(i18n.t('dateRange.from')).value,'');
- assert(ui.getByRole('button',{name:i18n.t('filters.hide.label')}));cleanup();
- // An obsolete full-data response must not replace a newly cleared filter.
- let finish;const pending=new Promise(resolve=>{finish=resolve});
- ui=view({data:[earlier],showExport:false,fetchAllForExport:()=>pending});change(ui,'2026-10-13','2026-10-13');fireEvent.click(ui.getAllByRole('button',{name:i18n.t('filters.button.reset')})[0]);await act(async()=>{finish(matching)});assert(ui.getByText('Outside'));assert(!ui.queryByText('Match 0'));cleanup();
- // Local legacy placeholders do not discard the already-loaded rows.
- ui=view({data:[earlier,...matching],showExport:false,showPagination:false,fetchPageData:async()=>({status:0,data:[]})});change(ui,'2026-10-13','2026-10-13');await waitFor(()=>assert(ui.getByText('Match 11')));assert(!ui.queryByText('Outside'));cleanup();
+ // Changing callback identity and parent data must not start another request.
+ ui.rerender(h(I18nextProvider,{i18n},h(MemoryRouter,null,h(AppTable,{data:[earlier],columns:[{header:'Name',accessor:'name'},{header:'Title',accessor:'title',filter:{type:'text'},hidden:true}],totalPages:2,showExport:false,fetchPageData:(...args)=>fetchPageData(...args)}))));
+ await act(async()=>{await new Promise(resolve=>setTimeout(resolve,30))});assert.equal(queries.length,beforeTyping+1);assert(ui.getByText('Match 11'));assert(!ui.queryByText('Outside'));
+ fireEvent.click(ui.getAllByRole('button',{name:i18n.t('filters.button.reset')})[0]);await waitFor(()=>assert(ui.getByText('Outside')));assert.equal(ui.getByLabelText('Title').value,'');assert.equal(ui.getByLabelText(i18n.t('dateRange.from')).value,'');assert.deepEqual(queries.at(-1).filters,{});cleanup();
+ // Local tables combine dates, text and dropdown criteria without network scans.
+ ui=view({data:[{id:'a',name:'Alpha',email:'Match@example.test',joiningClass:{id:'class-a'},creationDate:'2026-10-13'},{id:'b',name:'Beta',email:'other@example.test',joiningClass:{id:'class-a'},creationDate:'2026-10-13'},{id:'c',name:'Earlier',email:'match@example.test',joiningClass:{id:'class-a'},creationDate:'2026-10-12'}],showExport:false,showPagination:false,columns:[{header:'Name',accessor:'name'},{header:'Email',accessor:'email',filter:{type:'text'},hidden:true}]});
+ fireEvent.change(ui.getByLabelText('Email'),{target:{value:'MATCH'}});change(ui,'2026-10-13','2026-10-13');assert(ui.getByText('Alpha'));assert(!ui.queryByText('Beta'));assert(!ui.queryByText('Earlier'));cleanup();
+ const {filterTableRecords}=require(core+'/helper/tableFilters.ts');assert.equal(filterTableRecords([{joiningClass:{id:'class-a'}},{joiningClass:{id:'class-b'}}],[{accessor:'joiningClass',filter:{type:'dropdown'}}],{classId:'class-a'}).length,1);
+ // Obsolete responses must not replace results from the latest applied filters.
+ let finish;const delayed=new Promise(resolve=>{finish=resolve});let calls=0;
+ ui=view({data:[],showExport:false,fetchPageData:async()=>++calls===1?delayed:{status:2,data:[earlier],headers:{pagination:JSON.stringify({totalPages:1})}}});
+ change(ui,'2026-10-13','2026-10-13');await waitFor(()=>assert(ui.getByText('Outside')));await act(async()=>{finish({status:2,data:matching,headers:{pagination:JSON.stringify({totalPages:2})}})});assert(ui.getByText('Outside'));assert(!ui.queryByText('Match 0'));cleanup();
+ // Local legacy placeholders preserve already-loaded rows.
+ ui=view({data:all,showExport:false,showPagination:false,fetchPageData:async()=>({status:0,data:[]})});change(ui,'2026-10-13','2026-10-13');await waitFor(()=>assert(ui.getByText('Match 11')));assert(!ui.queryByText('Outside'));cleanup();
+ // Shared request hooks accept replacement criteria and suppress stale data/pagination status.
+ const useApiRequests=require(core+'/hooks/useApiRequests.ts').default;
+ const {LoaderContext}=require(core+'/contexts/LoaderContext.tsx');
+ const {renderHook}=require(app+'/@testing-library/react');
+ const loader={showLoader:()=>{},hideLoader:()=>{},setError:()=>{},clearError:()=>{}};
+ const hook=renderHook(()=>useApiRequests(),{wrapper:({children})=>h(I18nextProvider,{i18n},h(LoaderContext.Provider,{value:loader},children))});
+ let finishOld,oldResult;const old=new Promise(resolve=>{finishOld=resolve});
+ await act(async()=>{oldResult=hook.result.current.execute(()=>old)});
+ await act(async()=>{const newest=await hook.result.current.execute(async()=>({data:[matching[0]],headers:{}}));assert.equal(newest.status,2)});
+ await act(async()=>{finishOld({data:[earlier],headers:{}});assert.equal((await oldResult).status,0)});
+ assert.deepEqual(hook.result.current.data,[matching[0]]);hook.unmount();
+ const {buildParams}=require(core+'/api/properties/pagintation.ts');
+ assert.deepEqual(buildParams({pageNumber:4,pageSize:20},{creationDateFrom:'2026-10-13',creationDateTo:'2026-10-13',email:'school',classId:'abc',unused:'',other:null}),{pageNumber:4,pageSize:20,creationDateFrom:'2026-10-13',creationDateTo:'2026-10-13',email:'school',classId:'abc'});
  assert.equal(runtimeError,null);
- console.log('PASS: creation-date range uses the real shared filter panel on every table; draft edits, Apply/Enter, accessor mappings, hide/show, active counts and unified Reset work; all API pages are filtered and re-paginated without repeat fetching; reset, stale-load protection and legacy local loaders work.');
+ console.log('PASS: all shared tables combine applied dates and column filters; one request per page with complete query criteria; draft edits and callback/parent changes cause no extra requests; Apply/Enter, hide/show, reset, local filters and stale-response protection work.');
 })().catch(error=>{console.error(error);process.exitCode=1});
