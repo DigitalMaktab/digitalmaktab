@@ -18,6 +18,7 @@ const realLoad = Module._load;
 let facade;
 Module._load = function (request, parent, isMain) {
   if (request === '@digitalmaktab/spa-core') return facade;
+  if (/^\.\.\/select\/App(Country|Branch|ClassType|Shift|Teacher|Class)Select$/.test(request)) return { __esModule: true, default: () => null };
   if (['react', 'react/jsx-runtime', 'react-dom', 'react-dom/client', 'react-i18next', 'i18next'].includes(request)) return realLoad.call(this, path.join(app, request), parent, isMain);
   return realLoad.apply(this, arguments);
 };
@@ -78,6 +79,18 @@ const h = React.createElement;
   ui = render(h(Wrapper, { initial: { from: '2026-10-14', to: '2026-10-13' } }));
   assert(ui.getByRole('alert').textContent.includes(i18n.t('dateRange.invalidRange'))); cleanup();
   ui = render(h(Wrapper, { disabled: true })); assert(ui.getByLabelText(i18n.t('dateRange.from')).disabled); cleanup();
+  // Enter opens the Hijri picker without submitting the enclosing filter panel.
+  const AppTableFilters=component('components/table/AppTableFilter.tsx');let applied=0;
+  await i18n.changeLanguage('fa-AF');
+  const CountryFilters=()=>{
+    const [filters,setFilters]=React.useState({creationDateFrom:'2026-10-13',creationDateTo:'2026-10-14'});
+    return h(I18nextProvider,{i18n},h(CalendarProvider,{value:{...gregorianCalendar,system:'SOLAR_HIJRI',DatePicker:AfghanDatePicker}},
+      h(AppTableFilters,{columns:[],filters,onFilterChange:(key,value)=>setFilters(previous=>({...previous,[key]:value})),onApplyFilters:()=>{applied++}})));
+  };
+  ui=render(h(CountryFilters));fireEvent.keyDown(ui.getByLabelText(i18n.t('dateRange.from')),{key:'Enter'});
+  assert.equal(applied,0);assert(ui.getByRole('dialog',{name:i18n.t('afghanDatePicker.label')}));
+  fireEvent.click(ui.getByRole('button',{name:'۲۱'}));fireEvent.click(ui.getByRole('button',{name:i18n.t('filters.button.label')}));
+  assert.equal(applied,1);cleanup();
   assert(isValidDateRange({ from: '', to: '' })); assert(!isValidDateRange({ from: '2026-02-30', to: '' }));
   assert(isDateInRange(new Date('2026-10-13T00:00:00Z'), { from: '2026-10-13', to: '2026-10-13' }));
   assert(isDateInRange('2026-10-13T23:59:59Z', { from: '2026-10-13', to: '2026-10-13' }));

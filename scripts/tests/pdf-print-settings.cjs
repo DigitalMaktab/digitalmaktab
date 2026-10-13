@@ -8,7 +8,7 @@ const {JSDOM}=require(app+'/jsdom');const dom=new JSDOM('<html><body></body></ht
 for(const key of ['window','document','navigator','HTMLElement','HTMLButtonElement','localStorage'])global[key]=dom.window[key];global.IS_REACT_ACT_ENVIRONMENT=true;
 const ts=require(path.join(root,'digitalmaktab-spa-core/node_modules/typescript'));
 require.extensions['.tsx']=require.extensions['.ts']=(module,file)=>module._compile(ts.transpileModule(fs.readFileSync(file,'utf8'),{fileName:file,compilerOptions:{module:ts.ModuleKind.CommonJS,jsx:ts.JsxEmit.ReactJSX,esModuleInterop:true,target:ts.ScriptTarget.ES2020}}).outputText,file);
-const realLoad=Module._load;Module._load=function(request,parent,isMain){if(request==='./AppTableFilter')return {__esModule:true,default:()=>null};if(['react','react/jsx-runtime','react-dom','react-dom/client','react-i18next','react-router-dom','i18next','formik'].includes(request))return realLoad.call(this,app+'/'+request,parent,isMain);return realLoad.apply(this,arguments)};
+const realLoad=Module._load;Module._load=function(request,parent,isMain){if(/^\.\.\/select\/App(Country|Branch|ClassType|Shift|Teacher|Class)Select$/.test(request))return {__esModule:true,default:()=>null};if(['react','react/jsx-runtime','react-dom','react-dom/client','react-i18next','react-router-dom','i18next','formik'].includes(request))return realLoad.call(this,app+'/'+request,parent,isMain);return realLoad.apply(this,arguments)};
 const React=require(app+'/react');const {render,fireEvent,waitFor,cleanup,within}=require(app+'/@testing-library/react');const {I18nextProvider}=require(app+'/react-i18next');const {MemoryRouter}=require(app+'/react-router-dom');
 const i18n=require(app+'/i18next').createInstance();const h=React.createElement;
 const AppTable=require(root+'/digitalmaktab-spa-core/src/components/table/AppTable.tsx').default;
@@ -30,8 +30,9 @@ const realTimer=window.setTimeout.bind(window);window.setTimeout=(callback,delay
   fireEvent.click(ui.getByRole('button',{name:i18n.t('report.settings.cancel')}));
   fireEvent.change(ui.getByLabelText(i18n.t('dateRange.from')),{target:{value:'2026-10-14'}});
   fireEvent.change(ui.getByLabelText(i18n.t('dateRange.to')),{target:{value:'2026-10-13'}});
-  assert(ui.getByRole('button',{name:i18n.t('report.print.tooltip')}).disabled);
+  assert(ui.getByRole('button',{name:i18n.t('filters.button.label')}).disabled);
   fireEvent.change(ui.getByLabelText(i18n.t('dateRange.from')),{target:{value:'2026-10-13'}});
+  fireEvent.click(ui.getByRole('button',{name:i18n.t('filters.button.label')}));
   await waitFor(()=>assert(!ui.getByRole('button',{name:i18n.t('report.print.tooltip')}).disabled));
   assert(ui.getByText('Boundary'));assert(!ui.queryByText('Earlier'));assert(!ui.queryByText('Later'));
   fireEvent.click(ui.getByRole('button',{name:i18n.t('report.print.tooltip')}));
@@ -48,7 +49,7 @@ const realTimer=window.setTimeout.bind(window);window.setTimeout=(callback,delay
  const filtered=filterRecordsByCreationDate(rows,{from:'2026-10-13',to:'2026-10-13'});
  assert.deepEqual(filtered.map(r=>r.name),['Boundary']);
  assert.deepEqual(settings.prepareTablePdf(columns,filtered,initial).rows.map(r=>r.name),['Boundary']);
- let ui=view();fireEvent.change(ui.getByLabelText(i18n.t('dateRange.from')),{target:{value:'2030-01-01'}});
+ let ui=view();fireEvent.change(ui.getByLabelText(i18n.t('dateRange.from')),{target:{value:'2030-01-01'}});fireEvent.click(ui.getByRole('button',{name:i18n.t('filters.button.label')}));
  await waitFor(()=>assert(ui.getByRole('button',{name:i18n.t('report.print.tooltip')}).disabled));
  cleanup();
  console.log('PASS: actual AppTable opens translated shared settings before PDF; paper size/orientation, column selection, hidden-field exclusion, table-level creation-date range shared by displayed rows and exports, date controls absent from the print modal, invalid-range/no-column validation, all-row fetch, no-match error and real PDF export in all three locales.');
