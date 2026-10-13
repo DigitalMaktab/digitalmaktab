@@ -48,11 +48,17 @@ for dir in "$PROJECTS"/digitalmaktab-country-*; do
   [ ${#csprojs[@]} -gt 0 ] && COUNTRY_DIRS+=("$dir")
 done
 
+# Country packages must compile against the newly packed Core, not the old
+# same-version NuGet cache. Clear it before restoring country consumers.
+rm -rf "$HOME/.nuget/packages/digitalmaktab.core" "$HOME/.nuget/packages/digitalmaktab.core.abstractions"
+dotnet nuget locals http-cache --clear >/dev/null
+
 for country_dir in "${COUNTRY_DIRS[@]}"; do
   name="$(basename "$country_dir")"
   echo "==> Cleaning + building + packing $name"
-  (cd "$country_dir" && dotnet clean -c Release >/dev/null \
-    && dotnet build -c Release >/dev/null \
+  (cd "$country_dir" && dotnet restore --force --no-cache >/dev/null \
+    && dotnet clean -c Release >/dev/null \
+    && dotnet build -c Release --no-restore >/dev/null \
     && dotnet pack -c Release --no-build -o "$NUGET_LOCAL" >/dev/null)
 done
 
