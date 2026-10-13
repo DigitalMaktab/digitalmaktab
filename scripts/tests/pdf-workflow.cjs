@@ -16,7 +16,7 @@ window.HTMLAnchorElement.prototype.click=function(){lastDownload={url:this.href,
 const wrapper=({children})=>h(I18nextProvider,{i18n},h(MemoryRouter,null,children));const view=props=>render(h(wrapper,null,h(AppTable,{columns,data:rows,totalPages:1,printPreferenceKey:'workflow-table',...props})));
 const button=(ui,key)=>ui.getAllByRole('button',{name:i18n.t('report.settings.'+key)}).at(-1);const openSettings=ui=>fireEvent.click(ui.getByRole('button',{name:i18n.t('report.print.tooltip')}));
 (async()=>{
- await i18n.init({lng:'en-US',resources:{'en-US':{translation:JSON.parse(fs.readFileSync(core+'/src/locales/en-US/translation.json'))}},interpolation:{escapeValue:false}});localStorage.clear();
+ await i18n.init({lng:'en-US',resources:{'en-US':{translation:JSON.parse(fs.readFileSync(core+'/src/locales/en-US/translation.json'))}},interpolation:{escapeValue:false}});localStorage.clear();localStorage.setItem('user',JSON.stringify({role:0,school:{id:'user-a',email:'a@example.test'}}));
  // Persist preferences and cancel a pending record request, including callers that ignore its signal.
  let finish,cancelSignal,fetches=0;const pending=new Promise(resolve=>{finish=resolve});
  let ui=view({fetchAllForExport:(filters,signal)=>{fetches++;cancelSignal=signal;return pending}});openSettings(ui);
@@ -39,7 +39,7 @@ const button=(ui,key)=>ui.getAllByRole('button',{name:i18n.t('report.settings.'+
  // Preferences remain isolated by table, follow column identities, and tolerate corrupt storage.
  ui=view({printPreferenceKey:'other-table'});openSettings(ui);assert.equal(ui.getByLabelText(i18n.t('report.settings.pageSize')).value,'a4');assert(ui.getByRole('checkbox',{name:'Due date'}).checked);cleanup();
  assert.deepEqual(settings.loadPdfSettings('workflow-table',[columns[1],columns[0],columns[2]]).selectedColumns,[1]);
- localStorage.setItem('dm-pdf-settings:broken','{bad');assert.deepEqual(settings.loadPdfSettings('broken',columns),settings.defaultPdfSettings(columns));
+ localStorage.setItem(settings.pdfPreferenceStorageKey('broken',settings.getPdfPreferenceUserKey()),'{bad');assert.deepEqual(settings.loadPdfSettings('broken',columns),settings.defaultPdfSettings(columns));
  // Cancel between server pages: no subsequent page request and no mutation of the table's page snapshot.
  const queries=[];let stop;const pageWait=new Promise(resolve=>{stop=resolve});
  ui=view({data:rows,totalPages:3,fetchPageData:async(page,size,filters,signal)=>{
