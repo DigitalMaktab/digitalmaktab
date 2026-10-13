@@ -32,7 +32,7 @@ const bold=fontFile.match(/const vazirMatnBoldBase64\s*=\s*"([^"]+)"/)[1];
 config.configureCorePdf({pdfMake:{vfs:{'VazirMatn-Regular.ttf':regular,'VazirMatn-Bold.ttf':bold}}});
 assert.equal(config.getVazirmatnBase64(),regular);assert.equal(config.getVazirmatnBoldBase64(),bold);
 let blob;global.URL.createObjectURL=b=>{blob=b;return 'blob:test'};
-global.URL.revokeObjectURL=()=>{};window.open=()=>({location:{href:""},close(){}});window.setTimeout=()=>0;
+let opened=0;global.URL.revokeObjectURL=()=>{};window.open=url=>{assert.equal(url,"blob:test");assert(blob&&blob.type==="application/pdf");opened++;return {location:{href:url},close(){}}};window.setTimeout=()=>0;
 global.fetch=async()=>{throw new Error('Logo is offline')};
 const h=React.createElement;
 const circular={name:'Nested entity'};circular.self=circular;
@@ -60,6 +60,13 @@ const columns=[{header:'route',accessor:'name',render:v=>h('strong',null,v)}, {h
  }
  await act(async()=>hook.result.current(columns,Array.from({length:180},(_,i)=>({...rows[i%3],name:'Route '+i})), 'Multipage report',''));
  assert(doc.getNumberOfPages()>2);fs.writeFileSync(artifacts+'/pdf-multipage.pdf',Buffer.from(await blob.arrayBuffer()));
+ // Logo loading is still part of generation; do not open a viewer while it is pending.
+ let finishLogo;const pendingLogo=new Promise(resolve=>{finishLogo=resolve});global.fetch=()=>pendingLogo;
+ const beforeOpen=opened;let exporting;
+ await act(async()=>{exporting=hook.result.current(columns,rows,'Delayed logo','/delayed-logo.png')});
+ assert.equal(opened,beforeOpen);
+ await act(async()=>{finishLogo({ok:false});await exporting});assert.equal(opened,beforeOpen+1);
+ global.fetch=async()=>({ok:false});
  const legacy=renderHook(()=>require(root+'/src/hooks/useExportToPdf.ts').default());assert.equal(typeof legacy.result.current,'function');
  const {reportText}=require(root+'/src/pdf/tableValues.ts');
  const locale={language:'fa-AF',formatNumber:v=>new Intl.NumberFormat('fa-AF').format(v),formatBoolean:v=>v?'بلی':'نخیر'};

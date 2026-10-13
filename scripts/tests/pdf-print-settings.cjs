@@ -15,13 +15,13 @@ const AppTable=require(root+'/digitalmaktab-spa-core/src/components/table/AppTab
 const settings=require(root+'/digitalmaktab-spa-core/src/pdf/tableSettings.ts');const {filterRecordsByCreationDate}=require(root+'/digitalmaktab-spa-core/src/helper/dateRange.ts');
 const columns=[{header:'name',accessor:'name'},{header:'dueDate',accessor:'dueDate'},{header:'creationDate',accessor:'creationDate',hidden:true}];const rows=[{id:'1',name:'Earlier',creationDate:'2026-10-12T23:00:00Z',dueDate:'2026-10-13'},{id:'2',name:'Boundary',creationDate:'2026-10-13T23:59:59Z',dueDate:'2030-01-01'},{id:'3',name:'Later',creationDate:'2026-10-14T00:00:00Z',dueDate:'2026-10-13'},{id:'4',name:'Invalid',creationDate:'invalid',dueDate:'2026-10-13'}];
 const config=require(root+'/digitalmaktab-spa-core/src/pdf/config.ts');const source=fs.readFileSync(path.join(root,'digitalmaktab-spa/src/config/pdfMakeConfig.ts'),'utf8');config.configureCorePdf({vazirmatnBase64:source.match(/const vazirMatnRegularBase64\s*=\s*"([^"]+)"/)[1]});
-let blob,opened=0;URL.createObjectURL=value=>{blob=value;return 'blob:test'};URL.revokeObjectURL=()=>{};window.open=()=>{opened++;return {location:{href:""},close(){}}};global.fetch=async()=>({ok:false});
+let blob,opened=0;URL.createObjectURL=value=>{blob=value;return 'blob:test'};URL.revokeObjectURL=()=>{};window.open=url=>{assert.equal(url,'blob:test');assert(blob&&blob.type==='application/pdf');opened++;return {location:{href:url},close(){}}};global.fetch=async()=>({ok:false});
 window.HTMLAnchorElement.prototype.click=()=>{};
 const realTimer=window.setTimeout.bind(window);window.setTimeout=(callback,delay,...args)=>delay===60000?0:realTimer(callback,delay,...args);
 (async()=>{
  const resources={};for(const lng of ['en-US','fa-AF','ps-AF']){const repo=lng==='en-US'?'digitalmaktab-spa-core':'digitalmaktab-spa-country-afghanistan';resources[lng]={translation:{...JSON.parse(fs.readFileSync(root+'/'+repo+'/src/locales/'+lng+'/translation.json')),name:'Name',dueDate:'Due date',creationDate:'Creation date'}};}
  await i18n.init({lng:'en-US',resources,interpolation:{escapeValue:false}});
- let fetches=0;const all=async(filters)=>{fetches++;return filterRecordsByCreationDate(rows,{from:filters.creationDateFrom||'',to:filters.creationDateTo||''})};const view=()=>render(h(I18nextProvider,{i18n},h(MemoryRouter,null,h(AppTable,{columns,data:rows,totalPages:1,fetchAllForExport:all}))));
+ let exportGate;let fetches=0;const all=async(filters)=>{fetches++;if(exportGate)await exportGate;return filterRecordsByCreationDate(rows,{from:filters.creationDateFrom||'',to:filters.creationDateTo||''})};const view=()=>render(h(I18nextProvider,{i18n},h(MemoryRouter,null,h(AppTable,{columns,data:rows,totalPages:1,fetchAllForExport:all}))));
  for(const lng of ['en-US','fa-AF','ps-AF']){
   await i18n.changeLanguage(lng);let ui=view();await waitFor(()=>assert(!ui.getByRole('button',{name:i18n.t('report.print.tooltip')}).disabled));assert(ui.getByLabelText(i18n.t('dateRange.from')));fireEvent.click(ui.getByRole('button',{name:i18n.t('report.print.tooltip')}));const dialog=ui.getByRole('dialog');assert(dialog.textContent.includes(i18n.t('report.settings.title')));assert(!dialog.textContent.includes('Creation date'));
   fireEvent.change(ui.getByLabelText(i18n.t('report.settings.pageSize')),{target:{value:'letter'}});fireEvent.change(ui.getByLabelText(i18n.t('report.settings.orientation')),{target:{value:'landscape'}});
@@ -45,6 +45,12 @@ const realTimer=window.setTimeout.bind(window);window.setTimeout=(callback,delay
   fireEvent.click(ui.getByRole('button',{name:i18n.t('report.csv.tooltip')}));
   await waitFor(()=>assert.equal(blob.type,'text/csv;charset=utf-8'));const csv=await blob.text();assert(csv.includes('Boundary'));assert(!csv.includes('Earlier'));assert(!csv.includes('Later'));cleanup();
  }
+ // A delayed full-data request must keep the preparing dialog in this tab.
+ let finish;exportGate=new Promise(resolve=>{finish=resolve});const beforeOpen=opened;
+ let pendingUi=view();fireEvent.click(pendingUi.getByRole('button',{name:i18n.t('report.print.tooltip')}));
+ fireEvent.click(pendingUi.getByRole('button',{name:i18n.t('report.settings.export')}));
+ assert.equal(opened,beforeOpen);assert(pendingUi.getByRole('button',{name:i18n.t('report.settings.preparing')}).disabled);
+ finish();await waitFor(()=>assert(!pendingUi.queryByRole('dialog')));assert.equal(opened,beforeOpen+1);exportGate=undefined;cleanup();
  const initial=settings.defaultPdfSettings(columns);assert.deepEqual(initial.selectedColumns,[0,1]);
  const filtered=filterRecordsByCreationDate(rows,{from:'2026-10-13',to:'2026-10-13'});
  assert.deepEqual(filtered.map(r=>r.name),['Boundary']);
