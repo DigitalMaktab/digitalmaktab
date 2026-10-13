@@ -23,7 +23,7 @@ const realTimer=window.setTimeout.bind(window);window.setTimeout=(callback,delay
  await i18n.init({lng:'en-US',resources,interpolation:{escapeValue:false}});
  let exportGate;let fetches=0;const all=async(filters)=>{fetches++;if(exportGate)await exportGate;return filterRecordsByCreationDate(rows,{from:filters.creationDateFrom||'',to:filters.creationDateTo||''})};const view=()=>render(h(I18nextProvider,{i18n},h(MemoryRouter,null,h(AppTable,{columns,data:rows,totalPages:1,fetchAllForExport:all}))));
  for(const lng of ['en-US','fa-AF','ps-AF']){
-  await i18n.changeLanguage(lng);let ui=view();await waitFor(()=>assert(!ui.getByRole('button',{name:i18n.t('report.print.tooltip')}).disabled));assert(ui.getByLabelText(i18n.t('dateRange.from')));fireEvent.click(ui.getByRole('button',{name:i18n.t('report.print.tooltip')}));const dialog=ui.getByRole('dialog');assert(dialog.textContent.includes(i18n.t('report.settings.title')));assert(!dialog.textContent.includes('Creation date'));
+  localStorage.clear();await i18n.changeLanguage(lng);let ui=view();await waitFor(()=>assert(!ui.getByRole('button',{name:i18n.t('report.print.tooltip')}).disabled));assert(ui.getByLabelText(i18n.t('dateRange.from')));fireEvent.click(ui.getByRole('button',{name:i18n.t('report.print.tooltip')}));const dialog=ui.getByRole('dialog');assert(dialog.textContent.includes(i18n.t('report.settings.title')));assert(!within(dialog).queryByLabelText(i18n.t('dateRange.from')));
   fireEvent.change(ui.getByLabelText(i18n.t('report.settings.pageSize')),{target:{value:'letter'}});fireEvent.change(ui.getByLabelText(i18n.t('report.settings.orientation')),{target:{value:'landscape'}});
   fireEvent.click(ui.getByRole('checkbox',{name:'Due date'}));fireEvent.click(ui.getByRole('checkbox',{name:'Name'}));assert(ui.getByRole('button',{name:i18n.t('report.settings.export')}).disabled);fireEvent.click(ui.getByRole('checkbox',{name:'Name'}));
   assert.equal(within(ui.getByRole('dialog')).queryByLabelText(i18n.t('dateRange.from')),null);
@@ -40,7 +40,8 @@ const realTimer=window.setTimeout.bind(window);window.setTimeout=(callback,delay
   fireEvent.change(ui.getByLabelText(i18n.t('report.settings.orientation')),{target:{value:'landscape'}});
   fireEvent.click(ui.getByRole('checkbox',{name:'Due date'}));
   fireEvent.click(ui.getByRole('button',{name:i18n.t('report.settings.export')}));
-  await waitFor(()=>assert(!ui.queryByRole('dialog')));assert(blob);
+  await waitFor(()=>assert(ui.getByRole('button',{name:i18n.t('report.settings.openPdf')})));assert(blob);
+  fireEvent.click(ui.getByRole('button',{name:i18n.t('report.settings.openPdf')}));fireEvent.click(ui.getAllByRole('button',{name:i18n.t('report.settings.close')}).at(-1));
   fs.writeFileSync(artifacts+'/modal-'+lng+'.pdf',Buffer.from(await blob.arrayBuffer()));
   fireEvent.click(ui.getByRole('button',{name:i18n.t('report.csv.tooltip')}));
   await waitFor(()=>assert.equal(blob.type,'text/csv;charset=utf-8'));const csv=await blob.text();assert(csv.includes('Boundary'));assert(!csv.includes('Earlier'));assert(!csv.includes('Later'));cleanup();
@@ -50,7 +51,7 @@ const realTimer=window.setTimeout.bind(window);window.setTimeout=(callback,delay
  let pendingUi=view();fireEvent.click(pendingUi.getByRole('button',{name:i18n.t('report.print.tooltip')}));
  fireEvent.click(pendingUi.getByRole('button',{name:i18n.t('report.settings.export')}));
  assert.equal(opened,beforeOpen);assert(pendingUi.getByRole('button',{name:i18n.t('report.settings.preparing')}).disabled);
- finish();await waitFor(()=>assert(!pendingUi.queryByRole('dialog')));assert.equal(opened,beforeOpen+1);exportGate=undefined;cleanup();
+ finish();await waitFor(()=>assert(pendingUi.getByRole('button',{name:i18n.t('report.settings.openPdf')})));assert.equal(opened,beforeOpen);fireEvent.click(pendingUi.getByRole('button',{name:i18n.t('report.settings.openPdf')}));assert.equal(opened,beforeOpen+1);exportGate=undefined;cleanup();
  const initial=settings.defaultPdfSettings(columns);assert.deepEqual(initial.selectedColumns,[0,1]);
  const filtered=filterRecordsByCreationDate(rows,{from:'2026-10-13',to:'2026-10-13'});
  assert.deepEqual(filtered.map(r=>r.name),['Boundary']);
