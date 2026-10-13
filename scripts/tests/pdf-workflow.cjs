@@ -20,7 +20,7 @@ const button=(ui,key)=>ui.getAllByRole('button',{name:i18n.t('report.settings.'+
  // Persist preferences and cancel a pending record request, including callers that ignore its signal.
  let finish,cancelSignal,fetches=0;const pending=new Promise(resolve=>{finish=resolve});
  let ui=view({fetchAllForExport:(filters,signal)=>{fetches++;cancelSignal=signal;return pending}});openSettings(ui);
- assert(within(ui.getByRole('dialog')).getByText(i18n.t('report.settings.recordCount')));
+ assert(!within(ui.getByRole('dialog')).queryByText(i18n.t('report.settings.recordCount')));
  fireEvent.change(ui.getByLabelText(i18n.t('report.settings.pageSize')),{target:{value:'letter'}});
  fireEvent.change(ui.getByLabelText(i18n.t('report.settings.orientation')),{target:{value:'landscape'}});
  fireEvent.click(ui.getByRole('checkbox',{name:'Due date'}));fireEvent.click(button(ui,'export'));
@@ -70,5 +70,5 @@ const button=(ui,key)=>ui.getAllByRole('button',{name:i18n.t('report.settings.'+
  const apiHook=renderHook(()=>useApiRequests(),{wrapper:({children})=>h(wrapper,null,h(LoaderContext.Provider,{value:loader},children))});
  await act(async()=>{await apiHook.result.current.execute(async()=>({data:[rows[0]],headers:{}}))});const loadersBefore=loaderCalls;
  await act(async()=>{await requestOptions.withApiRequestOptions({silent:true},()=>apiHook.result.current.execute(async()=>({data:[rows[1]],headers:{}})))});assert.deepEqual(apiHook.result.current.data,[rows[0]]);assert.equal(loaderCalls,loadersBefore);apiHook.unmount();cleanup();
- console.log('PASS: PDF progress, applied-filter summary, ready Open/Download, popup-block recovery, cancellation during requests and rendering, retry, per-table preferences, corrupt storage, URL cleanup, isolated transport signals, and preservation of table data/loader state.');
+ console.log('PASS: PDF progress, ready Open/Download, popup-block recovery, cancellation during requests and rendering, retry, per-table preferences, corrupt storage, URL cleanup, isolated transport signals, and preservation of table data/loader state.');
 })().catch(error=>{console.error(error);process.exitCode=1});
