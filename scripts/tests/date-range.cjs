@@ -36,7 +36,7 @@ const AfghanDatePicker = require(path.join(country, 'AfghanDatePicker.tsx')).def
 const AppDateRange = component('components/AppDateRange.tsx');
 const { CalendarProvider, gregorianCalendar } = require(path.join(source, 'contexts/CalendarContext.tsx'));
 const { toJalali, toGregorian } = require(path.join(country, 'jalali.ts'));
-const { isValidDateRange, isDateInRange } = require(path.join(source, 'helper/dateRange.ts'));
+const { isValidDateRange, isDateInRange, filterRecordsByCreationDate } = require(path.join(source, 'helper/dateRange.ts'));
 const { prepareTablePdf, defaultPdfSettings } = require(path.join(source, 'pdf/tableSettings.ts'));
 const h = React.createElement;
 (async () => {
@@ -85,7 +85,7 @@ const h = React.createElement;
   const columns = [{ header: 'Name', accessor: 'name' }];
   const rows = [{ name: 'Creation wins', creationDate: '2026-10-13T00:00:00Z', createdAt: '2030-01-01', dueDate: '2030-01-01' },
     { name: 'Legacy entry timestamp', createdAt: '2026-10-13T00:00:00Z' }, { name: 'Missing creation timestamp', dueDate: '2026-10-13' }];
-  const report = prepareTablePdf(columns, rows, { ...defaultPdfSettings(columns), dateFrom: '2026-10-13', dateTo: '2026-10-13' });
+  const report = prepareTablePdf(columns, filterRecordsByCreationDate(rows, { from: '2026-10-13', to: '2026-10-13' }), defaultPdfSettings(columns));
   assert.deepEqual(report.rows.map(row => row.name), ['Creation wins', 'Legacy entry timestamp']);
   assert.deepEqual(toJalali(new Date('2026-10-13T00:00:00Z')), { jy: 1405, jm: 6, jd: 21 });
   assert.equal(toGregorian(1405, 6, 21).toISOString().slice(0, 10), '2026-10-13');

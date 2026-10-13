@@ -12,24 +12,44 @@ const realLoad=Module._load;Module._load=function(request,parent,isMain){if(requ
 const React=require(app+'/react');const {render,fireEvent,waitFor,cleanup,within}=require(app+'/@testing-library/react');const {I18nextProvider}=require(app+'/react-i18next');const {MemoryRouter}=require(app+'/react-router-dom');
 const i18n=require(app+'/i18next').createInstance();const h=React.createElement;
 const AppTable=require(root+'/digitalmaktab-spa-core/src/components/table/AppTable.tsx').default;
-const settings=require(root+'/digitalmaktab-spa-core/src/pdf/tableSettings.ts');
+const settings=require(root+'/digitalmaktab-spa-core/src/pdf/tableSettings.ts');const {filterRecordsByCreationDate}=require(root+'/digitalmaktab-spa-core/src/helper/dateRange.ts');
 const columns=[{header:'name',accessor:'name'},{header:'dueDate',accessor:'dueDate'},{header:'creationDate',accessor:'creationDate',hidden:true}];const rows=[{id:'1',name:'Earlier',creationDate:'2026-10-12T23:00:00Z',dueDate:'2026-10-13'},{id:'2',name:'Boundary',creationDate:'2026-10-13T23:59:59Z',dueDate:'2030-01-01'},{id:'3',name:'Later',creationDate:'2026-10-14T00:00:00Z',dueDate:'2026-10-13'},{id:'4',name:'Invalid',creationDate:'invalid',dueDate:'2026-10-13'}];
 const config=require(root+'/digitalmaktab-spa-core/src/pdf/config.ts');const source=fs.readFileSync(path.join(root,'digitalmaktab-spa/src/config/pdfMakeConfig.ts'),'utf8');config.configureCorePdf({vazirmatnBase64:source.match(/const vazirMatnRegularBase64\s*=\s*"([^"]+)"/)[1]});
 let blob,opened=0;URL.createObjectURL=value=>{blob=value;return 'blob:test'};URL.revokeObjectURL=()=>{};window.open=()=>{opened++;return {location:{href:""},close(){}}};global.fetch=async()=>({ok:false});
+window.HTMLAnchorElement.prototype.click=()=>{};
 const realTimer=window.setTimeout.bind(window);window.setTimeout=(callback,delay,...args)=>delay===60000?0:realTimer(callback,delay,...args);
 (async()=>{
  const resources={};for(const lng of ['en-US','fa-AF','ps-AF']){const repo=lng==='en-US'?'digitalmaktab-spa-core':'digitalmaktab-spa-country-afghanistan';resources[lng]={translation:{...JSON.parse(fs.readFileSync(root+'/'+repo+'/src/locales/'+lng+'/translation.json')),name:'Name',dueDate:'Due date',creationDate:'Creation date'}};}
  await i18n.init({lng:'en-US',resources,interpolation:{escapeValue:false}});
  let fetches=0;const all=async()=>{fetches++;return rows};const view=()=>render(h(I18nextProvider,{i18n},h(MemoryRouter,null,h(AppTable,{columns,data:rows.slice(0,1),totalPages:1,fetchAllForExport:all}))));
  for(const lng of ['en-US','fa-AF','ps-AF']){
-  await i18n.changeLanguage(lng);let ui=view();fireEvent.click(ui.getByRole('button',{name:i18n.t('report.print.tooltip')}));assert.equal(opened,fetches);const dialog=ui.getByRole('dialog');assert(dialog.textContent.includes(i18n.t('report.settings.title')));assert(!dialog.textContent.includes('Creation date'));
+  await i18n.changeLanguage(lng);let ui=view();await waitFor(()=>assert(!ui.getByRole('button',{name:i18n.t('report.print.tooltip')}).disabled));assert(ui.getByLabelText(i18n.t('dateRange.from')));fireEvent.click(ui.getByRole('button',{name:i18n.t('report.print.tooltip')}));const dialog=ui.getByRole('dialog');assert(dialog.textContent.includes(i18n.t('report.settings.title')));assert(!dialog.textContent.includes('Creation date'));
   fireEvent.change(ui.getByLabelText(i18n.t('report.settings.pageSize')),{target:{value:'letter'}});fireEvent.change(ui.getByLabelText(i18n.t('report.settings.orientation')),{target:{value:'landscape'}});
   fireEvent.click(ui.getByRole('checkbox',{name:'Due date'}));fireEvent.click(ui.getByRole('checkbox',{name:'Name'}));assert(ui.getByRole('button',{name:i18n.t('report.settings.export')}).disabled);fireEvent.click(ui.getByRole('checkbox',{name:'Name'}));
-  assert.equal(within(ui.getByRole('dialog')).getAllByRole('combobox').length,2);fireEvent.change(ui.getByLabelText(i18n.t('dateRange.from')),{target:{value:'2026-10-14'}});fireEvent.change(ui.getByLabelText(i18n.t('dateRange.to')),{target:{value:'2026-10-13'}});assert(ui.getByRole('button',{name:i18n.t('report.settings.export')}).disabled);
-  fireEvent.change(ui.getByLabelText(i18n.t('dateRange.from')),{target:{value:'2026-10-13'}});fireEvent.click(ui.getByRole('button',{name:i18n.t('report.settings.export')}));await waitFor(()=>assert(!ui.queryByRole('dialog')));assert(blob);assert.equal(opened,fetches);
-  fs.writeFileSync(artifacts+'/modal-'+lng+'.pdf',Buffer.from(await blob.arrayBuffer()));cleanup();
+  assert.equal(within(ui.getByRole('dialog')).queryByLabelText(i18n.t('dateRange.from')),null);
+  fireEvent.click(ui.getByRole('button',{name:i18n.t('report.settings.cancel')}));
+  fireEvent.change(ui.getByLabelText(i18n.t('dateRange.from')),{target:{value:'2026-10-14'}});
+  fireEvent.change(ui.getByLabelText(i18n.t('dateRange.to')),{target:{value:'2026-10-13'}});
+  assert(ui.getByRole('button',{name:i18n.t('report.print.tooltip')}).disabled);
+  fireEvent.change(ui.getByLabelText(i18n.t('dateRange.from')),{target:{value:'2026-10-13'}});
+  await waitFor(()=>assert(!ui.getByRole('button',{name:i18n.t('report.print.tooltip')}).disabled));
+  assert(ui.getByText('Boundary'));assert(!ui.queryByText('Earlier'));assert(!ui.queryByText('Later'));
+  fireEvent.click(ui.getByRole('button',{name:i18n.t('report.print.tooltip')}));
+  fireEvent.change(ui.getByLabelText(i18n.t('report.settings.pageSize')),{target:{value:'letter'}});
+  fireEvent.change(ui.getByLabelText(i18n.t('report.settings.orientation')),{target:{value:'landscape'}});
+  fireEvent.click(ui.getByRole('checkbox',{name:'Due date'}));
+  fireEvent.click(ui.getByRole('button',{name:i18n.t('report.settings.export')}));
+  await waitFor(()=>assert(!ui.queryByRole('dialog')));assert(blob);
+  fs.writeFileSync(artifacts+'/modal-'+lng+'.pdf',Buffer.from(await blob.arrayBuffer()));
+  fireEvent.click(ui.getByRole('button',{name:i18n.t('report.csv.tooltip')}));
+  await waitFor(()=>assert.equal(blob.type,'text/csv;charset=utf-8'));const csv=await blob.text();assert(csv.includes('Boundary'));assert(!csv.includes('Earlier'));assert(!csv.includes('Later'));cleanup();
  }
- const initial=settings.defaultPdfSettings(columns);assert.deepEqual(initial.selectedColumns,[0,1]);const withoutDateColumn=columns.filter(column=>column.accessor!=='creationDate');let filtered=settings.prepareTablePdf(columns,rows,{...initial,dateFrom:'2026-10-13',dateTo:'2026-10-13'});assert.deepEqual(filtered.rows.map(r=>r.name),['Boundary']);assert.deepEqual(settings.prepareTablePdf(withoutDateColumn,rows,{...initial,dateFrom:'2026-10-13',dateTo:'2026-10-13'}).rows.map(r=>r.name),['Boundary']);
- let ui=view();fireEvent.click(ui.getByRole('button',{name:i18n.t('report.print.tooltip')}));assert.equal(within(ui.getByRole('dialog')).getAllByRole('combobox').length,2);fireEvent.change(ui.getByLabelText(i18n.t('dateRange.from')),{target:{value:'2030-01-01'}});fireEvent.click(ui.getByRole('button',{name:i18n.t('report.settings.export')}));await waitFor(()=>assert(ui.getByRole('alert').textContent.includes(i18n.t('report.settings.noRows'))));assert(ui.getByRole('dialog'));cleanup();
- console.log('PASS: actual AppTable opens translated shared settings before PDF; paper size/orientation, column selection, hidden-field exclusion, inclusive record-creation-date filtering independent of visible/business-date columns, invalid-range/no-column validation, all-row fetch, no-match error and real PDF export in all three locales.');
+ const initial=settings.defaultPdfSettings(columns);assert.deepEqual(initial.selectedColumns,[0,1]);
+ const filtered=filterRecordsByCreationDate(rows,{from:'2026-10-13',to:'2026-10-13'});
+ assert.deepEqual(filtered.map(r=>r.name),['Boundary']);
+ assert.deepEqual(settings.prepareTablePdf(columns,filtered,initial).rows.map(r=>r.name),['Boundary']);
+ let ui=view();fireEvent.change(ui.getByLabelText(i18n.t('dateRange.from')),{target:{value:'2030-01-01'}});
+ await waitFor(()=>assert(ui.getByRole('button',{name:i18n.t('report.print.tooltip')}).disabled));
+ cleanup();
+ console.log('PASS: actual AppTable opens translated shared settings before PDF; paper size/orientation, column selection, hidden-field exclusion, table-level creation-date range shared by displayed rows and exports, date controls absent from the print modal, invalid-range/no-column validation, all-row fetch, no-match error and real PDF export in all three locales.');
 })().catch(error=>{console.error(error);process.exitCode=1});
