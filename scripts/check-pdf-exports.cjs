@@ -48,11 +48,17 @@ for (const name of fs.readdirSync(projects)) {
 assert(tables.length > 0, 'No table export sites found');
 assert.deepEqual([...new Set(generators)], ['digitalmaktab-spa-core/src/hooks/useJsPdfExportToPdf.ts'], 'All table PDF paths must use the shared Unicode exporter');
 const environment = { ...process.env, PDF_AUDIT_PROJECTS: projects, PDF_AUDIT_ARTIFACTS: artifacts };
-for (const test of ['pdf-export.cjs', 'pdf-print-settings.cjs']) {
+for (const test of ['pdf-export.cjs', 'pdf-print-settings.cjs', 'date-range.cjs']) {
   const result = spawnSync(process.execPath, [path.join(__dirname, 'tests', test)], { env: environment, stdio: 'inherit', timeout: 60_000 });
   if (result.error) throw result.error;
   assert.equal(result.status, 0, test + ' failed');
 }
+// Date-only Solar Hijri selections must survive a host timezone west of UTC.
+const timezoneCheck = spawnSync(process.execPath, [path.join(__dirname, 'tests/date-range.cjs')], {
+  env: { ...environment, TZ: 'America/New_York' }, stdio: 'inherit', timeout: 60_000,
+});
+if (timezoneCheck.error) throw timezoneCheck.error;
+assert.equal(timezoneCheck.status, 0, 'UTC date-only calendar round-trip failed');
 for (const locale of ['en-US', 'fa-AF', 'ps-AF']) {
   const content = spawnSync('pdftotext', ['-layout', path.join(artifacts, 'pdf-' + locale + '.pdf'), '-'], { encoding: 'utf8' });
   if (content.status === 0) {
