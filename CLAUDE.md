@@ -99,6 +99,11 @@ create GitHub remotes on their own.
    toolbar actions, export. Tables also expose:
    - Double-click a row → opens the detail/edit view.
    - Right-click → context menu.
+   Every table filter, including API scope selectors, belongs in the shared
+   filter panel: use column filters or `filterControls` (draft values, Apply,
+   Reset). `scopeControls` is for non-filter context/actions only. Forward all
+   applied criteria to paged/export loaders; keep the table mounted on empty
+   results so filters remain accessible.
    Use these where they apply. **Confirmation for destructive actions
    is mandatory** — use `AppModal` (there's a built-in confirm on
    `AppTable`'s delete flow).
