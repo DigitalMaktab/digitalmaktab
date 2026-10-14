@@ -1,0 +1,82 @@
+const fs = require('node:fs'), path = require('node:path'), assert = require('node:assert/strict'), Module = require('node:module');
+const projects = path.resolve(__dirname, '../../..'), core = projects + '/digitalmaktab-spa-core', country = projects + '/digitalmaktab-spa-country-afghanistan', app = projects + '/digitalmaktab-spa/node_modules';
+const { JSDOM } = require(app + '/jsdom'); const dom = new JSDOM('<html><body></body></html>', { url: 'http://localhost' });
+for (const key of ['window', 'document', 'navigator', 'HTMLElement', 'HTMLButtonElement', 'localStorage']) global[key] = dom.window[key];
+global.IS_REACT_ACT_ENVIRONMENT = true; HTMLElement.prototype.scrollIntoView = () => {};
+const ts = require(core + '/node_modules/typescript');
+require.extensions['.tsx'] = require.extensions['.ts'] = (module, file) => module._compile(ts.transpileModule(fs.readFileSync(file, 'utf8'), { fileName: file, compilerOptions: { module: ts.ModuleKind.CommonJS, jsx: ts.JsxEmit.ReactJSX, esModuleInterop: true, target: ts.ScriptTarget.ES2020 } }).outputText, file);
+let mocks; const original = Module._load;
+Module._load = function (request, parent, isMain) {
+  if (request === '@digitalmaktab/spa-core' && mocks) return mocks;
+  if (/^\.\.\/select\/App(Country|Branch|ClassType|Shift|Teacher|Class)Select$/.test(request)) return { __esModule: true, default: () => null };
+  if (['react', 'react/jsx-runtime', 'react-dom', 'react-dom/client', 'react-i18next', 'react-router-dom', 'i18next', 'formik'].includes(request)) return original.call(this, app + '/' + request, parent, isMain);
+  return original.apply(this, arguments);
+};
+const React = require(app + '/react'), h = React.createElement, { render, fireEvent, waitFor, cleanup, within, act } = require(app + '/@testing-library/react');
+const { MemoryRouter, Routes, Route } = require(app + '/react-router-dom'), { I18nextProvider } = require(app + '/react-i18next'), i18n = require(app + '/i18next').createInstance();
+const { CalendarProvider } = require(core + '/src/contexts/CalendarContext.tsx'), { AuthContext } = require(core + '/src/helper/auth/AuthProvider.tsx');
+const load = file => require(core + '/src/' + file).default;
+let rows, requests = [], activateCalls = [], saves = [], failActivation = false;
+const request = async (url, config = {}) => {
+  requests.push({ url, signal: config.signal });
+  return { data: url.endsWith('/academic-years') ? rows : rows.find(row => url.endsWith('/' + row.id)) };
+};
+mocks = {
+  AppTable: load('components/table/AppTable.tsx'), AppBaseEditor: load('components/AppBaseEditor.tsx'), AppCard: load('components/card/AppCard.tsx'),
+  AppAlert: load('components/AppAlert.tsx'), AppButton: load('components/AppButton.tsx'), AppModal: load('components/modal/AppModal.tsx'), AppStatusBadge: load('components/AppStatusBadge.tsx'),
+  AppFormInput: load('components/form/AppFormInput.tsx'), AppFormLocalDatePicker: load('components/form/AppFormLocalDatePicker.tsx'),
+  AppStandaloneInput: load('components/input/AppStandaloneInput.tsx'), AppCalendarGrid: load('components/calendar/AppCalendarGrid.tsx'),
+  useAppLocalizer: require(core + '/src/hooks/useAppLocalizer.ts').useAppLocalizer, useFormattedDate: load('hooks/useFormattedDate.ts'), UserRole: require(core + '/src/models/UserRole.ts').UserRole,
+  apiClient: { get: request, put: async (url, dto) => { saves.push({ url, dto }); return { data: dto }; }, post: async (url, dto) => {
+    if (url.endsWith('/activate')) { activateCalls.push({ url, dto }); if (failActivation) throw { response: { data: { detail: 'Stale version: reload school year.' } } }; rows = rows.map(row => ({ ...row, isActive: url.includes('/' + row.id + '/') })); return { data: rows[1] }; }
+    saves.push({ url, dto }); return { data: dto };
+  } },
+};
+const { afghanistanCalendar } = require(country + '/src/calendarModule.ts');
+const List = require(country + '/src/academicYears/AfghanAcademicYearList.tsx').default, Editor = require(country + '/src/academicYears/AfghanAcademicYearEditor.tsx').default;
+const helpers = require(country + '/src/academicYears/calendar.ts');
+const view = (component, entry = '/afghanistan/academic-years', editor = false) => render(h(I18nextProvider, { i18n }, h(MemoryRouter, { initialEntries: [entry] }, h(AuthContext.Provider, { value: { userRole: 0 } }, h(CalendarProvider, { value: afghanistanCalendar }, editor ? h(Routes, null, h(Route, { path: '/afghanistan/academic-years/:id', element: component }), h(Route, { path: '/afghanistan/academic-years', element: h('p', null, 'Saved school year') })) : component)))));
+(async () => {
+  const resources = {}; for (const language of ['en-US', 'fa-AF', 'ps-AF']) resources[language] = { translation: { ...JSON.parse(fs.readFileSync(core + '/src/locales/en-US/translation.json')), ...JSON.parse(fs.readFileSync(country + '/src/locales/' + language + '/translation.json')) } };
+  await i18n.init({ lng: 'fa-AF', resources, interpolation: { escapeValue: false } });
+  assert.deepEqual(helpers.fullAcademicYear(1403), { fromDate: '2024-03-20', toDate: '2025-03-20' });
+  assert.deepEqual(helpers.fullAcademicYear(1404), { fromDate: '2025-03-21', toDate: '2026-03-20' });
+  assert.equal(helpers.currentAcademicYear(new Date(2025, 2, 21, 0, 15)), 1404);
+  assert.equal(helpers.normalizeYear('۱۴۰۳'), 1403); assert.equal(helpers.normalizeYear('١٤٠٣'), 1403);
+  assert(helpers.validAcademicDates(1403, '2024-09-01', '2025-06-01')); assert(!helpers.validAcademicDates(1403, '2025-03-21', '2025-04-01'));
+  assert(!helpers.validAcademicDates(1403, '2024-03-20', '2025-03-21'));
+  rows = [{ id: 'first', solarHijriYear: 1403, fromDate: '2024-03-20', toDate: '2025-03-20', isActive: true, version: 'version-a', creationDate: '2026-10-14' }, { id: 'second', solarHijriYear: 1404, fromDate: '2025-03-21', toDate: '2026-03-20', isActive: false, version: 'version-b', creationDate: '2026-10-15' }];
+  let ui = view(h(List)); await waitFor(() => assert(ui.getByText('۱۴۰۳'))); assert(ui.getByText('۱ حمل ۱۴۰۳')); assert.equal(requests.length, 1);
+  const second = ui.getByText('۱۴۰۴').closest('tr'); fireEvent.contextMenu(second);
+  fireEvent.click(ui.getByRole('menuitem', { name: i18n.t('afghanAcademicYears.activate') })); assert.equal(activateCalls.length, 0);
+  fireEvent.click(within(ui.getByRole('dialog')).getByRole('button', { name: i18n.t('afghanAcademicYears.activate') }));
+  await waitFor(() => assert(!ui.queryByRole('dialog'))); assert.deepEqual(activateCalls[0], { url: '/afghanistan/academic-years/second/activate', dto: { version: 'version-b' } });
+  assert.equal(requests.length, 2);
+  // Native-year text and active-state filters share date Apply/Reset without network requests.
+  fireEvent.change(ui.getByLabelText(i18n.t('afghanAcademicYears.year'), { exact: false }), { target: { value: '۱۴۰۴' } });
+  fireEvent.click(ui.getByRole('button', { name: i18n.t('filters.button.label') })); assert(ui.getByText('۱۴۰۴')); assert(!ui.queryByText('۱۴۰۳')); assert.equal(requests.length, 2);
+  fireEvent.click(ui.getAllByRole('button', { name: i18n.t('filters.button.reset').trim() })[0]); assert(ui.getByText('۱۴۰۳'));
+  failActivation = true; fireEvent.contextMenu(ui.getByText('۱۴۰۳').closest('tr')); fireEvent.click(ui.getByRole('menuitem', { name: i18n.t('afghanAcademicYears.activate') }));
+  fireEvent.click(within(ui.getByRole('dialog')).getByRole('button', { name: i18n.t('afghanAcademicYears.activate') })); await waitFor(() => assert(ui.getByText('Stale version: reload school year.'))); cleanup();
+  // Real shared editor uses the installed Hijri date picker, keeps a year immutable, and sends optimistic version data.
+  ui = view(h(Editor), '/afghanistan/academic-years/first', true);
+  await waitFor(() => assert(ui.getByLabelText(i18n.t('afghanAcademicYears.year'), { exact: false }).disabled));
+  assert.equal(ui.getByLabelText(i18n.t('afghanAcademicYears.fromDate'), { exact: false }).value, '۱۴۰۳/۰۱/۰۱');
+  fireEvent.submit(ui.container.querySelector('form')); await waitFor(() => assert.equal(saves.length, 1));
+  assert.deepEqual(saves[0], { url: '/afghanistan/academic-years/first', dto: { solarHijriYear: 1403, fromDate: '2024-03-20', toDate: '2025-03-20', version: 'version-a' } }); cleanup();
+  // New-year bounds are native; invalid combinations remain in the editor and never reach the API.
+  ui = view(h(Editor), '/afghanistan/academic-years/new', true); const current = helpers.currentAcademicYear();
+  assert.equal(ui.getByLabelText(i18n.t('afghanAcademicYears.year'), { exact: false }).value, String(current));
+  assert(ui.getByLabelText(i18n.t('afghanAcademicYears.fromDate'), { exact: false }).value.startsWith(new Intl.NumberFormat('fa-AF', { useGrouping: false }).format(current)));
+  fireEvent.change(ui.getByLabelText(i18n.t('afghanAcademicYears.year'), { exact: false }), { target: { value: String(current - 1) } });
+  fireEvent.submit(ui.container.querySelector('form')); await waitFor(() => assert(ui.getByText(i18n.t('afghanAcademicYears.invalidDates')))); assert.equal(saves.length, 1);
+  const nativeCurrent = new Intl.NumberFormat('fa-AF', {useGrouping: false}).format(current);
+  fireEvent.change(ui.getByLabelText(i18n.t('afghanAcademicYears.year'), {exact: false}), {target: {value: nativeCurrent}});
+  fireEvent.submit(ui.container.querySelector('form')); await waitFor(() => assert.equal(saves.length, 2)); assert.equal(saves[1].dto.solarHijriYear, current); cleanup();
+  await i18n.changeLanguage('ps-AF'); rows = []; ui = view(h(List)); await act(async () => {}); assert(ui.getByRole('link', { name: i18n.t('afghanAcademicYears.add') })); assert(ui.getByLabelText(i18n.t('afghanAcademicYears.year'), { exact: false }).closest('.filter-form')); cleanup();
+  const definition = require(country + '/src/applicationModule.tsx').afghanistanApplicationModule;
+  assert(definition.routes.some(route => route.path === '/afghanistan/academic-years' && route.roles.includes('PRINCIPAL') && !route.roles.includes('TEACHER')));
+  const selectModules = require(core + '/src/modules/definitions.ts').selectModules;
+  assert.equal(selectModules([definition], { countryCode: 'AT', role: 'ADMIN' }).length, 0);
+  console.log('PASS: country-owned school-year list/editor, Hijri leap bounds and timezone-safe labels, localized year parsing, role/module isolation, shared filters, confirmation/versioned activation, visible stale errors and validated saves.');
+})().catch(error => { console.error(error); process.exitCode = 1; });
