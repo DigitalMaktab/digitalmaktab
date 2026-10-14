@@ -48,6 +48,16 @@ const change=(ui,from,to)=>{fireEvent.change(ui.getByLabelText(i18n.t('dateRange
  ui=view({data:[{id:'a',name:'Alpha',email:'Match@example.test',joiningClass:{id:'class-a'},creationDate:'2026-10-13'},{id:'b',name:'Beta',email:'other@example.test',joiningClass:{id:'class-a'},creationDate:'2026-10-13'},{id:'c',name:'Earlier',email:'match@example.test',joiningClass:{id:'class-a'},creationDate:'2026-10-12'}],showExport:false,showPagination:false,columns:[{header:'Name',accessor:'name'},{header:'Email',accessor:'email',filter:{type:'text'},hidden:true}]});
  fireEvent.change(ui.getByLabelText('Email'),{target:{value:'MATCH'}});change(ui,'2026-10-13','2026-10-13');assert(ui.getByText('Alpha'));assert(!ui.queryByText('Beta'));assert(!ui.queryByText('Earlier'));cleanup();
  const {filterTableRecords}=require(core+'/helper/tableFilters.ts');assert.equal(filterTableRecords([{joiningClass:{id:'class-a'}},{joiningClass:{id:'class-b'}}],[{accessor:'joiningClass',filter:{type:'dropdown'}}],{classId:'class-a'}).length,1);
+ // Enum status filters share the draft/apply/reset/date flow and compare underlying numeric fields.
+ const statusColumns=[{header:'Name',accessor:'name'},{header:'teacherLeave.column.status',accessor:'leaveStatusValue',filter:{type:'dropdown',accessor:'leaveStatus',options:[{value:'',labelKey:'teacherLeave.status.all'},{value:'0',labelKey:'teacherLeave.status.requested'},{value:'1',labelKey:'teacherLeave.status.approved'}]}}];
+ const leaves=[{id:'requested',name:'Requested current',leaveStatus:0,leaveStatusValue:'Requested',creationDate:'2026-10-13'},{id:'approved',name:'Approved current',leaveStatus:1,leaveStatusValue:'Approved',creationDate:'2026-10-13'},{id:'old',name:'Requested earlier',leaveStatus:0,leaveStatusValue:'Requested',creationDate:'2026-10-12'}];
+ ui=view({data:leaves,columns:statusColumns,showExport:false,showPagination:false});
+ const statusSelect=ui.getByLabelText(i18n.t('teacherLeave.column.status'));
+ assert(statusSelect.closest('.filter-form'));assert.equal(ui.container.querySelectorAll('.filter-form select').length,1);
+ fireEvent.change(statusSelect,{target:{value:'0'}});assert(ui.getByText('Approved current'));
+ change(ui,'2026-10-13','2026-10-13');assert(ui.getByText('Requested current'));assert(!ui.queryByText('Approved current'));assert(!ui.queryByText('Requested earlier'));
+ assert.deepEqual(filterTableRecords(leaves,statusColumns,{leaveStatus:'0'}).map(row=>row.id),['requested','old']);
+ fireEvent.click(ui.getAllByRole('button',{name:i18n.t('filters.button.reset')})[0]);assert(ui.getByText('Approved current'));assert(ui.getByText('Requested earlier'));assert.equal(statusSelect.value,'');cleanup();
  // Obsolete responses must not replace results from the latest applied filters.
  let finish;const delayed=new Promise(resolve=>{finish=resolve});let calls=0;
  ui=view({data:[],showExport:false,fetchPageData:async()=>++calls===1?delayed:{status:2,data:[earlier],headers:{pagination:JSON.stringify({totalPages:1})}}});
