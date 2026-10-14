@@ -58,6 +58,15 @@ tarball_for() {
   echo "${name#@}" | tr '/' '-' | awk -v v="$version" '{print $0"-"v".tgz"}'
 }
 
+SDK_DIR="$PROJECTS/digitalmaktab-spa-sdk"
+echo "==> Building + packing SPA SDK"
+(cd "$SDK_DIR" && npm run build >/dev/null && npm pack --pack-destination "$NPM_LOCAL" >/dev/null)
+SDK_TGZ="$NPM_LOCAL/$(tarball_for "$SDK_DIR")"
+for consumer in "$CORE_DIR" "$SPA_DIR" "$PROJECTS"/digitalmaktab-spa-country-* "$PROJECTS"/digitalmaktab-spa-school-*; do
+  [ -f "$consumer/package.json" ] || continue
+  swap_package "$SDK_TGZ" "$consumer/node_modules/@digitalmaktab/spa-sdk"
+done
+
 echo "==> Building spa-core"
 (cd "$CORE_DIR" && npm run build >/dev/null)
 echo "==> Packing spa-core"
@@ -66,7 +75,7 @@ CORE_TGZ="$NPM_LOCAL/$(tarball_for "$CORE_DIR")"
 
 # Discover country packages.
 COUNTRY_DIRS=()
-for dir in "$PROJECTS"/digitalmaktab-spa-country-*; do
+for dir in "$PROJECTS"/digitalmaktab-spa-country-* "$PROJECTS"/digitalmaktab-spa-school-*; do
   [ -d "$dir" ] || continue
   [ -f "$dir/package.json" ] && COUNTRY_DIRS+=("$dir")
 done
@@ -114,5 +123,5 @@ rm -rf "$SPA_DIR/node_modules/.cache"
 echo "==> Done. CRA will re-bundle automatically (mtimes bumped above);"
 echo "    hard-refresh the browser if it serves a cached chunk."
 if [ ${#COUNTRY_DIRS[@]} -gt 0 ]; then
-  echo "    Country packages included: $(printf '%s ' "${COUNTRY_DIRS[@]##*/}")"
+  echo "    Country/school packages included: $(printf '%s ' "${COUNTRY_DIRS[@]##*/}")"
 fi

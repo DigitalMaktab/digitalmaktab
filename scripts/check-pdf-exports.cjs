@@ -48,7 +48,7 @@ for (const name of fs.readdirSync(projects)) {
 assert(tables.length > 0, 'No table export sites found');
 assert.deepEqual([...new Set(generators)], ['digitalmaktab-spa-core/src/hooks/useJsPdfExportToPdf.ts'], 'All table PDF paths must use the shared Unicode exporter');
 const environment = { ...process.env, PDF_AUDIT_PROJECTS: projects, PDF_AUDIT_ARTIFACTS: artifacts };
-for (const test of ['pdf-export.cjs', 'pdf-print-settings.cjs', 'date-range.cjs', 'table-date-range.cjs', 'pdf-workflow.cjs', 'print-defaults.cjs', 'student-table.cjs']) {
+for (const test of ['pdf-export.cjs', 'pdf-print-settings.cjs', 'date-range.cjs', 'table-date-range.cjs', 'pdf-workflow.cjs', 'print-defaults.cjs', 'student-table.cjs', 'country-consistency.cjs', 'modules.cjs']) {
   const result = spawnSync(process.execPath, [path.join(__dirname, 'tests', test)], { env: environment, stdio: 'inherit', timeout: 60_000 });
   if (result.error) throw result.error;
   assert.equal(result.status, 0, test + ' failed');

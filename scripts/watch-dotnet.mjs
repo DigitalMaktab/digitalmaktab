@@ -13,7 +13,7 @@
 // loaded assemblies and dotnet-watch doesn't detect transitive
 // NuGet DLL swaps.
 
-import { watch } from "node:fs";
+import { watch, readdirSync, existsSync } from "node:fs";
 import { spawn } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { dirname, join, resolve } from "node:path";
@@ -22,10 +22,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dirname, "..");
 const PROJECTS = resolve(ROOT, "..");
 
-const WATCHED = [
-  join(PROJECTS, "digitalmaktab-core/src"),
-  join(PROJECTS, "digitalmaktab-country-afghanistan"),
-];
+const WATCHED = [join(PROJECTS, "digitalmaktab-core/src"), ...readdirSync(PROJECTS).filter(name => /^digitalmaktab-(country|school)-/.test(name)).map(name => join(PROJECTS, name))].filter(existsSync);
 const SYNC_SCRIPT = join(ROOT, "scripts/sync-dotnet.sh");
 const RESTART_SCRIPT = join(ROOT, "scripts/restart-api.sh");
 

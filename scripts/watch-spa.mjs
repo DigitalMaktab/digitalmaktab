@@ -12,7 +12,7 @@
 // Dependency-free — uses Node's native fs.watch recursive mode
 // (macOS + Windows out of the box, Linux via inotify-recursive).
 
-import { watch } from "node:fs";
+import { watch, readdirSync, existsSync } from "node:fs";
 import { spawn } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { dirname, join, resolve } from "node:path";
@@ -21,10 +21,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dirname, "..");
 const PROJECTS = resolve(ROOT, "..");
 
-const WATCHED = [
-  join(PROJECTS, "digitalmaktab-spa-core/src"),
-  join(PROJECTS, "digitalmaktab-spa-country-afghanistan/src"),
-];
+const WATCHED = readdirSync(PROJECTS).filter(name => name === "digitalmaktab-spa-core" || name === "digitalmaktab-spa-sdk" || /^digitalmaktab-spa-(country|school)-/.test(name)).map(name => join(PROJECTS, name, "src")).filter(existsSync);
 const SYNC_SCRIPT = join(ROOT, "scripts/sync-spa.sh");
 
 // Ignore noise: build output, cached snapshots, .DS_Store, swap files.

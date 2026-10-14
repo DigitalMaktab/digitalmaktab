@@ -71,7 +71,7 @@ run_sync_spa() {
 }
 
 case "$REPO_NAME" in
-  digitalmaktab-core|digitalmaktab-country-afghanistan)
+  digitalmaktab-core|digitalmaktab-country-*|digitalmaktab-school-*)
     # Only sync if source actually changed — pure doc / markdown
     # merges shouldn't trigger a 30s pack cycle.
     if echo "$CHANGED_FILES" | grep -qE '\.(cs|resx|csproj|json)$'; then
@@ -80,7 +80,7 @@ case "$REPO_NAME" in
       echo "post-merge: no .cs/.resx/.csproj changes, skipping sync-dotnet"
     fi
     ;;
-  digitalmaktab-spa-core|digitalmaktab-spa-country-afghanistan)
+  digitalmaktab-spa-core|digitalmaktab-spa-sdk|digitalmaktab-spa-country-*|digitalmaktab-spa-school-*)
     if echo "$CHANGED_FILES" | grep -qE '\.(ts|tsx|json|css|scss)$'; then
       run_sync_spa
     else
@@ -88,7 +88,7 @@ case "$REPO_NAME" in
     fi
     ;;
   *)
-    # digitalmaktab-api, -spa, -spa-sdk, and the monorepo stub
+    # digitalmaktab-api, -spa, and the monorepo stub
     # don't produce artifacts other repos consume — nothing to sync.
     echo "post-merge: $REPO_NAME has no downstream consumers, skipping"
     ;;

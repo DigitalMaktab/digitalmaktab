@@ -36,11 +36,14 @@ echo "==> Packing Core"
   src/DigitalMaktab.Core/DigitalMaktab.Core.csproj \
   -c Release --no-build -o "$NUGET_LOCAL" >/dev/null)
 
+echo "==> Packing SDK"
+(cd "$CORE_DIR" && dotnet pack src/DigitalMaktab.SDK/DigitalMaktab.SDK.csproj -c Release --no-build -o "$NUGET_LOCAL" >/dev/null)
+
 # Discover country packages. Each has a single .csproj at its root
 # (sibling convention — see Afghan package). An empty match means no
 # country packages are checked out, which is a valid shape too.
 COUNTRY_DIRS=()
-for dir in "$PROJECTS"/digitalmaktab-country-*; do
+for dir in "$PROJECTS"/digitalmaktab-country-* "$PROJECTS"/digitalmaktab-school-*; do
   [ -d "$dir" ] || continue
   shopt -s nullglob
   csprojs=("$dir"/*.csproj)
@@ -50,7 +53,7 @@ done
 
 # Country packages must compile against the newly packed Core, not the old
 # same-version NuGet cache. Clear it before restoring country consumers.
-rm -rf "$HOME/.nuget/packages/digitalmaktab.core" "$HOME/.nuget/packages/digitalmaktab.core.abstractions"
+rm -rf "$HOME/.nuget/packages/digitalmaktab.core" "$HOME/.nuget/packages/digitalmaktab.core.abstractions" "$HOME/.nuget/packages/digitalmaktab.sdk"
 dotnet nuget locals http-cache --clear >/dev/null
 
 for country_dir in "${COUNTRY_DIRS[@]}"; do
@@ -65,7 +68,7 @@ done
 echo "==> Clearing NuGet caches for Core.Abstractions + Core + each country package"
 rm -rf \
   "$HOME/.nuget/packages/digitalmaktab.core" \
-  "$HOME/.nuget/packages/digitalmaktab.core.abstractions"
+  "$HOME/.nuget/packages/digitalmaktab.core.abstractions" "$HOME/.nuget/packages/digitalmaktab.sdk"
 for country_dir in "${COUNTRY_DIRS[@]}"; do
   # Discover the package id from the .csproj (PackageId element, or
   # fall back to AssemblyName / directory-last-segment matching the
@@ -90,5 +93,5 @@ echo "==> Building API"
 
 echo "==> Done. Restart 'dotnet run' in digitalmaktab-api to pick up the swap."
 if [ ${#COUNTRY_DIRS[@]} -gt 0 ]; then
-  echo "    Country packages included: $(printf '%s ' "${COUNTRY_DIRS[@]##*/}")"
+  echo "    Country/school packages included: $(printf '%s ' "${COUNTRY_DIRS[@]##*/}")"
 fi

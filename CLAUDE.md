@@ -110,31 +110,40 @@ create GitHub remotes on their own.
 7. **Multi-repo, commit locally, don't push.** Restated because the
    human has reminded me many times.
 
-## SPA composition (per-country modules)
+## Module composition (countries and schools)
 
-The SPA imports translations + grading via the country module system:
-
-- `digitalmaktab-spa/src/locale/i18n.ts` imports `enUS` from spa-core
-  and spreads `afghanistanModule.translations` from
-  `spa-country-afghanistan`.
-- Adding a country = new sibling repo mirroring
-  `spa-country-afghanistan/` (see `docs/globalization.md` for the plan
-  the human sketched). Country modules export `{ code, defaultLanguage,
-  supportedLanguages, translations, grading }`.
-- Backend country-specific logic uses `ICalendarProvider` +
-  `ICalendarProviderResolver` in `DigitalMaktab.Core.Abstractions/Countries/`
-  — one implementation per `CalendarSystem` (Gregorian in Core, Solar
-  Hijri in `DigitalMaktab.Country.Afghanistan`).
+- Installed SPA packages export `ApplicationModule` from spa-core, extending
+  the type-only spa-sdk `ModuleDefinition`. Register them in
+  `digitalmaktab-spa/src/plugins/modules.ts`.
+- Core's `ApplicationModuleProvider` activates modules by school country and
+  school ID, then composes routes, sidebar items, editor tabs, person/table
+  columns, row transformations, translations, languages, calendar and grading.
+  School contributions take precedence over country contributions.
+- `AppTable` supports `moduleTableKey` and module-defined table behavior. Keep
+  all custom UI on Core primitives; module DTOs/domains stay in their package.
+- Backend modules extend SDK `CountryModuleBase` / `SchoolModuleBase` and
+  register through `AddDigitalMaktabModule`. Core discovers their controllers,
+  model configurations and mapper profiles, and enforces their country/school
+  target. Module-owned records use `ModuleEntity` or `IModuleSchoolEntity` for
+  tenant filtering and write protection. Background work uses a scoped
+  `ModuleTenantContext` binding.
+- Afghanistan is the working reference. Additional country and school packages
+  follow the same contract; no lower-module implementation belongs in Core.
+- Backend calendars continue to use `ICalendarProvider` +
+  `ICalendarProviderResolver` in Core.Abstractions. Gregorian is in Core;
+  Solar Hijri belongs to Afghanistan.
+- See `digitalmaktab-docs/HOWTO-ADD-COUNTRY.md` and
+  `HOWTO-ADD-COUNTRY-SPA.md` for current registration examples.
 
 ## Dev workflow — build + install ritual (READ CAREFULLY)
 
 Because packages are consumed via **tarball install** (not `npm link`),
-changes to `spa-core` or `spa-country-afghanistan` do NOT hot-reload
+changes to SDK, `spa-core`, country or school packages do NOT hot-reload
 into the running `npm start`. Use the automation scripts:
 
 ```bash
 ./scripts/sync-dotnet.sh   # Core.Abstractions + Core + Afghan .NET → API
-./scripts/sync-spa.sh      # spa-core + spa-country-afghanistan → SPA
+./scripts/sync-spa.sh      # SDK + spa-core + country/school modules → SPA
 ./scripts/sync-all.sh      # both of the above in order
 ```
 
