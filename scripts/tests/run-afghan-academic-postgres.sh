@@ -10,4 +10,4 @@ pg_ctl -D "$database_dir/data" -o "-h '' -k '$database_dir' -p 55439" -l "$datab
 createdb -h "$database_dir" -p 55439 -U academic_test academic_year_tests
 export AF_ACADEMIC_TEST_DATABASE="Host=$database_dir;Port=55439;Username=academic_test;Database=academic_year_tests"
 cd "$projects_dir/digitalmaktab-country-afghanistan"
-dotnet test tests/DigitalMaktab.Country.Afghanistan.Tests --no-restore --filter FullyQualifiedName~AcademicYearTests --verbosity quiet
+dotnet test tests/DigitalMaktab.Country.Afghanistan.Tests --no-restore --filter FullyQualifiedName~AcademicYearTests --verbosity minimal

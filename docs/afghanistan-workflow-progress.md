@@ -14,9 +14,15 @@ when integration requires them. Commit affected repositories locally; do not pus
   Dates must fit teaching dates, cannot overlap, and have one type per year.
   Versioned edits and a shared school write lock protect concurrent changes.
   Year edits cannot exclude existing periods.
-- Next: show country periods in the shared school calendar using a generic Core
-  contribution contract, then connect individual examination scheduling to the
-  selected window without duplicating the Core examination editor or scheduler.
+- Calendar integration: implemented through Core's optional
+  ISchoolCalendarContributor contract. Afghanistan owns its repository query,
+  localized titles, label key and editor path; Core composes scoped contributions.
+  Real PostgreSQL/HTTP verification includes Core holidays/events/exams, period
+  boundaries, all three cultures, teacher reads, country isolation and an
+  independent school module. Shared frontend tests cover native month bounds,
+  all languages, internal editor links and viewer permissions.
+- Next: connect individual examination scheduling to the selected window without
+  duplicating the Core examination editor or scheduler.
   Core Exam currently has no examination-type field and no module validation hook;
   inspect these boundaries before choosing the integration.
 - Document dates: inspect all country reports and official document flows, reuse
@@ -33,6 +39,8 @@ when integration requires them. Commit affected repositories locally; do not pus
   native dates, draft/Apply/Reset behavior without repeated requests, period
   versions, stale errors, invalid school-year selection, initial active year,
   and empty-state navigation. Also passes in America/New_York.
+- The calendar integration also fixes events with no end time appearing in every
+  later calendar request. The existing event date defines its end when none is set.
 - Shared PDF/filter/module audit passes across 96 AppTable sites. Core component
   reuse audit passes across 185 source files. Localization parity passes across
   frontend, backend and mobile bundles.

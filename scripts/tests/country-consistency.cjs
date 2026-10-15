@@ -10,11 +10,12 @@ mocks={AppButton,AppCalendarGrid,AppStandaloneInput,useAppLocalizer:require(core
 const {afghanistanCalendar}=require(projects+'/digitalmaktab-spa-country-afghanistan/src/index.ts');const {afghanTeacherTableExtension:af}=require(projects+'/digitalmaktab-spa-country-afghanistan/src/teacherTable.ts');const {afghanStudentTableExtension:afStudent}=require(projects+'/digitalmaktab-spa-country-afghanistan/src/studentTable.ts');
 registry={teacherTableExtensions:[af,{countryCode:'AT',columns:[{header:'Austria field',accessor:'austriaExample',printByDefault:true}],prepareRow:row=>({...row,austriaExample:row.countryDetails.austriaExample})}]};
 const AppMonthCalendar=require(core+'/src/components/calendar/AppMonthCalendar.tsx').default,AppTable=require(core+'/src/components/table/AppTable.tsx').default,AppModal=require(core+'/src/components/modal/AppModal.tsx').default,AppCountryPersonFields=require(core+'/src/components/AppCountryPersonFields.tsx').default;
-let rows=[],code='AF',queries=[],calendarRequests=[];
-mocks={...mocks,useCountryPeople:()=>({students:[afStudent],teachers:registry.teacherTableExtensions}),getCoreTeacherColumns,ResponseResult,useCalendar,getCalendarMonth,localDateKey,AuthContext,UserRole:require(core+'/src/models/UserRole.ts').UserRole,useFormattedDate:require(core+'/src/hooks/useFormattedDate.ts').default,
+let rows=[],code='AF',queries=[],calendarRequests=[],calendarExtras=[];
+const {getCalendarEntryLabel,getCalendarEntryManagePath}=require(core+'/src/helper/calendarEntries.ts');
+mocks={...mocks,getCalendarEntryLabel,getCalendarEntryManagePath,useCountryPeople:()=>({students:[afStudent],teachers:registry.teacherTableExtensions}),getCoreTeacherColumns,ResponseResult,useCalendar,getCalendarMonth,localDateKey,AuthContext,UserRole:require(core+'/src/models/UserRole.ts').UserRole,useFormattedDate:require(core+'/src/hooks/useFormattedDate.ts').default,
  useSchoolOperations:()=>({data:[],totalPages:1,teacherList:async()=>{queries.push(1);return {status:200,data:rows,headers:{pagination:JSON.stringify({totalPages:1,countryCode:code})}}}}),
  AppMonthCalendar,AppTable,AppModal,AppCountryPersonFields,AppCard:({title,actions,children})=>h('section',null,h('h1',null,title),actions,children),AppAlert:({children})=>h('div',null,children),AppButtonLink:({to,children})=>h('a',{href:to},children),BulkImportModal:()=>null,school:{},getAssetUrl:()=>'',AppImg:props=>h('img',props),
- schoolCalendar:{getCalendar:async(from,to,signal)=>{calendarRequests.push({from,to,signal});return {status:200,data:{entries:[{id:'event',kind:'EVENT',title:'CalendarEvent',fromDate:from,toDate:from}]}}}}};
+ schoolCalendar:{getCalendar:async(from,to,signal)=>{calendarRequests.push({from,to,signal});return {status:200,data:{entries:[{id:'event',kind:'EVENT',title:'CalendarEvent',fromDate:from,toDate:from},...calendarExtras.map(entry=>({...entry,fromDate:from,toDate:to}))]}}}}};
 const TeacherList=require(projects+'/digitalmaktab-spa/src/screens/school/teacher/TeacherList.tsx').default,SchoolCalendar=require(projects+'/digitalmaktab-spa/src/screens/school/calendar/SchoolCalendar.tsx').default;
 const view=(component,calendar=gregorianCalendar,role=0)=>render(h(I18nextProvider,{i18n},h(MemoryRouter,null,h(AuthContext.Provider,{value:{userRole:role,user:null}},h(CalendarProvider,{value:calendar},component)))));
 (async()=>{
@@ -28,6 +29,25 @@ const view=(component,calendar=gregorianCalendar,role=0)=>render(h(I18nextProvid
  // Real calendar screen uses native month bounds, accepts HTTP 200, exposes creation links and date-specific actions.
  ui=view(h(SchoolCalendar),afghanistanCalendar);await waitFor(()=>assert(ui.getByText('CalendarEvent')));const request=calendarRequests.at(-1);const native=getCalendarMonth(new Date(),afghanistanCalendar);assert.equal(request.from,localDateKey(native.start));assert.equal(request.to,localDateKey(native.end));assert(ui.getByRole('link',{name:i18n.t('schoolEvent.add.label')}));fireEvent.click(ui.getByRole('button',{name:request.from}));assert(ui.getAllByRole('link',{name:i18n.t('schoolEvent.add.label')}).some(link=>link.getAttribute('href').includes('?date='+request.from)));assert(ui.getByRole('link',{name:i18n.t('schoolCalendar.manageEntry')}));cleanup();assert(request.signal.aborted);
  calendarRequests=[];ui=view(h(SchoolCalendar),gregorianCalendar,4);await waitFor(()=>assert(ui.getByText('CalendarEvent')));assert(!ui.queryByRole('link',{name:i18n.t('schoolEvent.add.label')}));cleanup();
+ // Module calendar entries use country labels and their own editor, in all app languages.
+ for(const language of ['en-US','fa-AF','ps-AF']){
+  await i18n.changeLanguage(language);const title=i18n.t('afghanExamPeriods.midterm')+' ۱۴۰۵';
+  calendarExtras=[{id:'period',kind:'afghanistan.exam-period',title,kindLabelKey:'afghanExamPeriods.title',managePath:'/afghanistan/exam-periods/period'}];
+  const before=calendarRequests.length;ui=view(h(SchoolCalendar),afghanistanCalendar);await waitFor(()=>assert(ui.getAllByText(title).length));assert.equal(calendarRequests.length,before+1);
+  const firstDay=calendarRequests.at(-1).from;fireEvent.click(ui.getByRole('button',{name:firstDay}));
+  assert(ui.getByText(i18n.t('afghanExamPeriods.title')));
+  assert(ui.getAllByRole('link',{name:i18n.t('schoolCalendar.manageEntry')}).some(link=>link.getAttribute('href')==='/afghanistan/exam-periods/period'));
+  assert(!ui.container.textContent.includes('schoolCalendar.kind.afghanistan'));cleanup();
+ }
+ ui=view(h(SchoolCalendar),afghanistanCalendar,4);await waitFor(()=>assert(ui.getAllByText(calendarExtras[0].title).length));fireEvent.click(ui.getByRole('button',{name:calendarRequests.at(-1).from}));assert(!ui.queryByRole('link',{name:i18n.t('schoolCalendar.manageEntry')}));cleanup();calendarExtras=[];
+ const custom={kind:'school.activity',id:'custom',title:'School module entry'};
+ assert.equal(getCalendarEntryLabel(custom,key=>key),custom.title);assert.equal(getCalendarEntryManagePath(custom),undefined);
+ assert.equal(getCalendarEntryManagePath({...custom,managePath:'/school/activity/custom?tab=details'}),'/school/activity/custom?tab=details');
+ for(const managePath of ['https://example.invalid','//example.invalid','/\\example.invalid','/\nexample.invalid','javascript:alert(1)'])assert.equal(getCalendarEntryManagePath({...custom,managePath}),undefined,JSON.stringify(managePath));
+ assert.equal(getCalendarEntryManagePath({kind:'EXAM',id:'sitting'}),'/exams');
+ assert.equal(getCalendarEntryManagePath({kind:'EVENT',id:'event'}),'/event-editor/event');
+ assert.equal(getCalendarEntryManagePath({kind:'HOLIDAY',id:'holiday'}),'/holidays');
+ await i18n.changeLanguage('fa-AF');
  ui=view(h(CountryPersonProvider,{students:[afStudent],teachers:[af]},h(AppCountryPersonFields,{kind:'teacher',person:{id:'teacher',countryCode:'AF',countryDetails:{fatherNameNative:'CountryFather'}}})));assert(ui.getByText('CountryFather'));cleanup();
  // Shared date/time picker keeps the selected civil day and clock time across calendar conversion.
  const DateTime=require(core+'/src/components/AppLocalDateTimePicker.tsx').default;let picked;
@@ -35,5 +55,5 @@ const view=(component,calendar=gregorianCalendar,role=0)=>render(h(I18nextProvid
  ui=view(h(DateTimeHarness),afghanistanCalendar);assert.equal(ui.getByLabelText('Meeting').value,'۱۴۰۳/۰۱/۰۱');fireEvent.click(ui.getByLabelText('Meeting'));fireEvent.click(ui.getByRole('button',{name:'۲'}));assert.equal(picked,'2024-03-21T13:45');fireEvent.change(ui.getByLabelText('Meeting — '+i18n.t('dateTime.time')),{target:{value:'15:10'}});assert.equal(picked,'2024-03-21T15:10');cleanup();
  // No native Gregorian datetime inputs remain in shell domain forms.
  const walk=dir=>fs.readdirSync(dir,{withFileTypes:true}).flatMap(entry=>entry.isDirectory()?walk(dir+'/'+entry.name):entry.name.endsWith('.tsx')?[dir+'/'+entry.name]:[]);for(const file of walk(projects+'/digitalmaktab-spa/src/screens'))assert(!fs.readFileSync(file,'utf8').includes('type="datetime-local"'),file);
- console.log('PASS: actual teacher country composition, Core names, country profile fields, native Gregorian/Hijri month bounds, leap years, HTTP 200 calendar data, admin/day creation controls, viewer permissions, cleanup cancellation and shared datetime selectors. TZ='+process.env.TZ);
+ console.log('PASS: actual teacher country composition, Core names, country profile fields, native Gregorian/Hijri month bounds, leap years, HTTP 200 calendar data, localized module entries/editor links and rejected external paths, admin/day creation controls, viewer permissions, cleanup cancellation and shared datetime selectors. TZ='+process.env.TZ);
 })().catch(error=>{console.error(error);process.exitCode=1});
