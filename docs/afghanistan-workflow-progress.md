@@ -229,3 +229,37 @@ or academic dates.
   Core TypeScript checks pass. Shared packages have been synced to the SPA, and
   its production build succeeds with the existing CRA/ESLint and bundle warnings.
   Restart the SPA development server to load the updated packages.
+
+## Transfer workflow consistency and lookup reliability
+
+- The shared transfer screen now uses AppTable for both pending lists, retaining
+  filters on empty results, shared creation-date filtering, sorting, pagination,
+  PDF/CSV settings and separate per-user print preferences. Row double-click opens
+  a shared review modal; context actions and visible actions use the same handlers.
+- Release and cancellation require AppModal confirmation. Pending mutations disable
+  actions and reject duplicate submissions. Failed list reads are visible with
+  Retry; stale rows cannot trigger transfer actions after a failed refresh.
+- Lookup/request controls reuse AppForm and Core inputs. Core owns generic native
+  decimal digit normalization and strict positive-integer parsing for school codes;
+  it rejects partial numbers, fractions and Int32 overflow. Afghanistan retains
+  Asas identifiers, normalization and its lookup endpoint in its module.
+- Changing lookup criteria clears the old result and class, aborts abandoned reads
+  and ignores late responses. Missing, ambiguous and failed lookups have distinct
+  localized messages. Shared transfer API methods and the optional country lookup
+  contract forward cancellation signals. New messages cover all supported locales
+  and the mobile catalogs.
+- `scripts/tests/transfers.cjs` exercises the real screen and shared controls in
+  English, Dari and Pashto: country/Gregorian fallback lookup, native codes,
+  malformed inputs, conflicts, empty filters, native creation dates, CSV rows,
+  confirmations, double-click/context review, one release/request per repeated
+  click, load failures/Retry and unmount cancellation. It is part of the shared
+  PDF/filter audit, which now inventories 99 AppTable sites.
+- The complete shared regression audit, strict localization parity, component
+  reuse and Core/shell TypeScript checks pass. Packages are synced and the SPA
+  production build passes with the existing warnings. Restart the SPA dev server
+  to load the package updates; this cycle changes no backend packages.
+- Broader transfer completion remains unproven: the existing backend release path
+  still needs review of destination-class validation, destination school-year
+  selection and concurrent transitions. Country-owned transfer paperwork is not
+  implemented by this screen change; existing comments claiming a 3-parcha table
+  are not evidence that it exists. Optional identity attachments remain open.
