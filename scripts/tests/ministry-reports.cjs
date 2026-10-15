@@ -37,6 +37,18 @@ const view=kind=>render(h(I18nextProvider,{i18n},h(MemoryRouter,null,h(Report,{k
  client.defaults.adapter=async config=>{network++;return {status:200,statusText:'OK',headers:{},config,data:new Blob(['fresh workbook'])};};
  for(const responseType of ['blob','arraybuffer'])await client.get('/any-module/report',{responseType});assert.equal(network,2);assert.equal(cache.reads,0);assert.equal(cache.writes,0);
  client.defaults.adapter=async config=>{throw Object.assign(Error('network down'),{config});};await assert.rejects(client.get('/any-module/report',{responseType:'blob'}),/network down/);assert.equal(cache.reads,0);
+ // Explicit no-store JSON resources also bypass read/write cache and stale error fallback.
+ for(const casing of ['Cache-Control','cache-control']){
+  client.defaults.adapter=async config=>({status:200,statusText:'OK',headers:{},config,data:{fresh:true}});
+  const response=await client.get('/any-module/private-metadata',{headers:{[casing]:'no-store'}});assert(response.data.fresh);assert.equal(cache.reads,0);assert.equal(cache.writes,0);
+  client.defaults.adapter=async config=>{throw Object.assign(Error('private read failed'),{config});};await assert.rejects(client.get('/any-module/private-metadata',{headers:{[casing]:'no-store'}}),/private read failed/);assert.equal(cache.reads,0);
+ }
+ client.defaults.adapter=async config=>({status:200,statusText:'OK',headers:{'cache-control':'private, no-store'},config,data:{fresh:true}});
+ await client.get('/any-module/server-private');assert.equal(cache.writes,0);
+ // The client defaults to JSON: file callers must retain multipart bodies through Axios transforms.
+ const documentBody=new FormData();documentBody.append('file',new Blob(['%PDF-1.4'],{type:'application/pdf'}),'identity.pdf');documentBody.append('kind','0');
+ client.defaults.adapter=async config=>{assert.equal(config.data,documentBody);assert.match(config.headers.get('Content-Type'),/multipart\/form-data/);return {status:200,statusText:'OK',headers:{},config,data:{id:'uploaded'}}};
+ await client.post('/any-module/private-upload',documentBody,{headers:{'Content-Type':'multipart/form-data'}});
  assert.equal(revoked.length,6);
  console.log('PASS: real country report screens download once in all languages, show problem details, abort abandoned requests, preserve filenames and clean URLs; real Core binary requests bypass cache and stale offline fallback.');
 })().catch(error=>{console.error(error);process.exitCode=1;});

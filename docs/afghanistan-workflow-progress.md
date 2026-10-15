@@ -98,7 +98,9 @@ when integration requires them. Commit affected repositories locally; do not pus
 The goal remains open. Existing implementation must be inspected before adding
 anything to these areas; their completion is unverified:
 
-- Paper/electronic Tazkira details and optional attachments.
+- Paper/electronic Tazkira details and optional attachments are implemented in the
+  country forms/register and attachment tabs documented below. This does not
+  verify document authenticity or introduce mandatory government paperwork.
 - Student files, transfer documents, examination sheets and Ministry reporting.
 
 Continue inspecting the existing country implementations and shared contracts
@@ -261,7 +263,7 @@ or academic dates.
 - Backend destination-class validation, destination school-year selection and
   concurrent transitions are verified in the following section. Country-owned transfer paperwork is not
   implemented by this screen change; existing comments claiming a 3-parcha table
-  are not evidence that it exists. Optional identity attachments remain open.
+  are not evidence that it exists. Identity attachments are covered below.
 
 ## Transactional transfer backend and native fee periods
 
@@ -296,5 +298,66 @@ or academic dates.
   Hamal/Sawr boundary. All 20 Core tests and the SPA transfer regression pass.
 - Core, country and API packages are rebuilt and synced. Restart the API dev server
   to load the new assemblies. This cycle changes no database schema and touches no
-  production database. Country transfer paperwork and optional identity attachments
-  remain unimplemented; the broader goal stays open.
+  production database. Country transfer paperwork remains open; optional identity
+  attachments are implemented in the following section.
+
+## Optional private identity attachments
+
+- Afghanistan contributes an Identity attachments tab to both student and teacher
+  editors for admins. The same country component uses AppForm, Core file/select
+  controls, AppTable and AppModal. Paper/electronic Tazkira types, DTOs, entities,
+  repository, domain limits, routes, module registration and schema migration stay
+  in the country packages. Existing profile details remain optional.
+- Core owns a reusable bounded PDF/PNG/JPEG document reader with header-based type
+  detection, safe canonical download names, streaming size limits, cancellation and
+  content hashes. Country-owned attachment bytes are stored transactionally in a
+  PostgreSQL table, without a public Resources path. The country permits 5 MB per
+  file and ten active attachments per person. Student/teacher foreign keys, tenant
+  filters, person-row locks, duplicate guards and database constraints protect
+  ownership, quotas and concurrent uploads.
+- Lists return scalar metadata; authenticated attachment downloads use no-store,
+  attachment disposition and nosniff headers. Access checks the current person's
+  school on every operation. Files belong to their uploading school and are not
+  automatically shared after a transfer. Receiving schools see their own attachments;
+  a former school cannot download files through a transferred person's endpoint.
+- Confirmed removal clears the document bytes while retaining deletion metadata.
+  Tables include shared kind/name/creation-date filters, metadata PDF/CSV exports,
+  row download/context actions, empty/error states and Retry. Downloads finish before
+  triggering a file download and clean up their object URLs. Repeated upload clicks
+  issue one request, and abandoned reads/uploads are cancelled.
+- Core's file input and standalone file input now share one translated presentation,
+  including selected filenames, disabled states and controlled resets. Formik resets
+  clear the native file value so the same file can be selected again. Generic Core
+  API cache handling honors explicit no-store/no-cache requests and no-store response
+  headers; country attachment reads opt out of offline caching and stale fallback.
+  School/person changes immediately clear previous filenames and remount the table
+  so an old export or print dialog cannot remain attached to the new school scope.
+- All new product messages cover English, Dari, Pashto and mobile catalogs. The
+  controller owns its resource triples. Strict localization parity and shared
+  component audits pass.
+- Verification: 72 country tests pass with zero skips against isolated PostgreSQL
+  and real HTTP, including migration replay, student/teacher uploads and downloads,
+  role/country/school isolation, wrong-owner rejection, missing/deleted files, type/
+  size validation, concurrent duplicates, quotas, audit actors, byte erasure and
+  transfer boundaries. All 25 Core tests pass, including spoofed type rejection,
+  bounded streams despite false claimed lengths, canonical names and cancellation.
+- Shared React tests verify the actual attachment panel in all three locales,
+  applied kind/date filters and PDF/CSV metadata, download cleanup, deletion failure/
+  retry, upload deduplication, empty/error states, cancellation, editor contributions,
+  and Core standalone/Formik file resets. Actual API interceptor tests cover cache
+  bypass for both header casings, binary data, failures and server no-store responses.
+  Tests also verify multipart bodies survive the Core client's default JSON setting.
+  The HTTP fixture uses the API host's Newtonsoft enum converter; attachment DTOs
+  expose numeric kind values explicitly to keep UI filters independent of that setting.
+- Real Chrome cases compare the new file/select controls against Core forms and
+  exercise file selection, upload/reset and confirmed deletion in English/light,
+  Dari/dark and Pashto/mobile. The browser harness also retains its 24 existing form
+  and filter comparisons. Screenshots are kept in temporary afghan-forms directories.
+- Backend and SPA packages are rebuilt and synced. The 100-table shared regression
+  audit and production SPA build pass (existing CRA/ESLint and bundle warnings).
+  Restart both dev servers to load the new packages. The country startup migration
+  adds the attachment table on API restart; only isolated test databases were used
+  during verification, and no production database was touched.
+- Country transfer paperwork, examination sheets and further Ministry document
+  completeness remain open. No official layout or document-verification policy is
+  implied by attachment support.
