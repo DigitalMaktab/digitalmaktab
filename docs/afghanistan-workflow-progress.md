@@ -105,3 +105,36 @@ anything to these areas; their completion is unverified:
 An optional prioritization question was sent for these areas. Continue the
 remaining Solar Hijri workflow independently while awaiting an answer. Do not
 invent government-required document layouts or academic dates.
+
+## Additional Afghanistan examination categories (15 October 2026)
+
+- Country-owned `AfghanExamType` now defines midterm (0), annual/final (1),
+  supplementary/Mashrooti (2), excused/Mazurati (3), merit/Liaqat (4),
+  placement/Tasbit-e-Sinf (5), and external-candidate/Samea (6).
+  Original persisted values and JSON numbers remain compatible. Core's grading
+  component enum stays independent of country examination categories.
+- A new country migration expands the database check constraint; existing
+  migrations and records are retained. Rollback cannot silently delete records
+  using the added categories.
+- All categories are available in the existing shared table/editor, applied
+  type filters, PDF/CSV labels, scheduling options and country calendar entries.
+  English, Dari, Pashto and mobile translation catalogs have matching keys.
+- Supplementary, excused, merit, placement and external exam windows may overlap
+  each other or regular exams. Existing midterm/annual overlap protection,
+  school-year bounds, unique type per year, tenant isolation, optimistic versions,
+  and linked-sitting guards remain in force.
+- These changes classify periods and scheduled sittings. They do not create a
+  supplementary-score replacement policy, automatic promotion rule, or a new
+  government-required examination timetable.
+- Ministry sources checked:
+  - https://moe.gov.af/dr/فشرده-چند-خبر-از-معارف-مرکز-و-ولایات-6
+    (1403/12/20: explicitly names Liaqat, Mashrooti and Mazurati school exams).
+  - https://www.moe.gov.af/dr/فورم-های-عرضه-خدمات
+    (student services: Samea exams for grades 7–11/12 and returnee placement).
+- Verification: isolated PostgreSQL migrations and real HTTP academic/report
+  workflow: 33 passed, zero skipped. Shared React table/editor checks exercise
+  all seven categories and save each new category in all three languages.
+  Localization parity and shared-component reuse audits pass.
+- Full shared PDF/filter/module regression audit passes across 98 table sites.
+  Backend/API and SPA packages were rebuilt and synced; the consuming SPA
+  production build succeeds with existing CRA/ESLint warnings.

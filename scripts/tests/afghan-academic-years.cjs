@@ -117,6 +117,33 @@ const view = (component, entry = '/afghanistan/academic-years', editor = false, 
   assert.deepEqual(saves[beforeSave], { url: '/afghanistan/exam-periods/midterm', dto: { academicYearId: 'first', examType: 0, fromDate: '2024-07-01', toDate: '2024-07-15', version: 'period-v1' } }); cleanup();
   ui = view(h(PeriodEditor), '/afghanistan/exam-periods/new', true, '/afghanistan/exam-periods');
   await waitFor(() => assert.equal(ui.getByLabelText(i18n.t('afghanAcademicYears.year'), { exact: false }).value, 'first')); cleanup();
+  // Every country category has its own translated label, filter option and save value.
+  const { afghanExamTypes, afghanExamTypeLabelKey } = require(country + '/src/examPeriods/examTypes.ts');
+  for (const language of ['en-US', 'fa-AF', 'ps-AF']) {
+    await i18n.changeLanguage(language);
+    periods = afghanExamTypes.map(value => ({ id: 'type-' + value, academicYearId: 'first', examType: Number(value), fromDate: '2024-07-01', toDate: '2024-07-15', version: 'v-' + value }));
+    ui = view(h(PeriodList));
+    await waitFor(() => assert(ui.getAllByRole('row').length >= 8));
+    const typeFilter = ui.getByLabelText(i18n.t('afghanExamPeriods.type'), { exact: false });
+    assert.equal(typeFilter.options.length, 8);
+    for (const value of afghanExamTypes) {
+      const label = i18n.t(afghanExamTypeLabelKey(value));
+      assert(!label.startsWith('afghanExamPeriods.'));
+      fireEvent.change(typeFilter, { target: { value } });
+      fireEvent.click(ui.getByRole('button', { name: i18n.t('filters.button.label') }));
+      const dataRows = ui.getAllByRole('row').slice(1);
+      assert.equal(dataRows.length, 1); assert(dataRows[0].textContent.includes(label));
+    }
+    cleanup();
+    for (const value of afghanExamTypes.slice(2)) {
+      ui = view(h(PeriodEditor), '/afghanistan/exam-periods/type-' + value, true, '/afghanistan/exam-periods');
+      await waitFor(() => assert.equal(ui.getByLabelText(i18n.t('afghanExamPeriods.type'), { exact: false }).value, value));
+      const saved = saves.length;
+      fireEvent.submit(ui.container.querySelector('form'));
+      await waitFor(() => assert.equal(saves.length, saved + 1));
+      assert.equal(saves[saved].dto.examType, Number(value)); cleanup();
+    }
+  }
   await i18n.changeLanguage('ps-AF'); periods = []; ui = view(h(PeriodList)); await act(async () => {});
   assert(ui.getByRole('link', { name: i18n.t('afghanExamPeriods.add') }));
   assert(ui.getByLabelText(i18n.t('afghanExamPeriods.type'), { exact: false }).closest('.filter-form')); cleanup();
