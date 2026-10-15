@@ -36,10 +36,10 @@ const select = (label, values, change, key = 'status') => h(Enum, { labelKey: la
   let ui = view(h(Table, { data: [], columns: [{ header: 'Name', accessor: 'name' }], totalPages: 2, fetchPageData: load, filterControls: { initialValues: { status: 0 }, onApply: values => applied.push(values), render: (values, change) => select('teacherLeave.column.status', values, change) } }));
   await waitFor(() => assert(ui.getByText('Row 1')));
   assert.equal(queries.length, 1); assert.equal(queries[0].filters.status, 0);
-  const status = ui.getByLabelText(i18n.t('teacherLeave.column.status')); assert(status.closest('.filter-form'));
+  const status = ui.getByLabelText(i18n.t('teacherLeave.column.status'), { selector: "input,select,textarea" }); assert(status.closest('.filter-form'));
   fireEvent.change(status, { target: { value: '1' } }); assert.equal(queries.length, 1); assert.equal(applied.length, 0);
-  fireEvent.change(ui.getByLabelText(i18n.t('dateRange.from')), { target: { value: '2026-10-13' } });
-  fireEvent.change(ui.getByLabelText(i18n.t('dateRange.to')), { target: { value: '2026-10-13' } });
+  fireEvent.change(ui.getByLabelText(i18n.t('dateRange.from'), { selector: "input,select,textarea" }), { target: { value: '2026-10-13' } });
+  fireEvent.change(ui.getByLabelText(i18n.t('dateRange.to'), { selector: "input,select,textarea" }), { target: { value: '2026-10-13' } });
   apply(ui); await waitFor(() => assert.equal(queries.length, 2));
   const criteria = { status: '1', creationDateFrom: '2026-10-13', creationDateTo: '2026-10-13' };
   assert.deepEqual(queries.at(-1).filters, criteria); assert.deepEqual(applied.at(-1), criteria);
@@ -53,10 +53,10 @@ const select = (label, values, change, key = 'status') => h(Enum, { labelKey: la
   // Empty tables retain their controls; Reset clears every extra value and a checked flag counts once.
   const { activeTableFilterCount } = require(core + '/src/helper/dateRange.ts'); assert.equal(activeTableFilterCount({ status: 0, low: false }), 1);
   ui = view(h(Table, { data: [], columns: [{ header: 'Name', accessor: 'name' }], totalPages: 1, showExport: false, filterControls: { onApply: values => applied.push(values), render: (values, change) => select('teacherLeave.column.status', values, change) } }));
-  fireEvent.change(ui.getByLabelText(i18n.t('teacherLeave.column.status')), { target: { value: '0' } }); apply(ui); assert.equal(applied.at(-1).status, '0');
-  fireEvent.click(ui.getAllByRole('button', { name: i18n.t('filters.button.reset') })[0]); assert.deepEqual(applied.at(-1), {}); assert.equal(ui.getByLabelText(i18n.t('teacherLeave.column.status')).value, ''); cleanup();
+  fireEvent.change(ui.getByLabelText(i18n.t('teacherLeave.column.status'), { selector: "input,select,textarea" }), { target: { value: '0' } }); apply(ui); assert.equal(applied.at(-1).status, '0');
+  fireEvent.click(ui.getAllByRole('button', { name: i18n.t('filters.button.reset') })[0]); assert.deepEqual(applied.at(-1), {}); assert.equal(ui.getByLabelText(i18n.t('teacherLeave.column.status'), { selector: "input,select,textarea" }).value, ''); cleanup();
   ui = view(h(Table, { data: [row(1)], columns: [{ header: 'Name', accessor: 'name' }], totalPages: 1, isLoading: true }));
-  assert(ui.getByRole('button', { name: i18n.t('report.print.tooltip') }).disabled); assert(ui.getByRole('button', { name: i18n.t('report.csv.tooltip') }).disabled); assert(ui.getByLabelText(i18n.t('dateRange.from'))); cleanup();
+  assert(ui.getByRole('button', { name: i18n.t('report.print.tooltip') }).disabled); assert(ui.getByRole('button', { name: i18n.t('report.csv.tooltip') }).disabled); assert(ui.getByLabelText(i18n.t('dateRange.from'), { selector: "input,select,textarea" })); cleanup();
   // Real paged fees and audit screens forward every applied criterion once, with no separate initial/filter request.
   const no = () => null, empty = [], year = { id: 'year-1' };
   const ClassSelect = ({ name, value, onChange }) => h('label', null, 'Class', h('select', { name, value, onChange: e => onChange(e.target.value) }, h('option', { value: '' }, 'All'), h('option', { value: 'class-1' }, 'Class 1')));
@@ -65,30 +65,30 @@ const select = (label, values, change, key = 'status') => h(Enum, { labelKey: la
   mocks = { AppTable: Table, AppEnumFilterSelect: Enum, AppClassSelect: ClassSelect, AppCard: ({ children }) => h('section', null, children), AppAlert: ({ children }) => h('div', null, children), AppModal: no, AppForm: no, AppFormInput: no, AppFormOptionSelect: no, AppCheckbox: no, AppButton: require(core + '/src/components/AppButton.tsx').default, AppStatusBadge: ({ children }) => h('span', null, children), useAppLocalizer: require(core + '/src/hooks/useAppLocalizer.ts').useAppLocalizer, useCalendar: () => gregorianCalendar, useFees: () => ({ roster, totalPages: 1, data: empty }), useMainOperations: () => ({ fetchActiveCalendarYear: async () => {}, data: year }), ResponseResult: require(core + '/src/dtos/ResultEnum.ts').ResponseResult, PaymentMethod: require(core + '/src/models/PaymentMethod.ts').PaymentMethod };
   const Fees = require(shell + '/src/screens/school/fees/AdminFees.tsx').default;
   ui = view(h(Fees)); await waitFor(() => assert(ui.getByText('Fee student'))); assert.equal(calls.length, 1);
-  fireEvent.change(ui.getByLabelText('Class'), { target: { value: 'class-1' } }); fireEvent.change(ui.getByLabelText(i18n.t('adminFees.filter.status.label')), { target: { value: 'paid' } });
-  fireEvent.change(ui.getByLabelText(i18n.t('dateRange.from')), { target: { value: '2026-10-13' } }); assert.equal(calls.length, 1); apply(ui);
+  fireEvent.change(ui.getByLabelText('Class', { selector: "input,select,textarea" }), { target: { value: 'class-1' } }); fireEvent.change(ui.getByLabelText(i18n.t('adminFees.filter.status.label'), { selector: "input,select,textarea" }), { target: { value: 'paid' } });
+  fireEvent.change(ui.getByLabelText(i18n.t('dateRange.from'), { selector: "input,select,textarea" }), { target: { value: '2026-10-13' } }); assert.equal(calls.length, 1); apply(ui);
   await waitFor(() => assert.equal(calls.length, 2)); assert.deepEqual(calls.at(-1).filters, { month: String(new Date().getMonth()), classId: 'class-1', paymentStatus: 'paid', creationDateFrom: '2026-10-13', creationDateTo: '', calendarYearId: 'year-1' });
   await act(async () => {}); assert.equal(calls.length, 2);
   fireEvent.click(ui.getAllByRole('button', { name: i18n.t('filters.button.reset') })[0]); await waitFor(() => assert.equal(calls.length, 3)); assert.deepEqual(calls.at(-1).filters, { calendarYearId: 'year-1' }); cleanup();
   calls = []; const auditList = async (page, size, filters) => { calls.push({ page, size, filters }); return { status: 2, data: [{ id: 'audit', entityName: 'Audit record' }], headers: { pagination: JSON.stringify({ totalPages: 1 }) } }; };
   mocks = { ...mocks, useAudits: () => ({ list: auditList, data: empty, totalPages: 1 }) };
   const AuditLog = require(shell + '/src/screens/school/audit/AuditLog.tsx').default; ui = view(h(AuditLog)); await waitFor(() => assert(ui.getByText('Audit record'))); assert.equal(calls.length, 1);
-  fireEvent.change(ui.getByLabelText(i18n.t('auditLog.actionFilter.label')), { target: { value: 'UPDATE' } }); assert.equal(calls.length, 1); apply(ui); await waitFor(() => assert.equal(calls.length, 2)); assert.equal(calls.at(-1).filters.action, 'UPDATE'); cleanup();
+  fireEvent.change(ui.getByLabelText(i18n.t('auditLog.actionFilter.label'), { selector: "input,select,textarea" }), { target: { value: 'UPDATE' } }); assert.equal(calls.length, 1); apply(ui); await waitFor(() => assert.equal(calls.length, 2)); assert.equal(calls.at(-1).filters.action, 'UPDATE'); cleanup();
   // Course-scoped assignments use the table's applied filters and stay available with no course/results.
   calls = [];
   const courseList = async (courseId, page, size, filters) => { calls.push({ courseId, page, size, filters }); return { status: 2, data: [{ id: 'assignment', title: 'Homework', creationDate: '2026-10-13' }], headers: { pagination: JSON.stringify({ totalPages: 1 }) } }; };
   mocks = { ...mocks, AppCourseSelect: ClassSelect, useAssignments: () => ({ listForCourse: courseList, data: empty, totalPages: 1 }) };
   const Assignments = require(shell + '/src/screens/teacher/assignments/TeacherAssignments.tsx').default;
   ui = view(h(Assignments)); await act(async () => {}); assert.equal(calls.length, 0);
-  fireEvent.change(ui.getByLabelText('Class'), { target: { value: 'class-1' } });
-  fireEvent.change(ui.getByLabelText(i18n.t('teacherAssignments.title.label')), { target: { value: 'Home' } });
-  fireEvent.change(ui.getByLabelText(i18n.t('dateRange.from')), { target: { value: '2026-10-13' } }); assert.equal(calls.length, 0); apply(ui);
+  fireEvent.change(ui.getByLabelText('Class', { selector: "input,select,textarea" }), { target: { value: 'class-1' } });
+  fireEvent.change(ui.getByLabelText(i18n.t('teacherAssignments.title.label'), { selector: "input,select,textarea" }), { target: { value: 'Home' } });
+  fireEvent.change(ui.getByLabelText(i18n.t('dateRange.from'), { selector: "input,select,textarea" }), { target: { value: '2026-10-13' } }); assert.equal(calls.length, 0); apply(ui);
   await waitFor(() => assert(ui.getByText('Homework'))); assert.equal(calls.length, 1); assert.equal(calls[0].courseId, 'class-1');
   assert.deepEqual(calls[0].filters, { searchTerm: 'Home', creationDateFrom: '2026-10-13', creationDateTo: '' });
-  fireEvent.click(ui.getAllByRole('button', { name: i18n.t('filters.button.reset') })[0]); await waitFor(() => assert(!ui.queryByText('Homework'))); assert.equal(calls.length, 1); assert(ui.getByLabelText('Class')); cleanup();
+  fireEvent.click(ui.getAllByRole('button', { name: i18n.t('filters.button.reset') })[0]); await waitFor(() => assert(!ui.queryByText('Homework'))); assert.equal(calls.length, 1); assert(ui.getByLabelText('Class', { selector: "input,select,textarea" })); cleanup();
   // Aggregated grade/attendance views keep empty-table scopes visible and apply dates to source records.
   const GradeBook = require(core + '/src/components/grade/AppGradeBook.tsx').default;
   ui = view(h(GradeBook, { grades: [{ id: 'g1', courseId: 'course', examType: 0, score: 10, creationDate: '2026-10-12' }, { id: 'g2', courseId: 'course', examType: 1, score: 20, creationDate: '2026-10-13' }], filterControls: { render: (values, change) => select('teacherLeave.column.status', values, change) } }));
-  fireEvent.change(ui.getByLabelText(i18n.t('dateRange.from')), { target: { value: '2026-10-13' } }); apply(ui); assert(ui.container.querySelector('tbody tr')); assert(!ui.queryByText(/^10 \/ /)); cleanup();
+  fireEvent.change(ui.getByLabelText(i18n.t('dateRange.from'), { selector: "input,select,textarea" }), { target: { value: '2026-10-13' } }); apply(ui); assert(ui.container.querySelector('tbody tr')); assert(!ui.queryByText(/^10 \/ /)); cleanup();
   console.log('PASS: shared extra filters support drafts/Apply/Reset, numeric zero, empty results, all criteria in paged queries and CSV/PDF exports; real fees/audit screens issue one request per apply and preserve dates; aggregate controls remain available.');
 })().catch(error => { console.error(error); process.exitCode = 1; });

@@ -206,3 +206,26 @@ or academic dates.
   API packages are synced. The consuming SPA production build succeeds with the
   existing CRA/ESLint warnings. Development API/SPA servers must restart to load
   the swapped packages. No production database was touched.
+
+### Shared table filter and form consistency
+
+- Core AppTable filters now inherit the same theme as AppForm. Fixed-choice
+  filters and page-size controls reuse AppSelect2; text, number, textarea,
+  checkbox, lookup and date controls match their form equivalents. Country date
+  providers still select Solar Hijri for Afghanistan and Gregorian elsewhere.
+- Shared date-range validation uses AppErrorMessage and links both inputs to the
+  error. Filter field IDs are unique, numeric zero is preserved, and the All
+  option remains selectable. Updating Select2 values does not invoke draft
+  callbacks or reinitialize the widget on every render.
+- Core async lookups follow controlled filter values, clear their displayed
+  selection on Reset, preserve direction/disabled/validation metadata, and make
+  one initial option request. Optional lookup wrappers safely handle clearing.
+- Verification: all 24 real Chrome cases pass (12 country form cases and 12
+  shared filter cases). Comparisons cover English, Dari and Pashto, light/dark,
+  desktop/mobile, and Hijri/Gregorian controls. Actual dropdown interactions
+  verify All, lookup Reset, page-size changes, draft isolation and one request
+  per Apply/Reset. The shared PDF/filter/module regression passes across all
+  98 inventoried AppTable sites; strict translation parity, component reuse and
+  Core TypeScript checks pass. Shared packages have been synced to the SPA, and
+  its production build succeeds with the existing CRA/ESLint and bundle warnings.
+  Restart the SPA development server to load the updated packages.

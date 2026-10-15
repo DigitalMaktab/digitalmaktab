@@ -25,7 +25,7 @@ const form=()=>h(Form,{onCreated:()=>{createdCallbacks++;}});
 const fill=async(ui,calendar)=>{
  fireEvent.click(ui.getByRole('button',{name:'Choose class'}));fireEvent.click(ui.getByRole('button',{name:'Choose course'}));
  fireEvent.change(ui.getByLabelText(i18n.t('exam.create.fields.title'),{exact:false,selector:"input,select"}),{target:{value:'Mathematics exam'}});
- const dateInput=calendar===gregorianCalendar?ui.container.querySelector('input[type="date"]'):ui.getByLabelText(i18n.t('exam.create.fields.startAt'),{exact:true});
+ const dateInput=calendar===gregorianCalendar?ui.container.querySelector('input[type="date"]'):ui.getByLabelText(i18n.t('exam.create.fields.startAt'),{ selector: "input,select,textarea",exact:true});
  if(calendar===gregorianCalendar)fireEvent.change(dateInput,{target:{value:'2026-07-15'}});
  else {fireEvent.click(dateInput);fireEvent.click(ui.getByRole('button',{name:i18n.t('afghanDatePicker.today')}));}
 };

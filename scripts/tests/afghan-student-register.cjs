@@ -51,11 +51,11 @@ URL.revokeObjectURL = () => {}; window.HTMLAnchorElement.prototype.click = () =>
     { id: 'third', name: 'Clean student', fatherName: 'Father', asasNumber: 8, profileNumber: 8, registerNumber: null, electronicIdentity: '555', paperReference: '', dateOfBirth: '2010-01-01T00:00:00Z', issues: [], hasIssues: false, status: true, creationDate: new Date().toISOString().slice(0, 10) },
   ];
   let ui = view(); await waitFor(() => assert(ui.getByText('Ahmad'))); assert.equal(requests.length, 1);
-  const issue = ui.getByLabelText(i18n.t('afghanStudentRegister.issueFilter')); assert(issue.closest('.filter-form'));
-  const search = key => ui.getByLabelText(i18n.t('afghanStudentRegister.' + key), { exact: true });
+  const issue = ui.getByLabelText(i18n.t('afghanStudentRegister.issueFilter'), { selector: "input,select,textarea" }); assert(issue.closest('.filter-form'));
+  const search = key => ui.getByLabelText(i18n.t('afghanStudentRegister.' + key), { selector: "input,select,textarea", exact: true });
   fireEvent.change(issue, { target: { value: 'DuplicateAsas' } });
   fireEvent.change(search('asas'), { target: { value: '۷' } });
-  fireEvent.click(ui.getByLabelText(i18n.t('dateRange.from')));
+  fireEvent.click(ui.getByLabelText(i18n.t('dateRange.from'), { selector: "input,select,textarea" }));
   fireEvent.click(ui.getByRole('button', {name: i18n.t('afghanDatePicker.today')}));
   assert(ui.getByText('Ahmad')); assert(ui.getByText('Clean student')); apply(ui);
   assert(ui.getByText('Mahmood')); assert(!ui.queryByText('Ahmad')); assert(!ui.queryByText('Clean student')); assert.equal(requests.length, 1);
@@ -78,15 +78,15 @@ URL.revokeObjectURL = () => {}; window.HTMLAnchorElement.prototype.click = () =>
   await i18n.changeLanguage('fa-AF'); ui = view(); await waitFor(() => assert(ui.getByText('Ahmad')));
   fireEvent.change(search('electronic'), { target: { value: '٠٠٠١٢٣' } }); apply(ui);
   assert(ui.getByText('Ahmad')); assert(ui.getByText('Mahmood')); assert(!ui.queryByText('Clean student')); reset(ui); assert(ui.getByText('Clean student'));
-  fireEvent.change(ui.getByLabelText(i18n.t('afghanStudentRegister.issueFilter')), { target: { value: 'none' } }); apply(ui);
+  fireEvent.change(ui.getByLabelText(i18n.t('afghanStudentRegister.issueFilter'), { selector: "input,select,textarea" }), { target: { value: 'none' } }); apply(ui);
   assert(ui.getByText('Clean student')); assert(!ui.queryByText('Ahmad')); reset(ui);
   fireEvent.change(search('status'), { target: { value: 'false' } }); apply(ui); assert(ui.getByText('Mahmood')); assert(!ui.queryByText('Ahmad')); cleanup();
   ui = view(mocks.UserRole.PRINCIPAL); await waitFor(() => assert(ui.getByText('Ahmad'))); fireEvent.doubleClick(ui.getByText('Ahmad').closest('tr'));
   assert(!within(ui.getByRole('dialog')).queryByRole('link')); cleanup();
   failure = true; ui = view(); await waitFor(() => assert(ui.getByText('Register unavailable')));
-  assert(ui.getByLabelText(i18n.t('afghanStudentRegister.issueFilter'))); failure = false;
+  assert(ui.getByLabelText(i18n.t('afghanStudentRegister.issueFilter'), { selector: "input,select,textarea" })); failure = false;
   fireEvent.click(ui.getByRole('button', {name: i18n.t('afghanAcademicYears.refresh')})); await waitFor(() => assert(ui.getByText('Ahmad'))); cleanup();
-  rows = []; ui = view(); await act(async () => {}); assert(ui.getByLabelText(i18n.t('afghanStudentRegister.issueFilter'))); cleanup();
+  rows = []; ui = view(); await act(async () => {}); assert(ui.getByLabelText(i18n.t('afghanStudentRegister.issueFilter'), { selector: "input,select,textarea" })); cleanup();
   let resolve; pending = new Promise(done => { resolve = done; }); ui = view(); const last = requests.at(-1); cleanup(); assert(last.signal.aborted);
   resolve({data: []}); pending = null; await act(async () => {});
   const extension = require(country + '/src/studentTable.ts').afghanStudentTableExtension;

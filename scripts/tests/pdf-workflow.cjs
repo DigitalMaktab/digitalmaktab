@@ -21,23 +21,23 @@ const button=(ui,key)=>ui.getAllByRole('button',{name:i18n.t('report.settings.'+
  let finish,cancelSignal,fetches=0;const pending=new Promise(resolve=>{finish=resolve});
  let ui=view({fetchAllForExport:(filters,signal)=>{fetches++;cancelSignal=signal;return pending}});openSettings(ui);
  assert(!within(ui.getByRole('dialog')).queryByText(i18n.t('report.settings.recordCount')));
- fireEvent.change(ui.getByLabelText(i18n.t('report.settings.pageSize')),{target:{value:'letter'}});
- fireEvent.change(ui.getByLabelText(i18n.t('report.settings.orientation')),{target:{value:'landscape'}});
+ fireEvent.change(ui.getByLabelText(i18n.t('report.settings.pageSize'), { selector: "input,select,textarea" }),{target:{value:'letter'}});
+ fireEvent.change(ui.getByLabelText(i18n.t('report.settings.orientation'), { selector: "input,select,textarea" }),{target:{value:'landscape'}});
  fireEvent.click(ui.getByRole('checkbox',{name:'Due date'}));fireEvent.click(button(ui,'export'));
  assert(ui.getByRole('progressbar',{name:i18n.t('report.settings.loadingRecords')}));assert.equal(opens,0);assert.equal(fetches,1);
  fireEvent.click(button(ui,'cancel'));assert(cancelSignal.aborted);assert(!ui.queryByRole('dialog'));
  await act(async()=>{finish(rows)});assert.equal(opens,0);assert.equal(urls,0);
- openSettings(ui);assert.equal(ui.getByLabelText(i18n.t('report.settings.pageSize')).value,'letter');assert.equal(ui.getByLabelText(i18n.t('report.settings.orientation')).value,'landscape');assert(!ui.getByRole('checkbox',{name:'Due date'}).checked);cleanup();
+ openSettings(ui);assert.equal(ui.getByLabelText(i18n.t('report.settings.pageSize'), { selector: "input,select,textarea" }).value,'letter');assert.equal(ui.getByLabelText(i18n.t('report.settings.orientation'), { selector: "input,select,textarea" }).value,'landscape');assert(!ui.getByRole('checkbox',{name:'Due date'}).checked);cleanup();
  // A failed load offers Retry and preserves the preferences; successful generation stays in the modal.
  let attempts=0;ui=view({fetchAllForExport:async()=>{if(++attempts===1)throw new Error('network failure');return rows}});openSettings(ui);fireEvent.click(button(ui,'export'));
- await waitFor(()=>assert(ui.getByText(i18n.t('report.settings.errors.loading'))));assert.equal(ui.getByLabelText(i18n.t('report.settings.pageSize')).value,'letter');fireEvent.click(button(ui,'retry'));
+ await waitFor(()=>assert(ui.getByText(i18n.t('report.settings.errors.loading'))));assert.equal(ui.getByLabelText(i18n.t('report.settings.pageSize'), { selector: "input,select,textarea" }).value,'letter');fireEvent.click(button(ui,'retry'));
  await waitFor(()=>assert(button(ui,'openPdf')));assert.equal(opens,0);assert.equal(attempts,2);assert(ui.getByRole('progressbar',{name:i18n.t('report.settings.ready')}));assert(ui.getByText(i18n.t('report.settings.readyDetails',{records:'2',pages:'1'})));
  const readyUrl=[...blobs.keys()][0];const readyBlob=blobs.get(readyUrl);assert((await readyBlob.text()).startsWith('%PDF-'));
  // Blocked previews retain the finished artifact and a separate download option.
  window.open=()=>null;fireEvent.click(button(ui,'openPdf'));assert(ui.getByText(i18n.t('report.settings.popupBlocked')));fireEvent.click(button(ui,'downloadPdf'));assert.equal(lastDownload.url,readyUrl);assert(lastDownload.name.endsWith('.pdf'));assert.equal(attempts,2);
  fireEvent.click(button(ui,'close'));assert(revoked.includes(readyUrl));assert.equal(blobs.size,0);cleanup();
  // Preferences remain isolated by table, follow column identities, and tolerate corrupt storage.
- ui=view({printPreferenceKey:'other-table'});openSettings(ui);assert.equal(ui.getByLabelText(i18n.t('report.settings.pageSize')).value,'a4');assert(ui.getByRole('checkbox',{name:'Due date'}).checked);cleanup();
+ ui=view({printPreferenceKey:'other-table'});openSettings(ui);assert.equal(ui.getByLabelText(i18n.t('report.settings.pageSize'), { selector: "input,select,textarea" }).value,'a4');assert(ui.getByRole('checkbox',{name:'Due date'}).checked);cleanup();
  assert.deepEqual(settings.loadPdfSettings('workflow-table',[columns[1],columns[0],columns[2]]).selectedColumns,[1]);
  localStorage.setItem(settings.pdfPreferenceStorageKey('broken',settings.getPdfPreferenceUserKey()),'{bad');assert.deepEqual(settings.loadPdfSettings('broken',columns),settings.defaultPdfSettings(columns));
  // Cancel between server pages: no subsequent page request and no mutation of the table's page snapshot.

@@ -74,7 +74,7 @@ const view = (component, entry = '/afghanistan/academic-years', editor = false, 
   fireEvent.change(ui.getByLabelText(i18n.t('afghanAcademicYears.year'), { exact: false, selector: "input,select" }), { target: { value: String(current - 1) } });
   fireEvent.submit(ui.container.querySelector('form')); await waitFor(() => assert(ui.getByText(i18n.t('afghanAcademicYears.invalidDates')))); assert.equal(saves.length, 1);
   const nativeCurrent = new Intl.NumberFormat('fa-AF', {useGrouping: false}).format(current);
-  fireEvent.change(ui.getByLabelText(i18n.t('afghanAcademicYears.year'), {exact: false}), {target: {value: nativeCurrent}});
+  fireEvent.change(ui.getByLabelText(i18n.t('afghanAcademicYears.year'), { selector: "input,select,textarea",exact: false}), {target: {value: nativeCurrent}});
   fireEvent.submit(ui.container.querySelector('form')); await waitFor(() => assert.equal(saves.length, 2)); assert.equal(saves[1].dto.solarHijriYear, current); cleanup();
   await i18n.changeLanguage('ps-AF'); rows = []; ui = view(h(List)); await act(async () => {}); assert(ui.getByRole('link', { name: i18n.t('afghanAcademicYears.add') })); assert(ui.getByLabelText(i18n.t('afghanAcademicYears.year'), { exact: false, selector: "input,select" }).closest('.filter-form')); cleanup();
   // Country examination periods reuse the actual shared table, filters, editor and native date controls.

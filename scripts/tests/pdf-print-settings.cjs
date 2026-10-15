@@ -23,21 +23,23 @@ const realTimer=window.setTimeout.bind(window);window.setTimeout=(callback,delay
  await i18n.init({lng:'en-US',resources,interpolation:{escapeValue:false}});
  let exportGate;let fetches=0;const all=async(filters)=>{fetches++;if(exportGate)await exportGate;return filterRecordsByCreationDate(rows,{from:filters.creationDateFrom||'',to:filters.creationDateTo||''})};const view=()=>render(h(I18nextProvider,{i18n},h(MemoryRouter,null,h(AppTable,{columns,data:rows,totalPages:1,fetchAllForExport:all}))));
  for(const lng of ['en-US','fa-AF','ps-AF']){
-  localStorage.clear();await i18n.changeLanguage(lng);let ui=view();await waitFor(()=>assert(!ui.getByRole('button',{name:i18n.t('report.print.tooltip')}).disabled));assert(ui.getByLabelText(i18n.t('dateRange.from')));fireEvent.click(ui.getByRole('button',{name:i18n.t('report.print.tooltip')}));const dialog=ui.getByRole('dialog');assert(dialog.textContent.includes(i18n.t('report.settings.title')));assert(!within(dialog).queryByLabelText(i18n.t('dateRange.from')));
-  fireEvent.change(ui.getByLabelText(i18n.t('report.settings.pageSize')),{target:{value:'letter'}});fireEvent.change(ui.getByLabelText(i18n.t('report.settings.orientation')),{target:{value:'landscape'}});
+  localStorage.clear();await i18n.changeLanguage(lng);let ui=view();await waitFor(()=>assert(!ui.getByRole('button',{name:i18n.t('report.print.tooltip')}).disabled));assert(ui.getByLabelText(i18n.t('dateRange.from'), { selector: "input,select,textarea" }));fireEvent.click(ui.getByRole('button',{name:i18n.t('report.print.tooltip')}));const dialog=ui.getByRole('dialog');assert(dialog.textContent.includes(i18n.t('report.settings.title')));assert(!within(dialog).queryByLabelText(i18n.t('dateRange.from'), { selector: "input,select,textarea" }));
+  fireEvent.change(ui.getByLabelText(i18n.t('report.settings.pageSize'), { selector: "input,select,textarea" }),{target:{value:'letter'}});fireEvent.change(ui.getByLabelText(i18n.t('report.settings.orientation'), { selector: "input,select,textarea" }),{target:{value:'landscape'}});
   fireEvent.click(ui.getByRole('checkbox',{name:'Due date'}));fireEvent.click(ui.getByRole('checkbox',{name:'Name'}));assert(ui.getByRole('button',{name:i18n.t('report.settings.export')}).disabled);fireEvent.click(ui.getByRole('checkbox',{name:'Name'}));
-  assert.equal(within(ui.getByRole('dialog')).queryByLabelText(i18n.t('dateRange.from')),null);
+  assert.equal(within(ui.getByRole('dialog')).queryByLabelText(i18n.t('dateRange.from'), { selector: "input,select,textarea" }),null);
   fireEvent.click(ui.getByRole('button',{name:i18n.t('report.settings.cancel')}));
-  fireEvent.change(ui.getByLabelText(i18n.t('dateRange.from')),{target:{value:'2026-10-14'}});
-  fireEvent.change(ui.getByLabelText(i18n.t('dateRange.to')),{target:{value:'2026-10-13'}});
+  fireEvent.change(ui.getByLabelText(i18n.t('dateRange.from'), { selector: "input,select,textarea" }),{target:{value:'2026-10-14'}});
+  fireEvent.change(ui.getByLabelText(i18n.t('dateRange.to'), { selector: "input,select,textarea" }),{target:{value:'2026-10-13'}});
+  const invalidDate=ui.getByLabelText(i18n.t('dateRange.to'),{selector:'input'});assert.equal(invalidDate.getAttribute('aria-invalid'),'true');assert(document.getElementById(invalidDate.getAttribute('aria-describedby')));
+
   assert(ui.getByRole('button',{name:i18n.t('filters.button.label')}).disabled);
-  fireEvent.change(ui.getByLabelText(i18n.t('dateRange.from')),{target:{value:'2026-10-13'}});
+  fireEvent.change(ui.getByLabelText(i18n.t('dateRange.from'), { selector: "input,select,textarea" }),{target:{value:'2026-10-13'}});
   fireEvent.click(ui.getByRole('button',{name:i18n.t('filters.button.label')}));
   await waitFor(()=>assert(!ui.getByRole('button',{name:i18n.t('report.print.tooltip')}).disabled));
   assert(ui.getByText('Boundary'));assert(!ui.queryByText('Earlier'));assert(!ui.queryByText('Later'));
   fireEvent.click(ui.getByRole('button',{name:i18n.t('report.print.tooltip')}));
-  fireEvent.change(ui.getByLabelText(i18n.t('report.settings.pageSize')),{target:{value:'letter'}});
-  fireEvent.change(ui.getByLabelText(i18n.t('report.settings.orientation')),{target:{value:'landscape'}});
+  fireEvent.change(ui.getByLabelText(i18n.t('report.settings.pageSize'), { selector: "input,select,textarea" }),{target:{value:'letter'}});
+  fireEvent.change(ui.getByLabelText(i18n.t('report.settings.orientation'), { selector: "input,select,textarea" }),{target:{value:'landscape'}});
   fireEvent.click(ui.getByRole('checkbox',{name:'Due date'}));
   fireEvent.click(ui.getByRole('button',{name:i18n.t('report.settings.export')}));
   await waitFor(()=>assert(ui.getByRole('button',{name:i18n.t('report.settings.openPdf')})));assert(blob);
@@ -56,7 +58,7 @@ const realTimer=window.setTimeout.bind(window);window.setTimeout=(callback,delay
  const filtered=filterRecordsByCreationDate(rows,{from:'2026-10-13',to:'2026-10-13'});
  assert.deepEqual(filtered.map(r=>r.name),['Boundary']);
  assert.deepEqual(settings.prepareTablePdf(columns,filtered,initial).rows.map(r=>r.name),['Boundary']);
- let ui=view();fireEvent.change(ui.getByLabelText(i18n.t('dateRange.from')),{target:{value:'2030-01-01'}});fireEvent.click(ui.getByRole('button',{name:i18n.t('filters.button.label')}));
+ let ui=view();fireEvent.change(ui.getByLabelText(i18n.t('dateRange.from'), { selector: "input,select,textarea" }),{target:{value:'2030-01-01'}});fireEvent.click(ui.getByRole('button',{name:i18n.t('filters.button.label')}));
  await waitFor(()=>assert(!ui.queryByRole('button',{name:i18n.t('report.print.tooltip')})||ui.getByRole('button',{name:i18n.t('report.print.tooltip')}).disabled));
  cleanup();
  console.log('PASS: actual AppTable opens translated shared settings before PDF; paper size/orientation, column selection, hidden-field exclusion, table-level creation-date range shared by displayed rows and exports, date controls absent from the print modal, invalid-range/no-column validation, all-row fetch, no-match error and real PDF export in all three locales.');

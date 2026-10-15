@@ -9,12 +9,12 @@ const original=Module._load;Module._load=function(request,parent,isMain){if(/^\.
 const React=require(app+'/react');const {render,fireEvent,waitFor,cleanup,act}=require(app+'/@testing-library/react');const {I18nextProvider}=require(app+'/react-i18next');const {MemoryRouter}=require(app+'/react-router-dom');const i18n=require(app+'/i18next').createInstance();const AppTable=require(core+'/components/table/AppTable.tsx').default;const h=React.createElement;
 const columns=[{header:'Name',accessor:'name'}];const earlier={id:'earlier',name:'Outside',creationDate:'2026-10-12T00:00:00Z'};const matching=Array.from({length:12},(_,index)=>({id:'match-'+index,name:'Match '+index,creationDate:'2026-10-13T23:59:59Z'}));
 const view=props=>render(h(I18nextProvider,{i18n},h(MemoryRouter,null,h(AppTable,{columns,totalPages:1,...props}))));
-const change=(ui,from,to)=>{fireEvent.change(ui.getByLabelText(i18n.t('dateRange.from')),{target:{value:from}});fireEvent.change(ui.getByLabelText(i18n.t('dateRange.to')),{target:{value:to}});fireEvent.click(ui.getByRole('button',{name:i18n.t('filters.button.label')}))};
+const change=(ui,from,to)=>{fireEvent.change(ui.getByLabelText(i18n.t('dateRange.from'), { selector: "input,select,textarea" }),{target:{value:from}});fireEvent.change(ui.getByLabelText(i18n.t('dateRange.to'), { selector: "input,select,textarea" }),{target:{value:to}});fireEvent.click(ui.getByRole('button',{name:i18n.t('filters.button.label')}))};
 (async()=>{
  await i18n.init({lng:'en-US',resources:{'en-US':{translation:JSON.parse(fs.readFileSync(core+'/locales/en-US/translation.json'))}},interpolation:{escapeValue:false}});
  const all=[earlier,...matching];
  let ui=view({data:all,showExport:false,showPagination:false,showPageSizer:false});
- assert(ui.getByLabelText(i18n.t('dateRange.from')));assert(!ui.queryByText(i18n.t('table.creationDateRange.label')));
+ assert(ui.getByLabelText(i18n.t('dateRange.from'), { selector: "input,select,textarea" }));assert(!ui.queryByText(i18n.t('table.creationDateRange.label')));
  change(ui,'2026-10-13','2026-10-13');assert(!ui.queryByText('Outside'));assert.equal(ui.container.querySelectorAll('tbody tr').length,12);
  fireEvent.click(ui.getAllByRole('button',{name:i18n.t('filters.button.reset')})[0]);assert(ui.getByText('Outside'));cleanup();
  const queries=[];
@@ -26,33 +26,33 @@ const change=(ui,from,to)=>{fireEvent.change(ui.getByLabelText(i18n.t('dateRange
  };
  ui=view({data:records,totalPages:2,fetchPageData,showExport:false,columns:[{header:'Name',accessor:'name'},{header:'Title',accessor:'title',filter:{type:'text'},hidden:true}]});
  await waitFor(()=>assert(ui.getByText('Outside')));assert.equal(queries.length,1);
- fireEvent.change(ui.getByLabelText(i18n.t('dateRange.from')),{target:{value:'2026-10-13'}});
- fireEvent.change(ui.getByLabelText(i18n.t('dateRange.to')),{target:{value:'2026-10-13'}});
+ fireEvent.change(ui.getByLabelText(i18n.t('dateRange.from'), { selector: "input,select,textarea" }),{target:{value:'2026-10-13'}});
+ fireEvent.change(ui.getByLabelText(i18n.t('dateRange.to'), { selector: "input,select,textarea" }),{target:{value:'2026-10-13'}});
  assert(ui.getByText('Outside'));assert.equal(queries.length,1);
  fireEvent.click(ui.getByRole('button',{name:i18n.t('filters.button.label')}));
  await waitFor(()=>assert(!ui.queryByText('Outside')));assert.equal(queries.length,2);
  assert.deepEqual(queries.at(-1),{page:1,size:10,filters:{creationDateFrom:'2026-10-13',creationDateTo:'2026-10-13'}});
  assert(!queries.some(query=>query.size===50));
  fireEvent.click(ui.getByRole('button',{name:'Go to page 2'}));await waitFor(()=>assert(ui.getByText('Match 11')));assert.equal(queries.length,3);assert.equal(queries.at(-1).page,2);assert.equal(queries.at(-1).filters.creationDateFrom,'2026-10-13');
- fireEvent.click(ui.getByRole('button',{name:i18n.t('filters.hide.label')+' (1)'}));assert(!ui.queryByLabelText(i18n.t('dateRange.from')));
- fireEvent.click(ui.getByRole('button',{name:i18n.t('filters.show.label')+' (1)'}));assert.equal(ui.getByLabelText(i18n.t('dateRange.from')).value,'2026-10-13');
- const beforeTyping=queries.length;fireEvent.change(ui.getByLabelText('Title'),{target:{value:'11'}});assert.equal(queries.length,beforeTyping);
- fireEvent.keyDown(ui.getByLabelText('Title'),{key:'Enter'});await waitFor(()=>assert(ui.getByText('Match 11')));
+ fireEvent.click(ui.getByRole('button',{name:i18n.t('filters.hide.label')+' (1)'}));assert(!ui.queryByLabelText(i18n.t('dateRange.from'), { selector: "input,select,textarea" }));
+ fireEvent.click(ui.getByRole('button',{name:i18n.t('filters.show.label')+' (1)'}));assert.equal(ui.getByLabelText(i18n.t('dateRange.from'), { selector: "input,select,textarea" }).value,'2026-10-13');
+ const beforeTyping=queries.length;fireEvent.change(ui.getByLabelText('Title', { selector: "input,select,textarea" }),{target:{value:'11'}});assert.equal(queries.length,beforeTyping);
+ fireEvent.keyDown(ui.getByLabelText('Title', { selector: "input,select,textarea" }),{key:'Enter'});await waitFor(()=>assert(ui.getByText('Match 11')));
  await waitFor(()=>assert.equal(queries.length,beforeTyping+1));assert.equal(queries.at(-1).page,1);assert.deepEqual(queries.at(-1).filters,{creationDateFrom:'2026-10-13',creationDateTo:'2026-10-13',searchTerm:'11'});
  assert(ui.getByRole('button',{name:i18n.t('filters.hide.label')+' (2)'}));
  // Changing callback identity and parent data must not start another request.
  ui.rerender(h(I18nextProvider,{i18n},h(MemoryRouter,null,h(AppTable,{data:[earlier],columns:[{header:'Name',accessor:'name'},{header:'Title',accessor:'title',filter:{type:'text'},hidden:true}],totalPages:2,showExport:false,fetchPageData:(...args)=>fetchPageData(...args)}))));
  await act(async()=>{await new Promise(resolve=>setTimeout(resolve,30))});assert.equal(queries.length,beforeTyping+1);assert(ui.getByText('Match 11'));assert(!ui.queryByText('Outside'));
- fireEvent.click(ui.getAllByRole('button',{name:i18n.t('filters.button.reset')})[0]);await waitFor(()=>assert(ui.getByText('Outside')));assert.equal(ui.getByLabelText('Title').value,'');assert.equal(ui.getByLabelText(i18n.t('dateRange.from')).value,'');assert.deepEqual(queries.at(-1).filters,{});cleanup();
+ fireEvent.click(ui.getAllByRole('button',{name:i18n.t('filters.button.reset')})[0]);await waitFor(()=>assert(ui.getByText('Outside')));assert.equal(ui.getByLabelText('Title', { selector: "input,select,textarea" }).value,'');assert.equal(ui.getByLabelText(i18n.t('dateRange.from'), { selector: "input,select,textarea" }).value,'');assert.deepEqual(queries.at(-1).filters,{});cleanup();
  // Local tables combine dates, text and dropdown criteria without network scans.
  ui=view({data:[{id:'a',name:'Alpha',email:'Match@example.test',joiningClass:{id:'class-a'},creationDate:'2026-10-13'},{id:'b',name:'Beta',email:'other@example.test',joiningClass:{id:'class-a'},creationDate:'2026-10-13'},{id:'c',name:'Earlier',email:'match@example.test',joiningClass:{id:'class-a'},creationDate:'2026-10-12'}],showExport:false,showPagination:false,columns:[{header:'Name',accessor:'name'},{header:'Email',accessor:'email',filter:{type:'text'},hidden:true}]});
- fireEvent.change(ui.getByLabelText('Email'),{target:{value:'MATCH'}});change(ui,'2026-10-13','2026-10-13');assert(ui.getByText('Alpha'));assert(!ui.queryByText('Beta'));assert(!ui.queryByText('Earlier'));cleanup();
+ fireEvent.change(ui.getByLabelText('Email', { selector: "input,select,textarea" }),{target:{value:'MATCH'}});change(ui,'2026-10-13','2026-10-13');assert(ui.getByText('Alpha'));assert(!ui.queryByText('Beta'));assert(!ui.queryByText('Earlier'));cleanup();
  const {filterTableRecords}=require(core+'/helper/tableFilters.ts');assert.equal(filterTableRecords([{joiningClass:{id:'class-a'}},{joiningClass:{id:'class-b'}}],[{accessor:'joiningClass',filter:{type:'dropdown'}}],{classId:'class-a'}).length,1);
  // Enum status filters share the draft/apply/reset/date flow and compare underlying numeric fields.
  const statusColumns=[{header:'Name',accessor:'name'},{header:'teacherLeave.column.status',accessor:'leaveStatusValue',filter:{type:'dropdown',accessor:'leaveStatus',options:[{value:'',labelKey:'teacherLeave.status.all'},{value:'0',labelKey:'teacherLeave.status.requested'},{value:'1',labelKey:'teacherLeave.status.approved'}]}}];
  const leaves=[{id:'requested',name:'Requested current',leaveStatus:0,leaveStatusValue:'Requested',creationDate:'2026-10-13'},{id:'approved',name:'Approved current',leaveStatus:1,leaveStatusValue:'Approved',creationDate:'2026-10-13'},{id:'old',name:'Requested earlier',leaveStatus:0,leaveStatusValue:'Requested',creationDate:'2026-10-12'}];
  ui=view({data:leaves,columns:statusColumns,showExport:false,showPagination:false});
- const statusSelect=ui.getByLabelText(i18n.t('teacherLeave.column.status'));
+ const statusSelect=ui.getByLabelText(i18n.t('teacherLeave.column.status'), { selector: "input,select,textarea" });
  assert(statusSelect.closest('.filter-form'));assert.equal(ui.container.querySelectorAll('.filter-form select').length,1);
  fireEvent.change(statusSelect,{target:{value:'0'}});assert(ui.getByText('Approved current'));
  change(ui,'2026-10-13','2026-10-13');assert(ui.getByText('Requested current'));assert(!ui.queryByText('Approved current'));assert(!ui.queryByText('Requested earlier'));
