@@ -9,9 +9,10 @@ when integration requires them. Commit affected repositories locally; do not pus
 
 - School years: implemented and previously verified, including school-specific
   activation, native calendar dates and current-year request/background resolution.
-- Examination periods: configurable midterm/final windows, country-owned schema
+- Examination periods: seven country-owned categories (see additional categories below), country-owned schema
   and API, table/editor and sidebar item at `/afghanistan/exam-periods`.
-  Dates must fit teaching dates, cannot overlap, and have one type per year.
+  Dates must fit the school year and have one period per type/year. Regular
+  midterm/annual windows cannot overlap each other; special windows can coincide.
   Versioned edits and a shared school write lock protect concurrent changes.
   Year edits cannot exclude existing periods.
 - Calendar integration: implemented through Core's optional
@@ -97,14 +98,12 @@ when integration requires them. Commit affected repositories locally; do not pus
 The goal remains open. Existing implementation must be inspected before adding
 anything to these areas; their completion is unverified:
 
-- Asas register management, search and duplicate detection.
 - Paper/electronic Tazkira details and optional attachments.
 - Student files, transfer documents, examination sheets and Ministry reporting.
-- Validation of missing/inconsistent identity and report fields.
 
-An optional prioritization question was sent for these areas. Continue the
-remaining Solar Hijri workflow independently while awaiting an answer. Do not
-invent government-required document layouts or academic dates.
+Continue inspecting the existing country implementations and shared contracts
+before adding to these areas. Do not invent government-required document layouts
+or academic dates.
 
 ## Additional Afghanistan examination categories (15 October 2026)
 
@@ -138,3 +137,72 @@ invent government-required document layouts or academic dates.
 - Full shared PDF/filter/module regression audit passes across 98 table sites.
   Backend/API and SPA packages were rebuilt and synced; the consuming SPA
   production build succeeds with existing CRA/ESLint warnings.
+
+
+## Asas register and consistent country forms (16 October 2026)
+
+- `/afghanistan/student-register` is contributed by Afghanistan's application
+  module and sidebar for admins, principals and head masters. It reuses AppTable,
+  the shared filter panel, PDF/CSV settings, row context actions, double-click
+  review and AppModal. Admin actions open the existing Core profile and country
+  details editors. Read roles cannot edit those profiles.
+- Country DTO, domain read model/rules, repository, mapper profile, service and
+  controller reuse Core's existing student records, BaseRepository and
+  BaseController. No second student table or copied repository backbone was added.
+- The register exposes Core and country numbers separately, with country number
+  precedence and Core fallback. It flags missing/duplicate/conflicting Asas,
+  absent Core names/father names/details, missing or duplicate identity references,
+  partial paper Tazkira references and missing/future birth dates. Inactive students
+  participate in duplicate checks; records at another school do not. Assessment
+  runs before creation-date filtering so a filtered-out collision remains flagged.
+- Matching/search normalize Dari/Arabic digits and identity separators while
+  preserving original displayed/exported values and leading zeros. Name search
+  also normalizes Arabic/Persian kaf/yeh variants. The transfer lookup uses the
+  same effective Asas number, supports Core-only profiles, and returns an explicit
+  conflict instead of choosing an arbitrary duplicate. Responses contain bounded
+  scalar fields, without credentials or unrelated profile data.
+- All Afghanistan detail text/number fields use Core AppFormInput. The shared
+  AppEnumSelect now uses Core AppSelect2, matching the Core student form; it handles
+  nullable values, blur/touched errors and accessible validation. Programmatic
+  value refreshes update Select2 without firing another application change event.
+  Shared text inputs retain numeric zero and reflect Formik reset/reload values.
+- Core AppBaseEditor/AppForm support module-owned field validators and optional
+  field configuration without requiring nullable country details. Afghanistan
+  validates positive Int32 identifiers, enum choices, lengths, identity characters,
+  telephone structure and date validity. It preserves nullable fields and serializes
+  enum names as the numeric ordinals accepted by the API. These application checks
+  do not claim legal document verification or invent Ministry grade policies.
+- Afghanistan student/teacher detail controllers now follow BaseController and a
+  shared country repository. The server mirrors the input rules, returns localized
+  field errors, checks route/payload IDs and owns school/actor audit values. Upserts
+  serialize by person to prevent duplicate detail creation. Existing school checks
+  and admin authorization remain in force. Teacher hire dates use UTC civil dates.
+- Teacher hire date now uses AppFormLocalDatePicker/Formik: selecting a date retains
+  unsaved name/other edits. Core forwards the same field ID, required state and error
+  description through Gregorian and module calendar controls. Hijri picker month
+  labels share the country calendar catalog; weekday labels and navigation respect
+  app language/direction. No country-specific input styling was introduced.
+- Failed detail loads show Retry and withhold the editor until a successful read;
+  abandoning a load aborts it. Optional fields clear to null. Technical database/
+  migration descriptions were replaced with translated user-facing descriptions.
+- Verification: isolated PostgreSQL suite has 49 passing tests, zero skipped,
+  including real register/lookup requests and real student/teacher detail GET/PUTs,
+  valid/invalid payloads, optional clears, numeric enum round trips, identity values,
+  audit actors, role/country/school boundaries and creation-date diagnostics.
+- Shared React integration tests cover student/teacher forms in all three locales,
+  native-digit input, field errors, actual Select2 controls, nullable enum clears,
+  date edits without lost values, failures/retry and cancellation. Register tests
+  cover combined filters and PDF/CSV rows, review actions and access roles.
+- `node scripts/tests/afghan-form-browser.cjs` compares real Core and country
+  controls with full shared theme and Select2 CSS in Chrome: student, teacher,
+  academic-year and exam-period forms at desktop/mobile widths in English/light,
+  Dari/dark and Pashto/dark. It verifies matching computed styles, visible field
+  errors, invalid text/select borders, zero invalid saves and no extra reads.
+  Screenshots and measurements remain in temporary digitalmaktab-afghan-forms-*
+  directories. Earlier test-only screenshots without Select2 CSS were superseded.
+
+- Final shared PDF/filter/module regression audit passes across 98 AppTable sites;
+  localization parity and component reuse audits pass. SDK, Core, Afghanistan and
+  API packages are synced. The consuming SPA production build succeeds with the
+  existing CRA/ESLint warnings. Development API/SPA servers must restart to load
+  the swapped packages. No production database was touched.

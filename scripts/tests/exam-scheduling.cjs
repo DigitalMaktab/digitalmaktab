@@ -24,7 +24,7 @@ const view=(component,calendar=afghanistanCalendar)=>render(h(I18nextProvider,{i
 const form=()=>h(Form,{onCreated:()=>{createdCallbacks++;}});
 const fill=async(ui,calendar)=>{
  fireEvent.click(ui.getByRole('button',{name:'Choose class'}));fireEvent.click(ui.getByRole('button',{name:'Choose course'}));
- fireEvent.change(ui.getByLabelText(i18n.t('exam.create.fields.title'),{exact:false}),{target:{value:'Mathematics exam'}});
+ fireEvent.change(ui.getByLabelText(i18n.t('exam.create.fields.title'),{exact:false,selector:"input,select"}),{target:{value:'Mathematics exam'}});
  const dateInput=calendar===gregorianCalendar?ui.container.querySelector('input[type="date"]'):ui.getByLabelText(i18n.t('exam.create.fields.startAt'),{exact:true});
  if(calendar===gregorianCalendar)fireEvent.change(dateInput,{target:{value:'2026-07-15'}});
  else {fireEvent.click(dateInput);fireEvent.click(ui.getByRole('button',{name:i18n.t('afghanDatePicker.today')}));}
@@ -33,8 +33,8 @@ const fill=async(ui,calendar)=>{
  const resources={};for(const language of ['en-US','fa-AF','ps-AF'])resources[language]={translation:require(core+'/node_modules/lodash/merge')({},JSON.parse(fs.readFileSync(core+'/src/locales/en-US/translation.json')),JSON.parse(fs.readFileSync(country+'/src/locales/'+language+'/translation.json')))};
  await i18n.init({lng:'fa-AF',resources,interpolation:{escapeValue:false}});
  choices={required:true,options:[{providerId:'afghanistan.exam-periods',optionId:'midterm',version:'v1',calendarYearId:'year-id',label:'Midterm ۱۴۰۵',fromDate:'2026-07-01',toDate:'2026-07-16'}]};
- let ui=view(form());await waitFor(()=>assert(ui.getByLabelText(i18n.t('exam.scheduling.period'),{exact:false})));assert.equal(loads.length,1);
- await fill(ui);fireEvent.change(ui.getByLabelText(i18n.t('exam.scheduling.period'),{exact:false}),{target:{value:'midterm'}});
+ let ui=view(form());await waitFor(()=>assert(ui.getByLabelText(i18n.t('exam.scheduling.period'),{exact:false,selector:"input,select"})));assert.equal(loads.length,1);
+ await fill(ui);fireEvent.change(ui.getByLabelText(i18n.t('exam.scheduling.period'),{exact:false,selector:"input,select"}),{target:{value:'midterm'}});
  failCreate=true;fireEvent.submit(ui.container.querySelector('form'));await waitFor(()=>assert(ui.getByText('Stale examination period: reload choices.')));
  assert.deepEqual(created[0].schedulingSelection,{providerId:'afghanistan.exam-periods',optionId:'midterm',version:'v1'});assert.equal(created[0].calendarYearId,'year-id');assert(created[0].startAt.endsWith('Z'));assert.equal(createdCallbacks,0);
  choices={...choices,options:choices.options.map(option=>({...option,version:'v2'}))};failCreate=false;
@@ -50,7 +50,7 @@ const fill=async(ui,calendar)=>{
  // Actual consuming table accepts HTTP 200 and filters provider labels through AppTable.
  items=[{id:'exam',title:'Visible HTTP exam',startAt:'2026-07-15T08:00:00Z',durationMinutes:60,schedulingOption:{...choices.options[0],label:'Country midterm'},creationDate:'2026-10-15'}];
  ui=view(h(Screen));await waitFor(()=>assert(ui.getByText('Visible HTTP exam')));assert(ui.getByText('Country midterm'));
- assert(ui.getByLabelText(i18n.t('exam.scheduling.period'),{exact:false}).closest('.filter-form'));
- fireEvent.change(ui.getByLabelText(i18n.t('exam.scheduling.period'),{exact:false}),{target:{value:'does not match'}});fireEvent.click(ui.getByRole('button',{name:i18n.t('filters.button.label')}));assert(!ui.queryByText('Visible HTTP exam'));cleanup();
+ assert(ui.getByLabelText(i18n.t('exam.scheduling.period'),{exact:false,selector:"input,select"}).closest('.filter-form'));
+ fireEvent.change(ui.getByLabelText(i18n.t('exam.scheduling.period'),{exact:false,selector:"input,select"}),{target:{value:'does not match'}});fireEvent.click(ui.getByRole('button',{name:i18n.t('filters.button.label')}));assert(!ui.queryByText('Visible HTTP exam'));cleanup();
  console.log('PASS: shared exam form uses localized native dates, scoped/versioned choices, retry without loops, visible stale errors, one in-flight submit, HTTP 200 success and class-year fallback; consuming table filters provider labels.');
 })().catch(error=>{console.error(error);process.exitCode=1;});

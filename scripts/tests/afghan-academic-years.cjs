@@ -56,27 +56,27 @@ const view = (component, entry = '/afghanistan/academic-years', editor = false, 
   await waitFor(() => assert(!ui.queryByRole('dialog'))); assert.deepEqual(activateCalls[0], { url: '/afghanistan/academic-years/second/activate', dto: { version: 'version-b' } });
   assert.equal(requests.length, 2);
   // Native-year text and active-state filters share date Apply/Reset without network requests.
-  fireEvent.change(ui.getByLabelText(i18n.t('afghanAcademicYears.year'), { exact: false }), { target: { value: '۱۴۰۴' } });
+  fireEvent.change(ui.getByLabelText(i18n.t('afghanAcademicYears.year'), { exact: false, selector: "input,select" }), { target: { value: '۱۴۰۴' } });
   fireEvent.click(ui.getByRole('button', { name: i18n.t('filters.button.label') })); assert(ui.getByText('۱۴۰۴')); assert(!ui.queryByText('۱۴۰۳')); assert.equal(requests.length, 2);
   fireEvent.click(ui.getAllByRole('button', { name: i18n.t('filters.button.reset').trim() })[0]); assert(ui.getByText('۱۴۰۳'));
   failActivation = true; fireEvent.contextMenu(ui.getByText('۱۴۰۳').closest('tr')); fireEvent.click(ui.getByRole('menuitem', { name: i18n.t('afghanAcademicYears.activate') }));
   fireEvent.click(within(ui.getByRole('dialog')).getByRole('button', { name: i18n.t('afghanAcademicYears.activate') })); await waitFor(() => assert(ui.getByText('Stale version: reload school year.'))); cleanup();
   // Real shared editor uses the installed Hijri date picker, keeps a year immutable, and sends optimistic version data.
   ui = view(h(Editor), '/afghanistan/academic-years/first', true);
-  await waitFor(() => assert(ui.getByLabelText(i18n.t('afghanAcademicYears.year'), { exact: false }).disabled));
-  assert.equal(ui.getByLabelText(i18n.t('afghanAcademicYears.fromDate'), { exact: false }).value, '۱۴۰۳/۰۱/۰۱');
+  await waitFor(() => assert(ui.getByLabelText(i18n.t('afghanAcademicYears.year'), { exact: false, selector: "input,select" }).disabled));
+  assert.equal(ui.getByLabelText(i18n.t('afghanAcademicYears.fromDate'), { exact: false, selector: "input,select" }).value, '۱۴۰۳/۰۱/۰۱');
   fireEvent.submit(ui.container.querySelector('form')); await waitFor(() => assert.equal(saves.length, 1));
   assert.deepEqual(saves[0], { url: '/afghanistan/academic-years/first', dto: { solarHijriYear: 1403, fromDate: '2024-03-20', toDate: '2025-03-20', version: 'version-a' } }); cleanup();
   // New-year bounds are native; invalid combinations remain in the editor and never reach the API.
   ui = view(h(Editor), '/afghanistan/academic-years/new', true); const current = helpers.currentAcademicYear();
-  assert.equal(ui.getByLabelText(i18n.t('afghanAcademicYears.year'), { exact: false }).value, String(current));
-  assert(ui.getByLabelText(i18n.t('afghanAcademicYears.fromDate'), { exact: false }).value.startsWith(new Intl.NumberFormat('fa-AF', { useGrouping: false }).format(current)));
-  fireEvent.change(ui.getByLabelText(i18n.t('afghanAcademicYears.year'), { exact: false }), { target: { value: String(current - 1) } });
+  assert.equal(ui.getByLabelText(i18n.t('afghanAcademicYears.year'), { exact: false, selector: "input,select" }).value, String(current));
+  assert(ui.getByLabelText(i18n.t('afghanAcademicYears.fromDate'), { exact: false, selector: "input,select" }).value.startsWith(new Intl.NumberFormat('fa-AF', { useGrouping: false }).format(current)));
+  fireEvent.change(ui.getByLabelText(i18n.t('afghanAcademicYears.year'), { exact: false, selector: "input,select" }), { target: { value: String(current - 1) } });
   fireEvent.submit(ui.container.querySelector('form')); await waitFor(() => assert(ui.getByText(i18n.t('afghanAcademicYears.invalidDates')))); assert.equal(saves.length, 1);
   const nativeCurrent = new Intl.NumberFormat('fa-AF', {useGrouping: false}).format(current);
   fireEvent.change(ui.getByLabelText(i18n.t('afghanAcademicYears.year'), {exact: false}), {target: {value: nativeCurrent}});
   fireEvent.submit(ui.container.querySelector('form')); await waitFor(() => assert.equal(saves.length, 2)); assert.equal(saves[1].dto.solarHijriYear, current); cleanup();
-  await i18n.changeLanguage('ps-AF'); rows = []; ui = view(h(List)); await act(async () => {}); assert(ui.getByRole('link', { name: i18n.t('afghanAcademicYears.add') })); assert(ui.getByLabelText(i18n.t('afghanAcademicYears.year'), { exact: false }).closest('.filter-form')); cleanup();
+  await i18n.changeLanguage('ps-AF'); rows = []; ui = view(h(List)); await act(async () => {}); assert(ui.getByRole('link', { name: i18n.t('afghanAcademicYears.add') })); assert(ui.getByLabelText(i18n.t('afghanAcademicYears.year'), { exact: false, selector: "input,select" }).closest('.filter-form')); cleanup();
   // Country examination periods reuse the actual shared table, filters, editor and native date controls.
   await i18n.changeLanguage('fa-AF');
   rows = [{ id: 'first', solarHijriYear: 1403, fromDate: '2024-03-20', toDate: '2025-03-20', isActive: true },
@@ -94,8 +94,8 @@ const view = (component, entry = '/afghanistan/academic-years', editor = false, 
   ui = view(h(PeriodList), '/afghanistan/exam-periods');
   await waitFor(() => assert(ui.getByText('۱۴۰۳')));
   assert.equal(requests.length, beforeList + 2);
-  assert(ui.getByLabelText(i18n.t('afghanExamPeriods.type'), { exact: false }).closest('.filter-form'));
-  fireEvent.change(ui.getByLabelText(i18n.t('afghanExamPeriods.type'), { exact: false }), { target: { value: '0' } });
+  assert(ui.getByLabelText(i18n.t('afghanExamPeriods.type'), { exact: false, selector: "input,select" }).closest('.filter-form'));
+  fireEvent.change(ui.getByLabelText(i18n.t('afghanExamPeriods.type'), { exact: false, selector: "input,select" }), { target: { value: '0' } });
   assert(ui.getByText('۱۴۰۴')); // Draft criteria wait for Apply.
   fireEvent.click(ui.getByRole('button', { name: i18n.t('filters.button.label') }));
   assert(ui.getByText('۱۴۰۳')); assert(!ui.queryByText('۱۴۰۴')); assert.equal(requests.length, beforeList + 2);
@@ -105,18 +105,18 @@ const view = (component, entry = '/afghanistan/academic-years', editor = false, 
   assert(ui.getByRole('menuitem', { name: i18n.t('afghanExamPeriods.edit') })); cleanup();
   const beforeSave = saves.length;
   ui = view(h(PeriodEditor), '/afghanistan/exam-periods/midterm', true, '/afghanistan/exam-periods');
-  await waitFor(() => assert.equal(ui.getByLabelText(i18n.t('afghanExamPeriods.fromDate'), { exact: false }).value, '۱۴۰۳/۰۴/۱۱'));
-  fireEvent.change(ui.getByLabelText(i18n.t('afghanAcademicYears.year'), { exact: false }), { target: { value: 'second' } });
+  await waitFor(() => assert.equal(ui.getByLabelText(i18n.t('afghanExamPeriods.fromDate'), { exact: false, selector: "input,select" }).value, '۱۴۰۳/۰۴/۱۱'));
+  fireEvent.change(ui.getByLabelText(i18n.t('afghanAcademicYears.year'), { exact: false, selector: "input,select" }), { target: { value: 'second' } });
   fireEvent.submit(ui.container.querySelector('form'));
   await waitFor(() => assert(ui.getByText(i18n.t('afghanExamPeriods.invalidDates')))); assert.equal(saves.length, beforeSave);
-  fireEvent.change(ui.getByLabelText(i18n.t('afghanAcademicYears.year'), { exact: false }), { target: { value: 'first' } });
+  fireEvent.change(ui.getByLabelText(i18n.t('afghanAcademicYears.year'), { exact: false, selector: "input,select" }), { target: { value: 'first' } });
   failSave = true; fireEvent.submit(ui.container.querySelector('form'));
   await waitFor(() => assert(ui.getByText('This examination period changed. Reload it before saving.')));
   assert.equal(saves.length, beforeSave); failSave = false;
   fireEvent.submit(ui.container.querySelector('form')); await waitFor(() => assert.equal(saves.length, beforeSave + 1));
   assert.deepEqual(saves[beforeSave], { url: '/afghanistan/exam-periods/midterm', dto: { academicYearId: 'first', examType: 0, fromDate: '2024-07-01', toDate: '2024-07-15', version: 'period-v1' } }); cleanup();
   ui = view(h(PeriodEditor), '/afghanistan/exam-periods/new', true, '/afghanistan/exam-periods');
-  await waitFor(() => assert.equal(ui.getByLabelText(i18n.t('afghanAcademicYears.year'), { exact: false }).value, 'first')); cleanup();
+  await waitFor(() => assert.equal(ui.getByLabelText(i18n.t('afghanAcademicYears.year'), { exact: false, selector: "input,select" }).value, 'first')); cleanup();
   // Every country category has its own translated label, filter option and save value.
   const { afghanExamTypes, afghanExamTypeLabelKey } = require(country + '/src/examPeriods/examTypes.ts');
   for (const language of ['en-US', 'fa-AF', 'ps-AF']) {
@@ -124,7 +124,7 @@ const view = (component, entry = '/afghanistan/academic-years', editor = false, 
     periods = afghanExamTypes.map(value => ({ id: 'type-' + value, academicYearId: 'first', examType: Number(value), fromDate: '2024-07-01', toDate: '2024-07-15', version: 'v-' + value }));
     ui = view(h(PeriodList));
     await waitFor(() => assert(ui.getAllByRole('row').length >= 8));
-    const typeFilter = ui.getByLabelText(i18n.t('afghanExamPeriods.type'), { exact: false });
+    const typeFilter = ui.getByLabelText(i18n.t('afghanExamPeriods.type'), { exact: false, selector: "input,select" });
     assert.equal(typeFilter.options.length, 8);
     for (const value of afghanExamTypes) {
       const label = i18n.t(afghanExamTypeLabelKey(value));
@@ -137,7 +137,7 @@ const view = (component, entry = '/afghanistan/academic-years', editor = false, 
     cleanup();
     for (const value of afghanExamTypes.slice(2)) {
       ui = view(h(PeriodEditor), '/afghanistan/exam-periods/type-' + value, true, '/afghanistan/exam-periods');
-      await waitFor(() => assert.equal(ui.getByLabelText(i18n.t('afghanExamPeriods.type'), { exact: false }).value, value));
+      await waitFor(() => assert.equal(ui.getByLabelText(i18n.t('afghanExamPeriods.type'), { exact: false, selector: "input,select" }).value, value));
       const saved = saves.length;
       fireEvent.submit(ui.container.querySelector('form'));
       await waitFor(() => assert.equal(saves.length, saved + 1));
@@ -146,7 +146,7 @@ const view = (component, entry = '/afghanistan/academic-years', editor = false, 
   }
   await i18n.changeLanguage('ps-AF'); periods = []; ui = view(h(PeriodList)); await act(async () => {});
   assert(ui.getByRole('link', { name: i18n.t('afghanExamPeriods.add') }));
-  assert(ui.getByLabelText(i18n.t('afghanExamPeriods.type'), { exact: false }).closest('.filter-form')); cleanup();
+  assert(ui.getByLabelText(i18n.t('afghanExamPeriods.type'), { exact: false, selector: "input,select" }).closest('.filter-form')); cleanup();
   rows = []; ui = view(h(PeriodEditor), '/afghanistan/exam-periods/new', true, '/afghanistan/exam-periods');
   await waitFor(() => assert(ui.getByText(i18n.t('afghanExamPeriods.noYears')))); assert(ui.getByRole('button', {name: i18n.t('afghanAcademicYears.add')})); cleanup();
   const definition = require(country + '/src/applicationModule.tsx').afghanistanApplicationModule;
