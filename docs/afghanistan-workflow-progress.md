@@ -29,18 +29,29 @@ when integration requires them. Commit affected repositories locally; do not pus
   strand sittings. School providers override country providers; schools without
   providers use the selected class's year. No Afghan field was added to Core Exam.
   Raw HTTP success handling and the empty user-year UUID submission were fixed.
-- Document dates: inspect all country reports and official document flows, reuse
-  the existing calendar backbone, and verify native dates in actual artifacts.
+- Ministry document dates: implemented and verified in real XLSX artifacts.
+  Country-owned repository/service/workbook builder use Core's school-year and
+  calendar-provider backbones. Headers follow the selected school year; current
+  classes follow active enrollments in that year/school. Birth/hire/joining dates
+  use Solar Hijri values, and the no-year fallback uses the Afghanistan civil day.
+  Existing sheet structure is preserved; row numbering and blank-name fallback
+  are corrected. Missing-details preparation is scoped and idempotent.
+- Next document checks: shared transcript/report-card components already call
+  useFormattedDate. Verify their rendered/printed artifacts and country fields
+  before marking the broader document workflow complete.
 
 ## Verification of examination-period implementation
 
-- `bash scripts/tests/run-afghan-academic-postgres.sh`: 25 tests pass with no skips;
+- `bash scripts/tests/run-afghan-academic-postgres.sh`: 29 tests pass with no skips;
   real PostgreSQL migration replay and Kestrel HTTP requests cover roles,
   country/school isolation, duplicate/overlap/range errors, stale updates,
   creation-date and academic-year filtering, and year boundary changes. Scheduling
   tests also cover real exam POST/GET/DELETE, version/foreign-school rejection,
   class-year resolution, linked-period integrity, assignment cascade deletion,
   school-provider precedence and transaction rollback after a provider failure.
+  A separate full-schema PostgreSQL database verifies real Ministry report GETs,
+  selected-year/enrollment behavior, XLSX dates/layout/numbering, school isolation,
+  role/country access and repeated missing-details preparation.
 - `node scripts/tests/afghan-academic-years.cjs`: real shared React table/editor
   and country calendar with a mocked HTTP boundary. Covers localized labels,
   native dates, draft/Apply/Reset behavior without repeated requests, period
@@ -51,6 +62,10 @@ when integration requires them. Commit affected repositories locally; do not pus
   selection, version refresh, errors, retries, in-flight button protection,
   HTTP 200 handling, class-year fallback and shared label filtering. Also passes
   in America/New_York. Core's existing 20-test regression suite passes.
+- `node scripts/tests/ministry-reports.cjs`: actual country download screens in
+  all three languages, error details, abort handling, filenames/URL cleanup and
+  missing-details feedback. Actual Core API interceptors verify binary downloads
+  bypass offline cache reads/writes and stale-on-error fallback.
 - The calendar integration also fixes events with no end time appearing in every
   later calendar request. The existing event date defines its end when none is set.
 - Shared PDF/filter/module audit passes across 96 AppTable sites. Core component
