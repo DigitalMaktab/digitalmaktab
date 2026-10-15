@@ -36,13 +36,19 @@ when integration requires them. Commit affected repositories locally; do not pus
   use Solar Hijri values, and the no-year fallback uses the Afghanistan civil day.
   Existing sheet structure is preserved; row numbering and blank-name fallback
   are corrected. Missing-details preparation is scoped and idempotent.
-- Next document checks: shared transcript/report-card components already call
-  useFormattedDate. Verify their rendered/printed artifacts and country fields
-  before marking the broader document workflow complete.
+- Shared transcript/report-card documents: verified in real Chrome PDFs with
+  Afghan fields, native dates, all three languages, screen themes and RTL/LTR.
+  A shared Core print boundary hides dashboard controls and keeps complete rows.
+  Transcript courses reuse AppTable with real creation metadata. Structured
+  addresses avoid object placeholders. Failed reads are visible and abandoned
+  reads cancel without repeated loader-triggered requests. The backend projects
+  country codes before enrichment, orders years by date, falls back through the
+  calendar provider, and selects each student's school year for report cards.
+  English/Dari/Pashto month labels now agree across backend and SPA catalogs.
 
 ## Verification of examination-period implementation
 
-- `bash scripts/tests/run-afghan-academic-postgres.sh`: 29 tests pass with no skips;
+- `bash scripts/tests/run-afghan-academic-postgres.sh`: 32 tests pass with no skips;
   real PostgreSQL migration replay and Kestrel HTTP requests cover roles,
   country/school isolation, duplicate/overlap/range errors, stale updates,
   creation-date and academic-year filtering, and year boundary changes. Scheduling
@@ -51,7 +57,11 @@ when integration requires them. Commit affected repositories locally; do not pus
   school-provider precedence and transaction rollback after a provider failure.
   A separate full-schema PostgreSQL database verifies real Ministry report GETs,
   selected-year/enrollment behavior, XLSX dates/layout/numbering, school isolation,
-  role/country access and repeated missing-details preparation.
+  role/country access and repeated missing-details preparation. It also exercises
+  transcript/report-card HTTP responses, nested Afghan fields, year/class labels,
+  course audit metadata, scores, parent/student access and a linked child's year
+  at another school. Test mapping is fixture-specific; repositories/controllers
+  and the country enrichment filter are real.
 - `node scripts/tests/afghan-academic-years.cjs`: real shared React table/editor
   and country calendar with a mocked HTTP boundary. Covers localized labels,
   native dates, draft/Apply/Reset behavior without repeated requests, period
@@ -66,9 +76,17 @@ when integration requires them. Commit affected repositories locally; do not pus
   all three languages, error details, abort handling, filenames/URL cleanup and
   missing-details feedback. Actual Core API interceptors verify binary downloads
   bypass offline cache reads/writes and stale-on-error fallback.
+- `node scripts/tests/academic-documents.cjs`: real shared documents and screens
+  verify safe addresses, country fields, native dates, language/direction, HTTP
+  200 handling, failures/cancellation and one request through LoaderProvider.
+- `node scripts/tests/academic-document-browser.cjs`: real Chrome desktop/mobile
+  dark/light rendering and eight real PDFs for transcripts/report cards in
+  English, Dari and Pashto, plus Gregorian Austria. Inspects the last of 60 rows,
+  hidden dashboard/filter controls and absence of object placeholders. Artifacts
+  are retained in the temporary digitalmaktab-academic-print-* directory.
 - The calendar integration also fixes events with no end time appearing in every
   later calendar request. The existing event date defines its end when none is set.
-- Shared PDF/filter/module audit passes across 96 AppTable sites. Core component
+- Shared PDF/filter/module audit passes across 97 AppTable sites. Core component
   reuse audit passes across 185 source files. Localization parity passes across
   frontend, backend and mobile bundles.
 - Backend and SPA packages rebuilt and synced into local consumers. Development
