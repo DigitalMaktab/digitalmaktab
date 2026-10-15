@@ -16,18 +16,21 @@ const React = require(app + '/react'), h = React.createElement, { render, fireEv
 const { MemoryRouter, Routes, Route } = require(app + '/react-router-dom'), { I18nextProvider } = require(app + '/react-i18next'), i18n = require(app + '/i18next').createInstance();
 const { CalendarProvider } = require(core + '/src/contexts/CalendarContext.tsx'), { AuthContext } = require(core + '/src/helper/auth/AuthProvider.tsx');
 const load = file => require(core + '/src/' + file).default;
+let periods = [], failSave = false;
 let rows, requests = [], activateCalls = [], saves = [], failActivation = false;
 const request = async (url, config = {}) => {
   requests.push({ url, signal: config.signal });
-  return { data: url.endsWith('/academic-years') ? rows : rows.find(row => url.endsWith('/' + row.id)) };
+  const source = url.includes('/exam-periods') ? periods : rows;
+  return { data: /\/(academic-years|exam-periods)$/.test(url) ? source : source.find(row => url.endsWith('/' + row.id)) };
 };
 mocks = {
   AppTable: load('components/table/AppTable.tsx'), AppBaseEditor: load('components/AppBaseEditor.tsx'), AppCard: load('components/card/AppCard.tsx'),
   AppAlert: load('components/AppAlert.tsx'), AppButton: load('components/AppButton.tsx'), AppModal: load('components/modal/AppModal.tsx'), AppStatusBadge: load('components/AppStatusBadge.tsx'),
+  AppEnumSelect: load('components/form/AppEnumSelect.tsx'),
   AppFormInput: load('components/form/AppFormInput.tsx'), AppFormLocalDatePicker: load('components/form/AppFormLocalDatePicker.tsx'),
   AppStandaloneInput: load('components/input/AppStandaloneInput.tsx'), AppCalendarGrid: load('components/calendar/AppCalendarGrid.tsx'),
   useAppLocalizer: require(core + '/src/hooks/useAppLocalizer.ts').useAppLocalizer, useFormattedDate: load('hooks/useFormattedDate.ts'), UserRole: require(core + '/src/models/UserRole.ts').UserRole,
-  apiClient: { get: request, put: async (url, dto) => { saves.push({ url, dto }); return { data: dto }; }, post: async (url, dto) => {
+  apiClient: { get: request, put: async (url, dto) => { if (failSave) throw { response: { data: { detail: 'This examination period changed. Reload it before saving.' } } }; saves.push({ url, dto }); return { data: dto }; }, post: async (url, dto) => {
     if (url.endsWith('/activate')) { activateCalls.push({ url, dto }); if (failActivation) throw { response: { data: { detail: 'Stale version: reload school year.' } } }; rows = rows.map(row => ({ ...row, isActive: url.includes('/' + row.id + '/') })); return { data: rows[1] }; }
     saves.push({ url, dto }); return { data: dto };
   } },
@@ -35,7 +38,7 @@ mocks = {
 const { afghanistanCalendar } = require(country + '/src/calendarModule.ts');
 const List = require(country + '/src/academicYears/AfghanAcademicYearList.tsx').default, Editor = require(country + '/src/academicYears/AfghanAcademicYearEditor.tsx').default;
 const helpers = require(country + '/src/academicYears/calendar.ts');
-const view = (component, entry = '/afghanistan/academic-years', editor = false) => render(h(I18nextProvider, { i18n }, h(MemoryRouter, { initialEntries: [entry] }, h(AuthContext.Provider, { value: { userRole: 0 } }, h(CalendarProvider, { value: afghanistanCalendar }, editor ? h(Routes, null, h(Route, { path: '/afghanistan/academic-years/:id', element: component }), h(Route, { path: '/afghanistan/academic-years', element: h('p', null, 'Saved school year') })) : component)))));
+const view = (component, entry = '/afghanistan/academic-years', editor = false, base = '/afghanistan/academic-years') => render(h(I18nextProvider, { i18n }, h(MemoryRouter, { initialEntries: [entry] }, h(AuthContext.Provider, { value: { userRole: 0 } }, h(CalendarProvider, { value: afghanistanCalendar }, editor ? h(Routes, null, h(Route, { path: base + '/:id', element: component }), h(Route, { path: base, element: h('p', null, 'Saved school year') })) : component)))));
 (async () => {
   const resources = {}; for (const language of ['en-US', 'fa-AF', 'ps-AF']) resources[language] = { translation: { ...JSON.parse(fs.readFileSync(core + '/src/locales/en-US/translation.json')), ...JSON.parse(fs.readFileSync(country + '/src/locales/' + language + '/translation.json')) } };
   await i18n.init({ lng: 'fa-AF', resources, interpolation: { escapeValue: false } });
@@ -74,9 +77,55 @@ const view = (component, entry = '/afghanistan/academic-years', editor = false) 
   fireEvent.change(ui.getByLabelText(i18n.t('afghanAcademicYears.year'), {exact: false}), {target: {value: nativeCurrent}});
   fireEvent.submit(ui.container.querySelector('form')); await waitFor(() => assert.equal(saves.length, 2)); assert.equal(saves[1].dto.solarHijriYear, current); cleanup();
   await i18n.changeLanguage('ps-AF'); rows = []; ui = view(h(List)); await act(async () => {}); assert(ui.getByRole('link', { name: i18n.t('afghanAcademicYears.add') })); assert(ui.getByLabelText(i18n.t('afghanAcademicYears.year'), { exact: false }).closest('.filter-form')); cleanup();
+  // Country examination periods reuse the actual shared table, filters, editor and native date controls.
+  await i18n.changeLanguage('fa-AF');
+  rows = [{ id: 'first', solarHijriYear: 1403, fromDate: '2024-03-20', toDate: '2025-03-20', isActive: true },
+    { id: 'second', solarHijriYear: 1404, fromDate: '2025-03-21', toDate: '2026-03-20', isActive: false }];
+  periods = [{ id: 'midterm', academicYearId: 'first', examType: 0, fromDate: '2024-07-01', toDate: '2024-07-15', version: 'period-v1', creationDate: '2026-10-14' },
+    { id: 'final', academicYearId: 'second', examType: 1, fromDate: '2025-12-01', toDate: '2025-12-15', version: 'period-v2', creationDate: '2026-10-15' }];
+  const PeriodList = require(country + '/src/examPeriods/AfghanExamPeriodList.tsx').default;
+  const PeriodEditor = require(country + '/src/examPeriods/AfghanExamPeriodEditor.tsx').default;
+  const { validExamPeriodDates } = require(country + '/src/examPeriods/validation.ts');
+  assert(validExamPeriodDates(rows[0], '2024-07-01', '2024-07-01'));
+  assert(!validExamPeriodDates(rows[0], '2024-02-30', '2024-07-01'));
+  assert(!validExamPeriodDates(rows[0], '2024-07-15', '2024-07-01'));
+  assert(!validExamPeriodDates(rows[0], '2024-07-15', '2025-03-21'));
+  const beforeList = requests.length;
+  ui = view(h(PeriodList), '/afghanistan/exam-periods');
+  await waitFor(() => assert(ui.getByText('۱۴۰۳')));
+  assert.equal(requests.length, beforeList + 2);
+  assert(ui.getByLabelText(i18n.t('afghanExamPeriods.type'), { exact: false }).closest('.filter-form'));
+  fireEvent.change(ui.getByLabelText(i18n.t('afghanExamPeriods.type'), { exact: false }), { target: { value: '0' } });
+  assert(ui.getByText('۱۴۰۴')); // Draft criteria wait for Apply.
+  fireEvent.click(ui.getByRole('button', { name: i18n.t('filters.button.label') }));
+  assert(ui.getByText('۱۴۰۳')); assert(!ui.queryByText('۱۴۰۴')); assert.equal(requests.length, beforeList + 2);
+  fireEvent.click(ui.getAllByRole('button', { name: i18n.t('filters.button.reset').trim() })[0]);
+  assert(ui.getByText('۱۴۰۴'));
+  fireEvent.contextMenu(ui.getByText('۱۴۰۳').closest('tr'));
+  assert(ui.getByRole('menuitem', { name: i18n.t('afghanExamPeriods.edit') })); cleanup();
+  const beforeSave = saves.length;
+  ui = view(h(PeriodEditor), '/afghanistan/exam-periods/midterm', true, '/afghanistan/exam-periods');
+  await waitFor(() => assert.equal(ui.getByLabelText(i18n.t('afghanExamPeriods.fromDate'), { exact: false }).value, '۱۴۰۳/۰۴/۱۱'));
+  fireEvent.change(ui.getByLabelText(i18n.t('afghanAcademicYears.year'), { exact: false }), { target: { value: 'second' } });
+  fireEvent.submit(ui.container.querySelector('form'));
+  await waitFor(() => assert(ui.getByText(i18n.t('afghanExamPeriods.invalidDates')))); assert.equal(saves.length, beforeSave);
+  fireEvent.change(ui.getByLabelText(i18n.t('afghanAcademicYears.year'), { exact: false }), { target: { value: 'first' } });
+  failSave = true; fireEvent.submit(ui.container.querySelector('form'));
+  await waitFor(() => assert(ui.getByText('This examination period changed. Reload it before saving.')));
+  assert.equal(saves.length, beforeSave); failSave = false;
+  fireEvent.submit(ui.container.querySelector('form')); await waitFor(() => assert.equal(saves.length, beforeSave + 1));
+  assert.deepEqual(saves[beforeSave], { url: '/afghanistan/exam-periods/midterm', dto: { academicYearId: 'first', examType: 0, fromDate: '2024-07-01', toDate: '2024-07-15', version: 'period-v1' } }); cleanup();
+  ui = view(h(PeriodEditor), '/afghanistan/exam-periods/new', true, '/afghanistan/exam-periods');
+  await waitFor(() => assert.equal(ui.getByLabelText(i18n.t('afghanAcademicYears.year'), { exact: false }).value, 'first')); cleanup();
+  await i18n.changeLanguage('ps-AF'); periods = []; ui = view(h(PeriodList)); await act(async () => {});
+  assert(ui.getByRole('link', { name: i18n.t('afghanExamPeriods.add') }));
+  assert(ui.getByLabelText(i18n.t('afghanExamPeriods.type'), { exact: false }).closest('.filter-form')); cleanup();
+  rows = []; ui = view(h(PeriodEditor), '/afghanistan/exam-periods/new', true, '/afghanistan/exam-periods');
+  await waitFor(() => assert(ui.getByText(i18n.t('afghanExamPeriods.noYears')))); assert(ui.getByRole('button', {name: i18n.t('afghanAcademicYears.add')})); cleanup();
   const definition = require(country + '/src/applicationModule.tsx').afghanistanApplicationModule;
+  assert(definition.routes.some(route => route.path === '/afghanistan/exam-periods' && route.roles.includes('HEAD_MASTER') && !route.roles.includes('TEACHER')));
   assert(definition.routes.some(route => route.path === '/afghanistan/academic-years' && route.roles.includes('PRINCIPAL') && !route.roles.includes('TEACHER')));
   const selectModules = require(core + '/src/modules/definitions.ts').selectModules;
   assert.equal(selectModules([definition], { countryCode: 'AT', role: 'ADMIN' }).length, 0);
-  console.log('PASS: country-owned school-year list/editor, Hijri leap bounds and timezone-safe labels, localized year parsing, role/module isolation, shared filters, confirmation/versioned activation, visible stale errors and validated saves.');
+  console.log('PASS: country-owned examination-period filters/editors/version guards and school-year list/editor, Hijri leap bounds and timezone-safe labels, localized year parsing, role/module isolation, shared filters, confirmation/versioned activation, visible stale errors and validated saves.');
 })().catch(error => { console.error(error); process.exitCode = 1; });
