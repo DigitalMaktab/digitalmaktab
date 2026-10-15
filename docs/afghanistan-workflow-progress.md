@@ -258,8 +258,43 @@ or academic dates.
   reuse and Core/shell TypeScript checks pass. Packages are synced and the SPA
   production build passes with the existing warnings. Restart the SPA dev server
   to load the package updates; this cycle changes no backend packages.
-- Broader transfer completion remains unproven: the existing backend release path
-  still needs review of destination-class validation, destination school-year
-  selection and concurrent transitions. Country-owned transfer paperwork is not
+- Backend destination-class validation, destination school-year selection and
+  concurrent transitions are verified in the following section. Country-owned transfer paperwork is not
   implemented by this screen change; existing comments claiming a 3-parcha table
   are not evidence that it exists. Optional identity attachments remain open.
+
+## Transactional transfer backend and native fee periods
+
+- Core TransferController now uses ITransferRepository/TransferRepository, which
+  extends BaseRepository. Transfers validate an active destination school/class
+  against that school's active academic year through the existing provider
+  contract. Both request and release check the destination; release checks the
+  student's origin again. New requests require a class; legacy incomplete requests
+  fail validation without moving the student.
+- PostgreSQL student/transfer row locks serialize competing requests and terminal
+  transitions. Destination checks share the school write lock used by country
+  academic-year changes. Release, source-enrollment closure, destination enrollment,
+  transfer audit fields and current-month fees commit in one transaction. Prior
+  enrollments and country profile records remain available as history.
+- Fee generation uses the destination year and calendar provider's month ordinal.
+  Afghanistan's provider now computes Today in Kabul civil time, with an injectable
+  clock. Country calendar/timezone logic remains entirely in Afghanistan; Core
+  consumes ICalendarProvider. Gregorian schools retain Core's year/calendar fallback.
+- Notifications run after commit through a dedicated service and repository reads;
+  failure is logged without reversing a completed transfer. The controller owns
+  English/Dari/Pashto resources for transfer errors and notification messages.
+  Lookup and pending response fields remain compatible with the shared SPA.
+- `run-afghan-academic-postgres.sh` now creates a third isolated database and runs
+  the real transfer repository/controller/fee repository over Kestrel/PostgreSQL.
+  All 69 country tests pass, zero skipped, including previous academic/report/profile
+  checks and existing calendar tests. Transfer coverage includes auth/tenant gates,
+  bounded lookup/pending serialization, native versus global school years, changed
+  destination years, inactive/foreign classes, moved students, concurrent requests,
+  release/release and release/cancel races, historical enrollment/profile retention,
+  destination fees, injected fee-write rollback/retry, and post-commit notification
+  counts. Fixed-clock tests cover both sides of Kabul midnight at Nowruz and the
+  Hamal/Sawr boundary. All 20 Core tests and the SPA transfer regression pass.
+- Core, country and API packages are rebuilt and synced. Restart the API dev server
+  to load the new assemblies. This cycle changes no database schema and touches no
+  production database. Country transfer paperwork and optional identity attachments
+  remain unimplemented; the broader goal stays open.
