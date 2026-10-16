@@ -361,3 +361,44 @@ or academic dates.
 - Country transfer paperwork, examination sheets and further Ministry document
   completeness remain open. No official layout or document-verification policy is
   implied by attachment support.
+
+## Transfer-document dossiers (16 October 2026)
+
+- Admins open `/afghanistan/transfer-dossiers` from Afghanistan's sidebar. The
+  register lists transfers involving their school, including released/cancelled
+  history, with effective Asas, student/school names, state and their own document
+  count. Double-click or context actions open a dossier.
+- A dossier tracks application, destination consent, education-office order,
+  three-parcha, student record card, result verification, receipt acknowledgment
+  and other correspondence. Each entry has a reference, optional civil date,
+  notes and optional private PDF/PNG/JPEG scan. At least a reference or scan is
+  required. Core's form inputs, enum select, file control, calendar adapter and
+  AppBaseEditor provide the editor; AppTable owns filters and filtered exports.
+- Afghanistan owns the DTOs, rules, repository, entity/configuration, independent
+  migration, controller/resources, SPA routes/sidebar and screens. Core's transfer
+  and bounded upload reader are reused. No alternative transfer state machine,
+  mandatory document checklist, government approval or official form is invented.
+- Sending and receiving schools maintain separate records/scans. Authorization
+  checks the participating schools on the transfer, including after release.
+  Downloads use authenticated no-store endpoints and sanitized attachment names;
+  files are stored in the transactional country table, without public URLs.
+- Writes lock the Core transfer row, reject stale versions and duplicate kind +
+  scan hash or normalized reference/date. Limits are 5 MB per scan and 50 active
+  documents per school/dossier. Updates preserve an existing scan unless replaced.
+  Confirmed deletion retains audit metadata and clears stored bytes. These are
+  application limits, not Ministry requirements.
+- Scope changes remount the country views and abort reads/mutations. Failed
+  saves preserve edits, failed deletes retain confirmation, and rapid submissions
+  share one operation. All new strings cover English, Dari, Pashto and mobile.
+- Verification: 76 country tests pass against isolated PostgreSQL/HTTP, including
+  migrations, file validation, both schools' private records, all eight kinds,
+  stale writes/deletes, concurrent duplicates, quota, byte erasure, creation-date
+  filtering and access after transfer. Swagger tests cover both multipart routes.
+  React workflow tests cover all three locales, native dates, exports, forms,
+  private downloads, confirmation/retry and school switching. Three Chrome cases
+  compare the editor with Core forms in English/light, Dari/dark and Pashto/mobile.
+  The shared export/filter/module audit covers 102 tables.
+- Examination attempts/results, reviewed promotion, returnee placement and the
+  remaining research roadmap are still open; this completes the transfer-paperwork
+  portion. Ministry workflow references remain the service forms and FAQ linked
+  above; no current legal eligibility or signature policy is asserted.
