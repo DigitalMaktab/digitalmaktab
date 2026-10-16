@@ -6,6 +6,7 @@ let wireUser;const original=Module._load;Module._load=function(request,parent,is
 const React=require(app+'/react'),h=React.createElement,{render,fireEvent,waitFor,cleanup}=require(app+'/@testing-library/react'),{MemoryRouter,Routes,Route}=require(app+'/react-router-dom'),{I18nextProvider}=require(app+'/react-i18next'),i18n=require(app+'/i18next').createInstance();
 const {normalizeUserRole}=require(core+'/src/helper/auth/normalizeUser.ts'),{getUser,saveUser}=require(core+'/src/helper/helper.ts'),auth=require(core+'/src/api/auth.ts').default,{AuthContext,AuthProvider}=require(core+'/src/helper/auth/AuthProvider.tsx'),AuthRoute=require(core+'/src/helper/auth/AuthRoute.tsx').default,Sidebar=require(core+'/src/components/AppSideBar.tsx').default,Provider=require(core+'/src/modules/ApplicationModuleProvider.tsx').default;
 const country={id:'AF',scope:{countryCode:'AF'},sidebar:{sections:()=>[{title:'Afghanistan',items:[{label:'Afghan register',link:'/afghanistan/student-register',roles:[0],icon:null}]}]}};
+const {authHomeRoute}=require(core+'/src/helper/auth/authHomeRoute.ts'),HomeRedirect=require(core+'/src/helper/auth/AuthHomeRedirect.tsx').default;
 const probe=()=>{const value=React.useContext(AuthContext);return h(React.Fragment,null,h('p',null,'Role '+value.userRole),h('button',{onClick:()=>value.login(wireUser)},'Sign in'),h('button',{onClick:value.logout},'Sign out'))};
 const tree=()=>h(I18nextProvider,{i18n},
  h(MemoryRouter,{initialEntries:['/home']},
@@ -18,6 +19,11 @@ const tree=()=>h(I18nextProvider,{i18n},
 (async()=>{
  await i18n.init({lng:'en-US',resources:{'en-US':{translation:JSON.parse(fs.readFileSync(core+'/src/locales/en-US/translation.json'))}},interpolation:{escapeValue:false}});
  const roles=['ADMIN','PRINCIPAL','HEAD_MASTER','TEACHER','STUDENT','ROOT_USER','PARENT','UNKNOWN'];for(const [value,name] of roles.entries()){assert.equal(normalizeUserRole(name),value);assert.equal(normalizeUserRole(value),value);assert.equal(normalizeUserRole(String(value)),value)}for(const value of [-1,8,1.2,NaN,null,undefined,'','OWNER','__proto__'])assert.equal(normalizeUserRole(value),7);
+ const homes={ADMIN:'/home',TEACHER:'/teacher-dashboard',STUDENT:'/student-dashboard',PARENT:'/parent-dashboard',ROOT_USER:'/dashboard',PRINCIPAL:'/unauthorized',HEAD_MASTER:'/unauthorized',UNKNOWN:'/unauthorized'};
+ for(const [role,home] of Object.entries(homes)){assert.equal(authHomeRoute(role),home);assert.equal(authHomeRoute(roles.indexOf(role)),home)}assert.equal(authHomeRoute('invalid'),'/unauthorized');
+ for(const [isAuthenticated,userRole,destination] of [[true,'ADMIN','/home'],[true,0,'/home'],[true,7,'/unauthorized'],[false,null,'/login']]){
+  const redirect=render(h(MemoryRouter,{initialEntries:['/error']},h(AuthContext.Provider,{value:{isAuthenticated,userRole}},h(Routes,null,h(Route,{path:'/error',element:h(HomeRedirect)}),h(Route,{path:destination,element:h('p',null,'Recovered')})))));await waitFor(()=>assert(redirect.getByText('Recovered')));cleanup();
+ }
  wireUser={token:'test',role:'ADMIN',school:{id:'austria',countryCode:'AT'}};const response=await auth.login('admin.at@demo.local','test');assert.equal(response.data.role,0);assert.equal(wireUser.role,'ADMIN');
  // Repair an existing named-role session on reload; no country module is needed for Core menus.
  localStorage.setItem('user',JSON.stringify(wireUser));assert.equal(getUser().role,0);let ui=render(tree());await waitFor(()=>assert(ui.getByText('Admin page')));assert(ui.container.querySelector('aside a[href="/home"]'));assert(!ui.container.querySelector('aside a[href^="/afghanistan/"]'));assert(ui.getByText('Role 0'));cleanup();
