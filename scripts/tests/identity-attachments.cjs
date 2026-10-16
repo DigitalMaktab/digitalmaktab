@@ -36,6 +36,17 @@ URL.createObjectURL=blob=>{if(blob.type.startsWith('text/csv'))csvBlob=blob;retu
 (async()=>{
  const resources={};for(const language of ['en-US','fa-AF','ps-AF'])resources[language]={translation:{...JSON.parse(fs.readFileSync(core+'/src/locales/en-US/translation.json')),...JSON.parse(fs.readFileSync(country+'/src/locales/'+language+'/translation.json'))}};
  await i18n.init({lng:'en-US',resources,interpolation:{escapeValue:false}});
+ // New profiles have no owner ID: no GET, upload controls, or POST until saved.
+ for(const language of ['en-US','fa-AF','ps-AF']){
+  await i18n.changeLanguage(language);
+  for(const type of ['teacher','student'])for(const id of ['', '   ']){
+   const beforeReads=reads.length,beforePosts=posts.length;const ui=view(type,id);
+   await act(async()=>{});
+   assert(ui.getByText(i18n.t(type==='teacher'?'afghanTeacherDetails.saveProfileFirst':'afghanStudentDetails.saveProfileFirst')));
+   assert.equal(reads.length,beforeReads);assert.equal(posts.length,beforePosts);
+   assert.equal(ui.container.querySelector('form'),null);assert.equal(ui.container.querySelector('input[type=file]'),null);cleanup();
+  }
+ }
  for(const language of ['en-US','fa-AF','ps-AF']){
   await i18n.changeLanguage(language);records=[old,recent];reads=[];pdfRows=null;csvBlob=null;let ui=view();await waitFor(()=>assert(ui.getByText('paper.pdf')));assert.equal(reads.length,1);assert.equal(reads[0].config.headers['Cache-Control'],'no-store');assert.equal(ui.container.querySelectorAll('table').length,1);
   const filter=ui.container.querySelector('.filter-form');fireEvent.change(within(filter).getByLabelText(i18n.t('afghanIdentityAttachments.kind'),{selector:'select'}),{target:{value:'1'}});assert(ui.getByText('paper.pdf'));fireEvent.click(within(filter).getByRole('button',{name:i18n.t('filters.button.label')}));assert(!ui.queryByText('paper.pdf'));assert(ui.getByText('electronic.png'));assert.equal(reads.length,1);
@@ -54,6 +65,16 @@ URL.createObjectURL=blob=>{if(blob.type.startsWith('text/csv'))csvBlob=blob;retu
  const {useFormikContext}=require(app+'/formik');const ResetFile=()=>{const form=useFormikContext();return h(mocks.AppButton,{label:'Reset file',onClick:()=>form.resetForm()})};ui=render(h(I18nextProvider,{i18n},h(mocks.AppForm,{initialValues:{file:null},validate:values=>values.file?{}:{file:'File required'},onSubmit:()=>{}},h(load('components/form/AppFormInput.tsx'),{name:'file',label:'Formik file',type:'file'}),h(ResetFile))));fireEvent.change(ui.getByLabelText('Formik file'),{target:{files:[new File(['sample'],'formik.pdf')]}});await waitFor(()=>assert(ui.getByRole('button',{name:'formik.pdf'})));fireEvent.click(ui.getByRole('button',{name:'Reset file'}));await waitFor(()=>assert(!ui.queryByRole('button',{name:'formik.pdf'})));fireEvent.submit(ui.container.querySelector('form'));await waitFor(()=>assert(ui.getByText('File required')));assert(ui.getByRole('button',{name:i18n.t('controls.fileInput.button')}).classList.contains('is-invalid'));assert.equal(ui.getByRole('button',{name:i18n.t('controls.fileInput.button')}).getAttribute('aria-describedby'),'file-error');cleanup();
  // Keep the mounted panel on a school switch: previous filenames and exports must disappear.
  const {ApplicationModuleContextProvider}=require(core+'/src/modules/ModuleContext.tsx');const scoped=school=>h(I18nextProvider,{i18n},h(MemoryRouter,null,h(ApplicationModuleContextProvider,{modules:[],scope:{schoolId:school}},h(Attachments,{ownerType:'student',ownerId:'student-1'}))));records=[old];ui=render(scoped('school-one'));await waitFor(()=>assert(ui.getByText('paper.pdf')));failure=true;ui.rerender(scoped('school-two'));assert(!ui.queryByText('paper.pdf'));await waitFor(()=>assert(ui.getByText('Attachment unavailable')));failure=false;cleanup();
+ // A mounted editor can move between an unsaved profile and a saved teacher.
+ const teacherPanel=id=>h(I18nextProvider,{i18n},h(MemoryRouter,null,h(Attachments,{ownerType:'teacher',ownerId:id})));
+ reads=[];records=[old];ui=render(teacherPanel(''));await act(async()=>{});assert.equal(reads.length,0);
+ ui.rerender(teacherPanel('saved-teacher'));await waitFor(()=>assert(ui.getByText('paper.pdf')));assert.equal(reads.length,1);assert.equal(reads[0].url,'/afghanistan/identity-attachments/teacher/saved-teacher');
+ fireEvent.change(ui.getByLabelText(i18n.t('afghanIdentityAttachments.file'),{selector:'input[type="file"]'}),{target:{files:[new File(['%PDF-1.4'],'teacher.pdf',{type:'application/pdf'})]}});
+ fireEvent.click(ui.getByRole('button',{name:i18n.t('afghanIdentityAttachments.upload')}));await waitFor(()=>assert(ui.getByText('teacher.pdf')));
+ assert.equal(posts.at(-1).url,'/afghanistan/identity-attachments/teacher/saved-teacher');assert.equal(reads.length,2);
+ waitRead=true;fireEvent.click(ui.getByRole('button',{name:i18n.t('afghanAcademicYears.refresh')}));const staleSignal=reads.at(-1).config.signal;
+ ui.rerender(teacherPanel(''));assert(staleSignal.aborted);assert(!ui.queryByText('paper.pdf'));await act(async()=>waitRead({data:[old]}));waitRead=null;
+ assert(!ui.queryByText('paper.pdf'));assert.equal(reads.length,3);cleanup();
  const definition=require(country+'/src/applicationModule.tsx').afghanistanApplicationModule;const contributions=definition.editors.filter(editor=>editor.id==='afghan-identity-attachments');assert.deepEqual(contributions.map(editor=>editor.entity).sort(),['student','teacher']);assert(contributions.every(editor=>editor.roles.length===1&&editor.roles[0]==='ADMIN'));
  console.log('PASS: country student/teacher attachment tabs reuse shared forms/table/PDF/CSV, kind/date filters, authenticated downloads and URL cleanup, confirmation/retry, one upload per double click, empty/error states, no-store reads and cancellation in all three locales.');
 })().catch(error=>{console.error(error);process.exitCode=1});
