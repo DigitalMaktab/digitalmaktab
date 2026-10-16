@@ -14,4 +14,4 @@ export AF_TRANSFER_TEST_DATABASE="Host=$database_dir;Port=55439;Username=academi
 export AF_MINISTRY_TEST_DATABASE="Host=$database_dir;Port=55439;Username=academic_test;Database=ministry_report_tests"
 export AF_ACADEMIC_TEST_DATABASE="Host=$database_dir;Port=55439;Username=academic_test;Database=academic_year_tests"
 cd "$projects_dir/digitalmaktab-country-afghanistan"
-dotnet test tests/DigitalMaktab.Country.Afghanistan.Tests --no-restore --filter 'FullyQualifiedName~AcademicYearTests|FullyQualifiedName~MinistryReportTests|FullyQualifiedName~StudentRegisterTests|FullyQualifiedName~PersonDetailsTests|FullyQualifiedName~TransferTests|FullyQualifiedName~SolarHijriCalendarProviderTests' --verbosity minimal
+dotnet test tests/DigitalMaktab.Country.Afghanistan.Tests --no-restore --filter 'FullyQualifiedName~AcademicYearTests|FullyQualifiedName~MinistryReportTests|FullyQualifiedName~StudentRegisterTests|FullyQualifiedName~PersonDetailsTests|FullyQualifiedName~TransferTests|FullyQualifiedName~SolarHijriCalendarProviderTests|FullyQualifiedName~SwaggerTests' --verbosity minimal
