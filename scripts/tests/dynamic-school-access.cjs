@@ -6,19 +6,30 @@ for(const key of ['window','document','navigator','HTMLElement','HTMLButtonEleme
 const ts=require(core+'/node_modules/typescript');require.extensions['.tsx']=require.extensions['.ts']=(module,file)=>module._compile(ts.transpileModule(fs.readFileSync(file,'utf8'),{fileName:file,compilerOptions:{module:ts.ModuleKind.CommonJS,jsx:ts.JsxEmit.ReactJSX,esModuleInterop:true,target:ts.ScriptTarget.ES2020}}).outputText,file);
 let roles=[],staff=[],reads=[],writes=[],fail=false,pending=null;
 const response=data=>({status:200,data,headers:{pagination:JSON.stringify({totalPages:1,totalCount:data.length})}});
-const catalog=['students.read','students.write','classes.read','branches.read','reports.export','access.manage'];
+const catalog=['students.read','students.write','classes.read','branches.read','reports.export','access.manage','audit.read'];
 const api={get:async(url,config)=>{reads.push({url,params:config?.params});if(url==='/custom-roles/capabilities')return response(catalog);if(url==='/custom-roles/capability-dependencies')return response({'students.read':['classes.read','branches.read']});if(url==='/custom-roles')return response(roles.map(role=>({...role,assignedUsers:staff.filter(p=>p.roles.some(r=>r.id===role.id)).length})));if(url==='/school-staff')return response(staff);throw Error('Unexpected '+url)},
  post:async(url,dto)=>{writes.push({url,dto});if(pending)await pending;if(fail)throw {response:{status:409,data:{detail:'A conflicting change occurred.'}}};if(url.endsWith('/reset-password')){const id=url.split('/').at(-2);staff=staff.map(row=>row.id===id?{...row,version:'v-reset'}:row);return response({initialPassword:'TemporaryOnly@1234',staff:staff.find(row=>row.id===id)});}if(url==='/custom-roles'){const row={...dto,id:'role-'+roles.length,version:'v1',creationDate:'2026-10-17',status:true};roles=[...roles,row];return response(row)}if(url==='/school-staff'){const row={...dto,id:'person-'+staff.length,version:'v1',roles:roles.filter(r=>dto.roleIds.includes(r.id)).map(({id,name})=>({id,name})),creationDate:'2026-10-17'};staff=[...staff,row];return response(row)}throw Error('Unexpected '+url)},
  put:async(url,dto)=>{writes.push({url,dto});const id=url.split('/').at(-1);staff=staff.map(row=>row.id===id?{...row,...dto,version:'v2',roles:roles.filter(r=>dto.roleIds.includes(r.id)).map(({id,name})=>({id,name}))}:row);return response(staff.find(row=>row.id===id));},
  delete:async(url,config)=>{writes.push({url,params:config.params});throw {response:{status:409,data:{detail:'This role is assigned to staff.'}}}}};
 const original=Module._load;Module._load=function(request,parent,isMain){if(request==='./client'&&parent.filename.includes('/src/api/'))return {__esModule:true,default:api};if(['react','react/jsx-runtime','react-dom','react-dom/client','react-i18next','react-router-dom','i18next','formik'].includes(request))return original.call(this,app+'/'+request,parent,isMain);return original.apply(this,arguments)};
 const React=require(app+'/react'),h=React.createElement,{render,fireEvent,waitFor,cleanup,within,act}=require(app+'/@testing-library/react'),{MemoryRouter}=require(app+'/react-router-dom'),{I18nextProvider}=require(app+'/react-i18next'),i18n=require(app+'/i18next').createInstance();
-const {AuthContext}=require(core+'/src/helper/auth/AuthProvider.tsx'),{ApplicationModuleContextProvider}=require(core+'/src/modules/ModuleContext.tsx'),Screen=require(core+'/src/access/AppSchoolAccessManagement.tsx').default,{canAccessPath}=require(core+'/src/access/permissions.ts');
+const {AuthContext}=require(core+'/src/helper/auth/AuthProvider.tsx'),{ApplicationModuleContextProvider}=require(core+'/src/modules/ModuleContext.tsx'),{default:Screen,permissionLabel}=require(core+'/src/access/AppSchoolAccessManagement.tsx'),{canAccessPath}=require(core+'/src/access/permissions.ts');
 const wrapper=({children})=>h(I18nextProvider,{i18n},h(MemoryRouter,{initialEntries:['/custom-roles']},h(AuthContext.Provider,{value:{userRole:0,user:{role:0,school:{countryCode:'AT'}}}},h(ApplicationModuleContextProvider,{modules:[],scope:{countryCode:'AT',role:'ADMIN'}},children))));
 (async()=>{
  await i18n.init({lng:'en-US',resources:{'en-US':{translation:JSON.parse(fs.readFileSync(core+'/src/locales/en-US/translation.json'))}},interpolation:{escapeValue:false}});const t=i18n.t.bind(i18n);
+ // Exercise the real label formatter against every server capability in all app languages.
+ const source=fs.readFileSync(projects+'/digitalmaktab-core/src/DigitalMaktab.Core/Services/Access/CapabilityCatalog.cs','utf8');
+ const tokens=part=>[...part.matchAll(/"([^"]+)"/g)].map(match=>match[1]);
+ const capabilities=[...tokens(source.split('Resources = [')[1].split('];')[0]).flatMap(resource=>[resource+'.read',resource+'.write']),...tokens(source.split('.Concat([')[1].split('])')[0])];
+ for(const language of ['en-US','fa-AF','ps-AF']){
+  if(language!=='en-US')i18n.addResourceBundle(language,'translation',JSON.parse(fs.readFileSync(projects+'/digitalmaktab-spa-country-afghanistan/src/locales/'+language+'/translation.json')));
+  await i18n.changeLanguage(language);
+  for(const token of capabilities)assert(!permissionLabel(token,t).includes('accessManagement.'),language+': '+token);
+  assert.equal(permissionLabel('audit.read',t),t('accessManagement.special.audit_read'));
+ }
+ await i18n.changeLanguage('en-US');
  const ui=render(h(Screen),{wrapper});await waitFor(()=>assert(reads.some(r=>r.url==='/school-staff')));const initial=reads.length;await act(async()=>new Promise(r=>setTimeout(r,100)));assert.equal(reads.length,initial,'no idle fetch loop');
- fireEvent.click(ui.getByRole('button',{name:t('customRole.create.label')}));let dialog=within(ui.getByRole('dialog'));
+ fireEvent.click(ui.getByRole('button',{name:t('customRole.create.label')}));let dialog=within(ui.getByRole('dialog'));assert(dialog.getByRole('checkbox',{name:t('accessManagement.special.audit_read')}));
  fireEvent.submit(dialog.getByRole('button',{name:t('customRole.submit')}).closest('form'));await waitFor(()=>assert(dialog.getByText(t('accessManagement.required'))));assert.equal(writes.length,0);
  fireEvent.change(dialog.getByLabelText(t('customRole.fields.name'), {exact:false}),{target:{value:'Registrar'}});fireEvent.click(dialog.getByRole('checkbox',{name:'Students · View'}));
  fail=true;fireEvent.click(dialog.getByRole('button',{name:t('customRole.submit')}));await waitFor(()=>assert(dialog.getByText('A conflicting change occurred.')));assert.equal(dialog.getByLabelText(t('customRole.fields.name'), {exact:false}).value,'Registrar');assert(dialog.getByRole('checkbox',{name:'Students · View'}).checked);
