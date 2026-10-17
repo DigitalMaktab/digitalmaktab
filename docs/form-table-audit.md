@@ -26,9 +26,16 @@ Run `node scripts/audit-data-flows.cjs /tmp/digitalmaktab-data-flow-inventory.js
 | Teacher lookup/roster access | Course picker uses the existing teacher API. New teacher class and enrollment APIs enforce class ownership and school scope; isolated authenticated HTTP tests prove own-class reads, unrelated-teacher rejection and continued denial of admin endpoints. Teacher attendance/grade entry read all pages and cancel abandoned roster loads. Subject-course ownership and full populated screen saves need further coverage. |
 | School admin year selector | Browser found root-only calendar-year call returning 403. Replaced it with the shared `/main/calendarYears` endpoint, reading all pages. |
 
+| Saved reference selections | Actual react-select and six domain controls resolve saved IDs absent from the first page, retain selections during search, ignore stale results, cancel abandoned work and settle failed searches. Tests also exercise teacher-only APIs and account-scope cache isolation. |
+| Teacher/student reference permissions | Teacher student list/detail reads use the teacher API; an omitted class filter no longer becomes an empty GUID filter. Shared teacher references return only IDs and names for the authenticated school, enabling parent/student counseling requests without admin-profile access. Isolated HTTP tests cover scoped reads, cross-school rejection and the minimal response shape. |
+| Offline paginated tables | Cache snapshots retain pagination headers; tests compare online/offline rows and page counts. Failed mutations and authoritative HTTP errors still reject. |
+| Teacher/parent profile edits | Rendered forms preserve postal code, district and address type that the editor does not expose; failed saves keep the draft; successful responses immediately refresh the shared user session and displayed name while retaining country details. This screen test mocks the persistence API. |
+| School signup and address payloads | Rendered signup wizard keeps school country separate from phone country, advances on Enter, blocks pending duplicates and retains rejected drafts. An actual multipart HTTP/PostgreSQL test reads back school/phone country, postal code/address type and a verified password hash. Legacy requests derive the missing school country from phone country; invalid country IDs reject before writing. School-profile/signup multipart payloads include address type; signup also forwards a supplied district. |
+| Literal password confirmation | School registration, root-user creation and legacy password changes compare confirmation literally. Tests cover regex metacharacters, invalid regex syntax and mismatched confirmations; a password containing `[` also succeeds through real school-registration HTTP. |
+
 ## Reproducible checks
 
-- `bash scripts/check-data-flows.sh`: shared foundations, rendered assignment/library/chapter screens and isolated PostgreSQL backend tests.
+- `bash scripts/check-data-flows.sh`: shared foundations, rendered assignment/library/chapter/profile/signup screens, reference selectors and isolated PostgreSQL backend tests.
 - `node scripts/check-pdf-exports.cjs`: existing table/date/filter/export, person-country composition and module regressions. This is additional regression coverage, not whole-app persistence proof.
 - `node scripts/check-core-components.mjs`: shared UI reuse.
 - `LOGIN_TEST_EMAIL=... LOGIN_TEST_PASSWORD=... LOGIN_TEST_ORIGIN=http://localhost:3002 node scripts/tests/table-routes-browser.cjs`: read-only local browser route audit. Optional `AUDIT_ROUTES` comma-separated paths and `AUDIT_BROWSER_OUTPUT` JSON destination. Do not use real credentials against a production SPA build.
@@ -43,8 +50,8 @@ The initial authenticated read-only browser sweep visited 41 Austria admin sideb
 - Verify save/read-back for remaining endpoints and role-specific flows using isolated records/databases; newly enabled validators need valid-flow checks as well as rejection checks.
 - Verify all tables with populated fixtures, current page and applied filters after each mutation; include nested modals, exports and country-specific columns.
 - Complete settled browser checks across admin, teacher, parent, student and root roles. Parameterized routes need seeded context, not just sidebar crawling.
-- Review async lookup selection outside the first result page and search races; inspect other lookup controls for partial results.
-- Review offline paginated response metadata, modal error handling, and array/file form behavior at other call sites.
+- Async lookup saved-ID/search tests now cover all six Core async domain controls. Inspect remaining non-async reference controls for partial results and verify populated country-module forms with these controls.
+- Offline page metadata is covered by the shared adapter test; verify remaining modal error handling and array/file form behavior at other call sites.
 - Keep the active goal open until these requirements have direct evidence. No broad completion claim follows from a source inventory or green foundation suite.
 
 Package updates require `scripts/sync-spa.sh` / `scripts/sync-dotnet.sh`, followed by the user's SPA/API dev-server restarts. Local temporary verification servers must be stopped after use.

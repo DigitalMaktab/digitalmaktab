@@ -70,5 +70,8 @@ const deferred=()=>{let resolve,reject;const promise=new Promise((yes,no)=>{reso
  for(const method of ['post','put','patch','delete']){failure={};await assert.rejects(()=>apiClient.request({url:'/sample',method,data:{name:'unsaved'}}));}
  failure={response:{status:500,data:{detail:'database unavailable'}}};await assert.rejects(()=>apiClient.get('/sample'));failure={};const offline=await apiClient.get('/sample');assert.equal(offline.data.persisted,'server value');assert(offline.cached);
  failure=null;await apiClient.post('/sample',{name:'saved'});assert.equal(cached.size,0);assert.equal(networkCalls,8);
+ failure=null;apiClient.defaults.adapter=async config=>{if(failure)throw {config,...failure};return {data:[{id:'page-two-row'}],status:200,statusText:'OK',headers:{pagination:JSON.stringify({currentPage:2,totalPages:4,totalCount:153})},config}};
+ const onlinePage=await apiClient.get('/paged',{params:{pageNumber:2,pageSize:50}});failure={};const offlinePage=await apiClient.get('/paged',{params:{pageNumber:2,pageSize:50}});assert(offlinePage.cached);assert.deepEqual(offlinePage.data,onlinePage.data);assert.equal(offlinePage.headers.pagination,onlinePage.headers.pagination);assert.equal(JSON.parse(offlinePage.headers.pagination).totalPages,4);
+
  console.log('PASS: HTTP/internal success statuses, live Formik values and cleared selects, nested phone edits, one mutation per pending submit, stable inline loaders, independent parallel results, canceled stale table reads, and failed writes/HTTP errors never masquerading as cached successes.');
 })().catch(error=>{console.error(error);process.exitCode=1});
