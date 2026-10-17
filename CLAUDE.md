@@ -197,6 +197,15 @@ reports "translation not showing", "new component not appearing",
 "endpoint not found", the answer is almost always: **restart
 `npm start` and/or `dotnet watch run`**.
 
+## School activation and authentication
+
+Inactive schools must not log in. School admin authentication requires an active
+school; teacher, student and parent authentication requires both an active
+account and an active school. Core's shared JWT validation also rejects existing
+school-bound tokens while the school is inactive. Platform root accounts remain
+independent of school activation. Keep the support submission activation check;
+do not relax it to compensate for missing authentication enforcement.
+
 ## Dev-only demo login accounts
 
 Seeded automatically in Development env by `Seeder.SeedDevAccounts`.

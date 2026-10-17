@@ -8,6 +8,8 @@ trap cleanup EXIT
 pg_ctl -D "$database_dir/data" -o "-h '' -k '$database_dir' -p 55439" -l "$database_dir/server.log" -w start
 createdb -h "$database_dir" -p 55439 -U support_test support_tests
 createdb -h "$database_dir" -p 55439 -U support_test student_write_tests
+createdb -h "$database_dir" -p 55439 -U support_test authentication_tests
+export CORE_AUTH_TEST_DATABASE="Host=$database_dir;Port=55439;Username=support_test;Database=authentication_tests"
 export CORE_STUDENT_WRITE_TEST_DATABASE="Host=$database_dir;Port=55439;Username=support_test;Database=student_write_tests"
 export CORE_SUPPORT_TEST_DATABASE="Host=$database_dir;Port=55439;Username=support_test;Database=support_tests"
 cd "$projects_dir/digitalmaktab-core"
