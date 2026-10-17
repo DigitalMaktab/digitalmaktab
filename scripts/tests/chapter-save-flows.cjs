@@ -1,0 +1,35 @@
+// Render the real assignment screen, AppTable and modal controls. The repository is in memory;
+// backend database persistence is covered separately by the PostgreSQL suite.
+const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict'),Module=require('node:module');
+const projects=path.resolve(__dirname,'../../..'),core=projects+'/digitalmaktab-spa-core',shell=projects+'/digitalmaktab-spa',app=shell+'/node_modules';
+const {JSDOM}=require(app+'/jsdom'),dom=new JSDOM('<html><body></body></html>',{url:'http://localhost'});
+for(const key of ['window','document','navigator','HTMLElement','HTMLButtonElement','localStorage','File'])global[key]=dom.window[key];global.IS_REACT_ACT_ENVIRONMENT=true;HTMLElement.prototype.scrollIntoView=()=>{};
+const ts=require(core+'/node_modules/typescript');require.extensions['.tsx']=require.extensions['.ts']=(module,file)=>module._compile(ts.transpileModule(fs.readFileSync(file,'utf8'),{fileName:file,compilerOptions:{module:ts.ModuleKind.CommonJS,jsx:ts.JsxEmit.ReactJSX,esModuleInterop:true,target:ts.ScriptTarget.ES2020}}).outputText,file);
+const original=Module._load;let exportsForScreen;
+Module._load=function(request,parent,isMain){if(request==='@digitalmaktab/spa-core')return exportsForScreen;if(['react','react/jsx-runtime','react-dom','react-dom/client','react-i18next','react-router-dom','i18next','formik'].includes(request))return original.call(this,app+'/'+request,parent,isMain);return original.apply(this,arguments)};
+const React=require(app+'/react'),h=React.createElement,{render,fireEvent,waitFor,cleanup,act,within}=require(app+'/@testing-library/react'),{MemoryRouter}=require(app+'/react-router-dom'),{I18nextProvider}=require(app+'/react-i18next'),i18n=require(app+'/i18next').createInstance();
+const get=p=>require(core+'/src/'+p).default,{LoaderProvider}=require(core+'/src/contexts/LoaderContext.tsx'),{AuthContext}=require(core+'/src/helper/auth/AuthProvider.tsx'),{UserRole}=require(core+'/src/models/UserRole.ts'),{ResponseResult}=require(core+'/src/dtos/ResultEnum.ts');
+const {LearningMaterialType}=require(core+'/src/models/LearningMaterialType.ts');
+const paths={AppAlert:'components/AppAlert.tsx',AppBaseEditor:'components/AppBaseEditor.tsx',AppFormInput:'components/form/AppFormInput.tsx',AppFormSelect:'components/form/AppFormSelect.tsx',AppFormArray:'components/form/AppFormArray.tsx',AppFormSectionContainer:'components/form/AppFormSectionContainer.tsx',AppImg:'components/AppImg.tsx',AppButton:'components/AppButton.tsx',AppModal:'components/modal/AppModal.tsx',AppAccordion:'components/accordion/AppAccordion.tsx',AppVerticalSpacer:'components/spacer/AppVerticalSpacer.tsx',AppDashedLineSpacer:'components/spacer/AppDashedLineSpacer.tsx',AppStandaloneInput:'components/input/AppStandaloneInput.tsx',AppStandaloneFileInput:'components/input/AppStandaloneFileInput.tsx',AppTextArea:'components/input/AppTextArea.tsx',AppEnumFilterSelect:'components/select/AppEnumFilterSelect.tsx'};
+let writes=[],reads=0,failure=false;
+const list=async()=>{reads++;return {status:200,data:[]}};
+const add=async form=>{writes.push(Object.fromEntries(form));return failure?{status:3,errors:['Chapter rejected']}:{status:200}};
+const operations={data:[],courseSectionList:list,addCourseSection:add};
+exportsForScreen=Object.fromEntries(Object.entries(paths).map(([name,p])=>[name,get(p)]));
+Object.assign(exportsForScreen,{LearningMaterialType,ResponseResult,AuthContext,UserRole,VideoPlayer:()=>null,useTeacherOperations:()=>operations,useAppLocalizer:require(core+'/src/hooks/useAppLocalizer.ts').useAppLocalizer,AppLearningMaterialTypeSelect:props=>h('select',{'aria-label':'Material type',name:props.name,value:props.value,onChange:e=>props.onChange(e.target.value)},Object.entries(LearningMaterialType).filter(([key])=>isNaN(Number(key))).map(([key,value])=>h('option',{key,value},key)))});
+const Screen=require(shell+'/src/screens/school/class/subject/CourseMaterial.tsx').default;
+(async()=>{
+ await i18n.init({lng:'en-US',resources:{'en-US':{translation:JSON.parse(fs.readFileSync(core+'/src/locales/en-US/translation.json'))}},interpolation:{escapeValue:false}});
+ const wrapper=({children})=>h(I18nextProvider,{i18n},h(MemoryRouter,null,h(LoaderProvider,null,h(AuthContext.Provider,{value:{userRole:UserRole.TEACHER,user:null}},children))));
+ const ui=render(h(Screen,{id:'course-one',initialData:{}}),{wrapper});const field=name=>ui.container.querySelector(`[name="${name}"]`);
+ await waitFor(()=>assert.equal(reads,1));
+ const change=(name,value)=>fireEvent.change(field(name),{target:{value}});
+ change('title','New chapter');change('description','Chapter details');change('learningMaterials[0].title','First lesson');change('learningMaterials[0].description','Lesson details');
+ fireEvent.submit(ui.container.querySelector('form'));await act(async()=>{await new Promise(r=>setTimeout(r,80))});assert.equal(writes.length,0,'video requires file and thumbnail');assert(field('learningMaterials[0].thumbnail'));
+ fireEvent.change(ui.getByLabelText('Material type'),{target:{value:String(LearningMaterialType.LINK)}});await waitFor(()=>assert(!field('learningMaterials[0].thumbnail')));
+ const addButton=ui.container.querySelector('button .feather-plus').closest('button');fireEvent.click(addButton);await waitFor(()=>assert(field('learningMaterials[1].title')));assert.equal(field('title').value,'New chapter');assert.equal(field('learningMaterials[0].title').value,'First lesson');
+ change('learningMaterials[1].title','Second lesson');change('learningMaterials[1].description','Second details');fireEvent.change(ui.getAllByLabelText('Material type')[1],{target:{value:String(LearningMaterialType.LINK)}});fireEvent.click(ui.container.querySelector('button .feather-minus').closest('button'));await waitFor(()=>assert(!field('learningMaterials[1].title')));
+ failure=true;fireEvent.submit(ui.container.querySelector('form'));await waitFor(()=>assert(ui.getByText('Chapter rejected')));assert.equal(reads,1);assert.equal(field('title').value,'New chapter');assert.equal(writes[0]['learningMaterials[0].title'],'First lesson');assert(!('learningMaterials[1].title' in writes[0]));
+ failure=false;fireEvent.submit(ui.container.querySelector('form'));await waitFor(()=>assert.equal(reads,2));assert.equal(writes.length,2);assert.equal(writes[1].courseId,'course-one');cleanup();
+ console.log('PASS: real chapter editor keeps dynamic rows and typed values in its submitted payload, validates video uploads, accepts file-free link materials, retains rejected drafts and refreshes once after create.');
+})().catch(error=>{console.error(error);process.exitCode=1});

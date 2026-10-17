@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+set -euo pipefail
+project_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+node "$project_root/scripts/audit-data-flows.cjs" "${TMPDIR:-/tmp}/digitalmaktab-data-flow-inventory.json"
+node "$project_root/scripts/tests/data-foundations.cjs"
+node "$project_root/scripts/tests/assignment-save-flows.cjs"
+node "$project_root/scripts/tests/library-save-flows.cjs"
+node "$project_root/scripts/tests/chapter-save-flows.cjs"
+bash "$project_root/scripts/tests/run-core-support-postgres.sh"

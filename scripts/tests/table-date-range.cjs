@@ -64,7 +64,7 @@ const change=(ui,from,to)=>{fireEvent.change(ui.getByLabelText(i18n.t('dateRange
  change(ui,'2026-10-13','2026-10-13');await waitFor(()=>assert(ui.getByText('Outside')));await act(async()=>{finish({status:2,data:matching,headers:{pagination:JSON.stringify({totalPages:2})}})});assert(ui.getByText('Outside'));assert(!ui.queryByText('Match 0'));cleanup();
  // Local legacy placeholders preserve already-loaded rows.
  ui=view({data:all,showExport:false,showPagination:false,fetchPageData:async()=>({status:0,data:[]})});change(ui,'2026-10-13','2026-10-13');await waitFor(()=>assert(ui.getByText('Match 11')));assert(!ui.queryByText('Outside'));cleanup();
- // Shared request hooks accept replacement criteria and suppress stale data/pagination status.
+ // Shared display state follows the newest read; parallel callers retain their own successful results.
  const useApiRequests=require(core+'/hooks/useApiRequests.ts').default;
  const {LoaderContext}=require(core+'/contexts/LoaderContext.tsx');
  const {renderHook}=require(app+'/@testing-library/react');
@@ -73,7 +73,7 @@ const change=(ui,from,to)=>{fireEvent.change(ui.getByLabelText(i18n.t('dateRange
  let finishOld,oldResult;const old=new Promise(resolve=>{finishOld=resolve});
  await act(async()=>{oldResult=hook.result.current.execute(()=>old)});
  await act(async()=>{const newest=await hook.result.current.execute(async()=>({data:[matching[0]],headers:{}}));assert.equal(newest.status,2)});
- await act(async()=>{finishOld({data:[earlier],headers:{}});assert.equal((await oldResult).status,0)});
+ await act(async()=>{finishOld({data:[earlier],headers:{}});assert.equal((await oldResult).status,2)});
  assert.deepEqual(hook.result.current.data,[matching[0]]);hook.unmount();
  const {buildParams}=require(core+'/api/properties/pagintation.ts');
  assert.deepEqual(buildParams({pageNumber:4,pageSize:20},{creationDateFrom:'2026-10-13',creationDateTo:'2026-10-13',email:'school',classId:'abc',unused:'',other:null}),{pageNumber:4,pageSize:20,creationDateFrom:'2026-10-13',creationDateTo:'2026-10-13',email:'school',classId:'abc'});
