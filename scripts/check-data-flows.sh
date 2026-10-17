@@ -3,6 +3,7 @@ set -euo pipefail
 project_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 node "$project_root/scripts/audit-data-flows.cjs" "${TMPDIR:-/tmp}/digitalmaktab-data-flow-inventory.json"
 node "$project_root/scripts/tests/data-foundations.cjs"
+node "$project_root/scripts/tests/root-route.cjs"
 node "$project_root/scripts/tests/dynamic-school-access.cjs"
 node "$project_root/scripts/tests/school-dashboard.cjs"
 node "$project_root/scripts/tests/assignment-save-flows.cjs"
