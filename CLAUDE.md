@@ -200,11 +200,30 @@ reports "translation not showing", "new component not appearing",
 ## School activation and authentication
 
 Inactive schools must not log in. School admin authentication requires an active
-school; teacher, student and parent authentication requires both an active
+school; teacher, student, parent and staff authentication requires both an active
 account and an active school. Core's shared JWT validation also rejects existing
 school-bound tokens while the school is inactive. Platform root accounts remain
 independent of school activation. Keep the support submission activation check;
 do not relax it to compensate for missing authentication enforcement.
+
+## Dynamic school roles and staff
+
+- `/custom-roles` and `/school-staff` use Core's shared access management screen.
+  Define a role, register a staff account using its unique email, then assign
+  roles by immutable IDs. Staff names need not be unique. Do not create fake
+  teacher records for assistants or add each custom role to `UserRole`.
+- `STAFF` is the account type; `CustomRole` and `StaffUserRole` hold dynamic
+  capabilities. Core's catalog owns valid capability tokens and prerequisites.
+  The editor visibly selects prerequisites and the API stores the expanded set.
+- JWT validation reloads active assignments each request. Staff routes/actions
+  are opt-in and unmapped API actions are denied. Root-only administration is
+  excluded. Password changes/resets rotate the staff security stamp.
+- Country/school packages declare SPA route/editor `capabilities` and backend
+  `SchoolCapability` attributes in their own module. Keep their tenant targeting
+  and DTOs there. Shared code must not import a country implementation.
+- Staff use the shared forms, table/filter/export controls, profile and password
+  reset components. Keep account-scoped print preferences and module selection
+  working for staff as well as built-in identities.
 
 ## Dev-only demo login accounts
 

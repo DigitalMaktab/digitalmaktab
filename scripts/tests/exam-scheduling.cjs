@@ -18,9 +18,9 @@ const {afghanistanCalendar}=require(country+'/src/calendarModule.ts');
 let choices,loads=[],created=[],failLoad=false,failCreate=false,createResolve,createdCallbacks=0,items=[];
 api={schedulingOptions:async signal=>{loads.push(signal);if(failLoad)throw Error('network');return {status:200,data:choices};},create:async dto=>{created.push(dto);if(failCreate)throw {response:{data:{detail:'Stale examination period: reload choices.'}}};if(createResolve===true)await new Promise(resolve=>{createResolve=resolve;});return {status:200,data:{id:'created',...dto}};},list:async()=>({status:200,data:items}),conflicts:async()=>({status:200,data:{sameRoomConflicts:[],sameStudentConflicts:[],sameProctorConflicts:[]}})};
 const Form=load('components/exam/AppExamCreateForm.tsx');
-mocks={...mocks,AppExamCreateForm:Form,AppCard:load('components/card/AppCard.tsx'),AppModal:load('components/modal/AppModal.tsx'),AppAlert:load('components/AppAlert.tsx'),AppTable:load('components/table/AppTable.tsx'),ResponseResult,UserRole:require(core+'/src/models/UserRole.ts').UserRole,useUser:()=>({role:0}),useFormattedDate:load('hooks/useFormattedDate.ts'),exam:api};
+mocks={...mocks,usePermissions:require(core+'/src/access/usePermissions.ts').usePermissions,AppExamCreateForm:Form,AppCard:load('components/card/AppCard.tsx'),AppModal:load('components/modal/AppModal.tsx'),AppAlert:load('components/AppAlert.tsx'),AppTable:load('components/table/AppTable.tsx'),ResponseResult,UserRole:require(core+'/src/models/UserRole.ts').UserRole,useUser:()=>({role:0}),useFormattedDate:load('hooks/useFormattedDate.ts'),exam:api};
 const Screen=require(projects+'/digitalmaktab-spa/src/screens/exam/Exams.tsx').default;
-const view=(component,calendar=afghanistanCalendar)=>render(h(I18nextProvider,{i18n},h(MemoryRouter,null,h(AuthContext.Provider,{value:{userRole:0}},h(CalendarProvider,{value:calendar},component)))));
+const view=(component,calendar=afghanistanCalendar)=>render(h(I18nextProvider,{i18n},h(MemoryRouter,null,h(AuthContext.Provider,{value:{userRole:0,user:{role:0}}},h(CalendarProvider,{value:calendar},component)))));
 const form=()=>h(Form,{onCreated:()=>{createdCallbacks++;}});
 const fill=async(ui,calendar)=>{
  fireEvent.click(ui.getByRole('button',{name:'Choose class'}));fireEvent.click(ui.getByRole('button',{name:'Choose course'}));
