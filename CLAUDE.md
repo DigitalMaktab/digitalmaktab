@@ -134,6 +134,10 @@ create GitHub remotes on their own.
   `ModuleTenantContext` binding.
 - Afghanistan is the working reference. Additional country and school packages
   follow the same contract; no lower-module implementation belongs in Core.
+- Fee `Month` values are calendar-relative ordinals. Use the provider's
+  `FormatMonth` (or Core `ISchoolCalendarFormatter.FormatMonthAsync`) for
+  reminders; never print `Month.ToString()` or convert the ordinal as a
+  Gregorian date. Afghanistan owns Solar Hijri month translations.
 - Backend calendars continue to use `ICalendarProvider` +
   `ICalendarProviderResolver` in Core.Abstractions. Gregorian is in Core;
   Solar Hijri belongs to Afghanistan.
