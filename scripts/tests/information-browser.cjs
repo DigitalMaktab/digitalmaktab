@@ -37,5 +37,9 @@ for(const route of ['guide','faq','terms-of-service','about','resources']){
 await evaluate(`document.querySelector('.sidebar-footer button[aria-controls]').click()`);await sleep(100);
 const menu=await evaluate(`Array.from(document.querySelectorAll('.vertical-menu a')).map(a=>({label:a.textContent.trim(),path:a.getAttribute('href')}))`);
 if(menu.length!==11||new Set(menu.map(item=>item.path)).size!==11)throw Error('Incomplete footer menu '+JSON.stringify(menu));
+const widths=await evaluate(`(()=>{const selectors=['aside.page-sidebar','.sidebar-footer-container','.sidebar-footer','.vertical-menu'];return Object.fromEntries(selectors.map(selector=>[selector,document.querySelector(selector).getBoundingClientRect().width]))})()`);
+for(const [selector,width] of Object.entries(widths))if(Math.abs(width-widths['aside.page-sidebar'])>1)throw Error('Footer width differs from sidebar: '+JSON.stringify(widths));
+console.log('PASS: icons and information menu match sidebar width: '+JSON.stringify(widths));
+
 console.log('PASS: real '+country+' login, Privacy Policy light/dark contrast, country isolation, complete information routes and eleven footer links. Screenshots: '+work);
 }catch(e){console.error(e);process.exitCode=1}finally{socket?.close();browser.kill('SIGTERM')}})();
