@@ -40,6 +40,13 @@ if(menu.length!==11||new Set(menu.map(item=>item.path)).size!==11)throw Error('I
 const widths=await evaluate(`(()=>{const selectors=['aside.page-sidebar','.sidebar-footer-container','.sidebar-footer','.vertical-menu'];return Object.fromEntries(selectors.map(selector=>[selector,document.querySelector(selector).getBoundingClientRect().width]))})()`);
 for(const [selector,width] of Object.entries(widths))if(Math.abs(width-widths['aside.page-sidebar'])>1)throw Error('Footer width differs from sidebar: '+JSON.stringify(widths));
 console.log('PASS: icons and information menu match sidebar width: '+JSON.stringify(widths));
+for(const theme of ['light','dark']){
+ await evaluate(`document.documentElement.setAttribute('data-theme','${theme}');document.documentElement.setAttribute('data-bs-theme','${theme}')`);await sleep(200);
+ const popover=await evaluate(`(()=>{const menu=document.querySelector('.vertical-menu'),style=getComputedStyle(menu);return {radius:parseFloat(style.borderRadius),accent:parseFloat(style.borderTopWidth),shadow:style.boxShadow,close:!!menu.querySelector('button'),active:menu.querySelector('[aria-current="page"]')?.getAttribute('href')}})()`);
+ if(popover.radius<12||popover.accent<2||popover.shadow==='none'||!popover.close||popover.active!=='/resources')throw Error('Popover distinction missing '+JSON.stringify(popover));
+ const screenshot=await send('Page.captureScreenshot',{format:'png',captureBeyondViewport:false},sessionId);fs.writeFileSync(work+'/'+country+'-information-menu-'+theme+'.png',Buffer.from(screenshot.data,'base64'));
+}
+
 
 console.log('PASS: real '+country+' login, Privacy Policy light/dark contrast, country isolation, complete information routes and eleven footer links. Screenshots: '+work);
 }catch(e){console.error(e);process.exitCode=1}finally{socket?.close();browser.kill('SIGTERM')}})();
