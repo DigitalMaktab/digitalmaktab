@@ -22,6 +22,7 @@ const view=(role,url,isAuthenticated=true)=>render(h(MemoryRouter,{initialEntrie
 (async()=>{
  for(const role of [null,0,1,2,3,4,5,6,7,8]){const ui=view(role,'/',role!=null);await waitFor(()=>assert(ui.getByText('PublicScreen'),'root was shadowed for role '+role));cleanup()}
  for(const [role,url,page] of [[0,'/home','SchoolDashboard'],[3,'/teacher-dashboard','TeacherDashboard'],[4,'/student-dashboard','StudentDashboard'],[5,'/dashboard','Dashboard'],[6,'/parent-dashboard','ParentDashboard'],[8,'/staff-home','AppStaffHome']]){const ui=view(role,url);await waitFor(()=>assert(ui.getByText(page)));cleanup()}
+ for(const role of [null,0,3,4,6,8])for(const url of ['/privacy-policy','/support']){const ui=view(role,url,role!=null);await waitFor(()=>assert(ui.getByText('PublicInformationScreen')));cleanup()}
  const denied=view(4,'/home');await waitFor(()=>assert(denied.getByText('Unauthorized')));cleanup();
  console.log('PASS: actual shell routes render the public root for visitors and every account type; role dashboards still match and protected routes stay guarded.');
 })().catch(error=>{console.error(error);process.exitCode=1});

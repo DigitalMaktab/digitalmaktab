@@ -5,6 +5,7 @@ const ts=require(core+'/node_modules/typescript');require.extensions['.tsx']=req
 let mocks;const cache={reads:0,writes:0};const original=Module._load;
 Module._load=function(request,parent,isMain){
  if(request==='@digitalmaktab/spa-core'&&mocks)return mocks;
+ if(parent?.filename===core+'/src/hooks/useFileDownload.ts'&&request==='../api/client')return {__esModule:true,default:mocks.apiClient};
  if(parent?.filename===core+'/src/api/client.ts'&&request==='../cache/cache')return {getFromCache:async()=>{cache.reads++;return {old:'cached report'};},saveToCache:async()=>{cache.writes++;},invalidateCacheByPrefix:async()=>{}};
  if(parent?.filename===core+'/src/api/client.ts'&&request==='../helper/helper')return {getCurrentLanguage:()=> 'fa-AF',getUser:()=>({token:'report-test'})};
  if(['react','react/jsx-runtime','react-dom','react-dom/client','react-i18next','react-router-dom','i18next','formik'].includes(request))return original.call(this,app+'/'+request,parent,isMain);
@@ -52,5 +53,23 @@ const view=(kind,user={role:0})=>render(h(I18nextProvider,{i18n},h(MemoryRouter,
  client.defaults.adapter=async config=>{assert.equal(config.data,documentBody);assert.match(config.headers.get('Content-Type'),/multipart\/form-data/);return {status:200,statusText:'OK',headers:{},config,data:{id:'uploaded'}}};
  await client.post('/any-module/private-upload',documentBody,{headers:{'Content-Type':'multipart/form-data'}});
  assert.equal(revoked.length,6);
+ // The new official report screen uses the shared Core binary-download lifecycle.
+ mocks.AppSelect=load('components/AppSelect.tsx');mocks.AppDateRange=load('components/AppDateRange.tsx');
+ mocks.AppClassSelect=({value,onChange,name})=>h('select',{'aria-label':'Class',value,onChange:e=>onChange(e.target.value),name},h('option',{value:''},'Choose'),h('option',{value:'class-id'},'Class A'));
+ mocks.useFileDownload=require(core+'/src/hooks/useFileDownload.ts').useFileDownload;
+ const Official=require(country+'/src/AfghanOfficialReports.tsx').default;
+ const officialView=()=>render(h(I18nextProvider,{i18n},h(MemoryRouter,null,h(AuthContext.Provider,{value:{user:{role:0},userRole:0}},h(Official)))));
+ for(const language of ['en-US','fa-AF','ps-AF']){
+  await i18n.changeLanguage(language);const ui=officialView();let before=calls.length;
+  const template=ui.getByRole('combobox',{name:i18n.t('afghanOfficialReports.template')});
+  fireEvent.change(template,{target:{value:'transfers'}});fireEvent.click(ui.getByRole('button',{name:i18n.t('afghanOfficialReports.downloadTemplate')}));
+  await waitFor(()=>assert.equal(clicked.at(-1).filename,'transfers.xlsx'));assert.equal(calls.length,before+1);assert.equal(calls.at(-1).url,'/afghanistan/ministry-reports/templates/transfers');
+  fireEvent.change(ui.getByRole('combobox',{name:'Class'}),{target:{value:'class-id'}});const buttons=ui.getAllByRole('button',{name:i18n.t('ministryReports.download')});
+  fireEvent.click(buttons[0]);await waitFor(()=>assert.equal(clicked.at(-1).filename,'MinistryClassResults.xlsx'));assert.equal(calls.at(-1).url,'/afghanistan/ministry-reports/class-results/class-id');
+  fireEvent.change(ui.getByLabelText(i18n.t('dateRange.from')),{target:{value:'2026-03-21'}});fireEvent.change(ui.getByLabelText(i18n.t('dateRange.to')),{target:{value:'2026-04-20'}});
+  fireEvent.click(buttons[1]);await waitFor(()=>assert.equal(clicked.at(-1).filename,'MinistryTransfers.xlsx'));assert.equal(calls.at(-1).url,'/afghanistan/ministry-reports/transfers?from=2026-03-21&to=2026-04-20');cleanup();
+ }
+ pending=true;const abandoned=officialView();const downloadCount=clicked.length;
+ fireEvent.click(abandoned.getByRole('button',{name:i18n.t('afghanOfficialReports.downloadTemplate')}));await waitFor(()=>assert.equal(typeof pending,'function'));const abandonedSignal=calls.at(-1).config.signal;cleanup();assert(abandonedSignal.aborted);await act(async()=>pending());assert.equal(clicked.length,downloadCount);pending=false;
  console.log('PASS: real country report screens download once in all languages, show problem details, abort abandoned requests, preserve filenames and clean URLs; real Core binary requests bypass cache and stale offline fallback.');
 })().catch(error=>{console.error(error);process.exitCode=1;});
