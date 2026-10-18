@@ -23,7 +23,7 @@ mocks = {
   AppTable: load('components/table/AppTable.tsx'), AppCard: load('components/card/AppCard.tsx'), AppAlert: load('components/AppAlert.tsx'),
   AppButton: load('components/AppButton.tsx'), AppButtonLink: load('components/AppButtonLink.tsx'), AppModal: load('components/modal/AppModal.tsx'),
   AppEnumFilterSelect: load('components/select/AppEnumFilterSelect.tsx'), AuthContext,
-  AppStandaloneInput: load('components/input/AppStandaloneInput.tsx'), AppCalendarGrid: load('components/calendar/AppCalendarGrid.tsx'),
+  AppStandaloneInput: load('components/input/AppStandaloneInput.tsx'), AppCalendarGrid: load('components/calendar/AppCalendarGrid.tsx'), AppCalendarChoiceGrid: load('components/calendar/AppCalendarChoiceGrid.tsx'),
   useAppLocalizer: require(core + '/src/hooks/useAppLocalizer.ts').useAppLocalizer, useFormattedDate: load('hooks/useFormattedDate.ts'), UserRole: require(core + '/src/models/UserRole.ts').UserRole,
   apiClient: { get: async (url, config = {}) => {
     requests.push({ url, ...config });

@@ -32,7 +32,7 @@ mocks = {
   AppAlert: load('components/AppAlert.tsx'), AppButton: load('components/AppButton.tsx'), AppModal: load('components/modal/AppModal.tsx'), AppStatusBadge: load('components/AppStatusBadge.tsx'),
   AppEnumSelect: load('components/form/AppEnumSelect.tsx'),
   AppFormInput: load('components/form/AppFormInput.tsx'), AppFormLocalDatePicker: load('components/form/AppFormLocalDatePicker.tsx'),
-  AppStandaloneInput: load('components/input/AppStandaloneInput.tsx'), AppCalendarGrid: load('components/calendar/AppCalendarGrid.tsx'),
+  AppStandaloneInput: load('components/input/AppStandaloneInput.tsx'), AppCalendarGrid: load('components/calendar/AppCalendarGrid.tsx'), AppCalendarChoiceGrid: load('components/calendar/AppCalendarChoiceGrid.tsx'),
   useAppLocalizer: require(core + '/src/hooks/useAppLocalizer.ts').useAppLocalizer, useFormattedDate: load('hooks/useFormattedDate.ts'), UserRole: require(core + '/src/models/UserRole.ts').UserRole,
   apiClient: { get: request, put: async (url, dto) => { if (failSave) throw { response: { data: { detail: 'This examination period changed. Reload it before saving.' } } }; saves.push({ url, dto }); return { data: dto }; }, post: async (url, dto) => {
     if (url.endsWith('/activate')) { activateCalls.push({ url, dto }); if (failActivation) throw { response: { data: { detail: 'Stale version: reload school year.' } } }; rows = rows.map(row => ({ ...row, isActive: url.includes('/' + row.id + '/') })); return { data: rows[1] }; }
@@ -70,7 +70,21 @@ const view = (component, entry = '/afghanistan/academic-years', editor = false, 
   ui = view(h(Editor), '/afghanistan/academic-years/first', true);
   await waitFor(() => assert(ui.getByLabelText(i18n.t('afghanAcademicYears.year'), { exact: false, selector: "input,select" }).disabled));
   assert.equal(ui.getByLabelText(i18n.t('afghanAcademicYears.fromDate'), { exact: false, selector: "input,select" }).value, '۱۴۰۳/۰۱/۰۱');
+  // A blur/touched update and sibling edits must not destroy an open Select2.
+  const $ = require(core + '/node_modules/jquery');
+  const climate = $(ui.container.querySelector('select[name="policy.climate"]'));
+  const widget = climate.data('select2');
+  await act(async () => { climate.select2('open'); });
+  assert(widget.isOpen());
+  fireEvent.blur(climate[0]);
+  await act(async () => {});
+  assert.equal(climate.data('select2'), widget);
+  assert(widget.isOpen(), 'Formik blur must preserve the open dropdown');
   fireEvent.change(ui.container.querySelector('input[name="plan.displayName"]'),{target:{value:'School teaching year'}});
+  await act(async () => {});
+  assert.equal(climate.data('select2'), widget);
+  assert(widget.isOpen(), 'Sibling field edits must preserve the open dropdown');
+  await act(async () => { climate.select2('close'); });
   fireEvent.change(ui.container.querySelector('select[name="policy.climate"]'),{target:{value:'COLD'}});
   fireEvent.click(ui.getByRole('button',{name:i18n.t('academicYearSettings.terms')}));
   const termSection=ui.getByText(i18n.t('academicYearSettings.terms'),{selector:'legend'}).closest('fieldset');

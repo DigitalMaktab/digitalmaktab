@@ -22,7 +22,7 @@ const teacher = { teacherId: 'teacher-id', firstNameNative: 'معلم', maritalS
 mocks = { AppBaseEditor: load('components/AppBaseEditor.tsx'), AppEnumSelect: load('components/form/AppEnumSelect.tsx'), AppFormInput: load('components/form/AppFormInput.tsx'),
   AppFormSectionContainer: load('components/form/AppFormSectionContainer.tsx'), AppFormLocalDatePicker: load('components/form/AppFormLocalDatePicker.tsx'),
   AppAlert: load('components/AppAlert.tsx'), AppCard: load('components/card/AppCard.tsx'), AppButton: load('components/AppButton.tsx'),
-  AppStandaloneInput: load('components/input/AppStandaloneInput.tsx'), AppCalendarGrid: load('components/calendar/AppCalendarGrid.tsx'),
+  AppStandaloneInput: load('components/input/AppStandaloneInput.tsx'), AppCalendarGrid: load('components/calendar/AppCalendarGrid.tsx'), AppCalendarChoiceGrid: load('components/calendar/AppCalendarChoiceGrid.tsx'),
   useAppLocalizer: require(core + '/src/hooks/useAppLocalizer.ts').useAppLocalizer,
   apiClient: { get: async (url, config = {}) => { gets.push({url, ...config}); if (pending) return pending; if (failLoad) throw {response: {data: {detail: 'Could not load record'}}}; return {data: url.includes('teacher') ? teacher : student}; },
     put: async (url, dto) => { if (failSave) throw {response: {data: {detail: 'Profile save failed'}}}; saves.push({url, dto}); return {data: dto}; } }

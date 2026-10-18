@@ -30,7 +30,7 @@ const component = file => require(path.join(source, file)).default;
 facade = {
   AppStandaloneInput: component('components/input/AppStandaloneInput.tsx'),
   AppButton: component('components/AppButton.tsx'),
-  AppCalendarGrid: component('components/calendar/AppCalendarGrid.tsx'),
+  AppCalendarGrid: component('components/calendar/AppCalendarGrid.tsx'), AppCalendarChoiceGrid: component('components/calendar/AppCalendarChoiceGrid.tsx'),
   useAppLocalizer: require(path.join(source, 'hooks/useAppLocalizer.ts')).useAppLocalizer,
 };
 const AfghanDatePicker = require(path.join(country, 'AfghanDatePicker.tsx')).default;
@@ -44,7 +44,7 @@ const h = React.createElement;
   const resources = {};
   for (const locale of ['en-US', 'fa-AF', 'ps-AF']) {
     const file = locale === 'en-US' ? path.join(source, 'locales/en-US/translation.json') : path.join(country, 'locales', locale, 'translation.json');
-    resources[locale] = { translation: JSON.parse(fs.readFileSync(file, 'utf8')) };
+    resources[locale] = { translation: { ...JSON.parse(fs.readFileSync(file, 'utf8')), ...JSON.parse(fs.readFileSync(path.join(country, 'locales', locale, 'translation.json'), 'utf8')) } };
   }
   await i18n.init({ lng: 'en-US', resources, interpolation: { escapeValue: false } });
   const Wrapper = ({ calendar = gregorianCalendar, initial = { from: '2026-10-13', to: '2026-10-14' }, disabled = false }) => {
@@ -75,6 +75,51 @@ const h = React.createElement;
     fireEvent.click(ui.getByRole('button', { name: locale === 'en-US' ? '22' : '۲۲' }));
     assert(ui.getByText('{"from":"2026-10-13","to":"2026-10-14"}')); cleanup();
   }
+  // Jump straight to a birth year with local digits; navigating never changes
+  // the controlled date until a valid day is selected.
+  for (const locale of ['en-US', 'fa-AF', 'ps-AF']) {
+    await i18n.changeLanguage(locale);
+    let selected = null;
+    const props = { locale, value: new Date('2026-10-13T00:00:00Z'), onChange: date => { selected = date; },
+      minDate: toGregorian(1300, 0, 1), maxDate: toGregorian(1405, 6, 21) };
+    ui = render(h(I18nextProvider, { i18n }, h(AfghanDatePicker, props)));
+    fireEvent.click(ui.getByRole('textbox'));
+    fireEvent.click(ui.getByRole('button', { name: i18n.t('afghanDatePicker.chooseYear') }));
+    assert(ui.getByRole('button', { name: i18n.t('afghanDatePicker.nextYears') }).disabled);
+    const year = ui.getByLabelText(i18n.t('afghanDatePicker.year'));
+    fireEvent.change(year, { target: { value: '۱۲۹۹' } });
+    assert(ui.getByRole('button', { name: i18n.t('afghanDatePicker.goToYear') }).disabled);
+    fireEvent.change(year, { target: { value: locale === 'en-US' ? '1380' : locale === 'fa-AF' ? '۱۳۸۰' : '١٣٨٠' } });
+    fireEvent.keyDown(year, { key: 'Enter' });
+    const { AFGHAN_MONTH_KEYS } = require(path.join(country, 'calendarLabels.ts'));
+    fireEvent.click(ui.getByRole('button', { name: i18n.t(AFGHAN_MONTH_KEYS[0]), exact: true }));
+    // Same date supplied as a fresh object must not reset the browsed month.
+    ui.rerender(h(I18nextProvider, { i18n }, h(AfghanDatePicker, { ...props, value: new Date(props.value) })));
+    assert.equal(selected, null);
+    fireEvent.click(ui.getByRole('button', { name: locale === 'en-US' ? '15' : '۱۵', exact: true }));
+    assert.deepEqual(toJalali(selected), { jy: 1380, jm: 0, jd: 15 });
+    assert.equal(ui.queryByRole('dialog'), null);
+    cleanup();
+  }
+  // Leap Hoot exposes day 30; ordinary Hoot stops at 29. Month/year
+  // boundaries stay disabled when the permitted date interval is narrow.
+  await i18n.changeLanguage('en-US');
+  for (const [year, leap] of [[1403, true], [1404, false]]) {
+    ui = render(h(I18nextProvider, { i18n }, h(AfghanDatePicker, { locale: 'en-US', value: toGregorian(year, 11, 1), onChange: () => {} })));
+    fireEvent.click(ui.getByRole('textbox'));
+    assert.equal(!!ui.queryByRole('button', { name: '30', exact: true }), leap);
+    cleanup();
+  }
+  ui = render(h(I18nextProvider, { i18n }, h(AfghanDatePicker, { locale: 'en-US', value: toGregorian(1405, 6, 21),
+    minDate: toGregorian(1405, 6, 20), maxDate: toGregorian(1405, 6, 22), onChange: () => {} })));
+  fireEvent.click(ui.getByRole('textbox'));
+  assert(ui.getByRole('button', { name: i18n.t('afghanDatePicker.previousMonth') }).disabled);
+  assert(ui.getByRole('button', { name: i18n.t('afghanDatePicker.nextMonth') }).disabled);
+  fireEvent.click(ui.getByRole('button', { name: i18n.t('afghanDatePicker.chooseMonth') }));
+  const { AFGHAN_MONTH_KEYS } = require(path.join(country, 'calendarLabels.ts'));
+  assert(ui.getByRole('button', { name: i18n.t(AFGHAN_MONTH_KEYS[0]), exact: true }).disabled);
+  fireEvent.keyDown(ui.getByRole('dialog'), { key: 'Escape' });
+  assert.equal(ui.queryByRole('dialog'), null);cleanup();
   await i18n.changeLanguage('en-US');
   ui = render(h(Wrapper, { initial: { from: '2026-10-14', to: '2026-10-13' } }));
   assert(ui.getByRole('alert').textContent.includes(i18n.t('dateRange.invalidRange'))); cleanup();

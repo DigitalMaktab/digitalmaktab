@@ -32,7 +32,7 @@ const transferApi = {
 };
 let countryCode='AF';
 mocks={
-  AppCalendarGrid:load('components/calendar/AppCalendarGrid.tsx'),AppForm:load('components/form/AppForm.tsx'),AppTable:load('components/table/AppTable.tsx'),AppCard:load('components/card/AppCard.tsx'),AppAlert:load('components/AppAlert.tsx'),AppButton:load('components/AppButton.tsx'),AppModal:load('components/modal/AppModal.tsx'),AppStandaloneInput:load('components/input/AppStandaloneInput.tsx'),
+  AppCalendarGrid:load('components/calendar/AppCalendarGrid.tsx'), AppCalendarChoiceGrid: load('components/calendar/AppCalendarChoiceGrid.tsx'),AppForm:load('components/form/AppForm.tsx'),AppTable:load('components/table/AppTable.tsx'),AppCard:load('components/card/AppCard.tsx'),AppAlert:load('components/AppAlert.tsx'),AppButton:load('components/AppButton.tsx'),AppModal:load('components/modal/AppModal.tsx'),AppStandaloneInput:load('components/input/AppStandaloneInput.tsx'),
   AppClassSelect:props=>h(mocks.AppStandaloneInput,{...props,label:'Target class'}),
   useAppLocalizer:require(core+'/src/hooks/useAppLocalizer.ts').useAppLocalizer,useFormattedDate:load('hooks/useFormattedDate.ts'),
   useSchoolCountryCode:()=>countryCode,useCountryPeople:()=>({students:[{countryCode:'AF',transferLookup:countryLookup}]}),
