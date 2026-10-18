@@ -24,6 +24,10 @@ const request = async (url, config = {}) => {
   return { data: /\/(academic-years|exam-periods)$/.test(url) ? source : source.find(row => url.endsWith('/' + row.id)) };
 };
 mocks = {
+  AppFormError:load('components/form/AppFormError.tsx'),
+  AppAcademicYearSettingsFields:load('academicYears/AppAcademicYearSettingsFields.tsx'), AppFormValues:load('components/form/AppFormValues.tsx'), AppFormCollection:load('components/form/AppFormCollection.tsx'), AppFormCheckboxGroup:load('components/form/AppFormCheckboxGroup.tsx'),
+  ...require(core+'/src/academicYears/contracts.ts'),
+  AppFormOptionSelect:load('components/form/AppFormOptionSelect.tsx'),
   AppTable: load('components/table/AppTable.tsx'), AppBaseEditor: load('components/AppBaseEditor.tsx'), AppCard: load('components/card/AppCard.tsx'),
   AppAlert: load('components/AppAlert.tsx'), AppButton: load('components/AppButton.tsx'), AppModal: load('components/modal/AppModal.tsx'), AppStatusBadge: load('components/AppStatusBadge.tsx'),
   AppEnumSelect: load('components/form/AppEnumSelect.tsx'),
@@ -61,12 +65,20 @@ const view = (component, entry = '/afghanistan/academic-years', editor = false, 
   fireEvent.click(ui.getAllByRole('button', { name: i18n.t('filters.button.reset').trim() })[0]); assert(ui.getByText('۱۴۰۳'));
   failActivation = true; fireEvent.contextMenu(ui.getByText('۱۴۰۳').closest('tr')); fireEvent.click(ui.getByRole('menuitem', { name: i18n.t('afghanAcademicYears.activate') }));
   fireEvent.click(within(ui.getByRole('dialog')).getByRole('button', { name: i18n.t('afghanAcademicYears.activate') })); await waitFor(() => assert(ui.getByText('Stale version: reload school year.'))); cleanup();
+  rows[0].settings={id:'settings-a',version:'settings-v1',plan:{...mocks.academicYearPlanPayload(mocks.academicYearPlanForm()),displayName:'1403',timeZone:'Asia/Kabul',teachingWeekdays:[6,0,1,2,3,4],terms:[{code:'first',name:'First term',fromDate:'2024-03-20',toDate:'2024-07-01',gradeFrom:1,gradeTo:6}]}};
   // Real shared editor uses the installed Hijri date picker, keeps a year immutable, and sends optimistic version data.
   ui = view(h(Editor), '/afghanistan/academic-years/first', true);
   await waitFor(() => assert(ui.getByLabelText(i18n.t('afghanAcademicYears.year'), { exact: false, selector: "input,select" }).disabled));
   assert.equal(ui.getByLabelText(i18n.t('afghanAcademicYears.fromDate'), { exact: false, selector: "input,select" }).value, '۱۴۰۳/۰۱/۰۱');
+  fireEvent.change(ui.container.querySelector('input[name="plan.displayName"]'),{target:{value:'School teaching year'}});
+  fireEvent.change(ui.container.querySelector('select[name="policy.climate"]'),{target:{value:'COLD'}});
+  fireEvent.click(ui.getByRole('button',{name:i18n.t('academicYearSettings.terms')}));
+  const termSection=ui.getByText(i18n.t('academicYearSettings.terms'),{selector:'legend'}).closest('fieldset');
+  fireEvent.click(within(termSection).getByRole('button',{name:i18n.t('academicYearSettings.remove')}));
+  assert(ui.getByRole('dialog'));fireEvent.keyDown(document,{key:'Escape'});await waitFor(()=>assert(!ui.queryByRole('dialog')));
+  assert.equal(ui.container.querySelector('input[name="plan.terms.0.code"]').value,'first');
   fireEvent.submit(ui.container.querySelector('form')); await waitFor(() => assert.equal(saves.length, 1));
-  assert.deepEqual(saves[0], { url: '/afghanistan/academic-years/first', dto: { solarHijriYear: 1403, fromDate: '2024-03-20', toDate: '2025-03-20', version: 'version-a' } }); cleanup();
+  assert.equal(saves[0].url,'/afghanistan/academic-years/first'); assert.equal(saves[0].dto.version,'version-a'); assert.equal(saves[0].dto.settings.plan.timeZone,'Asia/Kabul'); assert.deepEqual(saves[0].dto.settings.plan.teachingWeekdays,[6,0,1,2,3,4]); assert.equal(saves[0].dto.policy.climate,'COLD');assert.equal(saves[0].dto.settings.version,'settings-v1');assert.equal(saves[0].dto.settings.plan.displayName,'School teaching year');assert.equal(saves[0].dto.settings.plan.terms[0].gradeTo,6); cleanup();
   // New-year bounds are native; invalid combinations remain in the editor and never reach the API.
   ui = view(h(Editor), '/afghanistan/academic-years/new', true); const current = helpers.currentAcademicYear();
   assert.equal(ui.getByLabelText(i18n.t('afghanAcademicYears.year'), { exact: false, selector: "input,select" }).value, String(current));
@@ -114,7 +126,7 @@ const view = (component, entry = '/afghanistan/academic-years', editor = false, 
   await waitFor(() => assert(ui.getByText('This examination period changed. Reload it before saving.')));
   assert.equal(saves.length, beforeSave); failSave = false;
   fireEvent.submit(ui.container.querySelector('form')); await waitFor(() => assert.equal(saves.length, beforeSave + 1));
-  assert.deepEqual(saves[beforeSave], { url: '/afghanistan/exam-periods/midterm', dto: { academicYearId: 'first', examType: 0, fromDate: '2024-07-01', toDate: '2024-07-15', version: 'period-v1' } }); cleanup();
+  assert.deepEqual(saves[beforeSave], { url: '/afghanistan/exam-periods/midterm', dto: { academicYearId: 'first', examType: 0, gradeFrom:1,gradeTo:12,fromDate: '2024-07-01', toDate: '2024-07-15', version: 'period-v1' } }); cleanup();
   ui = view(h(PeriodEditor), '/afghanistan/exam-periods/new', true, '/afghanistan/exam-periods');
   await waitFor(() => assert.equal(ui.getByLabelText(i18n.t('afghanAcademicYears.year'), { exact: false, selector: "input,select" }).value, 'first')); cleanup();
   // Every country category has its own translated label, filter option and save value.

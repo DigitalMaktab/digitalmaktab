@@ -129,8 +129,7 @@ No user-owned API or SPA server was restarted. Restart `dotnet watch run` and
 
 ## Research: academic-year setup versus pupil records (2026-10-18)
 
-The proposed reorganization follows ministry evidence and the supplied source workbooks;
-these are design findings, not a claim that the field migration is already implemented.
+The ownership research below informed the implemented school-year settings described at the end of this document. Operational workflows not listed as implemented remain design guidance.
 
 - [MoE, 1405 cold-region midterm notice](https://www.moe.gov.af/dr/اطلاعیه-وزارت-معارف-در-رابطه-به-آغاز-امتحانات-چهارونیم-ماهه-و-تعطیلات-تابستانی-سال-تعلیمی-۱۴۰۵), published 1405/4/10:
   grades 1–3 and 4–12 have different exam start dates. Shared calendar configuration
@@ -169,9 +168,7 @@ not silently rewrite already reviewed records or previously issued report result
 Existing historical totals must be retained until explicitly reviewed; disagreement
 between pupils' manually entered totals is not a safe source for a school-wide calendar.
 
-Current automated preparation is an interim, read-only draft: staff chooses teaching
-dates/weekdays per pupil; Core excludes holidays and distinguishes missing, duplicate
-and unverified attendance. A shared form-fill control preserves unrelated edits.
+Automated preparation now inherits teaching terms and weekdays from the saved school-year setup. Core excludes holidays, applies explicit closures/replacement days, and distinguishes missing, duplicate and unverified attendance. A shared form-fill control preserves unrelated edits.
 An Afghanistan-owned hourly readiness sweep reminds the school administrator of
 missing ministry records for configured midterm/final periods starting within seven
 days or already started, once per seven days per period. It does not decide eligibility.
@@ -226,3 +223,56 @@ assume there are only two examination types. Historical notices are not silently
 promoted to a current-year universal rule. No authoritative current-year national
 instructional-day total was verified during this research; store source-backed,
 scoped declarations rather than inventing a fixed 180/185/200-day default.
+
+## Implemented school-year settings
+
+`/afghanistan/academic-years/:id` now saves both the reusable Core settings and the
+Afghanistan policy in one school-locked transaction, with independent optimistic
+versions. The shared `CalendarYear` reference is unchanged. Core owns a related
+`SchoolAcademicYear` record per school/calendar-year identity: explicit year bounds
+and a typed JSONB plan containing display name, timezone, lifecycle, teaching
+weekdays, grade-scoped terms, calendar exceptions, deadlines/milestones, previous/next
+year references and grading/promotion/source references. The plan is edited through
+shared Core fields and repeatable form sections; no raw JSON editor is exposed.
+
+Afghanistan owns climate classification, ministry template/source references and
+reporting-period bindings to Core teaching-term codes. Each binding has an applicable
+grade range, optional official instructional-day declaration and optional regular /
+approved-excuse attendance thresholds, with a required source for those declared
+values. These policy values are stored for review; they do not silently determine
+exam eligibility or promote pupils. Actual exam windows remain separate, linked to
+the year; they now support different grade ranges. Duplicate or overlapping windows
+for the same grade group are rejected, while different grade groups may have different
+windows. Scheduling rejects classes outside the selected window's grade range and
+window edits cannot invalidate already linked sittings.
+
+The Core migration creates only the new school-year table and indexes. The country
+migration adds its policy data and exam grade scope and backfills existing Afghan
+year bounds into Core. It deliberately leaves teaching terms unconfigured. Existing
+year IDs, enrolments, daily attendance, grades and reviewed ministry records remain.
+No migration removes legacy country tables or person columns.
+
+Ministry preparation now POSTs an empty criteria object: it resolves the pupil's
+class/year/grade and reporting period, inherits applicable teaching terms and the
+saved timezone/workweek, and applies Core holidays and year-specific exceptions.
+Pupil-level teaching dates/weekdays have been removed. Instructional days are shown
+read-only in the pupil editor. Year details expose calculated day totals per term;
+ministry preparation flags disagreement with an official declaration. For a configured
+year, new pupil entries must match the calculated instructional-day total. Existing
+reviewed totals remain historical snapshots, and unconfigured historical paper-register
+imports remain supported for compatibility. A pupil not registered for a period has
+an explicit action to set zero attendance and no sitting. Calendar edits do not rewrite
+saved pupil records.
+
+Validation covers timezone, weekdays, names/date bounds, grade ranges, overlapping
+terms and exceptions, cross-school year references, ministry-term bindings and
+source-backed policy values. The editor uses Core forms, inputs, selects, checkbox
+groups, date pickers, accordions and confirmation modals. English, Dari and Pashto
+translations are mirrored to mobile. Generic settings and controls contain no
+Afghanistan implementation imports.
+
+Verification includes isolated PostgreSQL migration and HTTP workflows, school
+isolation, settings round-trips, independent version conflicts, ministry inheritance,
+read-only pupil teaching days, grade-specific exam windows and all three frontend
+locales. These tests use temporary databases, not the user's development database.
+Restart the API and SPA after the package sync; normal API startup applies migrations.
