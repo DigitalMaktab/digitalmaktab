@@ -54,7 +54,7 @@ const view=(kind,user={role:0})=>render(h(I18nextProvider,{i18n},h(MemoryRouter,
  await client.post('/any-module/private-upload',documentBody,{headers:{'Content-Type':'multipart/form-data'}});
  assert.equal(revoked.length,6);
  // The new official report screen uses the shared Core binary-download lifecycle.
- mocks.AppSelect=load('components/AppSelect.tsx');mocks.AppDateRange=load('components/AppDateRange.tsx');
+ mocks.AppButtonLink=load('components/AppButtonLink.tsx');mocks.AppSelect=load('components/AppSelect.tsx');mocks.AppDateRange=load('components/AppDateRange.tsx');
  mocks.AppClassSelect=({value,onChange,name})=>h('select',{'aria-label':'Class',value,onChange:e=>onChange(e.target.value),name},h('option',{value:''},'Choose'),h('option',{value:'class-id'},'Class A'));
  mocks.useFileDownload=require(core+'/src/hooks/useFileDownload.ts').useFileDownload;
  const Official=require(country+'/src/AfghanOfficialReports.tsx').default;

@@ -50,9 +50,23 @@ parts remain byte-for-byte identical, recorded in the manifest.
   Unrecognized subjects or conflicting marks return a translated error rather
   than silently mislabel scores. Missing marks remain blank, including actual
   recorded zero scores which are preserved as numeric zero.
-- Attendance subcategories and summary inputs remain blank where Core has no
-  equivalent record. The app does not fabricate sickness/leave/teaching-day data
-  or substitute its own result policy for the supplied ministry formulas.
+- Afghanistan now owns `AfghanMinistryRecord`: one verified register entry per
+  immutable enrolment and exam period. It stores period-specific enrolment,
+  instructional/present/absent/sick/leave days and exam participation (sat,
+  excluded, excused or did not sit). Nothing is inferred from missing input;
+  explicit zero remains distinct from an unrecorded period.
+- Both periods must be recorded before a class-results export. Daily category
+  totals must balance; periods together cannot exceed the academic-year date
+  span. A pupil not enrolled in a period must have zero days and no sitting.
+  Version checks and an enrolment-scoped transaction lock prevent lost updates
+  and conflicting cross-period totals.
+- Workbooks fill all five attendance columns for each period and their summed
+  total row. Summaries count enrolled pupils and participation statuses for
+  each sheet. Promotion/repetition/conditional counts reference the original
+  ministry result formulas. For a recorded non-participant, the original result
+  expression is retained inside a formula branch that displays the saved status;
+  the annual letter grade stays blank. Marks from a non-sitting are not printed.
+  No source template layouts or original source expressions are rewritten.
 - Transfer exports include only completed/released transfers involving this
   school. Both dates are required, inclusive and interpreted as Kabul civil days.
   Incoming/outgoing school columns follow the corresponding supplied sheet.
@@ -60,6 +74,23 @@ parts remain byte-for-byte identical, recorded in the manifest.
 - Routes enforce module country targeting and school capabilities; report
   responses disable caching. Downloads run once, expose localized failures and
   cancel when the page is abandoned.
+
+## Entering ministry data
+
+Open **Afghanistan → Ministry attendance and exam records** at
+`/afghanistan/ministry-records`, or follow the link from class-results exports.
+Choose the class inside AppTable's filter panel and Apply. Double-click a pupil
+or choose midterm/annual in the row menu. Enter verified register totals and
+period-specific enrolment/participation, then save each period. Class, year,
+enrolment and country ownership are enforced by the API; existing Core daily
+attendance records are not repurposed or assigned guessed sickness/leave values.
+
+The list uses Core's shared table, date/text/completion filters, exports and row
+menus. Editors use Core forms, inputs, selects and validation. Authorized readers
+see a read-only detail; writes require `attendance.write` and `students.read`.
+The entity, rules, repository, service, DTOs, controllers, migrations and screens
+all live in Afghanistan packages. New strings are mirrored in en-US/fa-AF/ps-AF
+and mobile bundles. The two country migrations apply during API startup.
 
 ## Public homepage
 
@@ -78,11 +109,15 @@ Pashto strings also have mobile counterparts.
 - `python3 tools/verify-ministry-templates.py /path/to/Downloads` in the Afghanistan
   backend compares every supplied formula, cell style and complete non-cell
   worksheet structure against source files. All 35 layouts / 20,258 formulas pass.
-- `scripts/tests/run-afghan-academic-postgres.sh`: 80 isolated PostgreSQL tests,
-  including real workbook downloads, scoped results, decimal marks and Kabul
-  transfer date boundaries.
+- `scripts/tests/run-afghan-academic-postgres.sh`: 94 tests, including isolated PostgreSQL migration/API flows,
+  real workbook downloads, class/year/school/country boundaries, balanced
+  attendance, explicit zeros, late enrolment, concurrent writes, both worksheet
+  layouts, decimal marks and Kabul transfer date boundaries.
 - `scripts/tests/ministry-reports.cjs`: actual report screens/shared download hook
   across all locales, correct paths/date payloads, filenames and cancellation.
+- `scripts/tests/ministry-records.cjs`: real Core tables/forms across all locales,
+  draft/applied class filters, empty states, zero/invalid values, stale edits,
+  read-only staff and abandoned requests.
 - `scripts/tests/public-home.cjs`, `root-route.cjs`, `school-dashboard.cjs`:
   appearance persistence/system changes, public/private routing, mobile controls
   and dashboard regressions.
