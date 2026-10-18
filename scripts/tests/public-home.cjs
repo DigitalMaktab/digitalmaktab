@@ -25,9 +25,15 @@ const Screen=require(projects+'/digitalmaktab-spa/src/screens/public/PublicScree
   assert.equal(ui.getByRole('heading',{level:1}).tagName,'H1');
   assert(ui.container.querySelector('.landing-page'));
   for(const href of ['/login','/signup','/privacy-policy','/support'])assert(ui.container.querySelector(`a[href="${href}"]`));
-  const selector=ui.getByRole('combobox',{name:i18n.t('appearance.label')});
-  fireEvent.change(selector,{target:{value:'light'}});await waitFor(()=>assert.equal(document.documentElement.dataset.bsTheme,'light'));assert.equal(localStorage.getItem('theme'),'light');
-  fireEvent.change(selector,{target:{value:'system'}});await act(async()=>{systemDark=true;for(const listener of mediaListeners)listener()});await waitFor(()=>assert.equal(document.documentElement.dataset.theme,'dark'));
+  assert.equal(ui.queryAllByRole('combobox').length,0);
+  assert(ui.container.querySelector('.public-controls .custom-dropdown'));
+  assert(!ui.container.querySelector('#public-navigation .custom-dropdown'));
+  const appearance=ui.getByRole('button',{name:i18n.t('appearance.label')});
+  assert.equal(appearance.getAttribute('aria-pressed'),'true');
+  fireEvent.click(appearance);await waitFor(()=>assert.equal(document.documentElement.dataset.bsTheme,'light'));assert.equal(localStorage.getItem('theme'),'light');
+  fireEvent.click(appearance);await waitFor(()=>assert.equal(document.documentElement.dataset.bsTheme,'dark'));assert.equal(localStorage.getItem('theme'),'dark');
+  localStorage.setItem('theme','system');await act(async()=>{window.dispatchEvent(new Event('storage'));systemDark=false;for(const listener of mediaListeners)listener()});await waitFor(()=>assert.equal(document.documentElement.dataset.theme,'light'));
+  await act(async()=>{systemDark=true;for(const listener of mediaListeners)listener()});await waitFor(()=>assert.equal(document.documentElement.dataset.theme,'dark'));
   const toggle=ui.getByRole('button',{name:i18n.t('public.header.menu')});fireEvent.click(toggle);assert.equal(toggle.getAttribute('aria-expanded'),'true');fireEvent.keyDown(ui.container.querySelector('#public-navigation'),{key:'Escape'});assert.equal(toggle.getAttribute('aria-expanded'),'false');
   cleanup();assert.equal(mediaListeners.size,0);systemDark=false;
  }

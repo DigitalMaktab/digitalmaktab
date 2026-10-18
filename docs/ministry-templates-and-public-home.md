@@ -65,8 +65,9 @@ parts remain byte-for-byte identical, recorded in the manifest.
 
 The public page now uses its missing landing layout class and respects the saved
 appearance preference. Core synchronizes light/dark/system preference, Bootstrap
-and app theme attributes, OS changes and other tabs. The public header exposes
-an appearance selector; the signed-in header shares the same preference hook.
+and app theme attributes, OS changes and other tabs. The public header uses the dashboard’s shared globe language picker and sun/moon
+control; both headers share the same preference hook. The navbar uses the app’s
+opaque card surface, stays pinned while scrolling, and retains contrast in both themes.
 The homepage has a semantic main heading, direct registration/sign-in actions,
 public privacy/support routes that require no private API calls, compact responsive spacing, dark feature cards and
 keyboard/mobile navigation with an accessible menu toggle. English, Dari and
