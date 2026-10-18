@@ -10,13 +10,13 @@ let mocks;const original=Module._load;Module._load=function(request,parent,isMai
 };
 const React=require(app+'/react'),h=React.createElement,{render,fireEvent,waitFor,cleanup,act}=require(app+'/@testing-library/react'),{MemoryRouter,Routes,Route}=require(app+'/react-router-dom'),{I18nextProvider}=require(app+'/react-i18next'),i18n=require(app+'/i18next').createInstance();
 const {AuthContext}=require(core+'/src/helper/auth/AuthProvider.tsx'),load=file=>require(core+'/src/'+file).default;
-let reads=[],saves=[],failSave=false,delay=false,reader=false;
+let preparations=[],reads=[],saves=[],failSave=false,delay=false,reader=false;
 const record={id:'record',enrollmentId:'enrol-a',period:0,registered:true,instructionalDays:90,presentDays:85,absentDays:2,sickDays:1,leaveDays:2,participation:0,version:'version-a'};
 let pupil={id:'enrol-a',classId:'class-a',calendarYearId:'year-a',studentId:'pupil-a',studentName:'Student A',fatherName:'Father A',grade:2,branchName:'A',nativeYear:'1405',creationDate:'2026-04-01T00:00:00Z',midterm:null,annual:null};
 mocks={usePermissions:require(core+'/src/access/usePermissions.ts').usePermissions,useApplicationModules:()=>({scope:{schoolId:'school-a'}}),useAppLocalizer:require(core+'/src/hooks/useAppLocalizer.ts').useAppLocalizer};
-for(const [name,file] of [['AppTable','table/AppTable'],['AppCard','card/AppCard'],['AppBaseEditor','AppBaseEditor'],['AppAlert','AppAlert'],['AppButton','AppButton'],['AppButtonLink','AppButtonLink'],['AppFormInput','form/AppFormInput'],['AppFormOptionSelect','form/AppFormOptionSelect'],['AppStatusBadge','AppStatusBadge']])mocks[name]=load('components/'+file+'.tsx');
+for(const [name,file] of [['AppDateRange','AppDateRange'],['AppCheckbox','AppCheckbox'],['AppFormFillButton','form/AppFormFillButton'],['AppTable','table/AppTable'],['AppCard','card/AppCard'],['AppBaseEditor','AppBaseEditor'],['AppAlert','AppAlert'],['AppButton','AppButton'],['AppButtonLink','AppButtonLink'],['AppFormInput','form/AppFormInput'],['AppFormOptionSelect','form/AppFormOptionSelect'],['AppStatusBadge','AppStatusBadge']])mocks[name]=load('components/'+file+'.tsx');
 const Select=load('components/AppSelect.tsx');mocks.AppClassSelect=({name,value,onChange})=>h(Select,{label:i18n.t('class.className.label'),name,value,onChange:event=>onChange(event.target.value)},h('option',{value:''},'Choose'),h('option',{value:'class-a'},'Class A'),h('option',{value:'class-b'},'Class B'));
-mocks.apiClient={get:async(url,config={})=>{reads.push({url,config});if(delay===true)await new Promise(resolve=>delay=resolve);return {data:url.includes('/enrollments/')?pupil:url.endsWith('class-b')?[]:[pupil]};},put:async(url,dto,config)=>{saves.push({url,dto,config});if(failSave)throw {response:{data:{detail:'Reload the latest record.'}}};return {data:{...record,...dto}}}};
+mocks.apiClient={post:async(url,dto)=>{preparations.push({url,dto});return {data:{instructionalDays:5,presentDays:3,absentDays:2,missingDays:0,conflictingDays:0,unverifiedDays:0}}},get:async(url,config={})=>{reads.push({url,config});if(delay===true)await new Promise(resolve=>delay=resolve);return {data:url.includes('/enrollments/')?pupil:url.endsWith('class-b')?[]:[pupil]};},put:async(url,dto,config)=>{saves.push({url,dto,config});if(failSave)throw {response:{data:{detail:'Reload the latest record.'}}};return {data:{...record,...dto}}}};
 const List=require(country+'/src/ministryRecords/AfghanMinistryRecordList.tsx').default,Editor=require(country+'/src/ministryRecords/AfghanMinistryRecordEditor.tsx').default;
 const helpers=require(country+'/src/ministryRecords/contracts.ts');
 function view(url){const user=reader?{role:8,staff:{capabilities:['students.read','attendance.read']}}:{role:0};return render(h(I18nextProvider,{i18n},h(AuthContext.Provider,{value:{user,userRole:user.role}},h(MemoryRouter,{initialEntries:[url]},h(Routes,null,h(Route,{path:'/afghanistan/ministry-records',element:h(List)}),h(Route,{path:'/afghanistan/ministry-records/:classId/:enrollmentId/:period',element:h(Editor)}))))));}
@@ -31,6 +31,16 @@ const field=(ui,key)=>ui.container.querySelector(`input[name="${key}"]`);
   fireEvent.change(filter,{target:{value:'class-b'}});assert.equal(reads.length,1);fireEvent.click(ui.getByRole('button',{name:i18n.t('filters.button.label')}));await waitFor(()=>assert.equal(reads.length,2));await waitFor(()=>assert(!ui.queryByText('Student A')));assert(ui.getByLabelText(i18n.t('class.className.label'),{exact:false,selector:'select'}));cleanup();
   ui=view('/afghanistan/ministry-records/class-a/enrol-a/0');await waitFor(()=>assert(field(ui,'instructionalDays')));
   for(const key of helpers.dayFields)assert.equal(field(ui,key).value,'');
+  fireEvent.change(field(ui,'sickDays'),{target:{value:'1'}});
+  fireEvent.change(ui.container.querySelector('input[name="ministry-teaching-range-from"]'),{target:{value:'2026-04-04'}});
+  fireEvent.change(ui.container.querySelector('input[name="ministry-teaching-range-to"]'),{target:{value:'2026-04-09'}});
+  const beforePrepare=preparations.length;assert.equal(saves.length,0);
+  fireEvent.click(ui.getByRole('button',{name:i18n.t('afghanMinistryPreparation.prepare')}));
+  await waitFor(()=>assert.equal(preparations.length,beforePrepare+1));
+  fireEvent.click(await ui.findByRole('button',{name:i18n.t('afghanMinistryPreparation.useDraft')}));
+  await waitFor(()=>assert.equal(field(ui,'presentDays').value,'3'));assert.equal(field(ui,'sickDays').value,'1');
+  assert.equal(field(ui,'participation'),null);assert.equal(saves.length,0);
+
   for(const key of helpers.dayFields)fireEvent.change(field(ui,key),{target:{value:'0'}});
   fireEvent.change(ui.getByLabelText(i18n.t('afghanMinistryRecords.registered'),{exact:false,selector:'select'}),{target:{value:'true'}});
   fireEvent.change(ui.getByLabelText(i18n.t('afghanMinistryRecords.participation'),{exact:false,selector:'select'}),{target:{value:'0'}});

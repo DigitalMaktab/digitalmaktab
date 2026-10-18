@@ -126,3 +126,103 @@ Pashto strings also have mobile counterparts.
 
 No user-owned API or SPA server was restarted. Restart `dotnet watch run` and
 `npm start` to load the newly packed modules.
+
+## Research: academic-year setup versus pupil records (2026-10-18)
+
+The proposed reorganization follows ministry evidence and the supplied source workbooks;
+these are design findings, not a claim that the field migration is already implemented.
+
+- [MoE, 1405 cold-region midterm notice](https://www.moe.gov.af/dr/اطلاعیه-وزارت-معارف-در-رابطه-به-آغاز-امتحانات-چهارونیم-ماهه-و-تعطیلات-تابستانی-سال-تعلیمی-۱۴۰۵), published 1405/4/10:
+  grades 1–3 and 4–12 have different exam start dates. Shared calendar configuration
+  needs grade-cohort scope, rather than one universal date pair per exam type.
+- [MoE, warm-region school-year notice](https://moe.gov.af/index.php/dr/اختتام-سال-تعلیمی-و-آغاز-امتحانات-سالانه-مکاتب-در-ولایت-های-گرمسیر-کشور), published 1404/3/3:
+  the teaching year runs from Sunbula to Thawr in the next Solar Hijri year.
+  Keep explicit school-specific date bounds; do not assume every school starts in Hamal.
+- [MoE, annual-exam notice](https://www.moe.gov.af/dr/اطلاعیه-وزارت-معارف-47), published 1403/8/20:
+  exam eligibility attendance thresholds vary by grade and documented excuse.
+  This historical notice is evidence for versioned, scoped policies, not proof of
+  a universal current-year rule. The 1404 census form has a generic 75% reporting
+  category, which must not silently replace grade-specific eligibility rules.
+- [MoE 1404 general-education census](https://moe.gov.af/sites/default/files/2025-05/تعلیمات%20عمومی%20سال%201404.pdf), page 5:
+  enrolment, exam inclusion and outcome totals are distinct reporting categories.
+  The supplied workbooks likewise separate instructional days, presence, absence,
+  sickness and leave. These totals are not all academic-year settings.
+
+Recommended ownership (application design inference from the sources):
+
+| Owner | Data |
+| --- | --- |
+| Core school academic-year aggregate | School ownership, calendar-year reference, year bounds, timezone, lifecycle, default teaching weekdays; generic child teaching terms with cohort scope |
+| Afghanistan academic-year extension | Solar Hijri year designation, warm/cold/extremely cold teaching-season classification, ministry reporting-period bindings |
+| Core teaching terms + Afghanistan bindings | Generic dates, cohort scope and weekday overrides in Core; first/second ministry-period meaning in Afghanistan; calculated day totals reuse Core holidays |
+| Afghanistan exam period | Exam type, grade cohort and sitting window, linked to the academic year; retain supplementary/excused and other exam types |
+| Core enrolment and daily attendance | Effective pupil enrolment history and recorded attendance facts; missing records remain unknown |
+| Afghanistan pupil ministry record | Reviewed per-pupil attendance categories, registration and participation decisions; source/version snapshot for historical exports |
+| Afghanistan eligibility policy | Grade/period/year-scoped threshold and approved-excuse rules, source reference and version; proposed eligibility remains distinct from actual sitting |
+
+The academic-year screen should manage shared settings once. Ministry preparation
+should select the class/year/period and inherit that configuration, displaying
+instructional days as a calculated value. Late enrolment or transfers require explicit
+effective enrolment dates before pupil-specific expected-day totals can be automated.
+Do not derive those dates from record creation timestamps. Shared calendar edits must
+not silently rewrite already reviewed records or previously issued report results.
+Existing historical totals must be retained until explicitly reviewed; disagreement
+between pupils' manually entered totals is not a safe source for a school-wide calendar.
+
+Current automated preparation is an interim, read-only draft: staff chooses teaching
+dates/weekdays per pupil; Core excludes holidays and distinguishes missing, duplicate
+and unverified attendance. A shared form-fill control preserves unrelated edits.
+An Afghanistan-owned hourly readiness sweep reminds the school administrator of
+missing ministry records for configured midterm/final periods starting within seven
+days or already started, once per seven days per period. It does not decide eligibility.
+Fees now check the school's calendar month hourly and on startup, with a database
+lock preventing concurrent automatic/manual duplicate generation. Scheduled inferred
+presence is disabled. School backups include module contributions and additional
+school-owned Core tables; the manifest explicitly states uploaded files are excluded.
+
+### Complete school academic-year information to persist
+
+The storage boundary is explicit: reusable data and infrastructure in Core;
+Afghanistan-specific meanings, policies and ministry data in Afghanistan. This is a
+proposed schema, not a description of fields already present in today's database.
+
+| Area | Information and relationships | Owner |
+| --- | --- | --- |
+| Identity | Immutable school-year ID, SchoolId, existing CalendarYearId, display label, previous/next school-year references | Core |
+| Dates and state | Year start/end, teaching start/end via terms, timezone, draft/open/closed/archived state, active flag, published/closed timestamps and actor IDs | Core |
+| Scope | Grade range and optional branch/class/shift applicability, explicit override precedence, valid school ownership | Core |
+| Teaching terms | Name/code, sequence, start/end, workweek, links to relevant assessment/reporting periods | Core generic terms; Afghan period mapping in Afghanistan |
+| Working calendar | Default weekdays, effective-dated exceptions, holidays, breaks, emergency closures and compensating teaching days with reason and approval | Core, extending existing Holiday/SchoolEvent rather than duplicating them |
+| Day totals | Computed teaching days by term/cohort; official approved count when supplied, source document and reason for any difference | Core calculation/snapshot; Afghan official declaration and reconciliation rules in Afghanistan |
+| Exam windows | Type/category, date window, grade/cohort scope, attempt, linked term/year, linked actual Core Exam sittings | Core scheduling + Afghanistan-owned categories, period constraints and links |
+| Attendance policy | Policy version/source/effective dates; threshold by grade and period, documented-excuse handling, denominator definition, transfer/late-entry treatment and rounding | Generic policy/version support in Core; Afghan rules and values in Afghanistan |
+| Assessment policy | Applicable grading-provider/policy version, components/weights, pass/conditional/promotion rules and supplementary-result treatment | Shared contracts in Core; Afghan implementation/values in Afghanistan |
+| Operational dates | Admission/registration windows, attendance/marks entry deadlines, review/publication dates, correction/appeal windows and any approved extensions | Core configurable milestones; country-mandated milestone definitions/rules in their country module |
+| Reporting | Template/policy version, ministry period mapping, approved totals, signoff, generated document references and generation parameters | Core export/audit primitives; Afghanistan ministry content and schema in Afghanistan |
+| Close and rollover | Destination year, closure checklist, unresolved results/transfers, reviewed promotion batch, approval, reopen reason and history | Core workflow; country promotion/eligibility provider |
+| Governance | Version token, change history, approver, policy/document references and applicable dates; immutable references on published reports | Core audit/versioning; country source attachments in country module |
+
+The current Core CalendarYear is a shared reference (date + native-year label), not
+a school-specific configuration record. Do not add one school's teaching dates,
+holidays or active lifecycle to that shared row. A school-owned aggregate must wrap
+it; Afghanistan extends the school aggregate rather than forking it.
+
+Do not place a pupil's registration, daily attendance, sickness/leave evidence,
+exam sitting or final result on the school-year row. Keep those records linked to
+the pupil's enrolment and actual exam/period. Ministry summaries are derived from
+those facts and retained as reviewed export snapshots. Expected instructional days
+come from the shared calendar, adjusted only using explicit effective enrolment data.
+
+Recommended screen composition: General, Teaching terms, Working days and breaks,
+Exams, Policies, Reporting, Close/rollover. Generic tabs use Core components; country
+modules add their own tabs/fields and capabilities. A pupil editor inherits the
+applicable setup instead of repeatedly asking for teaching dates and weekdays.
+
+Research caveats: the 1405 notice confirms grade-dependent exam dates; the 1404
+warm-region notice confirms a cross-Solar-Hijri-year teaching season; the 1404 census
+lists warm/cold/extremely cold climates. Ministry news published 1403/12/20 also
+confirms supplementary, excused and merit examinations, so the schema must not
+assume there are only two examination types. Historical notices are not silently
+promoted to a current-year universal rule. No authoritative current-year national
+instructional-day total was verified during this research; store source-backed,
+scoped declarations rather than inventing a fixed 180/185/200-day default.
