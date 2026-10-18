@@ -3,7 +3,17 @@ const projects=path.resolve(__dirname,'../../..'),core=projects+'/digitalmaktab-
 const {JSDOM}=require(app+'/jsdom'),dom=new JSDOM('<html><body></body></html>',{url:'http://localhost'});for(const key of ['window','document','navigator','HTMLElement','HTMLButtonElement','localStorage'])global[key]=dom.window[key];global.IS_REACT_ACT_ENVIRONMENT=true;
 const ts=require(core+'/node_modules/typescript');require.extensions['.tsx']=require.extensions['.ts']=(module,file)=>module._compile(ts.transpileModule(fs.readFileSync(file,'utf8'),{fileName:file,compilerOptions:{module:ts.ModuleKind.CommonJS,jsx:ts.JsxEmit.ReactJSX,esModuleInterop:true,target:ts.ScriptTarget.ES2020}}).outputText,file);
 let calls=[], requests=[], writes=0;
-const supportApi={get:async(url,options)=>{calls.push({url,options});if(url==='/support-requests')return {data:requests,headers:{pagination:JSON.stringify({totalPages:1,totalCount:requests.length})}};return {data:{schoolName:'School contact',email:'admin@school.invalid',phoneNumber:'123'}};},post:async(url,payload)=>{writes++;requests=[{...payload,id:'request',version:'first',state:0,reviewNote:'',creationDate:new Date().toISOString()}];return {data:requests[0]};},put:async(url,payload)=>{writes++;requests=[{...requests[0],...payload,version:'second'}];return {data:requests[0]};}};const original=Module._load;Module._load=function(request,parent,isMain){if(request==='../api/client'&&parent.filename.includes('/information/'))return {__esModule:true,default:supportApi};if(['react','react/jsx-runtime','react-dom','react-dom/client','react-i18next','react-router-dom','i18next','formik'].includes(request))return original.call(this,app+'/'+request,parent,isMain);return original.apply(this,arguments)};
+let activities=[];
+const supportApi={get:async(url,options)=>{
+ calls.push({url,options});
+ if(url==='/support-requests')return {data:requests,headers:{pagination:JSON.stringify({totalPages:1,totalCount:requests.length})}};
+ if(url.startsWith('/support-requests/'))return {data:{ticket:requests[0],activities,allowedActions:['COMMENT']}};
+ return {data:{schoolName:'School contact',email:'admin@school.invalid',phoneNumber:'123'}};
+},post:async(url,payload)=>{
+ writes++;
+ if(url.endsWith('/actions')){activities.push({id:'comment',actorEmail:'teacher@school.invalid',action:payload.action,message:payload.message});requests=[{...requests[0],version:'second'}];return {data:{ticket:requests[0],activities,allowedActions:['COMMENT']}};}
+ requests=[{...payload,id:'request',version:'first',submittedByEmail:'teacher@school.invalid',state:0,reviewNote:'',creationDate:new Date().toISOString()}];return {data:requests[0]};
+}};const original=Module._load;Module._load=function(request,parent,isMain){if(request==='../api/client'&&parent.filename.includes('/information/'))return {__esModule:true,default:supportApi};if(['react','react/jsx-runtime','react-dom','react-dom/client','react-i18next','react-router-dom','i18next','formik'].includes(request))return original.call(this,app+'/'+request,parent,isMain);return original.apply(this,arguments)};
 const React=require(app+'/react'),h=React.createElement,{render,fireEvent,cleanup,waitFor}=require(app+'/@testing-library/react'),{MemoryRouter}=require(app+'/react-router-dom'),{I18nextProvider}=require(app+'/react-i18next'),i18n=require(app+'/i18next').createInstance();
 const {selectModules}=require(core+'/src/modules/definitions.ts'),{composeInformationMenu,composeInformationSections,safeInformationHref,informationPages}=require(core+'/src/information/registry.ts'),{ApplicationModuleContextProvider}=require(core+'/src/modules/ModuleContext.tsx'),{AuthContext}=require(core+'/src/helper/auth/AuthProvider.tsx'),Footer=require(core+'/src/components/sidebar/AppSidebarFooter.tsx').default,Page=require(core+'/src/information/AppInformationPage.tsx').default;
 const af=require(projects+'/digitalmaktab-spa-country-afghanistan/src/information.ts').afghanInformation,at=require(projects+'/digitalmaktab-spa-country-austria/src/index.ts').austriaApplicationModule,afModule={id:'afghanistan',scope:{countryCode:'AF'},information:af};
@@ -30,10 +40,11 @@ ui=renderPage(h(Footer,{isOpen:true}),[], 'TEACHER');assert.equal(ui.getByRole('
 assert(calls.every(call=>call.options.headers['Cache-Control']==='no-store'));
 const Support=require(core+'/src/information/AppSupportRequests.tsx').default;
 ui=renderPage(h(Support,{kind:1}),[at]);await waitFor(()=>assert(calls.some(call=>call.url==='/support-requests')));
-fireEvent.submit(ui.container.querySelector('form'));await waitFor(()=>assert(ui.container.querySelector('.is-invalid')));assert.equal(writes,0);
-fireEvent.change(ui.container.querySelector('[name="subject"]'),{target:{value:'Print issue'}});fireEvent.change(ui.container.querySelector('[name="message"]'),{target:{value:'Steps to reproduce'}});fireEvent.submit(ui.container.querySelector('form'));
-await waitFor(()=>assert.equal(writes,1));await waitFor(()=>assert(ui.getByText('Saved for administrator review.')));await waitFor(()=>assert(ui.getByText('Print issue')));
-fireEvent.doubleClick(ui.getByText('Print issue'));await waitFor(()=>assert(ui.getByRole('dialog')));fireEvent.change(ui.container.querySelector('[name="reviewNote"]'),{target:{value:'School reviewed'}});fireEvent.submit(ui.getByRole('dialog').querySelector('form'));
-await waitFor(()=>assert.equal(writes,2));await waitFor(()=>assert(!ui.queryByRole('dialog')));assert(ui.getByText('School reviewed'));cleanup();
+fireEvent.click(ui.getByRole('button',{name:i18n.t('tickets.create')}));
+fireEvent.submit(ui.getByRole('dialog').querySelector('form'));await waitFor(()=>assert(ui.container.querySelector('.is-invalid')));assert.equal(writes,0);
+fireEvent.change(ui.getByRole('dialog').querySelector('[name="subject"]'),{target:{value:'Print issue'}});fireEvent.change(ui.getByRole('dialog').querySelector('[name="message"]'),{target:{value:'Steps to reproduce'}});fireEvent.submit(ui.getByRole('dialog').querySelector('form'));
+await waitFor(()=>assert.equal(writes,1));await waitFor(()=>assert(ui.getByRole('dialog').textContent.includes('Steps to reproduce')));
+fireEvent.change(ui.getByRole('dialog').querySelector('[name="message"]'),{target:{value:'Still happens in dark mode'}});fireEvent.submit(ui.getByRole('dialog').querySelector('form'));
+await waitFor(()=>assert.equal(writes,2));await waitFor(()=>assert(ui.getByText('Still happens in dark mode')));assert(calls.some(call=>call.url==='/support-requests/request'));cleanup();
 console.log('PASS: complete information pages in English/Dari, RTL, active-country resources, school overrides, roles, safe links, every footer link, Escape/outside focus behavior and bounded school contact requests.');
 })().catch(error=>{console.error(error);process.exitCode=1});

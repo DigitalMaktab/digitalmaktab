@@ -229,6 +229,26 @@ do not relax it to compensate for missing authentication enforcement.
   reset components. Keep account-scoped print preferences and module selection
   working for staff as well as built-in identities.
 
+## Platform support tickets
+
+- Core owns `/tickets`, `/api/support-requests`, and the existing Suggestions /
+  Feedback entry points. Keep all ticket filters in `AppTable`, use shared
+  forms/modals, and preserve account-scoped print defaults.
+- `SUPPORT_AGENT = 9` is a platform identity in `User`, with no school. Root
+  manages accounts at `/support-team`. Never turn school assistants into
+  support agents or give support agents root/school administration access.
+- Support agents are denied by default through `SupportAgentAccessFilter`,
+  including legacy `[Authorize]` actions, and cannot join classroom signaling.
+  Tokens revalidate their active status/security stamp on every request.
+- Ticket states are Open(0), InProgress(1), Resolved(2), Testing(3), Done(4).
+  Existing legacy Closed(2) rows migrate to Done(4). A support worker claims
+  and resolves work; only the immutable reporter starts testing, accepts it,
+  or reopens it. School leaders can see their school's reports but cannot
+  complete someone else's ticket.
+- Transitions/comments take `version` plus `clientRequestId`, append immutable
+  activity, and guard retries/concurrency. Do not restore the old arbitrary
+  school-admin status editor or bypass the transition service.
+
 ## Dev-only demo login accounts
 
 Seeded automatically in Development env by `Seeder.SeedDevAccounts`.
