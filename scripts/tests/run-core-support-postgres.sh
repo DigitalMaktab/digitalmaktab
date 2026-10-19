@@ -10,6 +10,8 @@ createdb -h "$database_dir" -p 55439 -U support_test support_tests
 createdb -h "$database_dir" -p 55439 -U support_test student_write_tests
 createdb -h "$database_dir" -p 55439 -U support_test authentication_tests
 createdb -h "$database_dir" -p 55439 -U support_test access_tests
+createdb -h "$database_dir" -p 55439 -U support_test ai_tests
+export CORE_AI_TEST_DATABASE="Host=$database_dir;Port=55439;Username=support_test;Database=ai_tests"
 export CORE_ACCESS_TEST_DATABASE="Host=$database_dir;Port=55439;Username=support_test;Database=access_tests"
 export CORE_AUTH_TEST_DATABASE="Host=$database_dir;Port=55439;Username=support_test;Database=authentication_tests"
 export CORE_STUDENT_WRITE_TEST_DATABASE="Host=$database_dir;Port=55439;Username=support_test;Database=student_write_tests"

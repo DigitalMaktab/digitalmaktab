@@ -249,6 +249,40 @@ do not relax it to compensate for missing authentication enforcement.
   activity, and guard retries/concurrency. Do not restore the old arbitrary
   school-admin status editor or bypass the transition service.
 
+## School-owned AI configuration
+
+- Core owns `/ai-settings`, `/ai-assistant`, and `/api/school-ai`. The school
+  chooses its provider, exact model ID, allowed account types, output limit,
+  and daily request limits. Defaults are disabled; do not pick a model or
+  activate a paid provider on a school's behalf.
+- Supported adapters are OpenAI Responses, Anthropic Messages, and Gemini
+  GenerateContent. Keep their fixed HTTPS origins, disabled redirects,
+  bounded responses, sanitized provider errors, and server-only credentials.
+  Adding a provider belongs in Core's provider gateway and validation/catalog.
+- School admins configure AI; staff require `ai.configure` / `ai.use` dynamic
+  capabilities, as well as the school's account-type allowlist. Configuring
+  AI implies the use capability. Root and support agents have no school AI.
+- Keys use ASP.NET Data Protection with a school-specific purpose. Preserve
+  the key ring across releases and instances; production hosts should set
+  `DataProtection__KeyRingPath` to a persistent protected directory. A lost
+  key ring requires schools to re-enter keys. Never return saved keys in DTOs
+  or include credentials/encrypted replies in audit snapshots or backups.
+- Changing provider clears its old key; removing a key requires disabling AI.
+  The connection-test button tests the saved configuration, including while
+  disabled, and counts as a request. Daily limits reset at midnight UTC and
+  include failed attempts. Do not add automatic provider retries.
+- `clientRequestId` + a payload fingerprint protect paid generations from
+  duplicate submissions. Same-actor replies can be replayed for 15 minutes
+  from an encrypted cache. Cleanup runs every 15 minutes, clears expired
+  replies, and deletes request metadata after 30 days. Conversation prompts/history are
+  not persisted, and request rows are excluded from the audit log.
+- Chat currently sends bounded recent text supplied by the user. It does not
+  read school records, run tools, or mutate school data. Keep model output
+  escaped as text and preserve cancellation, visible errors and retry IDs.
+- Provider protocol references: [OpenAI text generation](https://developers.openai.com/api/docs/guides/text),
+  [Anthropic Messages](https://platform.claude.com/docs/en/api/messages/create),
+  [Gemini GenerateContent](https://ai.google.dev/api/generate-content).
+
 ## Dev-only demo login accounts
 
 Seeded automatically in Development env by `Seeder.SeedDevAccounts`.
