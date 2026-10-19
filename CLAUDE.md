@@ -126,6 +126,14 @@ create GitHub remotes on their own.
   School contributions take precedence over country contributions.
 - `AppTable` supports `moduleTableKey` and module-defined table behavior. Keep
   all custom UI on Core primitives; module DTOs/domains stay in their package.
+- Sidebar sections can set `group` and `order` to join a shared workflow.
+  Core groups run from overview (0), daily (10), people (20), teaching (30),
+  assessment (40), finance (50), communication (60), wellbeing (70), operations
+  (80), tools (90), administration (100), to support (110). Country/school
+  modules own their contributions and can declare their own groups and order.
+  Grouping never changes route permissions; Dashboard remains first after
+  role/capability filtering. Use route identities for menu state and keys,
+  since translated labels can be identical.
 - Backend modules extend SDK `CountryModuleBase` / `SchoolModuleBase` and
   register through `AddDigitalMaktabModule`. Core discovers their controllers,
   model configurations and mapper profiles, and enforces their country/school
