@@ -257,6 +257,24 @@ do not relax it to compensate for missing authentication enforcement.
   activity, and guard retries/concurrency. Do not restore the old arbitrary
   school-admin status editor or bypass the transition service.
 
+## School automations
+
+- Core owns `/automations`, `/api/school-automations` and the minute reminder
+  sweep. New rules are disabled; preview must never save or send notifications.
+- Country/school packages contribute `ISchoolAutomationSource` implementations
+  with module-owned candidates, DTO/domain logic and translation keys. School
+  overrides country, country overrides Core for the same stable rule key.
+- Use the country-aware active academic year, effective school timezone and
+  native calendar, plus recipient language. Shared calendar `FormatOptions`
+  accepts `timeZone` for scheduled instants in SPA and mobile adapters.
+- Enforce active school/account membership, current staff capabilities and
+  notification preferences. Persist inbox rows and durable unique receipts in
+  one transaction; publish only after commit. Inbox cleanup must not cause
+  duplicate reminders. Keep optional rules disabled during development tests.
+- Automation prepares and reminds; it never fabricates attendance, changes
+  grades, confirms payments, approves admissions, promotes students or accepts
+  another reporter's support ticket. See `AUTOMATION-PLAN.md` for remaining work.
+
 ## School-owned AI configuration
 
 - Core owns `/ai-settings`, `/ai-assistant`, and `/api/school-ai`. The school
