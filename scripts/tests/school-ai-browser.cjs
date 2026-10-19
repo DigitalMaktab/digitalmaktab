@@ -7,7 +7,8 @@ const translations={};for(const language of ['en-US','fa-AF','ps-AF']){const rep
 const country=projects+'/digitalmaktab-spa-country-afghanistan';
 const settings={version:'initial',enabled:true,provider:'OPENAI',model:'test-model',hasApiKey:true,allowedRoles:['TEACHER','STAFF'],instructions:'Explain clearly',maxOutputTokens:1024,schoolDailyLimit:500,userDailyLimit:50};
 fs.writeFileSync(work+'/api.ts',`let settings=${JSON.stringify(settings)};
-export default {get:async(url)=>{window.aiReads=(window.aiReads||0)+1;return {data:url.endsWith('/status')?{available:true,enabled:true,reason:'',provider:'OPENAI',model:'test-model',myRequestsToday:0,schoolRequestsToday:0,schoolDailyLimit:500,userDailyLimit:50}:settings}},put:async(url,dto)=>{window.aiSaved=dto;settings={...dto,version:'next',hasApiKey:true};return {data:settings}},post:async(url,dto)=>{window.aiPosts=(window.aiPosts||0)+1;await new Promise(resolve=>setTimeout(resolve,100));if(dto.messages?.at(-1).content.includes('fail'))throw {response:{status:502,data:{code:'ProviderUnavailable',detail:'Simulated provider unavailable'}}};return {data:{text:'A useful answer <script>not executable</script>',requestId:'reply',provider:'OPENAI',model:'test-model',truncated:false}}}};`);
+let conversation={conversation:{id:'saved-chat',version:'v1',title:'',isPinned:false,turnCount:0,creationDate:'2026-10-19T10:00:00Z',updateDate:'2026-10-19T10:00:00Z'},turns:[]};
+export default {get:async(url)=>{window.aiReads=(window.aiReads||0)+1;return {data:url==='/school-ai/conversations'?{items:[conversation.conversation],totalCount:1,pageNumber:1,pageSize:50}:url.startsWith('/school-ai/conversations/')?JSON.parse(JSON.stringify(conversation)):url.endsWith('/status')?{available:true,enabled:true,reason:'',provider:'GROQ',model:'openai/gpt-oss-120b',myRequestsToday:0,schoolRequestsToday:0,schoolDailyLimit:500,userDailyLimit:50}:settings}},put:async(url,dto)=>{window.aiSaved=dto;settings={...dto,version:'next',hasApiKey:true};return {data:settings}},post:async(url,dto)=>{window.aiPosts=(window.aiPosts||0)+1;await new Promise(resolve=>setTimeout(resolve,100));if(dto.prompt?.includes('fail'))throw {response:{status:502,data:{code:'ProviderUnavailable',detail:'Simulated provider unavailable'}}};if(url.endsWith('/messages')){conversation.turns.push({requestId:dto.clientRequestId,prompt:dto.prompt,answer:'A useful answer <script>not executable</script>',state:'SUCCEEDED',errorCode:'',provider:'GROQ',model:'openai/gpt-oss-120b',createdAt:'2026-10-19T10:00:00Z'});conversation.conversation={...conversation.conversation,title:dto.prompt,version:'next',turnCount:conversation.turns.length};}return {data:{text:'A useful answer <script>not executable</script>',requestId:'reply',provider:'GROQ',model:'openai/gpt-oss-120b',truncated:false}}}};`);
 const entry=`import React from 'react';import {createRoot} from 'react-dom/client';import {I18nextProvider} from 'react-i18next';import i18n from 'i18next';
 import Settings from ${JSON.stringify(core+'/src/ai/AppSchoolAiSettings.tsx')};
 import Chat from ${JSON.stringify(core+'/src/ai/AppSchoolAiAssistant.tsx')};
@@ -44,7 +45,7 @@ webpack(config,async(error,stats)=>{
     const value=await send('Runtime.evaluate',{expression,returnByValue:true,awaitPromise},sessionId);
     if(value.exceptionDetails)throw new Error(JSON.stringify(value.exceptionDetails));return value.result.value;
    };
-   for(let attempt=0;attempt<100;attempt++){if(await evaluate('!!document.querySelector("form")'))break;assert(attempt<99,'AI form failed to render');await wait(100)}
+   for(let attempt=0;attempt<100;attempt++){if(await evaluate(screen==='chat'?'!!document.querySelector("textarea")':'!!document.querySelector("form")'))break;assert(attempt<99,'AI form failed to render');await wait(100)}
    const click=async(selector)=>{
     const point=await evaluate(`(()=>{const e=document.querySelector(${JSON.stringify(selector)});if(!e)throw Error('Missing control');e.scrollIntoView({block:'center',behavior:'instant'});const r=e.getBoundingClientRect();return{x:r.x+r.width/2,y:r.y+r.height/2}})()`);
     await send('Input.dispatchMouseEvent',{type:'mousePressed',button:'left',clickCount:1,...point},sessionId);await send('Input.dispatchMouseEvent',{type:'mouseReleased',button:'left',clickCount:1,...point},sessionId);await wait(150);
@@ -60,14 +61,14 @@ webpack(config,async(error,stats)=>{
     assert.equal(await evaluate('window.aiReads'),1,'Settings requests looped');
    }else{
     assert.equal(await evaluate('Array.from(document.querySelectorAll("a")).some(a=>a.getAttribute("href")=="/ai-settings")'),false,'Student sees configuration');
-    await fill('textarea','Explain fractions');await click('button[type="submit"]');
+    await fill('textarea','Explain fractions');await click('.ai-composer button[type="submit"]');
     assert.equal(await evaluate('window.aiPosts'),1);
     assert(await evaluate('document.querySelector("section").textContent.includes("A useful answer")'));
     assert.equal(await evaluate('!!document.querySelector("section script")'),false,'AI HTML was executed');
-    await fill('textarea','fail request');await click('button[type="submit"]');await wait(200);
+    await fill('textarea','fail request');await click('.ai-composer button[type="submit"]');await wait(200);
     assert(await evaluate('document.body.textContent.includes("Simulated provider unavailable")'),'Usage refresh hid the error');
     assert.equal(await evaluate('document.querySelector("textarea").value'),'fail request');
-    assert.equal(await evaluate('window.aiReads'),3,'Status requests looped');
+    assert.equal(await evaluate('window.aiReads'),9,'Conversation or status requests looped');
    }
    const layout=await evaluate('({width:document.documentElement.scrollWidth,background:getComputedStyle(document.querySelector(".card")).backgroundColor,color:getComputedStyle(document.querySelector(".card")).color})');
    assert(layout.width<=width+1,'AI form overflows '+JSON.stringify(layout));

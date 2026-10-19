@@ -282,11 +282,26 @@ do not relax it to compensate for missing authentication enforcement.
 - `clientRequestId` + a payload fingerprint protect paid generations from
   duplicate submissions. Same-actor replies can be replayed for 15 minutes
   from an encrypted cache. Cleanup runs every 15 minutes, clears expired
-  replies, and deletes request metadata after 30 days. Conversation prompts/history are
-  not persisted, and request rows are excluded from the audit log.
-- Chat currently sends bounded recent text supplied by the user. It does not
-  read school records, run tools, or mutate school data. Keep model output
-  escaped as text and preserve cancellation, visible errors and retry IDs.
+  replies, and deletes request metadata after 30 days. Saved conversations are
+  separate from that short-lived retry cache; successful turns remain replayable
+  without another paid call after request metadata expires.
+- `/api/school-ai/conversations` stores private histories scoped to school,
+  actor ID and account role. Titles and turns use per-conversation Data Protection;
+  the school admin and support team have no access to other users' histories.
+  Conversation entities and AI requests/settings are excluded from school backups;
+  histories and requests are excluded from audit snapshots. Users retain saved
+  chats until deletion (up to 500 chats, 100 turns per chat, bounded total text).
+- Saved-chat message requests send a prompt, expected conversation version and
+  retry ID. Core builds bounded context from successful saved turns, persists the
+  pending prompt before generation, and saves completed/failed states atomically.
+  Preserve the school lock, optimistic concurrency, durable replay fingerprints,
+  and delete protection during generation. Deletion clears associated reply caches.
+- The shared chat offers title search, pin/rename/delete, copy/text export, safe
+  Markdown, account/school boundaries, in-tab drafts and Ctrl/Command+Enter.
+  Legacy `/chat` and configuration tests remain transient for compatibility.
+  AI does not read school records, run tools, or mutate school data. Keep output
+  escaped through React; never introduce raw HTML rendering. Preserve cancellation,
+  visible errors and retry IDs; no automatic paid retries.
 - Provider protocol references: [OpenAI text generation](https://developers.openai.com/api/docs/guides/text),
   [Anthropic Messages](https://platform.claude.com/docs/en/api/messages/create),
   [Gemini GenerateContent](https://ai.google.dev/api/generate-content),
