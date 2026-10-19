@@ -388,3 +388,24 @@ of month-end attendance exports. Preserve the selected class/date range,
 Solar Hijri layout, subjects and lesson-progress/evidence records, including
 incomplete periods. Correct official-format parity requires a verified template;
 never synthesize handwritten signatures.
+
+
+## Reuse existing timetable records (2026-10-19)
+
+Before further timetable work, read the current schema/model audit in
+`../digitalmaktab-country-afghanistan/docs/TIMETABLE-MODEL-AUDIT.md`.
+Class already owns Shift, grade, branch, section and calendar year. Course already
+owns the class/subject/primary-teacher assignment; Schedule owns weekly per-period
+teacher assignments. Do not add parallel tables for these concepts.
+
+Bell settings are now `SchoolAcademicYear.Plan.BellSchedules`, serialized in the
+existing PlanJson with the existing academic-year Version. Reuse shared
+TimetableRules and SchoolRepository's school-locked schedule/class/course write
+paths. Academic-year bell edits share the same advisory school lock and validate
+existing schedules. Never restore the unused unsafe ordinal-only duplicate
+helpers or let a new generator bypass the shared validator.
+
+Afghan grade curricula should first extend existing AfghanAcademicYear.PolicyJson
+and reference existing Subject/Book/Course IDs. Audit before adding anything new.
+Room is hostel accommodation; Progress is student learning progress; neither is
+an interchangeable classroom or teaching-diary record.

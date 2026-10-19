@@ -207,5 +207,49 @@ Research and implement these together; no global identical-subject assumption.
 
 Research, model decisions, implementation slices and open evidence gaps are in
 `../digitalmaktab-country-afghanistan/docs/TAQSIM-AWQAT-RESEARCH.md`.
-The timetable implementation is pending; stream 2 completion does not imply it
-has shipped.
+Timetable implementation has started; the first increment below does not imply
+that automatic generation, substitution or printing has shipped.
+
+
+## Timetable implementation increment 1 (2026-10-19)
+
+Audited the live schema read-only as well as models, EF mappings/migrations,
+repositories, forms and existing templates. Details and reuse decisions are in
+`../digitalmaktab-country-afghanistan/docs/TIMETABLE-MODEL-AUDIT.md`.
+
+- Reuse Class.Shift and existing class/subject/course/teacher/schedule identities.
+  Bell values live in existing SchoolAcademicYear.PlanJson, edited through the
+  shared year settings form and existing Afghan year endpoint/version guard.
+  No new table, column, migration or replacement identity was introduced.
+- Bell rules cover grade ranges, shifts, weekdays, variable period counts/durations
+  and breaks. Real clock overlap prevents teacher/class double bookings across
+  different shift ordinals; unknown mixed-shift clocks require configuration.
+- Existing schedule create/update, class shift/grade edits, course moves/primary
+  teacher edits and bell changes use shared validation. School advisory locking
+  prevents racing writes. Rejected edits roll back. Inactive/foreign records and
+  cross-year course moves are rejected.
+- Fixed first-grade/section/shift zero-enum validation and the schedule teacher
+  input name. Existing period 9/10 assignments now reach the weekly DTO and views.
+- Core, country and mobile translations are in English, Dari and Pashto. All new
+  controls use existing Core form primitives; no alternative table/filter UI.
+
+Verification: 99 Core PostgreSQL/unit tests and 101 Afghanistan tests pass with
+zero skipped. New form test covers eight 40-minute periods, payload round-trip,
+midnight, overlaps, weekdays and period 9/10 display in all three languages.
+Existing Afghan academic-year editor tests pass. Real Chrome passes Dari dark
+1280px/320px, Pashto dark 360px and English light 1280px; the bell shift selector
+stays open during Formik validation and time controls fit. TypeScript, i18n/mobile
+coverage and local commit hooks are checked before recording this increment.
+`sync-all.sh` installs shared packages; mobile country locales rebuilt and swapped
+into both existing consumers. User-owned servers are not restarted.
+
+Pending: approved Afghan grade curricula/weekly requirements using existing
+Subject/Book/Course and Afghan year policy; automatic draft generation/publication;
+missing teacher eligibility/availability; leave-linked per-lesson cover proposals;
+dated teacher lesson evidence/taraqi; verified on-demand taraqi and monthly class
+attendance PDFs. Original automation work streams 3–5 also remain pending.
+
+
+Local commits for timetable increment 1 (nothing pushed): Core `faa14c6`,
+Afghan backend/audit `db58ed3`, SPA Core `19d75a3`, SPA shell `c6e221aa`,
+Afghan SPA `040e5ce`, Afghan mobile `77ae3f5`.
