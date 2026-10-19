@@ -364,3 +364,27 @@ password from the `RootUserPassword` config value.
 - Adding to `MainController` instead of a feature-specific controller.
 - Skipping the pack + swap ritual after changing spa-core.
 - Pushing to any git remote.
+
+
+## Timetable and lesson-presence research (2026-10-19)
+
+The human requested Afghan taqsim awqat, per-grade ministry subjects/books,
+shifts, automatic conflict-free draft scheduling, multi-subject teachers,
+approved substitutes and monthly class registers. Keep Afghan curriculum,
+ministry references and print profiles in Afghanistan; shared scheduling
+constraints belong in Core. A book is not necessarily a separate subject, and
+a book listing is not evidence of weekly teaching-hour requirements.
+
+The human explicitly authorizes teacher lesson-presence evidence from the
+assigned authenticated teacher taking attendance, or from an approved
+substitute. This is an exception to the earlier blanket no-inferred-attendance
+rule for this narrowly scoped teacher workflow. Never fabricate student
+attendance, handwritten signatures or whole-day teacher absence from a single
+substituted lesson. Leave and substitution proposals require administrator
+approval. Preserve actor, lesson, date, assignment and audit evidence.
+
+Taraqi talim must also be printable/exportable to PDF at any time, independently
+of month-end attendance exports. Preserve the selected class/date range,
+Solar Hijri layout, subjects and lesson-progress/evidence records, including
+incomplete periods. Correct official-format parity requires a verified template;
+never synthesize handwritten signatures.

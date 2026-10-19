@@ -5,11 +5,11 @@ const chrome=process.env.MODAL_TEST_CHROME||'/Applications/Google Chrome.app/Con
 if(!fs.existsSync(chrome))throw new Error('Set MODAL_TEST_CHROME to a headless Chrome executable');
 const translations={};for(const language of ['en-US','fa-AF','ps-AF']){const repo=language==='en-US'?'digitalmaktab-spa-core':'digitalmaktab-spa-country-afghanistan';translations[language]={translation:{...JSON.parse(fs.readFileSync(core+'/src/locales/en-US/translation.json','utf8')),...JSON.parse(fs.readFileSync(projects+'/digitalmaktab-spa-country-afghanistan/src/locales/'+language+'/translation.json','utf8'))}};}
 const country=projects+'/digitalmaktab-spa-country-afghanistan';
-const rule={id:'PTM_UPCOMING',titleKey:'automations.rules.PTM_UPCOMING.title',descriptionKey:'automations.rules.PTM_UPCOMING.description',enabled:false,leadMinutes:1440,timeZoneOverride:'',effectiveTimeZone:'Asia/Kabul',version:'initial',lastCheckedAt:null,lastCreatedCount:0,lastErrorCode:''};
+const rule={id:'ATTENDANCE_INCOMPLETE',windowKind:'OVERDUE',usesDailyDeadline:true,dailyDeadlineMinute:1080,titleKey:'automations.rules.ATTENDANCE_INCOMPLETE.title',descriptionKey:'automations.rules.ATTENDANCE_INCOMPLETE.description',enabled:false,leadMinutes:1440,timeZoneOverride:'',effectiveTimeZone:'Asia/Kabul',version:'initial',lastCheckedAt:null,lastCreatedCount:0,lastErrorCode:''};
 fs.writeFileSync(work+'/api.ts',`let rule=${JSON.stringify(rule)};export default {
  get:async()=>{window.automationReads=(window.automationReads||0)+1;return {data:[rule]}},
  put:async(url,dto)=>{window.automationSaved=dto;rule={...rule,...dto,version:'next'};return {data:rule}},
- post:async(url,dto)=>{window.automationPreview=dto;return {data:{timeZoneId:"Asia/Kabul",eligibleRecipients:40,alreadyDelivered:0,newRecipients:40,items:Array.from({length:40},(_,index)=>({sourceId:'meeting-'+index,subject:'Meeting '+index,occursAt:'2026-10-20T08:00:00Z',recipients:1}))}}}};`);
+ post:async(url,dto)=>{window.automationPreview=dto;return {data:{timeZoneId:"Asia/Kabul",eligibleRecipients:40,alreadyDelivered:0,newRecipients:40,items:Array.from({length:40},(_,index)=>({sourceId:'meeting-'+index,subject:'Class '+index,pendingCount:1,occursAt:'2026-10-20T08:00:00Z',recipients:1}))}}}};`);
 const entry=`import React from 'react';import {createRoot} from 'react-dom/client';import {I18nextProvider} from 'react-i18next';import i18n from 'i18next';
 import Screen from ${JSON.stringify(core+'/src/automation/AppSchoolAutomations.tsx')};
 import {AuthContext} from ${JSON.stringify(core+'/src/helper/auth/AuthProvider.tsx')};import {MemoryRouter} from 'react-router-dom';
@@ -52,16 +52,16 @@ webpack(config,async(error,stats)=>{
    await click('select[name="enabled"] + .select2 .select2-selection');
    assert(await evaluate('!!document.querySelector(".select2-container--open .select2-results")'),'Status picker closed while opening');
    await click('.select2-results__option:last-child');
-   await fill('input[name="leadMinutes"]','60');await fill('input[name="timeZoneOverride"]','Asia/Kabul');
+   await fill('input[name="dailyDeadlineTime"]','07:30');await fill('input[name="leadMinutes"]','60');await fill('input[name="timeZoneOverride"]','Asia/Kabul');
    await click('.modal-body form button');
-   assert(await evaluate('!!window.automationPreview && window.automationPreview.enabled===true'),'Preview did not use current fields');
+   assert(await evaluate('!!window.automationPreview && window.automationPreview.enabled===true && window.automationPreview.dailyDeadlineMinute===450'),'Preview did not use current fields');
    assert.equal(await evaluate('!!window.automationSaved'),false,'Preview saved settings');
    assert.equal(await evaluate('window.automationReads'),1,'Settings requests looped');
    const footer=await evaluate('(()=>{const e=document.querySelector(".modal-footer");const r=e.getBoundingClientRect();return {top:r.top,bottom:r.bottom,height:r.height}})()');
    assert(footer.top>=0&&footer.bottom<=height+1&&footer.height>0,'Modal buttons left the viewport '+JSON.stringify(footer));
    const shot=await send('Page.captureScreenshot',{format:'png'},sessionId);fs.writeFileSync(work+'/'+name+'-modal.png',Buffer.from(shot.data,'base64'));
    await click('.modal-footer button:last-child');await wait(200);
-   assert(await evaluate('!!window.automationSaved && window.automationSaved.enabled===true && window.automationSaved.leadMinutes===60'),'Settings were not saved');
+   assert(await evaluate('!!window.automationSaved && window.automationSaved.enabled===true && window.automationSaved.leadMinutes===60 && window.automationSaved.dailyDeadlineMinute===450'),'Settings were not saved');
    assert.equal(await evaluate('!!document.querySelector(".modal.show")'),false,'Modal stayed open after save');
    const layout=await evaluate('({width:document.documentElement.scrollWidth,background:getComputedStyle(document.querySelector(".card")).backgroundColor,color:getComputedStyle(document.querySelector(".card")).color})');
    assert(layout.width<=width+1,'Automation screen overflows '+JSON.stringify(layout));

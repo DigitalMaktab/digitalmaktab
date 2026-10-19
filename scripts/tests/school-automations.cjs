@@ -28,5 +28,12 @@ const Screen=require(core+'/src/automation/AppSchoolAutomations.tsx').default;
   hold=null;fireEvent.click(ui.getByRole('button',{name:i18n.t('automations.configure'),exact:true}));dialog=ui.getByRole('dialog');fail=true;fireEvent.click(button('save'));await waitFor(()=>assert(within(dialog).getByText('Refresh these settings')));assert(ui.getByRole('dialog'));
   cleanup();
  }
+ await i18n.changeLanguage('en-US');calls=[];writes=[];fail=false;hold=null;
+ row={...row,id:'ATTENDANCE_INCOMPLETE',titleKey:'automations.rules.ATTENDANCE_INCOMPLETE.title',descriptionKey:'automations.rules.ATTENDANCE_INCOMPLETE.description',windowKind:'OVERDUE',usesDailyDeadline:true,dailyDeadlineMinute:1080};
+ const daily=render(h(I18nextProvider,{i18n},h(MemoryRouter,{initialEntries:['/automations']},h(AuthContext.Provider,{value:{userRole:0,user:{role:0}}},h(Screen)))));
+ await waitFor(()=>assert(daily.getByRole('button',{name:i18n.t('automations.configure'),exact:true})));fireEvent.click(daily.getByRole('button',{name:i18n.t('automations.configure'),exact:true}));
+ const dialog=daily.getByRole('dialog'),time=dialog.querySelector('input[name=dailyDeadlineTime]');assert(time);assert.equal(time.value,'18:00');assert(within(dialog).getByLabelText(i18n.t('automations.lookback'),{exact:false}));
+ fireEvent.change(time,{target:{value:'00:00'}});fireEvent.click(within(dialog).getByRole('button',{name:i18n.t('automations.save'),exact:true}));await waitFor(()=>assert.equal(writes.length,1));assert.equal(writes[0].dto.dailyDeadlineMinute,0);assert.equal('dailyDeadlineTime' in writes[0].dto,false);
+ cleanup();
  console.log('PASS: opt-in settings, no-send preview, draft validation, timezone and version payloads, stale preview invalidation, single-flight save, busy modal, errors and three languages.');
 })().catch(error=>{console.error(error);process.exitCode=1;});
