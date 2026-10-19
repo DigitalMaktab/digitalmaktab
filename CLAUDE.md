@@ -264,7 +264,7 @@ do not relax it to compensate for missing authentication enforcement.
   and daily request limits. Defaults are disabled; do not pick a model or
   activate a paid provider on a school's behalf.
 - Supported adapters are OpenAI Responses, Anthropic Messages, Gemini
-  GenerateContent, and xAI Grok Responses. Keep their fixed HTTPS origins, disabled redirects,
+  GenerateContent, xAI Grok Responses, and Groq Chat Completions. Keep their fixed HTTPS origins, disabled redirects,
   bounded responses, sanitized provider errors, and server-only credentials.
   Adding a provider belongs in Core's provider gateway and validation/catalog.
 - School admins configure AI; staff require `ai.configure` / `ai.use` dynamic
@@ -290,7 +290,8 @@ do not relax it to compensate for missing authentication enforcement.
 - Provider protocol references: [OpenAI text generation](https://developers.openai.com/api/docs/guides/text),
   [Anthropic Messages](https://platform.claude.com/docs/en/api/messages/create),
   [Gemini GenerateContent](https://ai.google.dev/api/generate-content),
-  [xAI Responses](https://docs.x.ai/developers/rest-api-reference/inference/responses).
+  [xAI Responses](https://docs.x.ai/developers/rest-api-reference/inference/responses),
+  [Groq Chat Completions](https://console.groq.com/docs/api-reference).
 
 ## Dev-only demo login accounts
 
