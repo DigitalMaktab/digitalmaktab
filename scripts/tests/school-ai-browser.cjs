@@ -55,7 +55,7 @@ webpack(config,async(error,stats)=>{
     assert(await evaluate('!!document.querySelector(".select2-container--open .select2-results")'),'Provider select closed on opening');
     await click('.select2-results__option:last-child');
     await fill('input[name="apiKey"]','fake-new-key');await click('button[type="submit"]');
-    assert(await evaluate('!!window.aiSaved && window.aiSaved.provider==="GEMINI"'),'Saved provider did not follow the select '+JSON.stringify(await evaluate('({saved:window.aiSaved,values:Array.from(document.querySelectorAll("input,select,textarea")).map(e=>[e.name,e.value]),errors:Array.from(document.querySelectorAll(".invalid-feedback")).map(e=>e.textContent)})')));
+    assert(await evaluate('!!window.aiSaved && window.aiSaved.provider==="XAI"'),'Saved provider did not follow the select '+JSON.stringify(await evaluate('({saved:window.aiSaved,values:Array.from(document.querySelectorAll("input,select,textarea")).map(e=>[e.name,e.value]),errors:Array.from(document.querySelectorAll(".invalid-feedback")).map(e=>e.textContent)})')));
     assert.equal(await evaluate('document.querySelector("input[name=apiKey]").value'),'','Secret remained in the form after save');
     assert.equal(await evaluate('window.aiReads'),1,'Settings requests looped');
    }else{

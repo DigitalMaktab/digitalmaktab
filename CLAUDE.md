@@ -263,8 +263,8 @@ do not relax it to compensate for missing authentication enforcement.
   chooses its provider, exact model ID, allowed account types, output limit,
   and daily request limits. Defaults are disabled; do not pick a model or
   activate a paid provider on a school's behalf.
-- Supported adapters are OpenAI Responses, Anthropic Messages, and Gemini
-  GenerateContent. Keep their fixed HTTPS origins, disabled redirects,
+- Supported adapters are OpenAI Responses, Anthropic Messages, Gemini
+  GenerateContent, and xAI Grok Responses. Keep their fixed HTTPS origins, disabled redirects,
   bounded responses, sanitized provider errors, and server-only credentials.
   Adding a provider belongs in Core's provider gateway and validation/catalog.
 - School admins configure AI; staff require `ai.configure` / `ai.use` dynamic
@@ -289,7 +289,8 @@ do not relax it to compensate for missing authentication enforcement.
   escaped as text and preserve cancellation, visible errors and retry IDs.
 - Provider protocol references: [OpenAI text generation](https://developers.openai.com/api/docs/guides/text),
   [Anthropic Messages](https://platform.claude.com/docs/en/api/messages/create),
-  [Gemini GenerateContent](https://ai.google.dev/api/generate-content).
+  [Gemini GenerateContent](https://ai.google.dev/api/generate-content),
+  [xAI Responses](https://docs.x.ai/developers/rest-api-reference/inference/responses).
 
 ## Dev-only demo login accounts
 
