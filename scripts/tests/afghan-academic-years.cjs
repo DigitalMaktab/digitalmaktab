@@ -24,6 +24,9 @@ const request = async (url, config = {}) => {
   return { data: /\/(academic-years|exam-periods)$/.test(url) ? source : source.find(row => url.endsWith('/' + row.id)) };
 };
 mocks = {
+  AppFormSelect:load('components/form/AppFormSelect.tsx'),
+  AppSubjectSelect:props=>h(load('components/input/AppAsyncSelect.tsx'),{...props,label:i18n.t('timetableGenerator.subject'),loadOptions:async()=>[{id:'10000000-0000-0000-0000-000000000001',label:'Mathematics'}],resolveOption:async id=>({id,label:'Mathematics'})}),
+  AppBookSelect:props=>h(load('components/input/AppAsyncSelect.tsx'),{...props,label:i18n.t('timetableGenerator.gradeBook'),loadOptions:async()=>[{id:'10000000-0000-0000-0000-000000000002',label:'Grade 8 Mathematics'}],resolveOption:async id=>({id,label:'Grade 8 Mathematics'})}),
   AppFormError:load('components/form/AppFormError.tsx'),
   AppAcademicYearSettingsFields:load('academicYears/AppAcademicYearSettingsFields.tsx'), AppFormValues:load('components/form/AppFormValues.tsx'), AppFormCollection:load('components/form/AppFormCollection.tsx'), AppFormCheckboxGroup:load('components/form/AppFormCheckboxGroup.tsx'),
   ...require(core+'/src/academicYears/contracts.ts'),
@@ -66,6 +69,7 @@ const view = (component, entry = '/afghanistan/academic-years', editor = false, 
   failActivation = true; fireEvent.contextMenu(ui.getByText('۱۴۰۳').closest('tr')); fireEvent.click(ui.getByRole('menuitem', { name: i18n.t('afghanAcademicYears.activate') }));
   fireEvent.click(within(ui.getByRole('dialog')).getByRole('button', { name: i18n.t('afghanAcademicYears.activate') })); await waitFor(() => assert(ui.getByText('Stale version: reload school year.'))); cleanup();
   rows[0].settings={id:'settings-a',version:'settings-v1',plan:{...mocks.academicYearPlanPayload(mocks.academicYearPlanForm()),displayName:'1403',timeZone:'Asia/Kabul',teachingWeekdays:[6,0,1,2,3,4],terms:[{code:'first',name:'First term',fromDate:'2024-03-20',toDate:'2024-07-01',gradeFrom:1,gradeTo:6}]}};
+  rows[0].policy={climate:'UNSPECIFIED',sourceReference:'',ministryTemplateVersion:'',reportingPeriods:[],gradeSubjects:[{grade:8,subjectId:'10000000-0000-0000-0000-000000000001',bookId:'10000000-0000-0000-0000-000000000002',weeklyPeriods:6,maximumPerDay:2,sourceReference:'Approved school curriculum'}]};
   // Real shared editor uses the installed Hijri date picker, keeps a year immutable, and sends optimistic version data.
   ui = view(h(Editor), '/afghanistan/academic-years/first', true);
   await waitFor(() => assert(ui.getByLabelText(i18n.t('afghanAcademicYears.year'), { exact: false, selector: "input,select" }).disabled));
@@ -92,7 +96,7 @@ const view = (component, entry = '/afghanistan/academic-years', editor = false, 
   assert(ui.getByRole('dialog'));fireEvent.keyDown(document,{key:'Escape'});await waitFor(()=>assert(!ui.queryByRole('dialog')));
   assert.equal(ui.container.querySelector('input[name="plan.terms.0.code"]').value,'first');
   fireEvent.submit(ui.container.querySelector('form')); await waitFor(() => assert.equal(saves.length, 1));
-  assert.equal(saves[0].url,'/afghanistan/academic-years/first'); assert.equal(saves[0].dto.version,'version-a'); assert.equal(saves[0].dto.settings.plan.timeZone,'Asia/Kabul'); assert.deepEqual(saves[0].dto.settings.plan.teachingWeekdays,[6,0,1,2,3,4]); assert.equal(saves[0].dto.policy.climate,'COLD');assert.equal(saves[0].dto.settings.version,'settings-v1');assert.equal(saves[0].dto.settings.plan.displayName,'School teaching year');assert.equal(saves[0].dto.settings.plan.terms[0].gradeTo,6); cleanup();
+  assert.equal(saves[0].url,'/afghanistan/academic-years/first'); assert.equal(saves[0].dto.version,'version-a'); assert.equal(saves[0].dto.settings.plan.timeZone,'Asia/Kabul'); assert.deepEqual(saves[0].dto.settings.plan.teachingWeekdays,[6,0,1,2,3,4]); assert.equal(saves[0].dto.policy.climate,'COLD');assert.equal(saves[0].dto.settings.version,'settings-v1');assert.equal(saves[0].dto.settings.plan.displayName,'School teaching year');assert.equal(saves[0].dto.settings.plan.terms[0].gradeTo,6); assert.deepEqual(saves[0].dto.policy.gradeSubjects,rows[0].policy.gradeSubjects); cleanup();
   // New-year bounds are native; invalid combinations remain in the editor and never reach the API.
   ui = view(h(Editor), '/afghanistan/academic-years/new', true); const current = helpers.currentAcademicYear();
   assert.equal(ui.getByLabelText(i18n.t('afghanAcademicYears.year'), { exact: false, selector: "input,select" }).value, String(current));

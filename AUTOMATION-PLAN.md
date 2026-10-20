@@ -253,3 +253,57 @@ attendance PDFs. Original automation work streams 3–5 also remain pending.
 Local commits for timetable increment 1 (nothing pushed): Core `faa14c6`,
 Afghan backend/audit `db58ed3`, SPA Core `19d75a3`, SPA shell `c6e221aa`,
 Afghan SPA `040e5ce`, Afghan mobile `77ae3f5`.
+
+## Timetable implementation increment 2 (2026-10-20)
+
+- Afghan year PolicyJson now stores reviewed grade/Subject references, approved
+  weekly periods, maximum periods per day and an approval/source reference. An
+  optional existing Book reference selects a grade edition; otherwise the
+  subject's primary book remains the default. School/global book ownership and
+  active references are checked. No duplicate subject, book, course, shift or year
+  table was introduced, and no Ministry book listing was treated as a quota.
+- A shared Core generator fills missing periods around fixed Schedule rows using
+  existing Course teacher assignments and the shared real-clock validator. It
+  spreads lessons across days, supports repeated subjects and different shift/
+  grade bell patterns, and reports course, class and teacher capacity shortages.
+  Search is bounded to 100,000 nodes/five seconds and 2,000 new lessons; a search
+  limit is explicitly inconclusive. Existing courses express teacher assignments;
+  the generator never declares an unassigned teacher qualified.
+- Shared AppTimetablePlanner uses AppTable filters/exports and an AppModal publish
+  confirmation. Afghan year rows/editors link to
+  `/afghanistan/academic-years/:id/timetable`. Preview does not write. Publication
+  adds validated Schedule rows atomically and preserves every existing lesson.
+  School locking spans country-policy resolution and Core publication; a state
+  fingerprint invalidates stale drafts and prevents duplicate concurrent inserts.
+- Curriculum requires exactly one existing course/teacher assignment for every
+  adopted subject in every active class. Incomplete assignments, closed years,
+  invalid/foreign/inactive references and stale reviews fail explicitly.
+- Weekly timetable formatting retains parallel classes in a period instead of
+  silently discarding all but the first. ClassType is the existing morning/
+  evening/local/etc. category, not a separate section identifier; the new review
+  shows its actual localized meaning. Existing shift/grade identities are retained.
+
+Verification: 102 Core tests and 103 Afghanistan tests pass against isolated
+PostgreSQL, with zero skipped. These cover deterministic generation, repeats,
+fixed lessons, cross-shift clocks, capacity diagnostics, cancellation/limits,
+read-only previews, atomic rejection, concurrent publication, country policy
+changes, grade-book persistence, HTTP validation/permissions and Austria isolation.
+Shared planner tests pass in English/Dari/Pashto, including guarded single-flight
+confirmation and exact version payloads. Existing year editor tests now verify
+that grade-subject/book/load references survive unrelated edits. Real Chrome
+shared select/bell/Hijri checks pass in Dari dark desktop/320px, Pashto dark 360px
+and English light desktop. Package builds/sync, TypeScript and locale checks are
+recorded with the local commits. User-owned servers are not restarted.
+
+Still pending: Ministry catalogue adoption/import assistance beyond selecting
+existing library records; teacher eligibility/availability/load metadata; reviewed
+per-lesson leave cover; dated lesson delivery and attendance evidence; immutable
+published history; on-demand taraqi and monthly class attendance book PDFs.
+The current official book templates remain unverified. Original automation work
+streams 3–5 also remain pending. This increment does not complete the full goal.
+
+Local commits for increment 2 (nothing pushed): Core `05e7cb9`, Afghan backend
+`ba66cc9`, SPA Core `1596661`, Afghan SPA `7c330b3`, Afghan mobile `1268297`.
+`sync-all.sh` and final `sync-spa.sh` completed; mobile country package rebuilt
+and swapped into both existing mobile consumers. Shell TypeScript, strict locale
+coverage, diff checks and all local commit hooks pass.
