@@ -12,6 +12,10 @@ createdb -h "$database_dir" -p 55439 -U support_test authentication_tests
 createdb -h "$database_dir" -p 55439 -U support_test access_tests
 createdb -h "$database_dir" -p 55439 -U support_test ai_tests
 createdb -h "$database_dir" -p 55439 -U support_test automation_tests
+createdb -h "$database_dir" -p 55439 -U support_test teaching_migration_tests
+export CORE_TEACHING_MIGRATION_TEST_DATABASE="Host=$database_dir;Port=55439;Username=support_test;Database=teaching_migration_tests"
+createdb -h "$database_dir" -p 55439 -U support_test teaching_tests
+export CORE_TEACHING_TEST_DATABASE="Host=$database_dir;Port=55439;Username=support_test;Database=teaching_tests"
 createdb -h "$database_dir" -p 55439 -U support_test timetable_tests
 export CORE_TIMETABLE_TEST_DATABASE="Host=$database_dir;Port=55439;Username=support_test;Database=timetable_tests"
 export CORE_AUTOMATION_TEST_DATABASE="Host=$database_dir;Port=55439;Username=support_test;Database=automation_tests"

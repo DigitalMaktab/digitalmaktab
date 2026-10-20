@@ -307,3 +307,78 @@ Local commits for increment 2 (nothing pushed): Core `05e7cb9`, Afghan backend
 `sync-all.sh` and final `sync-spa.sh` completed; mobile country package rebuilt
 and swapped into both existing mobile consumers. Shell TypeScript, strict locale
 coverage, diff checks and all local commit hooks pass.
+
+
+## Timetable implementation completion (2026-10-20)
+
+This entry supersedes the pending timetable items in the earlier increments.
+The shared and Afghan workflows now include:
+
+- Existing year PlanJson stores teacher eligibility, generalist grade bounds,
+  availability windows and daily/weekly limits. Existing courses retain primary
+  assignments; the generator never silently declares an unassigned teacher
+  qualified. Shared manual/generation/publication paths enforce the same rules.
+- Existing TeacherLeave owns reviewed per-lesson covers. Requests prepare
+  candidates/proposals; approval rechecks real clock conflicts, qualifications,
+  availability, other leave and combined loads under the school lock. Explicit
+  uncovered lessons remain visible. Approved plans can be reviewed again;
+  delivered lessons are locked. Assigned/withdrawn covers notify teachers and
+  school owners receive request/cancellation/digest alerts.
+- `/teaching-lessons` (also `/teacher-attendance`) records the authenticated
+  assigned teacher or approved substitute taking explicit class attendance.
+  No student mark defaults to present. Dated evidence preserves actual actor,
+  original assignment, topic, per-student marks and correction history. Existing
+  daily attendance remains independently preserved. Future/closed-year records,
+  foreign rosters, forged actors, stale changes and altered retries are rejected.
+- TimetablePublication is append-only; school-local effective snapshots preserve
+  year/weekly lesson history. New publications do not backdate newly scheduled
+  lessons. Delivered evidence survives later timetable edits. Only two genuinely
+  missing tables were added, with two additive TeacherLeave columns; a migration
+  test applies/removes exactly those additions while retaining legacy data.
+- `/afghanistan/curriculum-catalogue` exposes the checked-in 572 Ministry link
+  occurrences. School adoption reuses existing Subject/Book identities, stores
+  grade editions/additional resources in country PolicyJson, and requires explicit
+  quotas/source approval. Guides/readers do not become compulsory subjects.
+  School-owned catalogue subjects/books remain private; resource downloads link
+  to the official HTTPS source without fetching/copying textbooks on the server.
+- `/afghanistan/teaching-registers` offers on-demand taraqi and Solar Hijri monthly
+  class attendance books. Native leap/month boundaries, school timezone, teaching
+  days, enrollment/withdrawal dates and missing/conflicting records are explicit.
+  PDFs use shared Unicode/bidi, filtered rows/selected columns, account print
+  preferences, generation cancellation and the completed-artifact viewer. Country
+  year policy configures paper, rows, binding margins and a template reference.
+  Blank signature lines never synthesize handwriting or evidence.
+- All screens reuse Core tables/forms/filter panels/modals; country endpoints and
+  menus are isolated from Austria. English, Dari, Pashto and mobile bundles are
+  updated. School rules and dated evidence stay in Core; Ministry catalogue,
+  native books and print profiles stay in Afghanistan.
+
+The current official Ministry master attendance/taraqi sheet remains unverified.
+The implemented exports are explicitly configurable school layouts, not a claim
+of exact official-template parity. Ministry book links do not establish current
+compulsory subjects or national teaching quotas. The school must approve those.
+
+Verification: 106 Core and 103 Afghanistan tests pass against isolated PostgreSQL
+with zero skipped; coverage includes narrow migration up/down, HTTP roles/tenant
+boundaries, actual teacher/cover evidence, replay/corrections, immutable history,
+catalogue adoption and native-month registers. Shared lesson/cover forms, planner
+and year editors pass in all three languages. Real Chrome checks cover Dari dark
+320px/desktop, Pashto dark 360px and English light desktop; long shared modals
+keep footer actions visible down to 320x480 and 800x240. Actual Unicode A3 register
+PDFs pass in all three languages with 31-day grids, multipage taraqi, cancellation
+and structured values; a Dari monthly page was visually inspected. The full
+shared PDF audit, strict translations and consumer TypeScript builds are checked
+before local commits. `sync-all.sh` repacks/installs backend/SPA packages; mobile
+country assets are rebuilt and swapped into both consumers. User-owned servers
+are untouched; restart API and SPA to load the installed packages. Nothing pushed.
+
+Original automation work streams 3–5 are separate from this timetable request and
+remain tracked above; this entry does not mark that broader historic goal complete.
+
+Final local commits (nothing pushed): Core `0c0baf9`, Afghan backend `29242d8`,
+SPA Core `84a0313`, Afghan SPA `56e108b`, shell `e36985f8`, mobile `72fcc6f`.
+The final PDF audit includes actual country catalogue/register UI checks in all
+three languages: version reuse after adoption, validation/single-flight submits,
+draft/Apply scopes, school A3 defaults and completed artifacts without refetch.
+All 104 table sites pass the shared PDF/filter audit. Commit hooks pass backend,
+package/shell TypeScript, locale parity, module isolation and Core UI reuse.

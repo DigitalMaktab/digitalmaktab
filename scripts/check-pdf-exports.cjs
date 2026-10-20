@@ -46,9 +46,10 @@ for (const name of fs.readdirSync(projects)) {
   if (fs.existsSync(source)) scan(source);
 }
 assert(tables.length > 0, 'No table export sites found');
-assert.deepEqual([...new Set(generators)], ['digitalmaktab-spa-core/src/hooks/useJsPdfExportToPdf.ts'], 'All table PDF paths must use the shared Unicode exporter');
+assert.deepEqual([...new Set(generators)].sort(), ['digitalmaktab-spa-core/src/hooks/useJsPdfExportToPdf.ts','digitalmaktab-spa-core/src/pdf/registerDocument.ts'].sort(), 'PDF renderers must remain in Core');
+for(const file of new Set(generators))assert(fs.readFileSync(path.join(projects,file),'utf8').includes('configureUnicodeDocument'), 'All renderers must reuse Core Unicode setup');
 const environment = { ...process.env, PDF_AUDIT_PROJECTS: projects, PDF_AUDIT_ARTIFACTS: artifacts };
-for (const test of ['pdf-export.cjs', 'pdf-print-settings.cjs', 'date-range.cjs', 'table-date-range.cjs', 'table-filter-controls.cjs', 'table-filter-placement.cjs', 'pdf-workflow.cjs', 'print-defaults.cjs', 'student-table.cjs', 'country-consistency.cjs', 'afghan-academic-years.cjs', 'afghan-student-register.cjs', 'transfers.cjs', 'identity-attachments.cjs', 'transfer-documents.cjs', 'afghan-details-forms.cjs', 'exam-scheduling.cjs', 'ministry-reports.cjs', 'academic-documents.cjs', 'modules.cjs', 'auth-role-contract.cjs']) {
+for (const test of ['afghan-teaching-workflows.cjs', 'teaching-operations.cjs', 'teaching-register-pdf.cjs', 'pdf-export.cjs', 'pdf-print-settings.cjs', 'date-range.cjs', 'table-date-range.cjs', 'table-filter-controls.cjs', 'table-filter-placement.cjs', 'pdf-workflow.cjs', 'print-defaults.cjs', 'student-table.cjs', 'country-consistency.cjs', 'afghan-academic-years.cjs', 'afghan-student-register.cjs', 'transfers.cjs', 'identity-attachments.cjs', 'transfer-documents.cjs', 'afghan-details-forms.cjs', 'exam-scheduling.cjs', 'ministry-reports.cjs', 'academic-documents.cjs', 'modules.cjs', 'auth-role-contract.cjs']) {
   const result = spawnSync(process.execPath, [path.join(__dirname, 'tests', test)], { env: environment, stdio: 'inherit', timeout: 60_000 });
   if (result.error) throw result.error;
   assert.equal(result.status, 0, test + ' failed');

@@ -11,8 +11,10 @@ const signIn=(id,role=3)=>localStorage.setItem('user',JSON.stringify({role,teach
  await i18n.init({lng:'en-US',resources:{'en-US':{translation:JSON.parse(fs.readFileSync(core+'/src/locales/en-US/translation.json'))}},interpolation:{escapeValue:false}});
  localStorage.clear();signIn('alice');const alice=preferences.getPdfPreferenceUserKey();assert(alice);
  assert.deepEqual(preferences.defaultPdfSettings(columns).selectedColumns,[0,3]);assert.deepEqual(preferences.defaultPdfSettings([{header:'Old table',accessor:'name'}]).selectedColumns,[0]);
+ assert.equal(preferences.loadPdfSettings("school-book",columns,alice,{pageSize:"a3",orientation:"landscape"}).pageSize,"a3");
  preferences.savePdfSettings('roster',columns,{pageSize:'letter',orientation:'landscape',selectedColumns:[0,1,3,4]});
  assert.deepEqual(preferences.loadPdfSettings('roster',columns).selectedColumns,[0,1,3]);
+ assert.equal(preferences.loadPdfSettings("roster",columns,alice,{pageSize:"a3",orientation:"landscape"}).pageSize,"letter");
  // Another account starts with table defaults, not Alice's choices or legacy shared settings.
  localStorage.setItem('dm-pdf-settings:roster',JSON.stringify({version:1,pageSize:'legal',orientation:'landscape',columns:[':photoPath:Photo']}));signIn('bob');
  assert.deepEqual(preferences.loadPdfSettings('roster',columns),preferences.defaultPdfSettings(columns));
