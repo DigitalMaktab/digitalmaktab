@@ -409,3 +409,31 @@ Afghan grade curricula should first extend existing AfghanAcademicYear.PolicyJso
 and reference existing Subject/Book/Course IDs. Audit before adding anything new.
 Room is hostel accommodation; Progress is student learning progress; neither is
 an interchangeable classroom or teaching-diary record.
+
+## Class capacity and annual registration limits (2026-10-21)
+
+Core owns `SchoolAcademicYear.Plan.DefaultClassCapacity` (40 by default),
+`AnnualRegistrationLimit` (blank/null means unlimited), and
+`AnnualRegistrationScope` (`NEW_ADMISSIONS` by default, or `ALL_ENROLLMENTS`).
+The shared `/registration-capacity` page edits the current school year; Afghan
+academic-year forms reuse these same Core settings. Country policies must not
+introduce a separate copy of these limits.
+
+Class owns an explicit `SectionNumber` and an optional `StudentCapacity` override.
+`ClassType` remains the legacy category, not the section identity. Registration
+fills a matching active grade/branch/category/shift section or creates the next
+numbered section. Course schedules are not copied into overflow classes.
+
+All registration/import/transfer/promotion enrollment writes use Core
+`EnrollmentCapacity` under the same school advisory lock and transaction as the
+account/enrollment changes. Check the year limit before creating a class or
+student. Keep welcome emails after commit. Year counts use distinct historical
+school/year enrollments; withdrawals/transfers do not reopen annual intake places.
+Returning students are excluded only in NEW_ADMISSIONS mode. Keep enrollment
+withdrawal history through soft deactivation; active rosters determine class seats.
+
+The additive Core migration adds only the two Class fields and numbers existing
+parallel rows without changing their IDs or enrollments. Isolated tests cover
+40 seats plus a single remaining yearly place, racing HTTP registrations, imported
+row rollback, promotion caps, scope/version guards and migration up/down. Shared
+forms and yearly payload round-trips are tested in English, Dari and Pashto.
