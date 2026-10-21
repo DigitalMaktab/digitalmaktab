@@ -460,3 +460,22 @@ This does not replace distributed rate-limit coordination. Health probes live at
 `/health/live` and `/health/ready`; metric labels must use route templates, never
 raw paths, tenant/person IDs or query strings. Never change process-wide culture
 on a per-request basis; use ASP.NET request-scoped localization.
+
+Financial mutations reuse Core `MutationReceiptStore` / `FeePaymentService`.
+Keep tenant/actor/role/operation/request fingerprints and the encrypted durable
+response in the same transaction as ledger, audit and inbox writes. Financial
+receipt metadata is not an expiring cache: cleanup must never enable an old
+payment to execute again. Exclude private receipt payloads from backups/audits.
+All payment/waiver/void forms send a stable Idempotency-Key UUID per operation;
+Core `useMutationIntent` pins it and the timestamp through failed submissions.
+No automatic mutation retries or new IDs on the same failed form submission.
+
+Fee balances use row locks plus reload before validation; bulk locks use stable
+UUID order, with allocation in requested order and a single transaction. Payment
+voids soft-deactivate existing rows, retain actor/time/history and reverse once.
+Income/current-payment queries exclude voided rows. Webhooks verify the exact
+buffered body and configured provider before durable session replay. Parent and
+student checkout requires actual fee ownership, and currency comes from country.
+For EF owned-reference replacements, deleted and newly added entries can share
+an identity: revision lookups must prefer live principals, never ToDictionary
+all states unconditionally. Country identity/address replacement tests cover it.
