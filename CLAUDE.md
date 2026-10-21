@@ -437,3 +437,26 @@ parallel rows without changing their IDs or enrollments. Isolated tests cover
 40 seats plus a single remaining yearly place, racing HTTP registrations, imported
 row rollback, promotion caps, scope/version guards and migration up/down. Shared
 forms and yearly payload round-trips are tested in English, Dari and Pashto.
+
+
+## Concurrency and performance hardening (2026-10-22)
+
+The active implementation checklist/evidence is `CONCURRENCY-PERFORMANCE-PLAN.md`.
+Navigation/workspace tabs are parked. Do not mark the larger performance goal
+complete from a focused concurrency test or a small query microbenchmark.
+
+Student/Teacher Core profile reads return opaque `Revision`; update DTOs must
+return it unchanged. Missing versions return localized 428, stale saves 409 with
+`record_edit_conflict`. Never let AutoMapper assign the revision. DataContext
+advances revisions for root and owned address/phone writes. Core profile and
+country extension hooks share a transaction. Keep entered form values on failure;
+never silently reload or automatically retry an outdated mutation.
+
+Core `RequestCapacity` provides bounded per-process admission before authentication,
+then validated school admission after authorization; expensive work is explicitly
+marked with Core `ExpensiveOperation`. Keep ordinary capacity separate, queues
+bounded (currently no queue), 503 + Retry-After localized and no mutation retries.
+This does not replace distributed rate-limit coordination. Health probes live at
+`/health/live` and `/health/ready`; metric labels must use route templates, never
+raw paths, tenant/person IDs or query strings. Never change process-wide culture
+on a per-request basis; use ASP.NET request-scoped localization.
