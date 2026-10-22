@@ -479,3 +479,18 @@ student checkout requires actual fee ownership, and currency comes from country.
 For EF owned-reference replacements, deleted and newly added entries can share
 an identity: revision lookups must prefer live principals, never ToDictionary
 all states unconditionally. Country identity/address replacement tests cover it.
+
+
+Dashboard/financial reads reuse Core repository scalar/group projections, no
+tracking, cancellation and repeatable-read snapshots across multiple statements.
+Use the school's calendar provider, selected school-year anchor and timezone;
+month ordinals are not Gregorian dates. Core SchoolLocalTime handles local date
+boundaries and midnight/date-line gaps. Parent/class aggregates must retain
+explicit school scope even after student transfers. Fee class attribution uses
+retained school/year enrollment history; missing history stays unassigned.
+Report DTO timestamps describe the successful snapshot, never a failed refresh.
+
+SPA read screens reuse Core useReloadableRead: one active request, abort on
+unmount/account/language/resource change, no cross-account snapshots, explicit
+manual retry, retain last same-scope figures on transient errors, clear on
+401/403/404. Do not reintroduce effect loops or automatic mutation retries.
