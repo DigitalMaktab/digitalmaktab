@@ -494,3 +494,25 @@ SPA read screens reuse Core useReloadableRead: one active request, abort on
 unmount/account/language/resource change, no cross-account snapshots, explicit
 manual retry, retain last same-scope figures on transient errors, clear on
 401/403/404. Do not reintroduce effect loops or automatic mutation retries.
+
+
+Student/teacher/parent registrations reuse Core AccountRegistrationService and
+MutationReceiptStore. Required Idempotency-Key remains stable through failures;
+original result, account, country hooks, placement/fee and welcome intent share
+one transaction. Replay must happen before current capacity/reference checks;
+server-selected year/context changes do not alter the client-command fingerprint.
+Use normalized-email locks before school/capacity locks for these mutations.
+Do not reintroduce post-commit account creation or email-gated persistence.
+
+Core AccountWelcomeQueue owns encrypted transactional welcome delivery, short
+SKIP LOCKED claims, token fencing, bounded transport/retries/expiry and terminal
+payload scrubbing. Exclude its private rows from backups and audits. Never hold
+DB transactions over network delivery, log provider bodies/passwords or describe
+provider acceptance as exactly-once email arrival. The original result's queued
+flag describes registration time; SPA uses shared AppPasswordRevealModal's
+emailQueued state. Persist/share Data Protection keys when scaling instances.
+
+Mutation intents use immutable actor/role/school scope via Core accountIdentity,
+not the access token: token renewal must not create a new payment/registration
+request ID. useMyId reuses the same role-nested account ID resolver. Unknown
+legacy session shapes conservatively fall back to the token scope.
