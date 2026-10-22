@@ -534,3 +534,8 @@ scroll behavior and fixed footer actions; do not duplicate modal or form control
 Self-service profile merges retain the current login token and reject late results
 for an unmounted/changed account. Date-only reviews use Core AppCalendarDate with
 UTC plus the active country's calendar adapter.
+
+
+## Audit actor labels and request scope (2026-10-23)
+
+Core UserResolver uses scalar projections and a bounded cache on DataContext so AutoMapper's transient resolver instances share names within one unit of work. Include the effective ModuleSchoolId in cache keys; reject cross-school account/school labels for bound requests, while retaining global platform actor names and authorized unbound contexts. Never cache account entities, passwords or names globally. Clear the cache on both SaveChanges paths. Parent and StaffUser are real audit identities too. The current optimization is one query per uncached distinct actor; it is not a completed batched lookup audit. PostgreSQL coverage lives in ActorNameMappingTests and the shared isolated backend harness.
