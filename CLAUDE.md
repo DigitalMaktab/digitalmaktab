@@ -516,3 +516,21 @@ Mutation intents use immutable actor/role/school scope via Core accountIdentity,
 not the access token: token renewal must not create a new payment/registration
 request ID. useMyId reuses the same role-nested account ID resolver. Unknown
 legacy session shapes conservatively fall back to the token scope.
+
+
+Parent uses Core IRevisionedRecord too. Parent admin/self-service and teacher
+self-service profile DTOs echo Revision; use the shared BaseController version
+problem/check helpers (428 missing, 409 stale). The aggregate tracker covers
+owned-only edits; never assign client revisions to entities. Core's infrastructure
+fallback handles real unhandled EF races before response start without retrying.
+Do not restore parent-update field-value debug logs.
+
+Person editors reuse AppRecordConflictReview inside Formik, preserving drafts
+until explicit Keep/Load saved choice. Comparison reads are cancellable/no-store;
+loading values replaces the entire form baseline and revision together, and never
+saves automatically. AppBaseEditor/useFormData support explicit replacement.
+AppFormSubmitButton owns pending submit state. AppModal owns nested keyboard/
+scroll behavior and fixed footer actions; do not duplicate modal or form controls.
+Self-service profile merges retain the current login token and reject late results
+for an unmounted/changed account. Date-only reviews use Core AppCalendarDate with
+UTC plus the active country's calendar adapter.
