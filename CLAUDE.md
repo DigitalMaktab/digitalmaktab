@@ -289,8 +289,9 @@ do not relax it to compensate for missing authentication enforcement.
   capabilities, as well as the school's account-type allowlist. Configuring
   AI implies the use capability. Root and support agents have no school AI.
 - Keys use ASP.NET Data Protection with a school-specific purpose. Preserve
-  the key ring across releases and instances; production hosts should set
-  `DataProtection__KeyRingPath` to a persistent protected directory. A lost
+  the key ring across releases and instances; production hosts must use Core shared Data Protection configuration
+  (persistent KeyRingPath, matching KeyRingId marker, certificate or explicit
+  external-storage protection; see the API README). A lost
   key ring requires schools to re-enter keys. Never return saved keys in DTOs
   or include credentials/encrypted replies in audit snapshots or backups.
 - Changing provider clears its old key; removing a key requires disabling AI.
@@ -544,3 +545,10 @@ Core UserResolver uses scalar projections and a bounded cache on DataContext so 
 ## Startup database coordination (2026-10-23)
 
 API startup wraps migrations, forward repairs and seeding in Core StartupDatabaseCoordinator. Register the same singleton as a DataContext command interceptor; the coordinator rejects missing guards, retry strategies and multiplexing. Reuse its passed DataContext for every startup write; never open another scope/connection for seeding or module initialization. It holds a session advisory lock on a dedicated non-pooled connection. A lost session is permanently fenced and fails startup even when old repair code catches a command error. Seeder failures now propagate. No listener or background service should start before the locked sequence succeeds. DatabaseStartup:LockWaitSeconds defaults to 120 (maximum 1800); timeout fails startup instead of skipping initialization. A transaction-pooling PostgreSQL proxy is incompatible with this session-lock path. This coordinates cooperating startups, not incompatible online schema changes; production still needs a controlled reviewed migration rollout. Test coverage is StartupDatabaseCoordinatorTests via the isolated Core PostgreSQL harness.
+
+
+## Shared Data Protection and health routes (2026-10-23)
+
+Core Runtime AddDigitalMaktabDataProtection owns key persistence; SchoolAiRegistration only ensures the existing DigitalMaktab application identity. Do not change that discriminator or create per-instance key stores for receipts, queued mail or school credentials. Outside Development, provision an absolute shared persistent directory and its .digitalmaktab-key-ring UUID marker, matching DataProtection:KeyRingId. Configure a currently valid private RSA wrapping certificate, or explicitly acknowledge externally protected unencrypted key XML. Keep old keys/revocations/decryption certificates while retained ciphertext needs them. Rotation requires an overlap rollout; details are in the API README. No automatic production key migration or certificate generation is authorized by these helpers. Development defaults remain compatible.
+
+Verify DataProtectionReadinessHealthCheck before starting the API/jobs. Core MapDigitalMaktabHealthChecks is the only registration for /health/live and /health/ready; never restore the old competing MapGet handlers that bypassed dependency health. Liveness is dependency-free; readiness includes database and key storage. Report generic unhealthy responses, never exception bodies. Filesystem identity markers guard wrong/empty replacements but do not prove that mounts are shared. Framework synchronous key loading cannot promise a hard deadline on stalled OS mounts. SharedDataProtectionTests and the real two-host registration/payment fixtures cover the common configuration.
