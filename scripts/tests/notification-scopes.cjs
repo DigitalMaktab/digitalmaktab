@@ -50,5 +50,11 @@ const tick=async(ms=110)=>act(async()=>{await new Promise(resolve=>setTimeout(re
  api.get=originalGet;api.put=originalPut;api.delete=originalDelete;let captured;
  api.defaults.adapter=async config=>{captured=config;return{status:200,statusText:'OK',headers:{},config,data:{}};};
  const notification=get('api/notification.ts').default;const oldRequest=notification.markAsRead('one',{token:'original-account'});helper.saveUser(b);await oldRequest;assert.equal(captured.headers.Authorization,'Bearer original-account');assert.equal(captured.headers['Cache-Control'],'no-store');
+ // Rejected old-account tokens must not clear a newer login; a current 401 does.
+ ui=render(h(I18nextProvider,{i18n},h(AuthProvider,null,h(Draft))));await act(async()=>auth.login(b));
+ api.defaults.adapter=async config=>{throw{config,response:{status:401,config}};};
+ await act(async()=>{await assert.rejects(notification.markAsRead('old',{token:'original-account'}));});assert.equal(auth.user.token,'b1');assert.equal(helper.getUser().token,'b1');
+ await act(async()=>{await assert.rejects(notification.markAsRead('current',{token:'b1'}));});assert.equal(auth.user,null);assert.equal(auth.isAuthenticated,false);assert.equal(helper.getUser(),null);
+ await act(async()=>auth.login(b));await act(async()=>{await assert.rejects(api.post('/auth',{email:'wrong',password:'wrong'}));});assert.equal(auth.user.token,'b1');cleanup();
  helper.removeUser();console.log('Notification scope/lifecycle: shared connection, coalesced reads, deduplication, reconnect, cancellation, token renewal, pinned writes, stale guards and draft isolation passed.');
 })().catch(error=>{console.error(error);process.exitCode=1;});

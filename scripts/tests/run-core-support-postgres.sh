@@ -5,6 +5,10 @@ database_dir="$(mktemp -d "${TMPDIR:-/private/tmp}/digitalmaktab-core-support.XX
 . "$(dirname "${BASH_SOURCE[0]}")/isolated-postgres-cleanup.sh"
 initdb -D "$database_dir/data" --auth=trust --username=support_test > "$database_dir/init.log"
 pg_ctl -D "$database_dir/data" -o "-h '' -k '$database_dir' -p 55439" -l "$database_dir/server.log" -w start
+createdb -h "$database_dir" -p 55439 -U support_test session_tests
+export CORE_SESSION_TEST_DATABASE="Host=$database_dir;Port=55439;Username=support_test;Database=session_tests"
+createdb -h "$database_dir" -p 55439 -U support_test session_migration_tests
+export CORE_SESSION_MIGRATION_TEST_DATABASE="Host=$database_dir;Port=55439;Username=support_test;Database=session_migration_tests"
 createdb -h "$database_dir" -p 55439 -U support_test notification_scope_migration_tests
 export CORE_NOTIFICATION_SCOPE_MIGRATION_TEST_DATABASE="Host=$database_dir;Port=55439;Username=support_test;Database=notification_scope_migration_tests"
 createdb -h "$database_dir" -p 55439 -U support_test notification_scope_tests

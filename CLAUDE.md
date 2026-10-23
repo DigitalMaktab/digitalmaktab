@@ -674,3 +674,40 @@ Private PostgreSQL harnesses source isolated-postgres-cleanup.sh immediately
 after mktemp, before initdb. Preserve bounded failure logs and original exit
 status; verify shutdown before removing only the owned private directory.
 Never clean up live/user databases or delete an unverified private cluster.
+
+
+## Shared account stamps and HTTP sessions (2026-10-23)
+
+All six account models implement ISecurityStampedAccount. School/Teacher/Student/
+Parent reuse the existing User/StaffUser stamp pattern. Core DataContext advances
+stamps in its existing tracked-change pass on actual password hash/salt, Status,
+SchoolId or UserRole changes; metadata edits preserve sessions. Both sync/async
+SaveChanges are covered. SQL/ExecuteUpdate bypasses must rotate stamps explicitly.
+Never map stamps from public edit DTOs or use record Revision as a login stamp.
+
+SchoolTokenValidation validates every current account/role/school/stamp, including
+root. Platform users require Guid.Empty school. Staff grants stay current and
+strictly tenant-bound; use scalar/projection reads, no cross-request validity cache.
+AuthService passes its password-verified entity's stamp and awaits TokenService.
+TokenService rejects changed snapshots before minting. Keep the existing claim
+name for compatibility; old school/root tokens without stamps must sign in again.
+Impersonation validates both target and original root stamp; don't silently read a
+new root stamp after the authenticating principal's credential changed. Leader
+password paths use actual PRINCIPAL/HEAD_MASTER roles and exact-role queries.
+
+SchoolAccountSecurityStamps preserves existing credentials/history and backfills
+four existing tables. Stop old writers during the coordinated rollout; restart
+API and require new login. No country identity fork. Open SignalR/push sessions
+still need a separate stamp-bound revocation audit; HTTP checks alone do not
+remove an existing connection from its groups. Reset-token consumption races
+also remain separate work.
+
+The session-stamp migration also initializes legacy empty User/StaffUser stamps
+(the earlier platform migration used Guid.Empty for existing users). Preserve
+valid stamps; never rotate every platform account blindly during startup.
+
+SPA Core protected-401 handling uses SESSION_INVALID_EVENT and the existing
+AuthProvider/AuthRoute flow. Both producer and consumer check the exact current
+token. Never let delayed old-token failures log out a newer login, and leave
+failed /auth submissions as ordinary form errors. Keep cancellation guards and
+original-account tokens; do not auto-retry rejected writes.
