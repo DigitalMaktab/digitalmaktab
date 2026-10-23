@@ -711,3 +711,27 @@ AuthProvider/AuthRoute flow. Both producer and consumer check the exact current
 token. Never let delayed old-token failures log out a newer login, and leave
 failed /auth submissions as ordinary form errors. Keep cancellation guards and
 original-account tokens; do not auto-retry rejected writes.
+
+
+## Stamp-bound notification routing (2026-10-23)
+
+Use NotificationRealtime for notification/message hub events. GroupFor requires
+an account stamp and produces version-3 addresses; never restore version-2 or
+bare-ID fallback. Subscribe verifies current account and impersonator stamps;
+stale subscriptions abort. Old sockets are excluded from new publication rather
+than polled individually. Already-queued frames cannot be recalled; idle stale
+connections can remain open until invocation, expiry or disconnect.
+
+Impersonation joins only the target+root stamp address. Publishers derive active
+root addresses in 100-row native UUID pages and bounded group batches under the
+shared delivery gate/publication budget. Reuse AccountSessionState's root check
+for both HTTP and hub paths. All API hosts must ship together and browser hub
+connections must reconnect after the group-version rollout. This is independent
+of, and does not replace, the still-required shared backplane/classroom audit.
+
+NotificationRootRouteIndex is a measured partial active-root User(Id) index;
+keep enum ordinals/predicate/runtime/snapshot aligned and preserve users/stamps.
+Use controlled DDL rollout on large tables. Message events and MESSAGE inbox
+staging/publication require a staff recipient's current expanded messages.send
+capability via SchoolNotificationAudience. General system notices stay available.
+Push-device ownership/stamp handling and classroom revocation remain separate.
