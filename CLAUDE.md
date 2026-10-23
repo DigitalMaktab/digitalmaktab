@@ -583,3 +583,22 @@ are School identities, not teacher rows with ADMIN role. Realtime publication is
 best effort after commit; do not claim durable/exactly-once external delivery or
 provider cancellation from the existing notification interface. Other jobs still
 need the broader coordination audit.
+
+Assignment due-soon, accepted-admission conversion and stale grade-appeal jobs
+also reuse Core RecurringSchoolNotificationSweep and feature-owned
+IRecurringSchoolNotificationRule implementations. Keep bounded source/recipient
+keyset pages and fresh contexts, startup catch-up/hourly retries, existing
+recipient cadences and exact tenant/roster/grant checks. Recheck source status
+and database time after domain row-lock waits; a pre-lock timestamp can be stale
+past an assignment deadline. Do not auto-convert admissions/decide appeals.
+Commit each recipient batch with its checkpoint; later-batch failure must retain
+previous committed progress without duplicate inbox rows when another worker
+resumes. Other legacy notification jobs still require the same audit.
+
+The narrow Core RecurringReminderIndexes migration adds three partial source
+indexes after measured PostgreSQL plans: active assignment due dates, accepted
+unconverted admission decision dates, and pending appeal proposal dates. Keep
+the predicate enum ordinals aligned with Core enums, runtime metadata and the
+snapshot. No history is rewritten. Normal index creation needs the existing
+controlled schema rollout on large databases; warm source-query microbenchmarks
+are not whole-application capacity evidence.
