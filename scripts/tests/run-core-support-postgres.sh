@@ -6,6 +6,10 @@ initdb -D "$database_dir/data" --auth=trust --username=support_test > "$database
 cleanup() { pg_ctl -D "$database_dir/data" -m fast -w stop >> "$database_dir/server.log" 2>&1 || true; }
 trap cleanup EXIT
 pg_ctl -D "$database_dir/data" -o "-h '' -k '$database_dir' -p 55439" -l "$database_dir/server.log" -w start
+createdb -h "$database_dir" -p 55439 -U support_test fee_rollover_tests
+export CORE_FEE_ROLLOVER_TEST_DATABASE="Host=$database_dir;Port=55439;Username=support_test;Database=fee_rollover_tests"
+createdb -h "$database_dir" -p 55439 -U support_test fee_sweep_tests
+export CORE_FEE_SWEEP_TEST_DATABASE="Host=$database_dir;Port=55439;Username=support_test;Database=fee_sweep_tests"
 createdb -h "$database_dir" -p 55439 -U support_test startup_seed_tests
 export CORE_STARTUP_SEED_TEST_DATABASE="Host=$database_dir;Port=55439;Username=support_test;Database=startup_seed_tests"
 createdb -h "$database_dir" -p 55439 -U support_test startup_tests
