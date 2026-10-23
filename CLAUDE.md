@@ -580,9 +580,10 @@ preferences and current staff capability checks; configurable automations retain
 per-candidate capability checks. The low-stock job uses 100-source/250-recipient
 pages, native recipient languages and a stock row lock/recheck; school admins
 are School identities, not teacher rows with ADMIN role. Realtime publication is
-best effort after commit; do not claim durable/exactly-once external delivery or
-provider cancellation from the existing notification interface. Other jobs still
-need the broader coordination audit.
+best effort after commit; do not claim durable/exactly-once external delivery.
+Core notification/transport interfaces now carry cancellation and the shared
+delivery gate bounds network work (see below). Other jobs still need the broader
+coordination audit.
 
 Assignment due-soon, accepted-admission conversion and stale grade-appeal jobs
 also reuse Core RecurringSchoolNotificationSweep and feature-owned
@@ -602,3 +603,38 @@ the predicate enum ordinals aligned with Core enums, runtime metadata and the
 snapshot. No history is rewritten. Normal index creation needs the existing
 controlled schema rollout on large databases; warm source-query microbenchmarks
 are not whole-application capacity evidence.
+
+
+## Bounded notification transports (2026-10-23)
+
+Core NotificationDeliveryGate is a singleton per host, configured through
+AddNotificationDelivery. It admits at most eight network operations by default,
+with no waiting queue, a ten-second per-channel deadline, and a thirty-second
+overall single/fan-out publication budget. Never put EF work inside its callbacks;
+transport providers must use asynchronous IO and honor cancellation. A provider
+which ignores cancellation retains its slot until its task truly finishes,
+preventing unlimited abandoned tasks. Timed-out best-effort publication must
+never undo a committed inbox/receipt or trigger automatic mutation/send retries.
+Provider acceptance is not exactly-once external delivery. Keep low-cardinality
+metrics and rate-limited, payload-free transport warnings. No-op transports log
+counts only, never phones/tokens/message bodies.
+
+NotificationService uses sequential fan-out and 100-device UUID keyset pages,
+with exact school/user/role/activity scope for devices and role-specific scoped
+phone projections. Default HTTP calls inherit request cancellation; hosted/payment
+post-commit calls pass explicit tokens. StageMany still returns its full legacy
+list and membership/inbox/SignalR namespaces still require the wider boundary
+audit; do not claim those completed from transport tests. The narrow
+NotificationDeviceLookupIndex migration adds only the partial active-recipient
+index after actual before/after query plans; preserve device history and use the
+existing controlled schema rollout on large tables. Country tests implement the
+same Core cancellation contracts; do not fork country transport abstractions.
+
+Legacy backup/birthday/password/digest/leave/transfer callers forward their shutdown
+token. FeeReminderService accepts a token for its existing reads/saves/fan-out;
+its bulk cadence transaction redesign remains open. Afghanistan ministry
+readiness uses Core StageMany, commits/disposes its transaction, then calls
+PublishPersisted. Keep network IO outside that transaction and retain the
+independent-connection publication visibility test. A caller owning a transaction
+must use staging and publish after commit; transport budgets do not establish
+that boundary on its behalf.
