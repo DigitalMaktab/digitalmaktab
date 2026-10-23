@@ -735,3 +735,32 @@ Use controlled DDL rollout on large tables. Message events and MESSAGE inbox
 staging/publication require a staff recipient's current expanded messages.send
 capability via SchoolNotificationAudience. General system notices stay available.
 Push-device ownership/stamp handling and classroom revocation remain separate.
+
+
+## Push-device binding integrity (2026-10-23)
+
+Use Core IDeviceTokenRepository for registration/unregistration. It owns the clean
+transaction and shared fingerprint lock, then rechecks the exact account/stamp.
+Only one active binding per SHA-256 token fingerprint is allowed globally; repeat
+same-owner registration reuses the row, while replacement/unregister archives
+history. Never index raw multi-KB tokens or let an old logout delete a new owner.
+DeviceTokenAccountBinding archives unverified legacy bindings, preserving IDs and
+token/owner values; SDKs must register again. Downgrade does not reactivate them.
+
+Push reads require current account stamps on each bounded device page. Keep
+network IO outside binding transactions; provider-queued/in-flight messages cannot
+be recalled. Audit snapshots must never contain Token, TokenFingerprint or
+AccountSecurityStamp. The binding migration redacts old DeviceToken snapshots,
+retains metadata/nonsecret JSON, clears malformed snapshots and keeps other entity
+audits intact. Redaction remains after downgrade. Existing retention still applies.
+
+DELETE /api/push/register-device accepts optional JSON token bodies plus legacy
+query compatibility. The shared SPA API uses the body and captures the original
+login synchronously, with cancellation/options; no automatic retry or ownership
+from client DTOs. Keep the 8,000-character token / 64 KiB body limits and reject
+unknown platforms, null characters and conflicting body/query values.
+
+Core private PostgreSQL test strings disable pooling, and unrelated xUnit classes
+are capped at four; races within tests remain concurrent. Do not increase the
+production database limit to fix idle per-test-database pools. Explicit provider
+configuration rejection tests must still construct valid provider inputs first.

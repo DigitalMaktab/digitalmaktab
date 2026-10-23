@@ -56,5 +56,10 @@ const tick=async(ms=110)=>act(async()=>{await new Promise(resolve=>setTimeout(re
  await act(async()=>{await assert.rejects(notification.markAsRead('old',{token:'original-account'}));});assert.equal(auth.user.token,'b1');assert.equal(helper.getUser().token,'b1');
  await act(async()=>{await assert.rejects(notification.markAsRead('current',{token:'b1'}));});assert.equal(auth.user,null);assert.equal(auth.isAuthenticated,false);assert.equal(helper.getUser(),null);
  await act(async()=>auth.login(b));await act(async()=>{await assert.rejects(api.post('/auth',{email:'wrong',password:'wrong'}));});assert.equal(auth.user.token,'b1');cleanup();
+ // Push SDK callbacks pin their accepted login and keep long tokens out of URLs.
+ const push=get('api/push.ts').default;api.defaults.adapter=async config=>{captured=config;return{status:200,statusText:'OK',headers:{},config,data:{}};};
+ helper.saveUser(a);const longToken='x'.repeat(8000),unregister=push.unregisterDevice(longToken);helper.saveUser(b);await unregister;
+ assert.equal(captured.headers.Authorization,'Bearer a1');assert.equal(captured.params,undefined);assert.equal(JSON.parse(captured.data).token,longToken);
+ const registration=push.registerDevice(0,'physical-token',{token:'captured-login'});helper.saveUser(a);await registration;assert.equal(captured.headers.Authorization,'Bearer captured-login');
  helper.removeUser();console.log('Notification scope/lifecycle: shared connection, coalesced reads, deduplication, reconnect, cancellation, token renewal, pinned writes, stale guards and draft isolation passed.');
 })().catch(error=>{console.error(error);process.exitCode=1;});
