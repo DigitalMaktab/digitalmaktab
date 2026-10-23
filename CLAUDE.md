@@ -764,3 +764,30 @@ Core private PostgreSQL test strings disable pooling, and unrelated xUnit classe
 are capped at four; races within tests remain concurrent. Do not increase the
 production database limit to fix idle per-test-database pools. Explicit provider
 configuration rejection tests must still construct valid provider inputs first.
+
+
+## Atomic credential recovery and self-service (2026-10-23)
+
+Use IPasswordResetRepository.Confirm/Change; never split VerifyPassword,
+SetPassword and token consumption in an endpoint. Core owns a clean transaction,
+locks the physical account row, reloads current credentials/stamp after waiting,
+uses database time for expiry, and commits credential/version/stamp updates and
+sibling invalidation together. No notification/provider IO belongs in that lock.
+Legacy updatePassword routes reuse BaseController.ChangePasswordAtomic and keep
+immutable ID/role/school identity even when an email claim is stale. ResolveByEmail
+returns the existing Session snapshot with current scope/stamp; no tuple-only or
+email-only write lookup. Keep cancellation and existing localized response shapes.
+
+PasswordResetAccountBinding retains old hashes/IDs/timestamps but retires unbound
+links; request a new link after rollout. The unique bound-hash index also covers
+consumed new records. Do not edit existing reset authorization/expiry fields or
+reactivate legacy links on downgrade. Token records are excluded from generic
+audit snapshots. Existing notification URLs can contain recovery links; no claim
+of encrypted outbox delivery or DB-wide token secrecy follows from hash storage.
+Notices require the real account school and actual role, including leaders.
+
+Normalized login-email changes also rotate account stamps. Case/whitespace-only
+normalization and ordinary names/addresses preserve sessions. This supersedes
+older profile-field wording. Keep temporary admin reset intent/replay and recovery
+transport/privacy as explicit remaining work; atomic self-service does not finish
+those separate flows.
