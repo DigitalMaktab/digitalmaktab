@@ -567,3 +567,19 @@ Inventory UI uses Core forms, submit buttons, explicit conflict review, mutation
 
 
 Core useReloadableRead has a separate invalidate() for reads invalidated by an accepted write: abort the prior snapshot and read again in the latest scope. Use ordinary reload() for single-flight read/retry controls. A held callback must remain safe through token renewal and become inert after unmount. Inventory uses invalidation after writes; it releases accepted-write pending state before awaiting any separate list work, so old refresh completion cannot affect a new operation's busy state. Do not replace this with automatic mutation retries or request polling.
+
+## Recurring school notification checkpoints (2026-10-23)
+
+Core RecurringSchoolNotifications reuses SchoolAutomationReceipt with reserved
+`system.*` rule keys. Keep inbox rows/checkpoints atomic, locks nonblocking,
+PostgreSQL cadence time, bounded recipient pages and fresh contexts between
+pages. Never deduplicate recurring work only against deletable inbox rows.
+System recurrence is capped at 30 days; retain existing 180-day receipt cleanup.
+SchoolNotificationAudience centralizes exact school/identity/role/activity,
+preferences and current staff capability checks; configurable automations retain
+per-candidate capability checks. The low-stock job uses 100-source/250-recipient
+pages, native recipient languages and a stock row lock/recheck; school admins
+are School identities, not teacher rows with ADMIN role. Realtime publication is
+best effort after commit; do not claim durable/exactly-once external delivery or
+provider cancellation from the existing notification interface. Other jobs still
+need the broader coordination audit.
