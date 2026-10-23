@@ -638,3 +638,39 @@ PublishPersisted. Keep network IO outside that transaction and retain the
 independent-connection publication visibility test. A caller owning a transaction
 must use staging and publish after commit; transport budgets do not establish
 that boundary on its behalf.
+
+
+## Notification account scopes and lifecycle (2026-10-23)
+
+Use Core NotificationAccount (school, immutable ID, actual role) for inbox,
+preferences, device ownership and message participation. Never restore bare-ID
+repository overloads or GUID-only SignalR groups. NotificationRealtime owns the
+versioned groups and delivery gate; publishers recheck active membership. The
+hub joins only its own authenticated identity and closes at ticket expiry.
+Global token/stamp revocation and distributed routing remain separate work.
+
+NotificationAccountScope preserves original preference rows as inactive history
+and creates canonical null-school platform preferences, choosing opt-out on
+legacy conflicts. Active school/platform unique indexes and the scope check
+must agree with runtime metadata. Down refuses null-school history; use a
+reviewed rollout/rollback and stop old API writers. Never delete/remap history
+to satisfy the old required FK. SchoolNotificationAudience checks only requested
+role tables; StageMany still has its legacy materialized return contract.
+
+Notification paging uses one repeatable-read snapshot for rows, total and unread;
+keep X-Notification-Unread-Count exposed to browser clients. Bulk read/delete
+operations stay set-based and scoped. Preference writes merge category patches
+under the Core advisory lock and reload cached tracked rows. Notification labels
+use NotificationController resources in English/Dari/Pashto, not static localizers.
+
+SPA Core useNotificationHub shares one connection per immutable account, with
+bounded event deduplication/reconnect and latest callbacks/tokens. Reuse Core
+useReloadableRead for inbox reads and pin accepted writes' original token via
+ApiRequestOptions. Full account changes remount private AuthProvider children;
+same-account token renewal preserves drafts. No automatic mutation retries.
+The notification lifecycle regression is part of check-pdf-exports.cjs.
+
+Private PostgreSQL harnesses source isolated-postgres-cleanup.sh immediately
+after mktemp, before initdb. Preserve bounded failure logs and original exit
+status; verify shutdown before removing only the owned private directory.
+Never clean up live/user databases or delete an unverified private cluster.

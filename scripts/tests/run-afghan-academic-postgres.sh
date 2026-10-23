@@ -3,9 +3,8 @@
 set -euo pipefail
 projects_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
 database_dir="$(mktemp -d "${TMPDIR:-/private/tmp}/digitalmaktab-af-academic.XXXXXX")"
+. "$(dirname "${BASH_SOURCE[0]}")/isolated-postgres-cleanup.sh"
 initdb -D "$database_dir/data" --auth=trust --username=academic_test > "$database_dir/init.log"
-cleanup() { pg_ctl -D "$database_dir/data" -m fast -w stop >> "$database_dir/server.log" 2>&1 || true; }
-trap cleanup EXIT
 pg_ctl -D "$database_dir/data" -o "-h '' -k '$database_dir' -p 55439" -l "$database_dir/server.log" -w start
 createdb -h "$database_dir" -p 55439 -U academic_test timetable_country_tests
 export AF_TIMETABLE_TEST_DATABASE="Host=$database_dir;Port=55439;Username=academic_test;Database=timetable_country_tests"
