@@ -791,3 +791,24 @@ normalization and ordinary names/addresses preserve sessions. This supersedes
 older profile-field wording. Keep temporary admin reset intent/replay and recovery
 transport/privacy as explicit remaining work; atomic self-service does not finish
 those separate flows.
+
+## Shared pre-authentication quotas (2026-10-23)
+
+Use Core SharedThrottleStore and AddDigitalMaktabSharedRateLimits for login/reset
+and existing AspNetCoreRateLimit endpoint policies. Never restore process-local
+counter dictionaries or allow-on-error fallback. Request ingress must precede
+SQL rate limiting, which precedes authentication; matched /api endpoints only.
+Trust RemoteIpAddress after configured ForwardedHeaders, never raw client IP or
+client-ID whitelist headers. Keep purpose-separated HMAC keys and exclude the
+infrastructure models from audit snapshots.
+
+SharedRequestThrottles adds bounded ephemeral infrastructure only. Default maximum
+is 100,000 buckets; change both the database capacity row and all host options
+under a coordinated rollout. Cleanup deletes at most 500 expired rows, never live
+quotas. Existing counter updates avoid the allocation lock. Preserve database-time
+windows, two-second default operation deadlines, caller cancellation and localized
+no-store 503/Retry-After on failure. Successful login clears email failures only;
+IP failures survive, locked attempts do not extend lockout, and only crossing the
+email threshold emits the owner notice. Completed-failure counters do not revoke
+already-admitted authentication attempts. Signing-key rotation changes HMAC
+namespaces. Shared quotas do not distribute request concurrency or hub routing.
