@@ -565,6 +565,15 @@ Core UserResolver uses scalar projections and a bounded cache on DataContext so 
 
 ## Startup database coordination (2026-10-23)
 
+Never add then drop the same column in recurring startup repairs. PostgreSQL
+retains dropped column slots toward its 1,600-column limit. Ministry fields already
+belong to AfghanStudentDetails; do not recreate them on Student. Inspect pg_class
+relnatts and pg_attribute attisdropped when diagnosing this limit: a schema-only
+dump/restore hides physical slot exhaustion. Explicit backed-up maintenance and
+its private regression test are documented in scripts/maintenance/README.md;
+never automatically rebuild live tables during startup or bypass the limit with
+duplicate data models or direct system-catalog edits.
+
 API startup wraps migrations, forward repairs and seeding in Core StartupDatabaseCoordinator. Register the same singleton as a DataContext command interceptor; the coordinator rejects missing guards, retry strategies and multiplexing. Reuse its passed DataContext for every startup write; never open another scope/connection for seeding or module initialization. It holds a session advisory lock on a dedicated non-pooled connection. A lost session is permanently fenced and fails startup even when old repair code catches a command error. Seeder failures now propagate. No listener or background service should start before the locked sequence succeeds. DatabaseStartup:LockWaitSeconds defaults to 120 (maximum 1800); timeout fails startup instead of skipping initialization. A transaction-pooling PostgreSQL proxy is incompatible with this session-lock path. This coordinates cooperating startups, not incompatible online schema changes; production still needs a controlled reviewed migration rollout. Test coverage is StartupDatabaseCoordinatorTests via the isolated Core PostgreSQL harness.
 
 
