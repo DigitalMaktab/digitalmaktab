@@ -87,5 +87,6 @@ export CORE_ACCESS_TEST_DATABASE="Host=$database_dir;Port=55439;Username=support
 export CORE_AUTH_TEST_DATABASE="Host=$database_dir;Port=55439;Username=support_test;Database=authentication_tests;Pooling=false"
 export CORE_STUDENT_WRITE_TEST_DATABASE="Host=$database_dir;Port=55439;Username=support_test;Database=student_write_tests;Pooling=false"
 export CORE_SUPPORT_TEST_DATABASE="Host=$database_dir;Port=55439;Username=support_test;Database=support_tests;Pooling=false"
+export CORE_BACKPLANE_REDIS_EXECUTABLE="$(command -v redis-server)"
 cd "$projects_dir/digitalmaktab-core"
 dotnet test tests/DigitalMaktab.Core.Tests --verbosity minimal "$@"

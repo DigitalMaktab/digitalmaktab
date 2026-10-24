@@ -905,3 +905,26 @@ retire sessions, preserving in-use graphs until their operations settle. These a
 local ephemeral limits, not shared routing or exact heap/load guarantees. Browser
 ClassroomSession markers reset old content before new room/generation bootstrap.
 Shared backplane/state, voter limits and client live-history bounds remain open.
+
+
+## Notification backplane (2026-10-24)
+
+Core AddNotificationBackplane configures Microsoft's Redis lifetime manager only
+for NotificationHub when NotificationBackplane:Enabled is true. Local/default
+mode requires no Redis. A backplane must never silently turn classroom-local
+state into distributed authority. ClassHub keeps the default lifetime manager
+until shared state/routing is implemented and verified.
+
+Require an explicit deployment channel prefix (same across replicas; different
+across environments), validated endpoint and bounded timeouts. One multiplexer
+is shared with readiness; disconnected backlog is fail-fast. No local fallback
+or automatic mutation/event replay. Keep current account/root stamp, tenant/role
+and staff-capability destination checks. Redis pub/sub loss does not erase the
+persisted inbox, but this feature is not a durable delivery outbox.
+
+Readiness includes enabled Redis and returns no provider details. Test real
+cross-host delivery, isolation, stamp revocation, unsubscribe, publisher restart,
+initial unavailability and recovery. The private PostgreSQL harness also requires
+redis-server; each test owns a socket-only, persistence-free process. Stop only
+that Process handle and verify it exited before removing its owned directory.
+No production Redis service is enabled/provisioned by the tests or package swap.
