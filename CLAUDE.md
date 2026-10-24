@@ -847,3 +847,18 @@ room lifecycle and backplane work remain; idle revoked recipients are excluded
 at later delivery checks, while already-queued/in-flight frames cannot be recalled.
 Keep per-method budgets, tenant fairness, history limits and stale-room cleanup as
 explicit follow-up work. No production capacity claim follows from 102 test peers.
+
+## Classroom method capacity (2026-10-24)
+
+ClassroomInvocations bounds whole method calls before DB authorization, default
+32 globally/eight per school per process, with no queue. Remove idle partitions;
+never create an unbounded per-school cache. A capacity partition from signed
+claims is not authorization. Keep current stamp/room checks after admission.
+
+One OperationTimeoutMs budget spans authorization, all sends and group operations.
+Do not reset a deadline on each send or release a method lease while its body is
+still running. Keep cooperative cancellation and localized Busy errors for
+capacity/deadline/authorization-store failures, without provider details or automatic retry.
+Timed-out ephemeral state changes are not guaranteed rolled back. Method limits
+are independent of HTTP request limits and do not implement a distributed fair
+scheduler or handshake admission.
