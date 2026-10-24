@@ -474,6 +474,13 @@ advances revisions for root and owned address/phone writes. Core profile and
 country extension hooks share a transaction. Keep entered form values on failure;
 never silently reload or automatically retry an outdated mutation.
 
+Student.DateOfBirth remains the existing DateTime/timestamptz field. Its Core
+DataContext value converter preserves civil calendar values and labels them UTC
+for storage; never ToUniversalTime a birthday or enable global legacy timestamp
+behavior to accept it. Reuse this field/mapping for all countries and writers.
+Teacher/Parent birth dates already use DateOnly. Do not generalize this civil-date
+conversion to payment, attendance, audit or other instant-valued timestamps.
+
 Core `RequestCapacity` provides bounded per-process admission before authentication,
 then validated school admission after authorization; expensive work is explicitly
 marked with Core `ExpensiveOperation`. Keep ordinary capacity separate, queues
