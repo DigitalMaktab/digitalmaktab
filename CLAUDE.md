@@ -928,3 +928,28 @@ initial unavailability and recovery. The private PostgreSQL harness also require
 redis-server; each test owns a socket-only, persistence-free process. Stop only
 that Process handle and verify it exited before removing its owned directory.
 No production Redis service is enabled/provisioned by the tests or package swap.
+
+
+## Academic record writer coordination (2026-10-24)
+
+Read digitalmaktab-core/docs/ACADEMIC-RECORD-WRITES.md before changing grade or
+attendance writes. GradeWriteService is the shared form/workbook cell writer;
+appeals use the same transaction-scoped natural key locks. Order actual signed
+lock hashes, recheck current provenance after waits and reject ambiguous legacy
+records rather than picking a winner. GradeCellLookup is non-unique and preserves
+history; never describe it as database-enforced uniqueness.
+
+Form batches stage new-grade inbox records through existing StageMany in their
+transaction; publish only after commit. Workbook rows retain independent success,
+forward cancellation and clear rolled-back tracked changes before another row.
+Do not expose provider exception text. Appeal decisions lock the pending row and
+grade, use actual course teacher authority, and commit score plus decision once.
+
+Serialization does not replace expected versions, durable mutation intent or UI
+conflict review: those grade/appeal contracts are still pending. The attendance
+writers still need shared school-local daily-key/date/ownership reconciliation.
+Do not infer complete concurrency protection or throughput from cell-race tests.
+
+Core's pre-commit hook rebuilds Release. After committing Core, sync the committed
+source before the final installed-DLL checksum check: a hook rebuild can change
+build provenance metadata even when executable source is unchanged.
