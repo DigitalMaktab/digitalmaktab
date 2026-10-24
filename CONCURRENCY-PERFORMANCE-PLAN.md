@@ -541,3 +541,60 @@ Final installation check: Core's pre-commit hook rebuilt Release after the initi
 pack, changing build provenance metadata. Packages were rebuilt from committed
 source, the API build and 103 country tests passed again, and the installed
 Core DLL now matches the final Release checksum. No user server was restarted.
+
+
+### Observed grade/appeal versions and shared review (twenty-seventh implementation increment)
+
+Core Grade and GradeAppeal reuse IRevisionedRecord and EF concurrency tokens.
+AcademicRecordRevisions backfills unique row UUIDs without rewriting marks,
+comments or decisions. Existing-cell writes require their observed token (428
+missing, 409 stale); absent cells require null, preventing stale recreation.
+All batch preconditions are validated before changes, and AddGrades returns
+accepted values/versions. No-op saves keep their version. Proposal ownership
+and decision authority precede version responses; decisions require both appeal
+and grade versions even for uphold. Direct tracked writers rotate versions and
+outdated EF saves fail. Existing natural-key locks and transactional inbox staging
+remain in place; this does not supply durable replay or database uniqueness.
+
+Fresh scoped workbook templates contain existing marks with a hidden Revision
+column. Edit populated rows; new marks start with blank rows instead of copying
+another mark's version. Stale/missing offline tokens cannot overwrite current
+marks. Template output is capped at 5,000 marks and uses expensive-operation
+admission. Teacher grade reads now apply course and exam filters before paging,
+plus teacher/school/exact class/year scope, no tracking and stable ordering.
+Private grade/review responses use no-store. Whole workbook ZIP/parsing bounds,
+durable import intent and through-commit reference/withdrawal coordination remain.
+
+SPA Core owns shared appeal proposal/decision forms and controlled-table conflict
+comparison on existing controls. The shell's duplicate forms were removed. Typed
+marks/reasons/notes survive rejection, canceled comparison, failed reads and locale
+changes. Only explicit use-saved replaces draft values and versions; it never
+submits. Accepted versions become the next edit's baseline. Pending actions guard
+double submissions, mounted/resource checks ignore late completions, reads cancel,
+and grade helpers synchronously pin the original account and bypass private offline
+fallback. No automatic mutation retries. Validation agrees with current exam maxima
+and backend 1,000-character appeal limits; en/fa/ps and mobile mirrors are aligned.
+
+Validation: Core 241 passed / zero skipped (`/tmp/dm-grade-versions-final-core3.log`),
+including full-batch stale-version races, EF predicate enforcement, offline workbook
+updates, proposal/decision expectations, authorization precedence, migration
+preservation/parity and repository course/exam scope. Afghanistan 103 passed / zero
+skipped against installed packages (`/tmp/dm-grade-versions-final-afghan.log`). Full
+104-site UI/export audit passed (`/tmp/dm-grade-versions-final-ui.log`), including
+actual controlled grade editors and Core appeal forms in all locales, explicit
+review/cancel, no autosave/retry, accepted baselines, late unmount and locale draft
+retention. Existing profile conflict tests remain green after comparison reuse.
+Core/shell TypeScript, strict i18n/mobile parity, all 23 worker registrations,
+shell syntax and whitespace checks passed. The notification backplane fixture now
+owns a separate database so unrelated migration/index tests do not race it; the
+recurring fixture supplies explicit GradeAppeal versions like production writers.
+
+Backend and SPA packages rebuilt/installed; API built; installed Core Release DLL
+and shared JS files match built checksums. Mobile country package built/packed and
+its translation files verified in both local consumers. Local commits only; no
+user servers restarted and no live user database used. Coordinate migration and
+API/SPA restart with old writers stopped, then reload open editors and download
+fresh workbooks. No production capacity claim follows from these checks. Grade
+receipts, attendance, wider editor/invariant/query/output audits, shared classroom
+state/jobs and representative load evidence remain; all seven top-level requirements
+stay unchecked and the full goal remains active.

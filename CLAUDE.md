@@ -945,8 +945,12 @@ forward cancellation and clear rolled-back tracked changes before another row.
 Do not expose provider exception text. Appeal decisions lock the pending row and
 grade, use actual course teacher authority, and commit score plus decision once.
 
-Serialization does not replace expected versions, durable mutation intent or UI
-conflict review: those grade/appeal contracts are still pending. The attendance
+Serialization does not replace durable mutation intent. Grade/appeal expected
+versions and Core conflict comparison now exist; retain both. Existing-cell
+writes require observed tokens, decisions require appeal plus grade versions,
+and review only replaces drafts after explicit confirmation. Template versions
+travel in a hidden column; old sheets cannot overwrite existing marks. Deploy
+AcademicRecordRevisions with all API/SPA consumers and retire old writers. The attendance
 writers still need shared school-local daily-key/date/ownership reconciliation.
 Do not infer complete concurrency protection or throughput from cell-race tests.
 
