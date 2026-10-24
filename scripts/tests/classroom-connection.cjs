@@ -23,7 +23,7 @@ class Builder {
 }
 Module._extensions['.ts']=(module,file)=>module._compile(ts.transpileModule(fs.readFileSync(file,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2020}}).outputText,file);
 Module._load=function(request,parent,main){if(request==='@microsoft/signalr')return{HubConnectionBuilder:Builder,HttpTransportType:{WebSockets:1}};return load.call(this,request,parent,main);};
-const {createClassroomConnection}=require(path.join(root,'src/helper/classroom/connection.ts'));
+const {createClassroomConnection,observeClassroomSession}=require(path.join(root,'src/helper/classroom/connection.ts'));
 (async()=>{
   for(const language of ['en-US','fa-AF','ps-AF']){
     let user={role:4,token:'first',student:{id:'same-guid',schoolId:'school-a'}};
@@ -56,6 +56,12 @@ const {createClassroomConnection}=require(path.join(root,'src/helper/classroom/c
     live={...live,token:jwt(change==='stamp'?{staff_security_stamp:'two'}:{staff_security_stamp:'one',imp_by:'root',imp_security_stamp:'root-stamp'})};
     assert.equal(underlying.options.accessTokenFactory(),'');assert.equal(stopped,1);assert.equal(underlying.stops,1);
   }
+  let changes=0;const scopedUser={role:4,token:'scope-token',student:{id:'id',schoolId:'school'}};
+  const scoped=createClassroomConnection('http://fixture/classhub','en-US',()=>scopedUser,()=>{},'fallback');const scopeNative=created.at(-1);
+  const detach=observeClassroomSession(scoped,()=>changes++);const session=scopeNative.events.get('classroomsession');
+  session({sessionId:'first',roomId:'main'});session({sessionId:'first',roomId:'main'});assert.equal(changes,0);
+  session({sessionId:'first',roomId:'child'});assert.equal(changes,1);session({sessionId:'new',roomId:'child'});assert.equal(changes,2);
+  session({sessionId:null,roomId:'main'});assert.equal(changes,2);detach();assert.equal(scopeNative.events.has('classroomsession'),false);await scoped.stop();
   assert.throws(()=>createClassroomConnection('http://fixture/classhub','en-US',()=>null,()=>{},'fallback'),/fallback/);
   console.log('classroom connection: authenticated renewal, identity isolation, visible errors, no mutation retries and idempotent disposal passed in all locales');
 })().finally(()=>{Module._load=load;if(extension)Module._extensions['.ts']=extension;else delete Module._extensions['.ts'];}).catch(error=>{console.error(error);process.exitCode=1;});

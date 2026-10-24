@@ -882,3 +882,26 @@ SPA Core's classroom connection binds JWT renewal to the same account/session,
 supplies culture, guards old callbacks, reports errors and never retries writes.
 Keep explicit disposal/media ownership and retain rejected chat drafts. Do not
 clear bootstrap state after JoinClass completes or drop content-limit errors.
+
+
+## Classroom retained-session lifecycle (2026-10-24)
+
+Core ClassroomState owns root generations and an async operation gate per family.
+Count reserved children toward both global/per-school room quotas before assigning
+attendees. Recheck closure/draining/child reservation after waiting; recheck DB
+authority too. Cross-root switches acquire gates in stable root order. Keep network
+and DB awaits outside short state monitors. Never dispose a gate under waiters or
+release admission while a noncooperating body is still running.
+
+Parent end clears all 14 maps for parent and children and notifies pending users;
+breakout end frees only children. Safe LeaveClass removes only the caller's bound
+membership even after revocation. Connection room bindings include generation;
+abort cleanup rechecks the current room as well as its epoch under binding sync.
+Keep Find lock-free: state lifecycle membership checks must not invert that lock.
+
+Defaults: 64 retained physical rooms/16 per school, five-minute empty retention,
+12-hour hard age. Lazy cleanup and a host-local 30-second health-tracked worker
+retire sessions, preserving in-use graphs until their operations settle. These are
+local ephemeral limits, not shared routing or exact heap/load guarantees. Browser
+ClassroomSession markers reset old content before new room/generation bootstrap.
+Shared backplane/state, voter limits and client live-history bounds remain open.
