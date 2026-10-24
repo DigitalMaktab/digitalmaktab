@@ -862,3 +862,23 @@ capacity/deadline/authorization-store failures, without provider details or auto
 Timed-out ephemeral state changes are not guaranteed rolled back. Method limits
 are independent of HTTP request limits and do not implement a distributed fair
 scheduler or handshake admission.
+
+## Classroom state and history budgets (2026-10-24)
+
+ClassroomState owns the existing 14 maps per API host. Never restore mutable
+static dictionaries on ClassHub or use same-process sharing as scale-out evidence.
+Read digitalmaktab-core/docs/CLASSROOM-STATE-AUDIT.md before adding room state.
+No new course/teacher/enrollment table is needed for ephemeral classroom content.
+
+Chat retention has item and byte caps; eviction removes its reactions and pins.
+Only retained message IDs can be pinned/reacted to. Stable contributor keys and
+aggregate reaction charging must survive display-name changes without extra keys.
+Whiteboard append/update checks both byte/count limits before mutation; undo and
+clear release charges. Preserve chat -> pin lock ordering, localized errors and
+network IO outside state monitors. These budgets are not exact heap/room-count
+bounds; total room lifecycle, client render limits and shared state remain open.
+
+SPA Core's classroom connection binds JWT renewal to the same account/session,
+supplies culture, guards old callbacks, reports errors and never retries writes.
+Keep explicit disposal/media ownership and retain rejected chat drafts. Do not
+clear bootstrap state after JoinClass completes or drop content-limit errors.
