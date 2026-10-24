@@ -783,3 +783,70 @@ locale installations match built artifacts. All affected code/country/mobile
 repositories are clean after local commits; root evidence is committed last.
 No live user database or user-owned server was used or restarted. The full goal
 is not achieved: every original top-level completion requirement stays open.
+
+### Bounded workbook ingress (thirtieth implementation increment)
+
+All five existing Core import services now use `BoundedWorkbook.LoadAsync` before
+import domain queries or writes. The shared loader caps actual input at 8 MiB,
+archive entries at 128, actual expansion at 16 MiB per part / 32 MiB total,
+worksheets at eight, used cells at 100,000 and used columns at 128. People and
+attendance accept at most 1,000 data rows; grades accept 5,000. XML depth, node,
+style, string, range-area and styled-column budgets precede ClosedXML allocation.
+Decoded text is bounded again after loading, including shared-string fan-out.
+Reject malformed/aliased packages, formulas, unsupported rich workbook metadata,
+large sparse extents and shifted data origins. Preserve caller stream ownership
+and cancellation; never orphan synchronous model construction on a timeout task.
+These are structural budgets, not exact heap/CPU or throughput guarantees.
+
+Existing BaseController import handling supplies localized, no-store 400/413
+problems in en/fa/ps. All five endpoints retain expensive-operation admission and
+matching upload limits. Unexpected person-row errors no longer leak provider
+messages; canceled/failed tracked changes are cleared. Student capacity waits now
+receive the same cancellation token. Reference-course template output is capped
+separately. See Core `docs/WORKBOOK-IMPORT-LIMITS.md` for the full contract.
+
+Validation after resuming: the complete isolated Core suite passed 281 tests,
+zero skipped (`/tmp/dm-workbook-throttle-diagnostic.log`), including adversarial
+archives, actual generated templates, all five real JWT HTTP import endpoints
+in all three locales, rejection before account writes and ingress metadata.
+Strict frontend/backend and mobile locale parity, shell syntax and whitespace
+checks passed. Core implementation committed locally as `f9ad1f4`; final consumer
+package/country checks are recorded below.
+
+An earlier full run failed one shared-throttle first-allocation test (280 passed,
+zero skipped, `/tmp/dm-workbook-resumed-core.log`), reproducing an intermittent
+failure from before the pause. The diagnostic run passed without increasing any
+production deadline or weakening fail-closed behavior. Internal exceptions now
+retain the underlying cause; HTTP failure responses remain generic. The cause
+of that intermittent failure is NOT established and remains follow-up work.
+The separate 500 ms lock-timeout assertions remain; unrelated progress checks
+use the existing production budget. Do not present a green retry as its repair.
+
+Intervening user-reported repairs are committed separately: startup inventory FK
+compatibility and throttle seed SQL types; Student physical column-slot exhaustion
+caused by recurring add/drop repairs (backed-up local maintenance preserved all
+516 students and references); and civil student birth-date persistence in Core.
+Those emergency fixes used explicit local maintenance; this import increment's
+validation itself uses isolated databases and does not restart user servers.
+
+The next import audit must reuse `AccountRegistrationService`,
+`MutationReceiptStore` and `AccountWelcomeQueue`: teacher/parent import rows still
+commit an account before calling legacy welcome delivery, so a delivery failure
+can misreport a committed row. Student imports also use the old welcome path.
+Whole-upload/per-row durable intent, result/password recovery, atomic country
+extensions, wider reference/template/output bounds and registration cancellation
+remain unfinished. No duplicate job/account/country tables are justified by this
+loader. All seven top-level completion requirements remain open, as do shared
+classroom authority, the wider job/invariant/query audits and representative
+multi-school load/recovery measurements.
+
+Final thirtieth-increment consumer checks: backend pack/install and API build
+passed (`/tmp/dm-workbook-resumed-sync.log`); Afghanistan 103 passed, zero skipped
+against the installed Core (`/tmp/dm-workbook-resumed-afghan.log`). Core Release
+and API-installed DLL SHA-256 both equal
+`6429225b0faf02542f85c54b589835d551dbcd22eb4acc55eb10c3f43b5338cf`.
+API documentation committed locally as `272a975`; strict locale/mobile checks
+passed (`/tmp/dm-workbook-resumed-i18n.log`, `/tmp/dm-workbook-resumed-mobile.log`).
+No user server was restarted for this package installation. Restart the API to
+load the installed package. No production capacity or full-goal completion claim
+follows from these tests.

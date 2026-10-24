@@ -1008,3 +1008,20 @@ Do not infer complete concurrency protection or throughput from cell-race tests.
 Core's pre-commit hook rebuilds Release. After committing Core, sync the committed
 source before the final installed-DLL checksum check: a hook rebuild can change
 build provenance metadata even when executable source is unchanged.
+
+
+## Bounded uploaded workbooks (2026-10-24)
+
+Every uploaded workbook uses Core BoundedWorkbook.LoadAsync before importer domain
+queries/writes. Never restore new XLWorkbook(fileStream) in an upload path. Keep
+8 MiB ingress/actual-byte limits, actual expansion and central-directory checks,
+structural/decoded-text budgets and data-only/no-formula policy. See Core
+WORKBOOK-IMPORT-LIMITS.md for limits and remaining scope. Source streams stay caller
+owned; importer disposes the returned workbook. Constructor CPU is synchronous:
+keep admission until it finishes, never orphan it through Task.Run timeouts.
+
+Use BaseController.ImportWorkbook for localized no-store parse problems; Parent
+passes its own localizer instead of legacy Main. Do not return provider messages
+in per-row failures. Keep cancellation escapes and clear failed tracked changes.
+This does not supply whole-upload receipts, registration/welcome effect recovery,
+complete output/query bounds or production capacity evidence.
