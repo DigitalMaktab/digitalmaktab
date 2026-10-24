@@ -950,8 +950,16 @@ versions and Core conflict comparison now exist; retain both. Existing-cell
 writes require observed tokens, decisions require appeal plus grade versions,
 and review only replaces drafts after explicit confirmation. Template versions
 travel in a hidden column; old sheets cannot overwrite existing marks. Deploy
-AcademicRecordRevisions with all API/SPA consumers and retire old writers. The attendance
-writers still need shared school-local daily-key/date/ownership reconciliation.
+AcademicRecordRevisions with all API/SPA consumers and retire old writers.
+
+Attendance writers now reuse DailyAttendanceWriter and invariant enrollment/day
+locks. Manual commands require civil Date; import ownership is active homeroom,
+Asas lookup must be unambiguous, and workbook rows own their transaction. Lesson
+writes take school then daily locks and preserve existing daily marks. Explicit
+fill uses 200-row checkpoints and current operator grants; empty unattended actors
+remain no-op. Use SchoolLocalTime, never DateTime.Date or UTC ISO slicing to infer
+a school's day. Attendance edit versions/receipts, full workbook resource bounds
+and through-commit reference/timezone coordination remain unfinished.
 Do not infer complete concurrency protection or throughput from cell-race tests.
 
 Core's pre-commit hook rebuilds Release. After committing Core, sync the committed

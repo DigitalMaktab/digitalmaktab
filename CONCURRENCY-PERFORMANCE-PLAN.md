@@ -598,3 +598,92 @@ fresh workbooks. No production capacity claim follows from these checks. Grade
 receipts, attendance, wider editor/invariant/query/output audits, shared classroom
 state/jobs and representative load evidence remain; all seven top-level requirements
 stay unchecked and the full goal remains active.
+
+
+### Shared daily attendance writer and civil dates (twenty-eighth implementation increment)
+
+The academic-record audit identified a selected-date loss in manual roll call,
+missing import teacher ownership and independent duplicate-prone creation paths.
+Core DailyAttendanceWriter now coordinates manual entry, workbook rows, explicit
+operator fill-missing and teaching-lesson daily creation using the existing
+Attendance table. PostgreSQL advisory keys are enrollment plus invariant-culture
+civil date, ordered by actual signed hash. Existing daily rows are locked/reloaded;
+legacy duplicate history requires review instead of a guessed winner. Lesson
+operations retain school-before-daily lock order and their own evidence/version/
+request contract, recheck the roster after waiting, and never overwrite the first
+daily roll call. No country policy or competing attendance domain was added.
+
+Manual AddAttendance requires Date as yyyy-MM-dd and saves that school-local day,
+not server DateTime.Now. Existing school/year plan timezone supplies half-open UTC
+bounds through SchoolLocalTime; absent active plans use UTC. Nonexistent/future
+civil dates and dates outside configured year bounds reject. New rows use an
+instant inside the actual day; edits preserve original timestamps. The existing
+active-year summary supplies school-local Today for the form, and the workbook
+sample date uses the same rule. Teacher reads apply school/student/class/year and
+homeroom scope, local-day range, no tracking and stable paging, with no-store.
+Manual batches are atomic, capped at 300 students/64 KiB and heavy-operation
+admitted; authorization/current active roster are checked after lock waits.
+
+Attendance workbook imports now resolve only the caller's active homeroom roster,
+reject ambiguous school/year Asas matches, parse invariant ISO text or native
+spreadsheet dates, and use the shared writer per row. Cancellation propagates;
+failed/successful row contexts are cleared before another row, preventing leaked
+rolled-back work. Request size is 8 MiB and at most 1,000 rows are processed.
+These are partial resource bounds: compressed ZIP expansion/full synchronous
+workbook parsing still need explicit limits. Existing row-success reporting is
+preserved; expected offline edit versions and durable upload intent remain open.
+
+Explicit fill-missing uses native UUID pages of 200 active enrollments. Each
+checkpoint takes shared daily locks, rechecks school/operator attendance.write
+grants and the roster, and skips every existing mark (including absence and
+ambiguous legacy cells). Checkpoints commit independently; canceled/failed later
+pages may leave accepted earlier pages. Empty unattended actors remain no-op and
+never fabricate presence. Core reuses its existing operator audience/capability
+query rather than a new role model. This does not finish background job scale-out
+or supply a durable full-day action receipt.
+
+AttendanceDailyLookup adds a non-unique enrollment/timestamp index with matching
+runtime/snapshot metadata. Down/up preserves existing records; a selective
+8,000-row EXPLAIN ANALYZE regression selects it without disabling sequential
+scans. This is a single-query correctness/plan check, not representative whole-app
+load evidence. Uniqueness and reference/withdrawal/timezone changes through commit
+remain unresolved. Other attendance readers/aggregates still need their wider
+calendar, paging and query audit.
+
+The actual teacher screen and shared API/hook now send the selected civil date,
+pin the original account, cancel abandoned reads, clear old rows when changing
+scope and prevent duplicate clicks/edits while saving. UTC timestamp prefixes no
+longer decide school-day membership. Cache and new offline queue keys include
+immutable role/school/account; queued commands include their original date and
+cannot replay under another login. Authoritative HTTP failures do not fall back
+to cached rosters. Unknown online outcomes are never silently queued as new
+writes. Legacy unscoped queues are retained but cannot safely be attributed or
+automatically replayed; review/resubmit before rollout. Existing explicit offline
+reconnect behavior still lacks expected versions/durable receipts, and serialized
+manual corrections remain last-writer-wins. Those are required follow-up work,
+not covered by daily-key serialization.
+
+Validation: full Core 251 passed / zero skipped (`/tmp/dm-attendance-final-core.log`),
+then final attendance/lesson HTTP/template and shared-writer regressions 14 passed
+(`/tmp/dm-attendance-final-focused-core.log`). Tests cover independent concurrent
+writers/cultures, day preservation, batch authorization, canceled waits, duplicate
+history, create-only lesson evidence, import ownership/ambiguity/culture/native
+dates, concurrent 207-student checkpoint fill, local range reads, index rollback/
+plan behavior and short/long/skipped dates. Afghanistan 103 passed / zero skipped
+against installed packages (`/tmp/dm-attendance-final-afghan.log`). Full 104-table
+UI/export audit passed (`/tmp/dm-attendance-full-ui.log`); final real attendance
+screen checks in en/fa/ps passed after later scope/default-day refinements
+(`/tmp/dm-attendance-final2-focused-ui.log`), including denial without cache fallback,
+original-account/date retention, double-submit guards and no unknown-outcome queue.
+Core/shell TypeScript, strict i18n/mobile parity, worker health registration,
+shell syntax, component reuse and whitespace checks passed. Existing toggle border
+styles no longer produce conflicting shorthand warnings during status changes.
+
+Core/API/SPA packages rebuilt and installed; API built; installed Core Release DLL
+and shared JS/types match built checksums. Local commits only. No live user DB,
+production service or user-owned server was changed/restarted. Stop old writers,
+coordinate the new API/SPA contract plus index migration, restart both servers and
+reload open attendance editors. Expected attendance versions/receipts, broader
+invariants/read/output audits, shared classroom authority/jobs and representative
+load evidence remain. All seven original completion requirements stay unchecked;
+the goal remains active.
