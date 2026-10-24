@@ -830,3 +830,20 @@ actual role + immutable ID. Replace both participant entry and group membership.
 Close classroom sockets at authentication expiry. These incoming-call checks do
 not yet remove idle revoked recipients from future group publication or make
 static room dictionaries distributed/bounded. Keep those remaining tasks explicit.
+
+## Classroom recipient publication (2026-10-24)
+
+ClassHubAccessFilter wraps invocation and lifecycle Clients with ClassroomDelivery.
+Never add a raw ClassHub IHubContext publisher or global/user broadcast bypass.
+Actual connection snapshots are checked in batches of at most 100 against current
+account/school/stamp/roster/teacher/staff grants, including impersonator stamp.
+No checked audience means no send; lookup failure/overload must never fall back
+to unchecked groups. Connection and publication admission is bounded, configured
+through ClassroomDelivery options. Keep database work outside NotificationDeliveryGate
+callbacks and preserve its independent classroom pool and cancellation behavior.
+
+The bounded routing registry is not shared classroom storage. Legacy content,
+room lifecycle and backplane work remain; idle revoked recipients are excluded
+at later delivery checks, while already-queued/in-flight frames cannot be recalled.
+Keep per-method budgets, tenant fairness, history limits and stale-room cleanup as
+explicit follow-up work. No production capacity claim follows from 102 test peers.
