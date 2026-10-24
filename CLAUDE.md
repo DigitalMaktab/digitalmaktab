@@ -958,8 +958,14 @@ Asas lookup must be unambiguous, and workbook rows own their transaction. Lesson
 writes take school then daily locks and preserve existing daily marks. Explicit
 fill uses 200-row checkpoints and current operator grants; empty unattended actors
 remain no-op. Use SchoolLocalTime, never DateTime.Date or UTC ISO slicing to infer
-a school's day. Attendance edit versions/receipts, full workbook resource bounds
-and through-commit reference/timezone coordination remain unfinished.
+a school's day. Attendance now uses IRevisionedRecord, RecordVersions and the existing durable
+MutationReceiptStore for manual batches. Require CalendarYearId/Date plus the
+Idempotency-Key header and preserve expected tokens through retries. Check
+homeroom authority after receipt waits even for replay. Core offline snapshots,
+review and intent IDs are shared; background acknowledgements never reset newer
+form drafts. Fresh workbook templates hide versions; examples stay on Reference.
+Whole-upload/fill-action receipts, full workbook resource bounds and through-commit
+reference/timezone/lifecycle coordination remain unfinished.
 Do not infer complete concurrency protection or throughput from cell-race tests.
 
 Core's pre-commit hook rebuilds Release. After committing Core, sync the committed

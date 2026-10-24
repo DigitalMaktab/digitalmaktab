@@ -687,3 +687,99 @@ reload open attendance editors. Expected attendance versions/receipts, broader
 invariants/read/output audits, shared classroom authority/jobs and representative
 load evidence remain. All seven original completion requirements stay unchecked;
 the goal remains active.
+
+
+### Attendance versions, durable intent and offline review (twenty-ninth implementation increment)
+
+Attendance now reuses IRevisionedRecord and shared RecordVersions validation.
+AttendanceRecordRevisions backfills distinct UUIDs without changing IDs, statuses,
+dates, actors or duplicate history. Existing-cell writes, including no-op choices,
+require the version originally read (canonical 428 missing / 409 stale); new
+cells require null. Every batch precondition is checked before mutation, and EF
+predicates also protect direct tracked writers. Create-only lesson/fill paths
+preserve existing marks. Grade's existing public checker delegates to the same
+Core guard; no country fork or competing attendance domain was introduced.
+
+Manual commands require recorded CalendarYearId and civil Date plus the existing
+Idempotency-Key header. Core reuses MutationReceiptStore with normalized enrollment
+order, school/actor/role/action scope, payload fingerprints and encrypted accepted
+marks/versions. Receipt and database effects commit together. Replaying an accepted
+request never reapplies its choice over a newer mark; changed details under a
+completed ID reject. Current homeroom ownership is checked before and after waiting
+on the receipt lock, including replay, and after daily waits for mutations. The
+generic receipt helper's optional authorizer supplies that after-wait check while
+preserving existing callers. Resolved draft/closed year plans reject new daily
+writes; an already-accepted request can replay after closure. Through-commit
+reference/timezone/lifecycle coordination and receipt storage/retention remain open.
+
+Teacher snapshot reads accept the recorded year and require current homeroom
+class authority. Scoped day/class workbook downloads include saved marks with
+hidden revisions (up to 1,000 rows). Examples moved to Reference and cannot become
+an imported fake student's attendance. Imports use observed tokens and reject
+stale old copies. Per-row success remains independent; whole-upload durable intent
+and full ZIP/parsing resource limits are still unfinished. Explicit school-wide
+fill also still needs its full-day intent/partial-checkpoint contract audit.
+
+SPA Core owns reusable snapshots, acknowledgement validation and pending-draft
+review; shell roll call consumes them. Accepted versions become the next baseline.
+Rejected writes, failed/canceled review and locale changes preserve entered choices
+and expected tokens. Explicit comparison loads saved values without submitting.
+Background acknowledgements never reset a newer typed form or silently refresh its
+version. Unknown online outcomes retain the same request intent for an explicit
+retry, instead of becoming a new queued operation. New offline drafts persist the
+original request ID/year/date/versions; reconnect or Send saved request reuses them.
+Conflicting drafts remain visible with comparison and confirmed local discard.
+Legacy entries lacking verified metadata remain stored and cannot auto-send.
+Core/country/mobile en/fa/ps strings mirror the new shared controls.
+
+The existing IndexedDB queue upgrades in place and atomically deduplicates known
+intents. It rejects changed payloads under a queued ID, caps payloads at 128 KiB,
+each kind at 100 entries and the store at 1,000. Kind indexes avoid reading other
+accounts' drafts. Scoped deletion and retry counters share readwrite transactions,
+preventing a retry from resurrecting a discarded row. Drains stop on failure and
+recheck later rows before sending, so a discarded later draft is not replayed.
+The hook flush is single-flight and queue changes refresh its counts/list. A
+blocked upgrade has a bounded caller wait and one retained opening/wait state,
+with explicit close-old-tabs recovery. A real browser exercises blocked upgrade,
+legacy preservation, recovery, concurrent deduplication, quotas, scope separation,
+failure ordering, later discard and retry/delete races. The harness owns its
+Chrome profile/process group and verifies exit before deleting it. Initial cleanup
+racing helper shutdown was corrected; the earlier owned failure directory was
+reclaimed after verifying no matching browser process remained.
+
+Validation: Core 255 passed / zero skipped (`/tmp/dm-attendance-versions-final-core.log`),
+including two real JWT API hosts with shared keys, one durable outcome/eight
+acknowledgements, no replay over later edits, stale whole-batch rejection, changed
+fingerprints, closed-year replay/new-write behavior and revocation injected while
+a receipt request waits. Migration rollback/reapply preserves marks and token
+metadata; stale tracked EF writes and offline workbook copies reject. Full
+104-table UI/export audit passed (`/tmp/dm-attendance-versions-final-ui.log`),
+including real shared comparison forms after the optional open-on-activation
+extension. Final actual attendance editor and pending-draft tests passed in all
+three languages (`/tmp/dm-attendance-versions-ui5.log`), including frozen tokens,
+explicit retry IDs, locale retention, canceled/confirmed comparison, legacy draft
+confirmation and background acknowledgements preserving newer choices. Real
+IndexedDB/browser checks passed (`/tmp/dm-attendance-versions-queue-browser4.log`).
+Strict i18n/mobile parity, TypeScript, hosted-service coverage, component reuse,
+shell syntax and whitespace checks passed. These are correctness/boundedness
+checks, not representative throughput measurements or complete goal sign-off.
+
+Backend/SPA packages rebuilt and installed, API built, Core Release DLL and
+installed JS/types checksums matched. Mobile country translations built/packed
+and verified in both consumers. Afghanistan regression and final repository
+status evidence follow below. Local commits only; no live user database, user
+server or production service was modified/restarted. Coordinate the migration
+and API/SPA contract, retire old writers, restart both servers and reload editors.
+All seven original completion requirements remain unchecked; broader writers,
+constraints/query/output audits, shared classroom authority/jobs and representative
+multi-school load evidence are still required.
+
+
+Final country integration: Afghanistan 103 passed / zero skipped against the
+installed Core packages (`/tmp/dm-attendance-versions-final-afghan.log`). Installed
+Core Release SHA-256 b787c11555e63f1da8c3debc25ecde07c7925096b2e294d348156c4256cb7c76
+matches the committed-source build. Shared attendance/queue JS and both mobile
+locale installations match built artifacts. All affected code/country/mobile
+repositories are clean after local commits; root evidence is committed last.
+No live user database or user-owned server was used or restarted. The full goal
+is not achieved: every original top-level completion requirement stays open.
