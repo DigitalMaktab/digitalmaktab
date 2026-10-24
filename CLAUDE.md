@@ -4,6 +4,27 @@ This file collects the persistent instructions the human has given across
 sessions. Every future Claude working on this repo must read this first
 and follow every rule. Golden rules are non-negotiable.
 
+## Mandatory discovery and reuse — every agent, every session
+
+Before implementing any change, thoroughly inspect the existing database model,
+fields, tables, relationships, migrations, DTOs, services, UI components and
+extension contracts across the affected sibling repositories. Trace actual
+usage, not just names. Reuse what already represents the concept and extend it
+compatibly when needed; do not add duplicate data, parallel code or another
+source of truth. This applies equally to fixes, refactors and new features.
+
+Shared capabilities belong in the appropriate Core layer before their consumers
+use them. Country and school specializations belong in their own modules. Make
+Core extensible through its composition contracts when lower modules need to
+specialize shared behavior; do not fork Core in a lower module or move local
+rules into Core. Before adding a new field, table, component, service or contract,
+briefly document what existing options were checked, why reuse/extension is
+insufficient and why the chosen layer owns the addition. Preserve existing data
+and compatibility when consolidating duplicates.
+
+These are persistent project rules for all agents and future sessions. See
+[AGENTS.md](AGENTS.md) for the agent entry point and discovery checklist.
+
 ## Repos on disk (multi-repo, local commits only)
 
 Working tree is a set of sibling directories under
