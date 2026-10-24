@@ -5,6 +5,8 @@ database_dir="$(mktemp -d "${TMPDIR:-/private/tmp}/digitalmaktab-core-support.XX
 . "$(dirname "${BASH_SOURCE[0]}")/isolated-postgres-cleanup.sh"
 initdb -D "$database_dir/data" --auth=trust --username=support_test > "$database_dir/init.log"
 pg_ctl -D "$database_dir/data" -o "-h '' -k '$database_dir' -p 55439" -l "$database_dir/server.log" -w start
+createdb -h "$database_dir" -p 55439 -U support_test class_access_tests
+export CORE_CLASS_ACCESS_TEST_DATABASE="Host=$database_dir;Port=55439;Username=support_test;Database=class_access_tests;Pooling=false"
 createdb -h "$database_dir" -p 55439 -U support_test shared_throttle_tests
 export CORE_SHARED_THROTTLE_TEST_DATABASE="Host=$database_dir;Port=55439;Username=support_test;Database=shared_throttle_tests;Pooling=false"
 createdb -h "$database_dir" -p 55439 -U support_test password_reset_tests

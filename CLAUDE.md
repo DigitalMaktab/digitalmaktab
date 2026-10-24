@@ -812,3 +812,21 @@ IP failures survive, locked attempts do not extend lockout, and only crossing th
 email threshold emits the owner notice. Completed-failure counters do not revoke
 already-admitted authentication attempts. Signing-key rotation changes HMAC
 namespaces. Shared quotas do not distribute request concurrency or hub routing.
+
+## Classroom invocation scope (2026-10-24)
+
+ClassHubAccessFilter replaces the former staff-only filter. Register it through
+AddSchoolAccessManagement and retain current account/stamp/impersonator checks for
+all classroom calls. Course rooms require school-scoped course/class membership;
+students must have an active enrollment and cannot claim HOST. Teacher host access
+uses existing course/schedule assignments, with school leaders/admins permitted.
+Staff keep messages.send and direct-call-only access. Never trust a client HOST
+string or send WebRTC payloads to unrelated connection IDs.
+
+Legacy direct IDs omit school/role; reject globally ambiguous role-table GUIDs.
+Do not relax this to enable collisions; introduce a coordinated typed wire
+contract instead. Participant replacement, kicks and poll identity use school +
+actual role + immutable ID. Replace both participant entry and group membership.
+Close classroom sockets at authentication expiry. These incoming-call checks do
+not yet remove idle revoked recipients from future group publication or make
+static room dictionaries distributed/bounded. Keep those remaining tasks explicit.
