@@ -992,3 +992,70 @@ attendance/grade upload outcomes, country import composition, remaining importan
 writers/editors, invariants/query/output audits, shared classroom authority/jobs
 and representative multi-school load/recovery evidence. Do not mark the full
 objective complete from this focused import milestone.
+
+
+### Durable academic workbook recovery (thirty-third increment)
+
+Grade and attendance uploads now reuse WorkbookImportReplay and the existing
+MutationReceiptStore instead of adding an import-job/mark table. All five upload
+endpoints require Idempotency-Key. Exact-file manifests pin the original year;
+independent row receipts retain committed outcomes. GradeWriteService explicitly
+joins the receipt transaction for imports while ordinary form batches retain
+clean transaction ownership; DailyAttendanceWriter already supports its caller's
+transaction. Existing natural-cell locks, reference checks and observed revisions
+still govern new writes. Mark and encrypted row receipt commit together. A receipt
+insertion failure after saving a mark rolls that mark back and leaves the original
+intent retryable, preserving earlier completed rows.
+
+ImportResultDto extends its existing encrypted row outcome with the accepted mark's
+immutable ID. Aggregate HTTP reports omit that internal provenance. Core's typed
+replay authorization hook rechecks the current original grade/course teacher or
+attendance enrollment/homeroom, school and pinned year before returning the saved
+outcome. Mutable Asas numbers and a newly active academic year cannot redirect a
+retry. Recovering an accepted outcome preserves later form corrections and rejects
+reassigned records. Account/security-stamp checks still run after receipt waits
+before decryption. These point-in-transaction checks do not establish through-commit
+coordination with every unrelated reference/timezone/lifecycle writer.
+
+Expected writer-domain/version exceptions roll back/report a localized row skip,
+while returned validation outcomes are recorded. Transient DB failures stop the
+remaining upload. A new intent still requires current versions, and no mutation
+is automatically retried. Known completed results now expose a Core AppButton to
+explicitly start another operation with the same file: persist a new ID before
+clearing the result, never upload automatically. Unknown outcomes retain their
+original ID and do not expose this action. Shared metadata-only recovery, original
+account binding, single-flight submission and stale-callback suppression remain.
+New labels ship in en/fa/ps and all mirrored mobile bundles.
+
+Validation: full isolated PostgreSQL Core suite 289 passed, zero skipped
+(`/tmp/dm-academic-full-core.log`). Real JWT/two-host HTTP coverage includes both
+academic upload endpoints, six concurrent submissions, one mark, missing keys,
+changed-file rejection, private/no-store responses, later form corrections,
+new-intent version rejection, changed Asas numbers, renewed active-year context
+and revoked original ownership. Failure injection at row receipt insertion proves
+mark rollback and same-intent recovery without duplicate marks. Existing domain,
+version, row-partial-success and shared receipt tests remain passing.
+
+All five actual shared modal/API adapters pass in three languages, including the
+explicit fresh-intent action after a known response and retained intent after an
+unknown response (`scripts/tests/import-recovery.cjs`, `/tmp/dm-academic-ui.log`).
+The full 104-table export/UI audit passed (`/tmp/dm-academic-full-ui.log`). Core and
+shell TypeScript, strict locale/mobile parity and precommit component checks passed.
+These correctness checks do not measure representative production throughput.
+
+Local commits: Core `bd25233`, SPA Core `86cdcb3`, Afghanistan SPA translations
+`cc4158f`, mobile translations `79a1f00`, API docs `4c67e9a`. Backend/SPA packages
+rebuilt and installed (`/tmp/dm-academic-release-dotnet.log`,
+`/tmp/dm-academic-release-spa.log`); mobile built/packed and installed in both apps.
+Core Release/API installed DLL SHA-256 matches:
+`c4870d5c9542a1adcbd2e0ce9cf8d738e3b5e709a6adcb917392e0ef15aa423d`.
+Installed modal/intent JS and all mobile locale checksums match their builds.
+Afghanistan 103 passed, zero skipped (`/tmp/dm-academic-release-afghan.log`);
+installed shell TypeScript passed (`/tmp/dm-academic-release-shell-tsc.log`).
+No user DB writes or manual user-server restarts. Restart API and SPA together.
+
+All seven original requirements remain open. Next work includes country import
+composition and legacy country-shaped template fields, explicit fill recovery,
+remaining important writers/editors, invariant/query/output audits, shared
+classroom authority/jobs and representative multi-school load/recovery evidence.
+Do not mark the goal complete from this workbook milestone.

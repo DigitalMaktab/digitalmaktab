@@ -1022,7 +1022,8 @@ Idempotency-Key header and preserve expected tokens through retries. Check
 homeroom authority after receipt waits even for replay. Core offline snapshots,
 review and intent IDs are shared; background acknowledgements never reset newer
 form drafts. Fresh workbook templates hide versions; examples stay on Reference.
-Whole-upload/fill-action receipts, full workbook resource bounds and through-commit
+All five workbook adapters now use the shared bounded loader and durable
+manifest/row receipts; explicit fill-action recovery and through-commit
 reference/timezone/lifecycle coordination remain unfinished.
 Do not infer complete concurrency protection or throughput from cell-race tests.
 
@@ -1046,3 +1047,29 @@ passes its own localizer instead of legacy Main. Do not return provider messages
 in per-row failures. Keep cancellation escapes and clear failed tracked changes.
 This does not supply whole-upload receipts, registration/welcome effect recovery,
 complete output/query bounds or production capacity evidence.
+
+
+## Durable academic workbook recovery (2026-10-25)
+
+All five workbook endpoints require Idempotency-Key. Reuse WorkbookImportReplay,
+MutationReceiptStore and the existing versioned mark writers; never introduce a
+parallel import-job or mark table. Grade imports explicitly join the receipt's
+transaction; normal form batches retain clean transaction ownership. The accepted
+mark and encrypted row receipt must commit together. Receipt storage failure rolls
+that row back; preceding committed rows survive. Expected writer conflicts roll
+back/report a skip; validation results returned by callbacks are recorded.
+
+Successful academic row receipts retain the actual immutable mark ID in existing
+ImportResultDto's internal provenance, omitted from aggregate HTTP reports. The
+shared typed replay authorizer checks current ownership of that original record,
+school and pinned year before returning a saved outcome. Do not infer ownership
+from mutable Asas numbers or reapply an old choice over later form corrections.
+Account/stamp/impersonator/staff checks still precede receipt decryption. These
+checks do not coordinate every unrelated reference writer through commit.
+
+Core's import modal may start a fresh same-file intent only after a known result
+and explicit action. Persist the new ID before clearing that result; the action
+never uploads automatically. Unknown responses keep the original request ID.
+Preserve metadata-only storage, account isolation, cancellation and no automatic
+mutation retries. Country import composition and explicit fill recovery remain
+open; see Core WORKBOOK-IMPORT-LIMITS.md and CONCURRENCY-PERFORMANCE-PLAN.md.

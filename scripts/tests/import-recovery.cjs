@@ -9,27 +9,27 @@ const original=Module._load;Module._load=function(request,parent,isMain){if(['re
 const React=require(app+'/react'),h=React.createElement,{render,fireEvent,waitFor,cleanup,act}=require(app+'/@testing-library/react');
 const {MemoryRouter}=require(app+'/react-router-dom'),{I18nextProvider}=require(app+'/react-i18next'),i18n=require(app+'/i18next').createInstance();
 const {LoaderProvider}=require(core+'/src/contexts/LoaderContext.tsx'),Modal=require(core+'/src/components/import/BulkImportModal.tsx').default;
-const client=require(core+'/src/api/client.ts').default,school=require(core+'/src/api/school.ts').default,parent=require(core+'/src/api/parent.ts').default;
+const client=require(core+'/src/api/client.ts').default,school=require(core+'/src/api/school.ts').default,parent=require(core+'/src/api/parent.ts').default,teacher=require(core+'/src/api/teacher.ts').default;
 const {UserRole}=require(core+'/src/models/UserRole.ts');const {importRequestId,ImportIntentStorageError}=require(core+'/src/components/import/importIntent.ts');
 const owner={role:UserRole.ADMIN,token:'first-token',school:{id:'school-one'}},setUser=user=>localStorage.setItem('user',JSON.stringify(user));
 const deferred=()=>{let resolve;const promise=new Promise(yes=>resolve=yes);return{promise,resolve}};
 const response={totalRows:1,createdCount:1,skippedCount:0,errors:[],generatedPasswords:[{email:'person@import.invalid',firstName:'First',lastName:'Last',password:'Imported@1234'}]};
 let writes=[],block=null,fail=true,notifications=0;
-client.post=async(url,form,config)=>{writes.push({url,file:form.get('file'),key:config.headers['Idempotency-Key'],token:config.accountToken,signal:config.signal});if(block)await block.promise;if(fail)throw{response:{status:503,data:{detail:'Original import response unavailable'}}};return{status:200,data:response};};
+client.post=async(url,form,config)=>{writes.push({url,file:form.get('file'),key:config.headers['Idempotency-Key'],token:config.accountToken,signal:config.signal});if(block)await block.promise;if(fail)throw{response:{status:503,data:{detail:'Original import response unavailable'}}};return{status:200,data:url.includes("attendance")||url.includes("grades")?{...response,generatedPasswords:[]}:response};};
 const wrapper=({children})=>h(I18nextProvider,{i18n},h(MemoryRouter,null,h(LoaderProvider,null,children)));
 (async()=>{
  const resources=Object.fromEntries(['en-US','fa-AF','ps-AF'].map(lang=>[lang,{translation:JSON.parse(fs.readFileSync(lang==='en-US'?core+'/src/locales/en-US/translation.json':projects+'/digitalmaktab-spa-country-afghanistan/src/locales/'+lang+'/translation.json'))}]));
  await i18n.init({lng:'en-US',resources,interpolation:{escapeValue:false}});
  for(const lang of Object.keys(resources)){
   await i18n.changeLanguage(lang);
-  for(const [kind,upload] of [['student',school.importStudents],['teacher',school.importTeachers],['parent',parent.importParents]]){
+  for(const [kind,upload] of [['student',school.importStudents],['teacher',school.importTeachers],['parent',parent.importParents],['grade',teacher.importGrades],['attendance',teacher.importAttendance]]){
    localStorage.clear();setUser(owner);writes=[];block=deferred();fail=true;notifications=0;
    const file=new File(['file bytes'],'people.xlsx',{lastModified:100,type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
    const props={isVisible:true,onClose:()=>{},translationPrefix:kind+'.import',downloadTemplate:async()=>({data:new Blob()}),importFile:upload,templateFileName:'template.xlsx',passwordsFileName:'passwords.csv',onImported:()=>notifications++};
    let ui=render(h(Modal,props),{wrapper});fireEvent.change(ui.container.querySelector('input[type="file"]'),{target:{files:[file]}});
    const click=()=>fireEvent.click(ui.getByRole('button',{name:i18n.t(kind+'.import.uploadButton'),exact:true}));
    click();fireEvent.click(ui.getByRole('button',{name:i18n.t(kind+'.import.uploading'),exact:true}));await waitFor(()=>assert.equal(writes.length,1));
-   await act(async()=>block.resolve());block=null;await waitFor(()=>ui.getByText('Original import response unavailable'));
+   await act(async()=>block.resolve());block=null;await waitFor(()=>ui.getByText('Original import response unavailable'));assert(!ui.queryByRole('button',{name:i18n.t('importRecovery.newImport'),exact:true}));
    assert.equal(writes[0].token,'first-token');assert.match(writes[0].key,/^[a-f0-9-]{36}$/);assert.equal(writes[0].file,file);
    setUser({...owner,token:'renewed-token'});click();await waitFor(()=>assert.equal(writes.length,2));await waitFor(()=>ui.getByText('Original import response unavailable'));
    assert.equal(writes[1].key,writes[0].key);assert.equal(writes[1].token,'renewed-token');
@@ -38,10 +38,11 @@ const wrapper=({children})=>h(I18nextProvider,{i18n},h(MemoryRouter,null,h(Loade
    // Re-selecting the same immutable file after a remount recovers its retained ID.
    cleanup();ui=render(h(Modal,props),{wrapper});fireEvent.change(ui.container.querySelector('input[type="file"]'),{target:{files:[file]}});fail=false;click();
    await waitFor(()=>assert.equal(notifications,1));assert.equal(writes[3].key,writes[0].key);
+   const previous=writes[3].key;fireEvent.click(ui.getByRole('button',{name:i18n.t('importRecovery.newImport'),exact:true}));assert(!ui.queryByRole('button',{name:i18n.t('importRecovery.newImport'),exact:true}));click();await waitFor(()=>assert.equal(notifications,2));assert.notEqual(writes[4].key,previous);
    for(const key of Object.keys(localStorage).filter(key=>key.startsWith('digitalmaktab.import.intent.'))){const saved=localStorage.getItem(key);assert(!saved.includes('token'));assert(!saved.includes('Imported@1234'));assert(!saved.includes('file bytes'));}
    // A pending old account must not receive visible credentials after a switch.
-   block=deferred();click();await waitFor(()=>assert.equal(writes.length,5));setUser({role:UserRole.ADMIN,token:'other-token',school:{id:'school-two'}});ui.rerender(h(Modal,props));
-   await act(async()=>block.resolve());block=null;assert.equal(notifications,1);assert(writes[4].signal.aborted);assert(!ui.queryByText(i18n.t(kind+'.import.passwordsTitle',{count:1})));
+   block=deferred();click();await waitFor(()=>assert.equal(writes.length,6));setUser({role:UserRole.ADMIN,token:'other-token',school:{id:'school-two'}});ui.rerender(h(Modal,props));
+   await act(async()=>block.resolve());block=null;assert.equal(notifications,2);assert(writes[5].signal.aborted);if(['student','teacher','parent'].includes(kind))assert(!ui.queryByText(i18n.t(kind+'.import.passwordsTitle',{count:1})));
    cleanup();
   }
  }
@@ -50,5 +51,5 @@ const wrapper=({children})=>h(I18nextProvider,{i18n},h(MemoryRouter,null,h(Loade
  const corrupted={getItem:()=>'{bad',setItem:()=>assert.fail('must not replace a corrupt accepted intent')};
  assert.throws(()=>importRequestId(corrupted,'[0,"school","actor"]','students',{name:'x',size:1,lastModified:1,type:''},()=>assert.fail('must not invent another request')),ImportIntentStorageError);
  assert.throws(()=>importRequestId(bad,'bearer-token','students',{name:'x',size:1,lastModified:1,type:''},()=>assert.fail('must not persist fallback token scope')),ImportIntentStorageError);
- console.log('PASS: actual person import modal/APIs retain request IDs and files across failures, close/reopen and remount; pin renewed credentials, block duplicate clicks, suppress stale account results, and keep secrets out of recovery storage in all three locales.');
+ console.log('PASS: all five actual import modal/APIs retain request IDs and files across failures, close/reopen and remount; pin renewed credentials, block duplicate clicks, suppress stale account results, and permit a fresh intent only after explicit action on a known result, and keep secrets out of recovery storage in all three locales.');
 })().catch(error=>{console.error(error);process.exitCode=1}).finally(()=>{cleanup();dom.window.close()});
