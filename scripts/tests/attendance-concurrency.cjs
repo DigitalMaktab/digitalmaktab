@@ -42,6 +42,17 @@ const wrapper=({children})=>h(I18nextProvider,{i18n},h(MemoryRouter,{initialEntr
 const button=(ui,key)=>ui.getByRole('button',{name:i18n.t(key),exact:true});
 function reset(){writes=[];reads=[];queued=[];cache.clear();block=undefined;fail=false;readError=undefined;markRevision=r1;markStatus=false;localStorage.setItem('user',JSON.stringify(account));Object.defineProperty(navigator,'onLine',{value:true,configurable:true});}
 (async()=>{
+ // The shared explicit-fill helper carries the caller's original intent and
+ // account/signal, with no automatic retry after an unknown response.
+ const fillApi=load('api/attendance.ts'),originalPost=client.post,fillCalls=[];
+ const fillAbort=new AbortController();localStorage.setItem('user',JSON.stringify(account));
+ client.post=async(url,dto,config)=>{fillCalls.push({url,dto,config});throw{response:{status:503}};};
+ await assert.rejects(fillApi.fillMissingToday(r1,classId,{signal:fillAbort.signal}));
+ localStorage.setItem('user',JSON.stringify({...account,token:'other-token'}));
+ await assert.rejects(fillApi.fillMissingToday(r1,classId,{signal:fillAbort.signal,token:account.token}));
+ assert.equal(fillCalls.length,2);assert.equal(fillCalls[0].url,'/attendance/auto-present-today');assert.equal(fillCalls[0].dto,undefined);
+ for(const call of fillCalls){assert.equal(call.config.headers['Idempotency-Key'],r1);assert.equal(call.config.accountToken,account.token);assert.equal(call.config.signal,fillAbort.signal);assert.equal(call.config.params.classId,classId);assert.equal(call.config.headers['Cache-Control'],'no-store');}
+ client.post=originalPost;localStorage.setItem('user',JSON.stringify(account));
  const resources=Object.fromEntries(['en-US','fa-AF','ps-AF'].map(lang=>[lang,{translation:JSON.parse(fs.readFileSync(lang==='en-US'?core+'/src/locales/en-US/translation.json':projects+'/digitalmaktab-spa-country-afghanistan/src/locales/'+lang+'/translation.json'))}]));await i18n.init({lng:'en-US',resources,interpolation:{escapeValue:false}});
  for(const language of Object.keys(resources)){
   reset();await i18n.changeLanguage(language);let ui=render(h(Entry),{wrapper});await waitFor(()=>ui.getByText('Pupil One'));

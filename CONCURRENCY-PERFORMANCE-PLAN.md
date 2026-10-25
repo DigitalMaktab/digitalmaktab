@@ -1226,3 +1226,112 @@ through-commit reference/permission coordination, invariant and query/output
 audits, shared classroom authority/background jobs and representative multi-school
 load/recovery measurements. Do not equate these profile tests with whole-goal
 completion or shrink the original scope.
+
+
+### Explicit attendance fill recovery (thirty-sixth increment)
+
+Discovery found an existing explicit operator fill route, 200-row checkpoints,
+shared DailyAttendanceWriter and encrypted MutationReceiptStore, but no durable
+original-day/roster/outcome contract. These are extended; no new database table,
+persistent field, roster copy or UI component is introduced. A nonpersistent
+result DTO acknowledges original counts/day/year; action options supply missing
+input/time budgets while existing RequestCapacity owns heavy admission.
+
+The first accepted Idempotency-Key manifest pins original server year, school-local
+civil day, UTC bounds/settings identity and one SQL snapshot of active, unmarked
+enrollment IDs. Optional class scope is fingerprinted. Temporary selections of
+200 IDs commit with that manifest. Each checkpoint commits its marks/count receipt
+together. Daily locks and current roster checks preserve any presence/absence
+already recorded, including later manual corrections. Partial failure/cancellation
+rolls back only the current checkpoint; an explicit same-ID retry recovers earlier
+counts and continues pending work. New registrations do not join an accepted intent.
+Completed acknowledgements describe the original action, even after calendar/year
+changes; they are not a live count. Unknown outcomes never trigger automatic retry.
+
+Current account/stamp/impersonator/grants are checked after receipt/daily waits
+and before replay decryption. Pending checkpoints also check lifecycle, settings
+identity, timezone boundaries and holiday. Changed class under the same accepted
+ID returns 409; missing IDs return 428. Missing selection or parent with surviving
+children fails closed with 503. A lost key never reconstructs or reapplies work.
+The shared receipt staging helper preserves the submitted fingerprint even when
+a mutation callback normalizes its mutable command.
+
+Completed checkpoint counts are recovered in one bounded query rather than
+hundreds of receipt transactions per retry. After all checkpoints are durable,
+only temporary selection receipts are pruned. Concurrent callers racing pruning
+recover retained counts. Manifest/count receipts must survive indefinitely until
+a reviewed replacement can prevent old execution. A crash before final pruning
+or abandoned partial action may retain targets; retention maintenance remains
+open. Default selected-target cap is 50,000 (maximum 250 checkpoints), and one
+cooperative 30-second budget spans all work. Deadline/transient failures return
+localized no-store 503/Retry-After; no orphan background work or automatic retry.
+Legacy unattended empty actors remain no-op; nonempty callers must adopt the
+durable contract. SPA Core helper pins account credentials and forwards the
+caller-owned request ID without introducing a new UI action.
+
+Validation: full isolated PostgreSQL Core suite 298 passed, zero skipped
+(`/tmp/dm-attendance-fill-full-core.log`). Coverage includes failure after writes
+before checkpoint commit, cancellation, manifest encryption rollback, selected
+roster cap/deadline, original-day/year recovery, late registration exclusion,
+manual absence/correction preservation, missing selection/manifest/key failure,
+settings deactivation/timezone/closure, and two independent real-JWT HTTP hosts.
+The HTTP race deliberately pauses a caller before target selection while another
+finishes/prunes, verifies retained-outcome recovery, concurrent duplicate requests,
+class fingerprint conflict, stamp revocation during daily-lock wait and localized
+no-store responses in en/fa/ps. Completed replay query count is bounded at two
+receipt SELECTs. These correctness checks do not establish representative load.
+
+The complete 104-table UI/export audit passed
+(`/tmp/dm-attendance-fill-full-ui.log`), including actual new helper transport,
+credential pinning, stable intent, cancellation, no-store and no automatic retries.
+Core TypeScript, strict locale/mobile parity, hosted-worker drift and precommit
+checks passed. Eight backend messages use AttendanceController resources in all
+three languages; no new frontend/mobile labels were added.
+
+Local commits: Core `4394e62`, SPA Core `60956c9`, Afghanistan test fixture
+`5cc0d12` and API `6e514e6`. Standard backend/SPA scripts rebuilt and installed
+the committed packages (`/tmp/dm-attendance-fill-release-dotnet.log`,
+`/tmp/dm-attendance-fill-release-spa.log`). The first backend build correctly
+rejected the country regression's obsolete constructor; its fixture now supplies
+the existing receipt dependency and the complete sync passed. Afghanistan tests
+against final installed dependencies: 106 passed, zero skipped
+(`/tmp/dm-attendance-fill-final-installed-afghan.log`). Installed shell TypeScript
+passed (`/tmp/dm-attendance-fill-release-shell-tsc.log`). Built and API-installed
+DLL SHA-256 values match:
+
+- Core: `1a7105c9c0286709366549e1bbe75c59b19df1ed3a29a74a0bc32d02e98a35db`.
+- Abstractions: `f1d2d0c84f1e148277739727f60c8ba9a421d71fecefff25cb9fced12a08b1af`.
+- Afghanistan: `e279e6326f3d3c745405831c1785945703584e3b6bb690e2930ad394af25f332`.
+
+Installed attendance helper/model JS also matches the SPA Core build. No live
+user DB changes or manual server restarts. Restart API/SPA together to load the
+coordinated contract; there is no schema migration for this increment.
+
+All seven original requirements remain open. Next work includes remaining
+important writers/editors, attendance and wider query/output bounds/index plans,
+through-commit reference/permission coordination, shared classroom authority and
+background jobs, telemetry and representative multi-school load/recovery evidence.
+Do not mark the larger goal complete from this attendance recovery increment.
+
+
+#### Next attendance read audit: discovered consumer constraints
+
+AttendanceRepository's ListForSchool/ListForStudent/ListForChildren still load
+entire selected-year entity graphs, ordered only by timestamp, without
+cancellation or no-tracking. These feed the three AttendanceController read
+routes and, through other call sites, ClassOverviewController and
+ReportCardController. The admin route's optional class/student scope can be empty.
+Parent reads first materialize GetChildren; scope/ownership must be checked in
+SQL rather than relying only on that preloaded list.
+
+SPA Core useAttendanceViews forwards whole arrays to the shell AdminAttendance,
+StudentAttendance and ParentChildAttendance screens. AppAttendanceSummary groups
+all marks in the browser, filters original mark creation timestamps before
+counting and sorts recent marks. Replacing its input with a paged raw array would
+silently corrupt totals. Extend existing repository/DTO/Core component contracts
+with SQL aggregation and bounded stable summary pages, keeping applied creation
+filters, class/student scope and recent school-local dates consistent. Preserve
+separate report-card/class-overview semantics; do not truncate their aggregates
+by reusing a raw page as a complete year. Reuse PagedList/UserParams/AppTable and
+the shared scoped cancellable read helpers where they fit. Verify representative
+query plans and source/DTO payload bounds before declaring this gap covered.

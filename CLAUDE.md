@@ -1023,8 +1023,8 @@ homeroom authority after receipt waits even for replay. Core offline snapshots,
 review and intent IDs are shared; background acknowledgements never reset newer
 form drafts. Fresh workbook templates hide versions; examples stay on Reference.
 All five workbook adapters now use the shared bounded loader and durable
-manifest/row receipts; explicit fill-action recovery and through-commit
-reference/timezone/lifecycle coordination remain unfinished.
+manifest/row receipts; explicit fill-action recovery is described below; through-commit
+reference/timezone/lifecycle coordination remains unfinished.
 Do not infer complete concurrency protection or throughput from cell-race tests.
 
 Core's pre-commit hook rebuilds Release. After committing Core, sync the committed
@@ -1138,3 +1138,32 @@ silent rebase, tab workspace or new persisted draft store.
 Deploy Core.Abstractions/Core/country/SPA packages together and restart API/SPA.
 The standalone Afghan person profile version gap is covered; remaining aggregate
 reference/authorization coordination and the wider editor/load audit stay open.
+
+
+## Explicit attendance fill recovery (2026-10-25)
+
+AttendanceAutoMarkService.FillMissingAsync reuses MutationReceiptStore and
+DailyAttendanceWriter. Never introduce another job/roster/attendance table.
+An explicit operator and stable Idempotency-Key are required; classId is optional
+and fingerprinted. Atomically accept the original year, school-local day/UTC
+bounds/settings identity and currently unmarked active enrollment IDs. Snapshot
+selections are temporary encrypted 200-ID subordinate receipts; each checkpoint
+commits marks plus its durable count. New registrations never join that intent.
+
+After completion prune only temporary selections. Retain manifest/count receipts
+so later retry cannot overwrite corrected/deleted marks. Batched completed-part
+reads must follow verified parent scope/fingerprint and current authorization;
+a caller racing selection pruning recovers the retained checkpoint. Missing
+recovery state fails closed, never reconstructs a new roster/day. Current stamps,
+impersonator and grants apply on replay; pending work also checks roster, holiday,
+settings identity, lifecycle and timezone after waits. These are not coordination
+with all unrelated reference/permission changes through commit.
+
+AttendanceFill options bound selected missing targets (default/max 50,000) and
+one cooperative action budget (default 30 seconds). Keep heavy admission separate.
+Cancellation rolls back only its current checkpoint; accepted earlier work remains
+recoverable. No automatic write retry/background continuation/unattended presence
+inference. Empty legacy actors remain no-op; nonempty callers use the durable API.
+SPA helper pins account credentials and forwards caller-owned intent. No new UI
+action, control or schema is added. Cleanup after crash-before-prune/abandoned
+partial intents, remaining reader bounds and representative load remain open.
