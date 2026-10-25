@@ -1437,3 +1437,72 @@ query bounds; never use one raw page as a full-year total. Remaining important
 writers/editors, through-commit reference/permission coordination, the wider
 invariant/query/index audit, distributed classroom/jobs, telemetry and isolated
 representative multi-school load/recovery evidence retain their full scope.
+
+
+### Existing Admin Actions attendance integration (thirty-eighth increment)
+
+The wider caller search discovered that the earlier fill integration audit missed
+school.autoPresentToday and the existing AdminActions button. That alias still
+posted without the now-required UUID, and its copy incorrectly described a nightly
+unattended marker. This carryover was fixed before further reader work.
+
+School.autoPresentToday now directly aliases attendance.fillMissingToday, with
+the required caller request ID and the existing AttendanceFillResult type. No
+second POST implementation, generated transport UUID, DTO copy or backend/schema
+change is introduced. The existing control moves to Core AppAttendanceFillAction
+and composes AppCard/AppButton/AppModal/AppAlert with useMutationIntent. Existing
+versioned editors require revisions and password-reset controls have credential
+semantics, so neither represents this acknowledgement-only domain action; there
+is no new generic form/intent registry or lower-module control implementation.
+
+An explicit verified-presence confirmation starts the action. Ref-gated single
+flight blocks duplicate events, busy modal controls stay locked, credentials are
+pinned and cancellation follows scope/unmount. A valid acknowledgement must
+contain the original civil date/year and bounded nonnegative counts before the
+control accepts success. Failed/malformed responses retain the UUID through
+explicit recovery, modal closure and locale/token renewal. Recovery refers to the
+original action rather than confirming a new current-day run. Known success
+shows its original date/count using country calendar formatting with UTC civil
+date semantics. Only known success plus explicit new-run confirmation resets
+the intent. Account changes remount the domain control and abort/suppress old
+responses. No automatic retry or unattended presence inference is introduced.
+
+This is mounted-action recovery: a full navigation/reload still loses this
+in-memory intent, consistent with the current shared mutation hook. It is not
+a persisted request history or the parked workspace/draft feature. Durable
+backend receipts remain authoritative for any caller that retains the original
+UUID. Cross-reload action recovery and the fee/promotion buttons' original-context
+and durable-outcome audit remain separate work.
+
+All new/updated text ships in English/Dari/Pashto and the three mirrored mobile
+bundles. Stale nightly-service claims and the failed-action instruction to check
+API logs are removed from this attendance control. Core owns all behavior and
+controls; country packages own translations/calendar formatting.
+
+Validation: actual AdminActions screen, Core action/modal/intent and API transport
+pass in all three languages (`scripts/tests/admin-attendance-fill.cjs`,
+`/tmp/dm-admin-fill-ui.log`). Coverage includes confirmation/cancel without writes,
+double submit, failed response, malformed acknowledgement, same-ID recovery,
+locale/token renewal, explicit new IDs only after known results, account-switch
+abort and stale-result suppression. Actual Gregorian/Solar Hijri result formatting
+is checked through the existing country adapter. The school compatibility alias
+is exercised with UUID/signal/pinned credentials. The test is now part of the
+complete 104-table UI/export audit, which passed after the recovery-dialog change
+(`/tmp/dm-admin-fill-final-ui.log`). Core TypeScript, strict locale/mobile parity
+and precommit checks passed. These UI correctness checks do not establish new
+backend concurrency/load evidence; no C# behavior changed in this increment.
+
+Local commits: SPA Core `8db990f`, Afghanistan SPA `84c044e`, mobile country
+`0185ef2`, shell `8008d301`, API docs `59ff6ff`. Standard SPA sync rebuilt/installed
+the committed packages (`/tmp/dm-admin-fill-release-spa.log`). Installed school
+API alias, Core action and component index JS match the build; all three source
+locale bundles match shell-installed bundles. Shell TypeScript passed against
+these installed dependencies (`/tmp/dm-admin-fill-shell-tsc.log`). Mobile used its
+existing pack script (`/tmp/dm-admin-fill-mobile-pack.log`); the local tarball was
+extracted into both mobile consumers. All three source/dist/parent/student locale
+checksums match. No backend/schema change, user DB writes or manual server
+restarts; restart SPA to load the coordinated control/exports/translations.
+
+All seven original goal requirements remain open; the remaining reader,
+writer/invariant, distributed jobs/classroom, observability and representative
+multi-school load/recovery scope is unchanged.

@@ -1196,3 +1196,24 @@ fields, summary table, UI controls, translations or overlapping index are needed
 The existing IX_Attendance_DailyLookup is used in private query plans. Legacy raw
 attendance routes/report/mobile inputs and representative multi-school load
 remain open; bounded summary pages do not prove the full read audit complete.
+
+
+## Existing Admin Actions attendance caller (2026-10-25)
+
+The earlier attendance caller audit missed school.autoPresentToday and the
+existing AdminActions screen. The school helper now aliases the one durable
+attendance.fillMissingToday transport and requires the original caller UUID.
+Never restore a second POST implementation or generate an ID in a transport
+helper. AppAttendanceFillAction moves the existing control into Core and
+composes AppCard/AppButton/AppModal/AppAlert with useMutationIntent; no generic
+form/version editor fits this acknowledgement-only operation. Keep one ref-gated
+request, credential capture, aborts and actor-scoped late-result suppression.
+
+Verify actual presence before confirming. Busy modal actions cannot dismiss an
+in-flight action. Failure/malformed replies retain the ID through modal closure
+and locale/token renewal; require valid original date/year/count fields before
+acknowledging. Show original date with the country calendar/UTC civil-date
+formatting. Only a known result plus explicit new-run confirmation resets the
+intent. This is mounted-action recovery, not persistent cross-reload storage or
+automatic retry. Remove stale claims about unattended nightly marking in all
+three SPA/mobile locale bundles. Promotion/fee buttons remain separate audit work.
