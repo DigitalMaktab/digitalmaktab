@@ -541,6 +541,14 @@ provider acceptance as exactly-once email arrival. The original result's queued
 flag describes registration time; SPA uses shared AppPasswordRevealModal's
 emailQueued state. Persist/share Data Protection keys when scaling instances.
 
+Student/teacher/parent imports also stage AccountWelcomeQueue inside each row's
+account transaction. Reuse AccountRegistrationService.LockEmail before school/
+capacity locks and recheck duplicates after waits. Never call welcome transport
+from an importer or report a committed account as skipped after mail failure.
+Keep partial-row success and queue-staging rollback. Durable upload/row receipts,
+generated-password result recovery and atomic country import hooks remain open;
+do not add duplicate account/import-job/outbox tables to solve those tasks.
+
 Mutation intents use immutable actor/role/school scope via Core accountIdentity,
 not the access token: token renewal must not create a new payment/registration
 request ID. useMyId reuses the same role-nested account ID resolver. Unknown

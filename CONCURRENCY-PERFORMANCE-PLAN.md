@@ -850,3 +850,67 @@ passed (`/tmp/dm-workbook-resumed-i18n.log`, `/tmp/dm-workbook-resumed-mobile.lo
 No user server was restarted for this package installation. Restart the API to
 load the installed package. No production capacity or full-goal completion claim
 follows from these tests.
+
+### Atomic import welcome intent (thirty-first implementation increment)
+
+User requested a pause until 02:05 Europe/Vienna on 25 October 2027 (one minute
+past the stated reset). No suitable goal-resumption scheduling tool is exposed;
+do not claim that an automatic resume was scheduled.
+
+Core changes initially checkpointed at the pause reuse AccountWelcomeQueue for student/teacher/
+parent import rows. Each account and encrypted welcome intent share a row
+transaction; student placement/enrollment remain in that transaction too. Imports
+no longer call mail transports synchronously. AccountRegistrationService exposes
+its existing normalized email advisory lock for import reuse, before capacity
+locks, with a duplicate check after waiting. Existing result/partial-row behavior
+remains. No schema, duplicate entity or UI contract added. Whole-upload/per-row
+receipt intent and durable generated-password/result replay are NOT implemented.
+
+Private tests now cover queue-staging failure rollback followed by a successful
+row for all three account types, preserved student enrollment, encrypted queued
+credentials, unavailable provider retry without changing committed accounts, and
+two independent importer contexts racing the same email. A shared-fixture test
+initially dispatched another fixture's outbox encrypted with another ephemeral
+key; fixture scheduling now isolates that probe without deleting history.
+
+Full Core suite: 283 passed, zero skipped
+(`/tmp/dm-import-welcome-isolated-final-core.log`). Diagnostics captured the old
+intermittent throttle failure as its two-second cancellation expiring before a
+cleanup command could execute (`/tmp/dm-import-welcome-final-core.log`). The
+wall-clock deadline fixture now runs separately from unrelated adversarial
+compression/parser allocations; internal host/DB races stay concurrent, and no
+production deadline was increased. This is test isolation, not production load
+or latency assurance. Keep broader real-load diagnosis open.
+
+Resume by reviewing the uncommitted work, committing Core locally, then running
+sync-dotnet.sh, Afghanistan regression, installed-DLL checksum, API/docs updates
+and final root evidence/commits. Core's pre-commit Release build must precede the
+final package swap. No package installation/server restart/user database change
+was performed for this in-progress increment. All original goal workstreams
+remain open; finish this carryover before beginning durable row/upload replay.
+
+
+Carryover completion after the user resumed on 2026-10-25: reviewed and committed
+Core as `a168782`; backend packages rebuilt/installed and API built successfully
+(`/tmp/dm-import-mail-sync.log`). Afghanistan regression: 103 passed, zero skipped
+(`/tmp/dm-import-mail-afghan.log`). Installed Core and final Release SHA-256:
+`603b2844a1bf52858df1fcb298e5c9bd20383be74e857430e861dd1aa134ac08`.
+Strict locale checks passed (`/tmp/dm-import-mail-i18n.log`). Core/import integration
+covered by the 283-pass full suite cited above. API documentation is committed
+locally; final root evidence commit follows. No user server was restarted and no
+user database was modified for this increment. All seven original workstreams
+remain open, including durable upload/row replay and production load diagnosis.
+
+Durable-import discovery: BulkImportModal currently accepts only a File, has no
+mutation intent or original-account pin, and discards local state on close. The
+three account API upload helpers do not send Idempotency-Key. Grade/attendance
+helpers already accept ApiRequestOptions but do not provide durable upload intent.
+Do not retry a changed file under the same intent or invent another account/job
+model. Reuse MutationReceiptStore for a file-hash manifest and independently
+committed row outcomes, with encrypted credentials; retain row-level partial
+success and reject changed input before any further rows run. Scope row IDs by
+original actor/role/school, upload intent, kind and row. Pin the selected year
+from the first accepted manifest so a later login-year change cannot redirect a
+retry. Replay must precede current email/capacity/reference checks. Coordinate
+this backend contract with the Core modal/useMutationIntent/API helpers and test
+unknown outcomes, concurrent hosts, cancellation, identity changes and recovery.
