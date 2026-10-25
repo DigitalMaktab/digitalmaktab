@@ -1167,3 +1167,32 @@ inference. Empty legacy actors remain no-op; nonempty callers use the durable AP
 SPA helper pins account credentials and forwards caller-owned intent. No new UI
 action, control or schema is added. Cleanup after crash-before-prune/abandoned
 partial intents, remaining reader bounds and representative load remain open.
+
+
+## Bounded standalone attendance summaries (2026-10-25)
+
+Reuse AttendanceRepository.Summary and AppAttendanceSummary.source for the three
+standalone attendance viewers. SQL counts original filtered marks by student,
+then returns a bounded page plus at most 30 recent marks per student. Preserve
+absence and inactive historical enrollment semantics; do not infer unmarked
+attendance or silently deduplicate conflicting history. Creation filters apply
+before aggregation to original mark CreationDate, never synthetic summary rows.
+Mine ignores foreign student IDs; parent link/current school membership is SQL
+bound. Scope both class and student school plus class/enrollment year. Count,
+page, recent rows and school timezone share one repeatable-read snapshot.
+
+AppTable.serverSort opts into global server sorting with sortBy/sortOrder and
+page-one reset. Repositories must whitelist keys and end ties with immutable IDs.
+Never re-sort an accepted server page locally, inject sort metadata into filter
+badges, or enable this flag on a loader that ignores it. GeneralParams only
+exposes the optional keys; existing repositories/tables retain their behavior.
+Summary precise rates sort before display rounding. Recent date-only values are
+formatted with UTC plus the active country's calendar to preserve school dates.
+
+The server source pins credentials, passes cancellation/no-store and uses the
+existing table filter lifecycle. Keep local report-card/class-overview array
+callers compatible without acquiring an HTTP loader provider. No new stored
+fields, summary table, UI controls, translations or overlapping index are needed.
+The existing IX_Attendance_DailyLookup is used in private query plans. Legacy raw
+attendance routes/report/mobile inputs and representative multi-school load
+remain open; bounded summary pages do not prove the full read audit complete.

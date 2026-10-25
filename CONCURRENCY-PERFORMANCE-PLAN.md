@@ -1335,3 +1335,105 @@ separate report-card/class-overview semantics; do not truncate their aggregates
 by reusing a raw page as a complete year. Reuse PagedList/UserParams/AppTable and
 the shared scoped cancellable read helpers where they fit. Verify representative
 query plans and source/DTO payload bounds before declaring this gap covered.
+
+
+### Bounded standalone attendance summaries (thirty-seventh increment)
+
+The three standalone attendance viewers downloaded entire selected-year mark
+graphs and computed per-student totals in the browser. Discovery traced the
+shared AttendanceRepository, AppAttendanceSummary, AppTable, creation-date helper,
+parent links, school timezone resolver and local report-card/class-overview
+callers. Those existing layers are extended. No persistent field/table/index,
+country fork, new component library, control or locale key is introduced. A
+small nonpersistent Core projection supplies counts/recent dates because raw
+AttendanceDto cannot represent an aggregate without fabricating mark entities.
+
+AttendanceRepository.Summary performs counts and stable student pages in SQL.
+Only filtered original marks contribute: inclusive UTC creation dates, optional
+class and school student scope combine before grouping. Mine ignores supplied
+student IDs; children checks the active current-school parent link in SQL. Both
+student/class schools and enrollment/class years are constrained. Absences and
+inactive historical enrollment marks remain counted; unmarked students remain
+absent from this marked-record summary. Legacy duplicate marks are retained,
+not silently merged into days. Count, page, bounded recent rows and timezone use
+one repeatable-read snapshot and request cancellation. No entity/audit-name
+graph, credentials, owned addresses or tracked records are loaded.
+
+The three role-policy routes are mine/summary, children/summary and school/summary.
+The shared staff endpoint map retains attendance.read for school reads. PageSize
+clamps to 1–50 and page number to the existing snapshot range. RecentDays clamps
+to 0–30 marks per returned student; one window query is restricted to the current
+page's IDs. Recent timestamps become school-local civil dates through the existing
+DailyAttendanceWriter.TimeZone; the UI formats them in UTC with the country
+calendar so host timezone cannot shift them. These are counts of stored marks,
+not inferred attendance, distinct daily totals or an enrollment census.
+
+AppAttendanceSummary.source reuses its table/columns, and all three shell viewers
+now delegate to it. Local array callers remain compatible without acquiring a
+request/loader provider. Creation dates/class controls remain in the shared
+draft/Apply/Reset section, with one request per applied scope/page. Requests pin
+credentials and pass cancellation/no-store. Locale/token reloads and obsolete
+response suppression use the existing table/request helpers; no automatic retry
+or whole-year fallback fetch is introduced.
+
+Core AppTable.serverSort is opt-in: pass sortBy/sortOrder, reset page one and keep
+the accepted server page order. Other tables preserve their behavior. GeneralParams
+exposes optional shared sort keys; repositories must opt in/whitelist them. Summary
+allows studentLabel/present/absent/rate and breaks all ties with student ID. Unknown
+keys fall back to ID; no interpolated SQL identifiers. Precise rate proportions
+sort before percentage display rounding. Sorting metadata does not become a
+filter badge or draft value. This preserves global sorting while paging totals.
+
+Validation: all 302 isolated PostgreSQL Core tests passed, zero skipped
+(`/tmp/dm-attendance-summary-full-core.log`). New coverage includes counts before
+paging and filtering, recent row caps, stable pages and global ordering, class/
+year/student boundaries, cross-school corrupt references, active parent links,
+cancellation/no tracking and a concurrent new mark between count/page reads.
+Real JWT HTTP tests verify original role policies, student/parent supplied-ID
+spoofing resistance, no-store/pagination, scope and localized invalid date ranges
+in all three languages. Existing wide goal tests remain passing; this is not
+through-commit membership coordination proof.
+
+Private warm fixture: 24,000 marks/120 students, 50 summaries/1,500 recent marks,
+60,401 JSON bytes, 24.38 ms for the repository method in the focused run. EXPLAIN
+(ANALYZE, BUFFERS) used the existing IX_Attendance_DailyLookup: count 5.101 ms,
+page 6.356 ms, recent 5.517 ms, timezone lookup 0.007 ms
+(`/tmp/dm-attendance-summary-plans.log`). The recent query restricts its indexed
+enrollment loops to 50 page students instead of all 120. No extra index was
+justified. These warm local measurements are neither whole-app HTTP latency
+nor representative production concurrency/supported-user evidence.
+
+Actual shared component/table/API tests in en/fa/ps verify all three real shell
+consumers, combined draft filters, page queries, retained complete totals/ratios,
+three-state global sorting/page reset, pinned credentials, token changes, aborts
+and late response suppression. Local-array mode also renders without a loader
+provider (`scripts/tests/attendance-summary.cjs`, `/tmp/dm-attendance-summary-ui.log`).
+The test is included in the complete 104-table UI/export audit, which passed
+after the local-array compatibility change
+(`/tmp/dm-attendance-summary-final-ui.log`). Core TypeScript, strict locale
+parity and local precommit component/route checks passed. React review retained
+shared components, stable primitive request dependencies, no mirrored page state,
+no fetch effects in shell consumers and keyboard-accessible table sort controls.
+
+Local commits: Core `30d151a`, SPA Core `3e36b7a`, SPA shell `65510308`, API docs
+`9f95972`. Standard scripts rebuilt and installed committed packages
+(`/tmp/dm-attendance-summary-release-dotnet.log`,
+`/tmp/dm-attendance-summary-release-spa.log`). Installed-dependency Afghanistan
+regressions: 106 passed, zero skipped (`/tmp/dm-attendance-summary-release-afghan.log`).
+Shell TypeScript passed (`/tmp/dm-attendance-summary-release-shell-tsc.log`).
+Built and API-installed DLL SHA-256 values match:
+
+- Core: `19a79d8b201fb8c1d94150adfd1b97c2d6e8ce6b340554a47ec5cad3b5c70166`.
+- Abstractions: `b565401897463d17e0f509bb1abfb811666bbee3fd48eec6e1891ef869c9ccd8`.
+- Afghanistan: `8de2678b4066082473c124d383767a2c83ab1b66ca39afe3e1fdc08463e85e35`.
+
+Installed attendance API/model, summary and AppTable JS match the source build.
+No live user DB changes or manual server restarts. Restart API/SPA together to
+load the new summary routes and clients. No schema migration is added.
+
+All seven original completion requirements remain open. Legacy raw attendance
+routes and report-card/class-overview/mobile inputs still need their own output/
+query bounds; never use one raw page as a full-year total. Remaining important
+writers/editors, through-commit reference/permission coordination, the wider
+invariant/query/index audit, distributed classroom/jobs, telemetry and isolated
+representative multi-school load/recovery evidence retain their full scope.
