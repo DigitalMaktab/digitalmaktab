@@ -1104,3 +1104,37 @@ references are deterministic/no-tracking and capped at 1,000, with localized 413
 class scoping and the broader import lookup audit remain open. Standalone country
 profile editor versions and through-commit reference/permission coordination are
 separate remaining work, not covered by these atomic import transactions.
+
+
+## Shared versions for module profiles (2026-10-25)
+
+Core IRevisionedExtension links a module-owned profile to its existing tracked
+IRevisionedRecord through RevisionOwner. Core SaveChanges follows owned fields
+into that extension and advances the Core aggregate's existing Revision. Do not
+add a parallel country revision field/table. Load the owner in the same unit of
+work; unbound extension writes fail. Metadata edits preserve security stamps.
+The shared owner lookup is lazy so unrelated Core writes do not allocate it.
+
+Afghan profile GET returns the Core version even for a missing profile; PUT
+requires it and rechecks fresh school/version after RecordVersions.LockAccount.
+That helper reuses the former password-repository physical row lock and is not
+authorization. Preserve existing profile IDs: legacy Id can differ from StudentId
+or TeacherId. Refresh only the clean matching profile/owned graph by its actual
+FK; never discard pending Core edits or unrelated enrollment changes. Profile and
+parent revision commit together. Create-only upsert/backfill hooks share the
+account lock, recheck existence and leave existing profiles/versions untouched.
+Backfill routes use heavy admission and hook IO forwards cancellation. Import
+versions come from the server's new account; Revision is not a workbook column.
+
+Country editors reuse Core useVersionedRecordEditor and AppBaseEditor conflict
+review/acknowledgedRevision. Preserve drafts on failure, locale/token renewal and
+review-read failure. Use saved values only after explicit comparison confirmation.
+A known save advances only the token, preserving fields typed during the request;
+failed/unknown responses do not refresh it. Account/resource switches abort and
+suppress old outcomes. Pin request credentials with accountRequestConfig. Native
+date/enum comparison uses country formatting. There is no automatic write retry,
+silent rebase, tab workspace or new persisted draft store.
+
+Deploy Core.Abstractions/Core/country/SPA packages together and restart API/SPA.
+The standalone Afghan person profile version gap is covered; remaining aggregate
+reference/authorization coordination and the wider editor/load audit stay open.

@@ -16,16 +16,16 @@ const React = require(app + '/react'), h = React.createElement, { render, fireEv
 const { MemoryRouter } = require(app + '/react-router-dom'), { I18nextProvider } = require(app + '/react-i18next'), i18n = require(app + '/i18next').createInstance();
 const { CalendarProvider } = require(core + '/src/contexts/CalendarContext.tsx');
 const load = file => require(core + '/src/' + file).default;
-let saves = [], gets = [], failLoad = false, failSave = false, pending;
-const student = { studentId: 'student-id', firstNameNative: 'احمد', fatherNameNative: 'پدر', asasNumber: 7, bloodGroup: 0, disabilityType: 0, motherTongue: 0, isOrphan: 0, studentStatus: 0 };
-const teacher = { teacherId: 'teacher-id', firstNameNative: 'معلم', maritalStatus: 1, employmentType: 1, educationLevel: 7, hireDate: '2024-03-20T00:00:00Z', bast: 2, step: 1 };
-mocks = { AppBaseEditor: load('components/AppBaseEditor.tsx'), AppEnumSelect: load('components/form/AppEnumSelect.tsx'), AppFormInput: load('components/form/AppFormInput.tsx'),
+let saves = [], gets = [], failLoad = false, failSave = false, pending, conflictSave = false, pendingSave = null, latestOverride = null; let versionCounter = 10;
+const student = { revision: '11111111-1111-4111-8111-111111111111', studentId: 'student-id', firstNameNative: 'احمد', fatherNameNative: 'پدر', asasNumber: 7, bloodGroup: 0, disabilityType: 0, motherTongue: 0, isOrphan: 0, studentStatus: 0 };
+const teacher = { revision: '22222222-2222-4222-8222-222222222222', teacherId: 'teacher-id', firstNameNative: 'معلم', maritalStatus: 1, employmentType: 1, educationLevel: 7, hireDate: '2024-03-20T00:00:00Z', bast: 2, step: 1 };
+mocks = { useVersionedRecordEditor: load('hooks/useVersionedRecordEditor.ts'), accountRequestConfig: require(core + '/src/api/requestOptions.ts').accountRequestConfig, AppBaseEditor: load('components/AppBaseEditor.tsx'), AppEnumSelect: load('components/form/AppEnumSelect.tsx'), AppFormInput: load('components/form/AppFormInput.tsx'),
   AppFormSectionContainer: load('components/form/AppFormSectionContainer.tsx'), AppFormLocalDatePicker: load('components/form/AppFormLocalDatePicker.tsx'),
   AppAlert: load('components/AppAlert.tsx'), AppCard: load('components/card/AppCard.tsx'), AppButton: load('components/AppButton.tsx'),
   AppStandaloneInput: load('components/input/AppStandaloneInput.tsx'), AppCalendarGrid: load('components/calendar/AppCalendarGrid.tsx'), AppCalendarChoiceGrid: load('components/calendar/AppCalendarChoiceGrid.tsx'),
   useAppLocalizer: require(core + '/src/hooks/useAppLocalizer.ts').useAppLocalizer,
-  apiClient: { get: async (url, config = {}) => { gets.push({url, ...config}); if (pending) return pending; if (failLoad) throw {response: {data: {detail: 'Could not load record'}}}; return {data: url.includes('teacher') ? teacher : student}; },
-    put: async (url, dto) => { if (failSave) throw {response: {data: {detail: 'Profile save failed'}}}; saves.push({url, dto}); return {data: dto}; } }
+  apiClient: { get: async (url, config = {}) => { gets.push({url, ...config}); if (pending) return pending; if (failLoad) throw {response: {data: {detail: 'Could not load record'}}}; return {data: latestOverride ?? (url.includes('teacher') ? teacher : student)}; },
+    put: async (url, dto, config) => { if (failSave) throw {response: {data: {detail: 'Profile save failed'}}}; saves.push({url, dto, config}); if(conflictSave)throw{response:{status:409,data:{code:'record_edit_conflict',detail:'Concurrent profile change'}}}; if(pendingSave)await pendingSave; return {data: {...dto,revision:'aaaaaaaa-aaaa-4aaa-8aaa-'+String(versionCounter++).padStart(12,'0')}}; } }
 };
 const { afghanistanCalendar } = require(country + '/src/calendarModule.ts');
 const Student = require(country + '/src/AfghanStudentDetailsEditor.tsx').default, Teacher = require(country + '/src/AfghanTeacherDetailsEditor.tsx').default;
@@ -76,6 +76,43 @@ const submit = ui => fireEvent.submit(ui.container.querySelector('form'));
     assert.equal(saves.at(-1).dto.secondaryDistrictId, null); assert.equal(saves.at(-1).dto.hireDate, new Date().toISOString().slice(0,10) + 'T00:00:00Z');
     failSave = true; submit(ui); await waitFor(() => assert(ui.getByText('Profile save failed'))); failSave = false; cleanup();
   }
+  // Actual Core conflict review and acknowledgement in both country editors.
+  for (const language of ['en-US','fa-AF','ps-AF']) for (const [Kind,kind,record] of [[Student,'Student',student],[Teacher,'Teacher',teacher]]) {
+    await i18n.changeLanguage(language); latestOverride=null;
+    localStorage.setItem('user',JSON.stringify({role:0,token:'first-profile-token',school:{id:'profile-school'}}));
+    const props={ [kind.toLowerCase()+'Id']:kind.toLowerCase()+'-id' };
+    let ui=view(h(Kind,props)); const label='afghan'+kind+'Details.firstNameNative';
+    await waitFor(()=>assert(input(ui,label))); change(ui,label,'My country draft'); conflictSave=true;
+    const before=saves.length; submit(ui); await waitFor(()=>assert(ui.getByText(i18n.t('recordConflict.kept'))));
+    assert.equal(input(ui,label).value,'My country draft');assert.equal(saves.length,before+1);
+    latestOverride={...record,firstNameNative:'Other saved name',revision:'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb'};
+    failLoad=true;fireEvent.click(ui.getByRole('button',{name:i18n.t('recordConflict.review')}));
+    await waitFor(()=>assert(ui.getByText(i18n.t('recordConflict.loadFailed'))));assert.equal(input(ui,label).value,'My country draft');
+    failLoad=false;fireEvent.click(ui.getByRole('button',{name:i18n.t('recordConflict.retry')}));
+    await waitFor(()=>assert(ui.getByText('Other saved name')));
+    fireEvent.click(ui.getByRole('button',{name:i18n.t('recordConflict.keep')})); assert.equal(input(ui,label).value,'My country draft');
+    fireEvent.click(ui.getByRole('button',{name:i18n.t('recordConflict.review')}));await waitFor(()=>assert(ui.getByText('Other saved name')));
+    fireEvent.click(ui.getByRole('button',{name:i18n.t('recordConflict.useSaved')}));await waitFor(()=>assert.equal(input(ui,label).value,'Other saved name'));
+    assert.equal(saves.length,before+1); conflictSave=false;
+    let finishSave;pendingSave=new Promise(resolve=>finishSave=resolve);change(ui,label,'Submitted name');submit(ui);submit(ui);
+    await waitFor(()=>assert.equal(saves.length,before+2));assert.equal(saves.at(-1).dto.revision,latestOverride.revision);
+    change(ui,label,'Typed while saving');const reads=gets.length;
+    await act(async()=>i18n.changeLanguage(language==='en-US'?'fa-AF':'en-US'));
+    assert.equal(input(ui,label).value,'Typed while saving');assert.equal(gets.length,reads);
+    localStorage.setItem('user',JSON.stringify({role:0,token:'renewed-profile-token',school:{id:'profile-school'}}));
+    await act(async()=>finishSave());pendingSave=null;await waitFor(()=>assert(ui.getByText(i18n.t('afghan'+kind+'Details.saved'))));
+    assert.equal(input(ui,label).value,'Typed while saving'); const accepted=versionCounter-1;submit(ui);
+    await waitFor(()=>assert.equal(saves.length,before+3));assert.equal(saves.at(-1).dto.revision,'aaaaaaaa-aaaa-4aaa-8aaa-'+String(accepted).padStart(12,'0'));
+    assert.equal(saves.at(-1).config.accountToken,'renewed-profile-token');
+    // A pending old-account write must not acknowledge or replace a new login's form.
+    await waitFor(()=>assert(ui.getByText(i18n.t('afghan'+kind+'Details.saved'))));
+    pendingSave=new Promise(resolve=>finishSave=resolve);submit(ui);await waitFor(()=>assert.equal(saves.length,before+4));const request=saves.at(-1);
+    localStorage.setItem('user',JSON.stringify({role:0,token:'other-profile-token',school:{id:'other-profile-school'}}));
+    ui.rerender(h(I18nextProvider,{i18n},h(MemoryRouter,null,h(CalendarProvider,{value:afghanistanCalendar},h(Kind,props)))));
+    await act(async()=>finishSave());pendingSave=null;assert(request.config.signal.aborted);
+    await waitFor(()=>assert(input(ui,label)));assert(!ui.queryByText(i18n.t('afghan'+kind+'Details.saved')));assert.notEqual(input(ui,label).value,'Typed while saving');
+    cleanup();localStorage.clear();latestOverride=null;
+  }
   let ui = view(h(Student)); assert(ui.getByText(i18n.t('afghanStudentDetails.saveProfileFirst'))); assert(!ui.container.querySelector('form')); cleanup();
   failLoad = true; ui = view(h(Student, {studentId: 'student-id'})); await waitFor(() => assert(ui.getByText('Could not load record')));
   assert(!ui.container.querySelector('form')); failLoad = false; fireEvent.click(ui.getByRole('button', {name: i18n.t('afghanDetailsForm.retry')}));
@@ -90,5 +127,5 @@ const submit = ui => fireEvent.submit(ui.container.querySelector('form'));
   const errors = validators.validatePersonDetails({asasNumber: '12abc', hireDate: '2026-02-30', electronicNationalIdNumber: 'abc', bloodGroup: 'MISSING'}, i18n.t.bind(i18n), ['asasNumber'], {bloodGroup: ['A_PLUS']});
   assert.deepEqual(Object.keys(errors).sort(), ['asasNumber','bloodGroup','electronicNationalIdNumber','hireDate'].sort());
   assert.deepEqual(validators.validatePersonDetails({}, i18n.t.bind(i18n), ['asasNumber'], {bloodGroup: ['A_PLUS']}), {});
-  console.log('PASS: real Core inputs and Select2 controls in Afghanistan student/teacher forms, translated field validation, optional clears, native integer input, correct numeric enums, Formik Hijri dates without lost edits, save/load failures, retry and aborts.');
+  console.log('PASS: real Core inputs and Select2 controls in Afghanistan student/teacher forms, translated field validation, optional clears, native integer input, correct numeric enums, Formik Hijri dates without lost edits, save/load failures, retained conflict drafts, explicit comparison/reload, acknowledged versions, locale/token renewal, newer typed fields, account isolation, retry and aborts.');
 })().catch(error => {console.error(error); process.exitCode = 1;});

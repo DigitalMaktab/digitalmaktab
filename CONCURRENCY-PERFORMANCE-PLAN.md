@@ -1136,3 +1136,93 @@ remaining important writers/editors, invariant and query/output audits, shared
 classroom authority/background jobs and representative multi-school load/recovery
 measurements. Keep the original full scope and do not mark complete from this
 module-import milestone.
+
+
+### Shared Core versions for country profiles (thirty-fifth increment)
+
+The standalone Afghan student/teacher profiles had no observed-version contract.
+Discovery found existing Core Student/Teacher Revision columns, RecordVersions,
+the credential writer's physical account lock, DataContext owned-value revision
+tracking and SPA Core's form/conflict comparison. These are extended and reused;
+there is no new persistent version column, table or second profile store.
+
+Core IRevisionedExtension exposes an existing tracked aggregate owner. SaveChanges
+follows a changed country profile or its owned national identity/address into that
+owner and advances the existing Core Revision with its EF predicate. Missing
+tracked owners reject rather than silently writing without a version. Owner lookup
+and cycle tracking allocate only on extension paths. Metadata edits preserve login
+stamps. RecordVersions.LockAccount extracts/reuses the password repository's fixed
+role/table, parameterized-ID physical row lock; credential behavior remains covered
+by the full Core suite. This helper supplies serialization, not authorization.
+
+Afghan profile DTOs echo the Core revision, including an empty country profile.
+PUT requires it: canonical localized no-store 428/409 on missing/stale versions.
+The repository checks actual school ownership after waiting, reloads the Core
+snapshot, checks RecordVersions and refreshes only a clean matching profile/owned
+graph. Existing legacy profile Id/FK differences are preserved; no unrelated
+Core/enrollment changes are cleared. Profile and parent version commit together.
+Commands cap at 64 KiB and reads are no-store. Create-only upsert/backfill hooks
+share the same account lock, recheck existence, preserve current profiles and leave
+versions untouched on no-op. They reuse ambient transactions or own one when
+needed and forward cancellation. Backfill HTTP actions use heavy admission. Import
+hooks supply the newly registered account's observed version; workbook columns
+exclude Revision. No spreadsheet field can bypass the version requirement.
+
+SPA Core useVersionedRecordEditor composes existing account identity, request
+options and conflict helpers for cancellable, single-flight versioned forms. Both
+country editors reuse it and existing AppBaseEditor conflict comparison. Failed
+saves/review reads and Keep preserve entered values; saved-value replacement is
+explicit. The shared acknowledgedRevision advances a known successful token only
+when its submitted baseline still matches, without replacing fields typed while
+saving. Locale/token renewal preserves forms; account/resource switches abort and
+suppress stale responses. Requests pin credentials; no automatic write retry,
+silent rebase, navigation tabs or persistent draft history is introduced. Date
+and enum comparison uses existing country calendar/translations, with shared Core
+controls. No new locale keys/mobile package changes were required.
+
+Validation: full isolated Core suite 291 passed, zero skipped
+(`/tmp/dm-country-versions-core-final.log`). Afghanistan suite 106 passed, zero
+skipped (`/tmp/dm-country-versions-af-final.log`). The new test runs two independent
+Kestrel hosts with existing test authentication: concurrent country writes accept
+one version, stale Core and stale country edits reject in both directions, owned-
+only changes advance the Core token without rotating stamps, missing versions
+return 428, three-locale conflicts return 409/no-store, foreign school requests
+return 404, 100 KiB commands receive 413 and no country Revision property exists
+in the EF model. Untracked-owner changes reject. Eight independent backfill
+contexts race a country editor, retain one profile and preserve no-op versions.
+These HTTP tests do not claim an additional JWT/through-commit permission proof.
+Existing report fixtures now observe versions after HTTP backfill/edits rather
+than reusing stale tracked Core snapshots.
+
+Actual country forms/shared Core comparison pass in en/fa/ps, including failed
+review reads, Keep/Use saved, no automatic save, acknowledged token reuse, newer
+typed fields, locale switch without refetch/draft loss, token renewal, duplicate
+submission and account-switch abort/suppression
+(`/tmp/dm-country-versions-ui-final.log`, `scripts/tests/afghan-details-forms.cjs`).
+The complete 104-table UI/export audit passed
+(`/tmp/dm-country-versions-full-ui.log`). Core/country/shell TypeScript, strict
+locale parity, component reuse, route policy and precommit checks passed. These
+correctness tests are not representative production load measurements.
+
+Local commits: Core `6e48b54`, Afghanistan `5156dc9`, SPA Core `e57c415`, Afghanistan
+SPA `32a540c`, API docs `ca366ca`. Committed backend/SPA packages were rebuilt and
+installed (`/tmp/dm-country-versions-release-dotnet.log`,
+`/tmp/dm-country-versions-release-spa.log`). Installed-dependency Afghanistan suite
+106 passed, zero skipped (`/tmp/dm-country-versions-release-afghan.log`); installed
+shell TypeScript passed (`/tmp/dm-country-versions-shell-tsc.log`). Built and API
+installed DLL hashes match:
+
+- Core: `bd72d417c2c83efc80e4358a0500102f85ed293b3ec306a0dd81ec4c4d3e3697`.
+- Abstractions: `a91dd43b4a9fd962f0c19c43dabb8b4bfdf1fbe5dd8db75508b05a197fe02a4c`.
+- Afghanistan: `00218df70f3aa22d75147593347e516d2b8c37001fddc9f0faf0b2fa073e4f70`.
+
+Installed Core hook/BaseEditor and both country editor JS match the builds. No
+user database changes or manual user-server restarts. Restart API and SPA together
+for the updated edit contract. There is no schema migration for this increment.
+
+All seven original completion requirements remain open. Next work includes
+explicit attendance fill recovery, remaining important writers/editors,
+through-commit reference/permission coordination, invariant and query/output
+audits, shared classroom authority/background jobs and representative multi-school
+load/recovery measurements. Do not equate these profile tests with whole-goal
+completion or shrink the original scope.
