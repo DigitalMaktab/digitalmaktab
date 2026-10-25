@@ -10,7 +10,7 @@ Module._load=function(request,parent,isMain){if(request==='@digitalmaktab/spa-co
  if(request.endsWith('/useJsPdfExportToPdf'))return{__esModule:true,default:()=>async()=>{throw Error('Not an export table')}};
  if(['react','react/jsx-runtime','react-dom','react-dom/client','react-i18next','react-router-dom','i18next','formik'].includes(request))return original.call(this,app+'/'+request,parent,isMain);
  return original.apply(this,arguments)};
-const React=require(app+'/react'),h=React.createElement,{render,fireEvent,waitFor,cleanup,act}=require(app+'/@testing-library/react');
+const React=require(app+'/react'),h=React.createElement,{render,renderHook,fireEvent,waitFor,cleanup,act}=require(app+'/@testing-library/react');
 const {MemoryRouter}=require(app+'/react-router-dom'),{I18nextProvider}=require(app+'/react-i18next'),i18n=require(app+'/i18next').createInstance();
 const load=file=>require(core+'/src/'+file).default,Summary=load('components/attendance/AppAttendanceSummary.tsx'),client=load('api/client.ts');
 const {AuthContext}=require(core+'/src/helper/auth/AuthProvider.tsx'),{LoaderContext}=require(core+'/src/contexts/LoaderContext.tsx');
@@ -26,6 +26,17 @@ coreExports={AppAttendanceSummary:Summary,AppClassSelect:ClassSelect,AppCard:({c
 const resources={'en-US':{translation:JSON.parse(fs.readFileSync(core+'/src/locales/en-US/translation.json'))}};
 for(const lang of ['fa-AF','ps-AF'])resources[lang]={translation:JSON.parse(fs.readFileSync(projects+'/digitalmaktab-spa-country-afghanistan/src/locales/'+lang+'/translation.json'))};
 (async()=>{await i18n.init({lng:'en-US',resources,interpolation:{escapeValue:false}});
+ // Raw helpers/hooks expose one page and its headers; they never load a whole year.
+ const savedGet=client.get,rawCalls=[],api=load('api/attendance.ts');
+ client.get=async(url,config)=>{rawCalls.push({url,config});return{status:200,data:[{id:'raw-mark',status:false}],headers:{pagination:JSON.stringify({totalPages:4,totalItems:174})}};};
+ const rawFilters={pageNumber:4,pageSize:50,classId:'class-one',studentId:'student-one',creationDateFrom:'2026-04-01',creationDateTo:'2026-04-30',dateTime:'2026-04-02'};
+ const rawAbort=new AbortController();localStorage.setItem('user',JSON.stringify(account));
+ for(const method of ['mine','forChildren','forSchool'])await api[method](rawFilters,{signal:rawAbort.signal,token:'original-token'});
+ for(const call of rawCalls){assert.deepEqual(call.config.params,rawFilters);assert.equal(call.config.accountToken,'original-token');assert.equal(call.config.signal,rawAbort.signal);assert.equal(call.config.headers['Cache-Control'],'no-store');}
+ const rawHook=renderHook(()=>load('hooks/useAttendanceViews.ts')(),{wrapper:({children})=>wrap(children)});let rawResult;
+ await act(async()=>{rawResult=await rawHook.result.current.forSchool(rawFilters,{signal:rawAbort.signal,token:'original-token'});});
+ assert.equal(rawResult.status,2);assert.equal(JSON.parse(rawResult.headers.pagination).totalItems,174);assert.equal(rawCalls.length,4);
+ rawAbort.abort();await act(async()=>{rawResult=await rawHook.result.current.mine(rawFilters,{signal:rawAbort.signal});});assert.equal(rawResult.status,0);assert.equal(rawCalls.length,4);rawHook.unmount();client.get=savedGet;
  for(const lang of Object.keys(resources)){await act(async()=>i18n.changeLanguage(lang));localStorage.setItem('user',JSON.stringify(account));
   requests=[];mode='ok';let ui=render(wrap(h(Summary,{source:{kind:'school'},showStudentName:true,recentDays:30,filterControls:{initialValues:{classId:''},render:(values,change)=>h(ClassSelect,{name:'classId',value:values.classId??'',onChange:value=>change('classId',value)})}})));
   await waitFor(()=>assert(ui.getByText('Aggregate pupil')));assert.equal(requests.length,1);assert(ui.getByText('50%'));

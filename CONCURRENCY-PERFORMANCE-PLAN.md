@@ -1506,3 +1506,90 @@ restarts; restart SPA to load the coordinated control/exports/translations.
 All seven original goal requirements remain open; the remaining reader,
 writer/invariant, distributed jobs/classroom, observability and representative
 multi-school load/recovery scope is unchanged.
+
+
+### Paged raw attendance and shared reader scope (thirty-ninth increment)
+
+Discovery traced the remaining unbounded raw AttendanceController routes, the
+existing bounded teacher/student repository path, PagedList/AttendanceParams,
+raw SPA helpers and full-history report consumers. Mobile already calls the
+paged /Student/attendance route; its omitted DateTime was being mapped to an
+invalid DateTime.MinValue. Existing domain entities, AttendanceDto/reference DTOs,
+paging, timezone resolver and header mapping are reused. No persistent field,
+table, duplicate record DTO, service registry or index is introduced. The
+unused school-wide ListForSchool method is retired rather than left as another
+unbounded browser path. Full-history report methods retain their separate callers.
+
+AttendanceRepository.Page now serves raw mine/children/school and teacher/student
+records. Summary and records reuse one FilteredMarks query: both school
+boundaries, class/enrollment year, server-owned student/teacher scope, active
+current-school parent link, original creation dates and optional civil-day filter.
+A parent-supplied student ID narrows within actual links and cannot expand access;
+mine forces the authenticated student. Raw routes retain the selected server
+year. Teacher ownership checks/explicit-scope requirement remain. Inactive
+historical enrollments and absence rows remain visible. Date boundaries reuse
+the existing school timezone/half-open UTC resolver.
+
+Raw count/page share a repeatable-read snapshot and request cancellation. Only
+reference navigations on at most 50 root records are requested, with no tracking
+and stable timestamp-desc/immutable-ID ordering. Existing JSON record shape and
+country enrichment remain available. A corrupt legacy class-to-foreign-branch
+reference keeps the attendance mark/count but clears that foreign branch on the
+no-tracking response copy. No stored data/history is rewritten. Raw reads still
+load bounded person entities internally; this does not finish the broader field/
+projection/audit-label batching audit. Responses use no-store and standard
+Pagination metadata; complete counts still come from /summary, not a raw page.
+
+AttendanceParams.DateTime is nullable. Omission now reads a bounded selected-year
+page; explicit invalid dates return AttendanceController's localized 400, including
+student actions. No new locale keys are needed. GeneralParams clamps sizes to
+1–50, including manually constructed empty pages. Shared PagedList uses 64-bit
+offsets and skips item SQL beyond the counted result, preserving empty-page
+headers without negative overflow or enormous OFFSET scans. That helper does not
+give every repository stable order/snapshot semantics.
+
+SPA raw helpers/useAttendanceViews now accept paging/filter/signal/token options,
+pin credentials and retain metadata. Each call performs one page request; no
+automatic whole-year fetch or retry is introduced. Standalone screens already
+use the server summary. Parent summary student filters were also aligned with
+actual link-constrained narrowing.
+
+Validation: complete isolated PostgreSQL Core suite 305 passed, zero skipped
+(`/tmp/dm-attendance-records-full-core.log`). New coverage includes stable
+73-record paging, SQL-side combined filters, false-status/history preservation,
+wrong-school references, active parent links, school-day boundaries, cancellation/
+no tracking, extreme-page single-count/no-offset behavior and a concurrent insert
+between count and page. Real JWT HTTP tests use the actual Core mapper profiles
+and the API's Newtonsoft loop/enum settings, verifying all raw role routes,
+student date omission, forged student scopes, standard metadata, bounded record
+shape, no credentials/stamps or foreign branch details, and exact English/Dari/
+Pashto invalid-date messages. The final full run includes the foreign-reference
+response-copy test. These are correctness/boundedness checks, not new production
+throughput or through-commit permission-coordination evidence.
+
+Actual SPA API/hook tests verify complete criteria, page metadata, pinned token,
+no-store, cancellation-before-send and no whole-year fallback
+(`scripts/tests/attendance-summary.cjs`, `/tmp/dm-attendance-records-ui.log`). The
+complete 104-table UI/export audit passed (`/tmp/dm-attendance-records-full-ui.log`).
+Core TypeScript and precommit checks passed. Local commits: Core `5d7d4d3`,
+SPA Core `b554a76`, API docs `9a8ff6b`. Standard backend/SPA scripts rebuilt and
+installed committed packages (`/tmp/dm-attendance-records-release-dotnet.log`,
+`/tmp/dm-attendance-records-release-spa.log`). Installed-dependency Afghanistan
+regressions passed: 106, zero skipped (`/tmp/dm-attendance-records-release-afghan.log`).
+Shell TypeScript passed (`/tmp/dm-attendance-records-release-shell-tsc.log`).
+Built and API-installed DLL SHA-256 values match:
+
+- Core: `1b35133ad102eaed87f9ac001e27ad814515874e7affbfb18b1ff45d86ebdda2`.
+- Abstractions: `b8e45cd828baff55771a6f029b53f88f05383ae6c49485a378be7e5e34587cfe`.
+- Afghanistan: `55b620cec9556eb1219420a9d4905e703547d112ce5f449cce33ed16af819155`.
+
+Installed raw attendance API/hook JS matches the build. No live user DB changes
+or manual server restarts; restart API/SPA together. There is no schema migration.
+
+All seven original requirements remain open. Report-card/class-overview full
+history needs aggregation/output work. Mobile's current student screen counts
+only its loaded page, shows every mark as present and uses host Gregorian dates;
+its query keys/transport also need account-scope work. The backend omission fix
+does not claim complete mobile attendance. Other important writers/editors,
+invariants, wider query/index/export bounds, shared jobs/classroom authority,
+telemetry and representative multi-school load/recovery remain in full scope.

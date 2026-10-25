@@ -1217,3 +1217,36 @@ formatting. Only a known result plus explicit new-run confirmation resets the
 intent. This is mounted-action recovery, not persistent cross-reload storage or
 automatic retry. Remove stale claims about unattended nightly marking in all
 three SPA/mobile locale bundles. Promotion/fee buttons remain separate audit work.
+
+
+## Paged raw attendance and optional dates (2026-10-25)
+
+AttendanceRepository.Page reuses PagedList/AttendanceDto for raw mine/children/
+school and teacher/student reads. Keep one FilteredMarks query shared with the
+summary, checking both student/class schools and class/enrollment years. Parent
+StudentId narrows only within the current active parent link; mine forces its
+own identity. Preserve inactive historical enrollment and absence records.
+Optional DateTime is a civil day resolved through existing school timezone
+bounds, combined with original creation timestamps and other scope filters.
+
+Count/page use one repeatable-read snapshot, cancellation/no-store and stable
+timestamp/ID order. Include only reference navigations on at most 50 roots;
+raw record shape/country enrichment remains. Clear foreign-school branch details
+from no-tracking response copies without hiding marks or modifying history.
+The unused unbounded ListForSchool
+method is removed; report-card/class-overview full-history methods remain for
+their separate audit. No new table, persistent field, DTO or index is needed.
+
+AttendanceParams.DateTime is nullable. Never map omission to DateTime.MinValue:
+student attendance without a date must return a bounded year page. Explicit
+invalid dates use AttendanceController resources, including student actions.
+GeneralParams clamps sizes to 1–50. PagedList calculates offsets as long and
+skips item SQL beyond the counted set, retaining empty-page/header semantics.
+Do not infer all repositories have snapshot/order guarantees from that helper.
+
+SPA raw helpers/useAttendanceViews forward one page plus filters/signal/pinned
+credentials and retain metadata; standalone summaries use /summary. Mobile
+student API already used a paged route; its screen currently counts only a page,
+marks every row as present and formats browser-native Gregorian dates. Its
+query keys/transport also require the remaining account-scope audit. Do not
+claim complete mobile attendance from the backend's optional-date fix.
