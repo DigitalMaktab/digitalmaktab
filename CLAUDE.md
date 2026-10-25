@@ -545,9 +545,22 @@ Student/teacher/parent imports also stage AccountWelcomeQueue inside each row's
 account transaction. Reuse AccountRegistrationService.LockEmail before school/
 capacity locks and recheck duplicates after waits. Never call welcome transport
 from an importer or report a committed account as skipped after mail failure.
-Keep partial-row success and queue-staging rollback. Durable upload/row receipts,
-generated-password result recovery and atomic country import hooks remain open;
-do not add duplicate account/import-job/outbox tables to solve those tasks.
+Keep partial-row success and queue-staging rollback. Person imports now reuse
+WorkbookImportReplay over MutationReceiptStore: an actual-file SHA-256 manifest
+pins the original student year; independent row receipts replay outcomes and
+credentials before current validation/reference/duplicate checks. Require a stable
+Idempotency-Key and recheck current account/impersonator stamps and staff grants
+after receipt waits. Never retry accepted rows when keys cannot decrypt results.
+Use the shared Rows pipeline for aggregation/tracker cleanup and stop on transient
+database failure rather than querying every remaining row.
+
+BulkImportModal and API helpers pin account credentials, retain selected files on
+close/unknown outcomes and restore IDs from bounded per-account/kind file metadata.
+Never store file bytes, passwords, response data or bearer-token fallback scopes
+in import recovery storage; corruption/storage failure must not silently invent
+another intent. The API and SPA upload contract ship together. Grade/attendance
+durable upload outcomes and atomic country import hooks remain open; do not add
+duplicate account/import-job/outbox tables to solve those tasks.
 
 Mutation intents use immutable actor/role/school scope via Core accountIdentity,
 not the access token: token renewal must not create a new payment/registration

@@ -914,3 +914,81 @@ from the first accepted manifest so a later login-year change cannot redirect a
 retry. Replay must precede current email/capacity/reference checks. Coordinate
 this backend contract with the Core modal/useMutationIntent/API helpers and test
 unknown outcomes, concurrent hosts, cancellation, identity changes and recovery.
+
+### Durable person-import intent and result recovery (thirty-second increment)
+
+Student, teacher and parent uploads now require Idempotency-Key. Core's shared
+WorkbookImportReplay uses the existing MutationReceiptStore and encrypted response
+columns: a manifest binds exact bounded-file SHA-256 to the actor/role/school,
+import kind and request ID, and pins the first accepted student academic year.
+Per-row operation keys under the same intent retain independently committed row
+outcomes and credentials. There is no new job/account/outbox table or duplicate
+storage of source files. Completed rows replay before current duplicate, capacity
+or reference checks; validation skips are recorded, while unexpected failed rows
+roll back and may run on explicit retry. Earlier rows survive later failure or
+cancellation. The shared Rows pipeline aggregates results and clears tracked
+state instead of copying this workflow into each adapter. Transient database
+errors stop later attempts with localized no-store 503/Retry-After; no mutation
+is automatically retried. Changed files under an accepted ID return 409, missing
+IDs 428, and unreadable replay keys 503 without re-executing accepted work.
+
+The controller passes current request authority, not client-supplied actor fields.
+After receipt waits, every manifest/row read rechecks current account stamp,
+impersonator stamp and staff import grants before decrypting saved credentials.
+This does not assert through-commit authorization coordination or resolve the
+wider role/target privilege audit. Country import hooks and legacy country-shaped
+student template fields still need the composition audit; existing Core DTOs,
+entities and module extensions must be reused rather than mirrored.
+
+Core BulkImportModal/useMutationIntent/API helpers retain stable request IDs with
+file metadata per immutable account/import kind, without persisting bytes,
+passwords or response bodies. Metadata is only a recovery hint: the server hashes
+actual bytes. Reselecting the original unchanged file after remount recovers its
+accepted row results. Failed/closed uploads retain the current file/intent;
+selecting another file explicitly starts another operation. Storage failures or
+corruption stop an upload rather than silently replacing an unknown intent.
+Requests pin account tokens, double clicks are single-flight, token renewal and
+locale changes preserve intent, and abandoned/account-switched results cannot
+reveal credentials. This is not a full import-history browser or durable source
+file archive: only the last file metadata/intent per account/kind is retained.
+Grade/attendance helpers forward the shared options but their durable upload
+outcomes remain unfinished; their existing version contracts are unchanged.
+
+Validation: full private PostgreSQL Core suite 287 passed, zero skipped
+(`/tmp/dm-import-replay-final-core.log`). Covers eight independent contexts with
+one accepted row and original credentials, partial failure/cancellation and later
+recovery, key loss, stamp revocation, exact file hash, row bounds and transient
+DB fail-fast. Real JWT HTTP tests use two independent Kestrel hosts and all three
+person import endpoints: missing keys, concurrent replay, changed-file rejection,
+private/no-store responses, replay after class closure/active-year change and
+locale change, one account/welcome intent per accepted row. Final targeted source
+and HTTP checks passed (`/tmp/dm-import-replay-final-http.log`,
+`/tmp/dm-import-replay-shared-pipeline.log`). These are correctness checks, not a
+representative latency or supported-user-count measurement.
+
+Actual Core modal/API tests pass in en/fa/ps (`scripts/tests/import-recovery.cjs`,
+`/tmp/dm-import-replay-ui-tests.log`), including failure, close/reopen, remount,
+reselection, token renewal, duplicate clicks, account switching and safe storage.
+The test is part of the complete 104-table UI/export audit, which passed
+(`/tmp/dm-import-replay-full-ui.log`). Strict locale/mobile parity, Core component
+reuse and TypeScript passed. No additional record/table/date UI was introduced.
+
+Local commits: Core `382f7cd`, SPA Core `b879f40`, Afghanistan SPA translations
+`81eaabf`, mobile translations `f077725`, API host/docs `f164e7a`. Backend and SPA
+packages were rebuilt/installed (`/tmp/dm-import-replay-release-dotnet.log`,
+`/tmp/dm-import-replay-release-spa.log`). Mobile country built/packed through its
+existing script and installed in both consumers; source/dist locale checksums
+match. Core Release and API-installed DLL SHA-256 both equal
+`087a7c47d170edd0f599f48b741c882654b4d2cb5b658ae0ba5f9f4212b8e1e5`.
+Installed SPA modal/intent/options JS matches the built artifacts. Afghanistan
+regression 103 passed, zero skipped (`/tmp/dm-import-replay-release-afghan.log`);
+shell TypeScript passed (`/tmp/dm-import-replay-release-shell-tsc.log`). No live
+user database was modified and no user server was manually restarted. Restart
+API and SPA together to load the coordinated import contract; old clients get
+428 rather than bypassing receipt protection.
+
+All seven original goal requirements remain open. Next work includes durable
+attendance/grade upload outcomes, country import composition, remaining important
+writers/editors, invariants/query/output audits, shared classroom authority/jobs
+and representative multi-school load/recovery evidence. Do not mark the full
+objective complete from this focused import milestone.
