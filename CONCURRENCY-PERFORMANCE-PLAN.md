@@ -1059,3 +1059,80 @@ composition and legacy country-shaped template fields, explicit fill recovery,
 remaining important writers/editors, invariant/query/output audits, shared
 classroom authority/jobs and representative multi-school load/recovery evidence.
 Do not mark the goal complete from this workbook milestone.
+
+
+### Atomic module-aware person imports (thirty-fourth increment)
+
+Discovery found that Core's student import still required Afghan native/English
+family chains but discarded those country values; neither student nor teacher
+imports invoked the existing extension hooks. The existing Afghan profile DTOs,
+entities, validation rules and repository already represented the data. They are
+reused, without another table, field, DTO or plugin registry.
+
+Core IStudentExtensionHook/ITeacherExtensionHook now share IPersonExtensionHook
+for optional machine columns, enum choices, legacy normalization and import saves.
+ModuleApplicability.PersonHooks supplies one matching policy for both form and
+import dispatch: country, exact school and enabled-module targeting, with school
+hooks after country hooks. Default import callbacks preserve existing upsert-only
+hooks. Core's base student template uses universal FirstName/LastName and existing
+Core columns. Afghanistan owns its native/English family chains, MotherTongue,
+IsOrphan and other existing profile fields. The teacher template now resolves the
+actual school and matching hooks asynchronously. Repeated/unsupported columns
+reject before row writes instead of being silently overwritten/discarded. Country
+DTO identifiers cannot select the server-owned import target. Explicit universal
+names win; only the Afghan module recognizes older English/native-only sheets.
+
+Country hooks parse the existing DTOs using AfghanPersonDetailsRules and save
+through AfghanPersonDetailsRepository with explicit ambient transaction ownership.
+Account, module profile, student enrollment, queued welcome and row receipt commit
+together. Standard localized field validation errors report skipped rows after
+rollback. Failure after a country save also rolls it back; replay of accepted rows
+does not invoke hooks or overwrite later profile edits. Normal standalone repository
+calls retain transaction ownership. Their editor versions and broader through-commit
+reference/permission coordination remain separate requirements.
+
+Core BoundedWorkbook.CellText normalizes typed Excel civil dates/numeric cells to
+invariant machine values; student/teacher birth dates accept ISO yyyy-MM-dd text
+or date cells across request locales. Template endpoints use heavy admission and
+no-store responses. Student class reference reads are no-tracking, deterministic
+and capped at 1,000, with localized 413. Class-scoped reference selection and wider
+import lookup/query bounds remain open. Imported teacher welcome records now use
+the actual TEACHER/PRINCIPAL/HEAD_MASTER role. New messages use existing per-controller
+School resources in en/fa/ps; there are no new frontend controls or locale keys.
+
+Validation: full private PostgreSQL Core suite 291 passed, zero skipped
+(`/tmp/dm-country-import-final-core.log`). Applicable module columns/atomic callbacks,
+wrong-country/wrong-school exclusion, country-before-school order, unsupported
+header rejection, module validation after saved Core writes, independent success,
+queued effects and accepted replay are covered. The real Afghan hooks/DTOs/rules/
+repository pass for students and teachers in all three locales, including native
+names, IDs, employment fields, typed dates, legacy sheets, preserved Core display
+names, actual principal welcome roles, retry without duplicate profiles, and Austria
+isolation. Injected welcome staging failure after country save leaves no account
+or country profile; explicit same-intent recovery succeeds. The harness owns a new
+isolated person-import database, never user data. Country parser tests reject
+invalid enums/numbers/dates/identifiers and ignore DTO target IDs.
+
+Core `026ca76`, Afghanistan `b8e5a8f` and API docs `1097ea9` are committed locally.
+Standard backend sync rebuilt/installed committed packages and built API
+(`/tmp/dm-country-import-release-dotnet.log`). All 105 Afghanistan tests passed
+against those installed dependencies, zero skipped
+(`/tmp/dm-country-import-release-afghan.log`). Strict locale parity, template route
+policy checks, shell syntax, whitespace and precommit checks passed. Source builds
+and installed API DLL hashes match:
+
+- Core: `641e4549b641a740ce3641ca634812160f68eb950474665bd70b700a354781cc`.
+- Abstractions: `974811da268af95ae5a2686c6d1de2c101b49f219cfbe5d8ba4b2fb6e2680cc5`.
+- Afghanistan: `292b77c1b6b4a6f94b259bed582eb2ef51dcc84b3748b647d4f8faa23e3303c0`.
+
+No user database was modified and user servers were not manually restarted. Restart
+API for the coordinated hook contract; if still on packages from the preceding
+modal increment, restart SPA too. No frontend package change in this increment.
+These correctness/boundedness checks do not establish whole-app capacity.
+
+All seven original completion requirements remain open. Next work includes
+standalone country profile editor concurrency, explicit attendance fill recovery,
+remaining important writers/editors, invariant and query/output audits, shared
+classroom authority/background jobs and representative multi-school load/recovery
+measurements. Keep the original full scope and do not mark complete from this
+module-import milestone.

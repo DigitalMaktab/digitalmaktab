@@ -8,6 +8,8 @@ initdb -D "$database_dir/data" --auth=trust --username=academic_test > "$databas
 pg_ctl -D "$database_dir/data" -o "-h '' -k '$database_dir' -p 55439" -l "$database_dir/server.log" -w start
 createdb -h "$database_dir" -p 55439 -U academic_test timetable_country_tests
 export AF_TIMETABLE_TEST_DATABASE="Host=$database_dir;Port=55439;Username=academic_test;Database=timetable_country_tests"
+createdb -h "$database_dir" -p 55439 -U academic_test person_import_tests
+export AF_PERSON_IMPORT_TEST_DATABASE="Host=$database_dir;Port=55439;Username=academic_test;Database=person_import_tests;Pooling=false"
 createdb -h "$database_dir" -p 55439 -U academic_test academic_year_tests
 createdb -h "$database_dir" -p 55439 -U academic_test ministry_report_tests
 createdb -h "$database_dir" -p 55439 -U academic_test transfer_tests
@@ -19,4 +21,4 @@ export AF_TRANSFER_TEST_DATABASE="Host=$database_dir;Port=55439;Username=academi
 export AF_MINISTRY_TEST_DATABASE="Host=$database_dir;Port=55439;Username=academic_test;Database=ministry_report_tests"
 export AF_ACADEMIC_TEST_DATABASE="Host=$database_dir;Port=55439;Username=academic_test;Database=academic_year_tests"
 cd "$projects_dir/digitalmaktab-country-afghanistan"
-dotnet test tests/DigitalMaktab.Country.Afghanistan.Tests --no-restore --filter 'FullyQualifiedName~TimetableCountryTests|FullyQualifiedName~AutomationCompletionTests|FullyQualifiedName~FeeReminderTests|FullyQualifiedName~AcademicYearTests|FullyQualifiedName~AcademicYearPolicyTests|FullyQualifiedName~MinistryReportTests|FullyQualifiedName~MinistryRecordTests|FullyQualifiedName~StudentRegisterTests|FullyQualifiedName~PersonDetailsTests|FullyQualifiedName~TransferTests|FullyQualifiedName~SolarHijriCalendarProviderTests|FullyQualifiedName~SwaggerTests' --verbosity minimal
+dotnet test tests/DigitalMaktab.Country.Afghanistan.Tests --no-restore --filter 'FullyQualifiedName~TimetableCountryTests|FullyQualifiedName~AutomationCompletionTests|FullyQualifiedName~FeeReminderTests|FullyQualifiedName~AcademicYearTests|FullyQualifiedName~AcademicYearPolicyTests|FullyQualifiedName~MinistryReportTests|FullyQualifiedName~MinistryRecordTests|FullyQualifiedName~StudentRegisterTests|FullyQualifiedName~PersonDetailsTests|FullyQualifiedName~PersonDetailsImportTests|FullyQualifiedName~TransferTests|FullyQualifiedName~SolarHijriCalendarProviderTests|FullyQualifiedName~SwaggerTests' --verbosity minimal

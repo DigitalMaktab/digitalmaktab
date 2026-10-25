@@ -1073,3 +1073,34 @@ never uploads automatically. Unknown responses keep the original request ID.
 Preserve metadata-only storage, account isolation, cancellation and no automatic
 mutation retries. Country import composition and explicit fill recovery remain
 open; see Core WORKBOOK-IMPORT-LIMITS.md and CONCURRENCY-PERFORMANCE-PLAN.md.
+
+
+## Atomic country/school person imports (2026-10-25)
+
+Extend the existing IStudentExtensionHook/ITeacherExtensionHook through Core
+IPersonExtensionHook; do not create another import registry or profile store.
+Hooks contribute machine columns/reference choices, optional legacy normalization
+and AfterImportAsync. Core ModuleApplicability.PersonHooks owns matching country,
+exact school and enabled-module selection, with school hooks after country hooks.
+Use that shared selection for ordinary form hooks too. Replay must not rerun
+accepted row hooks. Core templates contain universal names and Core fields only;
+module-only columns belong in that module. Reject repeated/unsupported columns
+rather than silently dropping data. Teacher templates are school-aware async reads.
+
+Afghanistan reuses its existing person DTOs, AfghanPersonDetailsRules and
+AfghanPersonDetailsRepository. Import calls explicitly join the row receipt's
+transaction; normal form calls still own their transaction. Country profile,
+account, enrollment, welcome intent and receipt commit together. Return localized
+field errors from module rules and roll the entire failed row back. IDs/school/role
+come from server context; DTO identifier columns are never import targets. Preserve
+explicit universal names; only the Afghan hook supplies the old English/native
+fallback. Do not reinstate mandatory Afghan name columns in Core.
+
+BoundedWorkbook.CellText normalizes typed Excel date/numeric cells to invariant
+machine values. Person birth-date text uses Gregorian yyyy-MM-dd, without timezone
+conversion; the country UI still owns its native picker. Imported welcome delivery
+must retain the actual TEACHER/PRINCIPAL/HEAD_MASTER role. Student template class
+references are deterministic/no-tracking and capped at 1,000, with localized 413;
+class scoping and the broader import lookup audit remain open. Standalone country
+profile editor versions and through-commit reference/permission coordination are
+separate remaining work, not covered by these atomic import transactions.
