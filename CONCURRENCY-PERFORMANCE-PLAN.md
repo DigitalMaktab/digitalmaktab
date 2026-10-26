@@ -2278,3 +2278,80 @@ endpoint or caller correct. Student class/schedule reads remain separate audit w
 as do scalar class summaries, nested audit-label mapping, person details/module
 snapshots, grade/fee/inventory and other reads/writers, shared classroom state/jobs,
 mobile SignalR/country/locale, telemetry and multi-school load/recovery/deployment.
+
+
+### Student roster scope and complete weekly grids (fiftieth increment, 2026-10-27)
+
+Discovery traced school/teacher/student schedule controllers, Schedule/mine and
+children fan-out, raw mobile student schedules, SPA grid loaders/tables, parent
+links, Student GetClass, existing roster predicates and Core formatting. Found:
+Student/schedules omitted StudentId and trusted a supplied class ID; Student/class
+loaded classmates' enrollment records; weekly fan-out silently took only the first
+server page per class; school/teacher flattened partial lesson pages into grids.
+Reuse DailyAttendanceWriter.ActiveRoster, UserParams.StudentId, existing models/
+DTOs, ReadPage/ReadSnapshot and Extensions.FlattenSchedules. No new table, stored
+field, DTO, index, roster service or country-specific rule.
+
+Student GetClass now scopes school/student/year in SQL through the existing active
+roster (active school/class/student/enrollment and equal class/enrollment year).
+Return one deterministic grade/section/ID reference with branch/year, without
+classmates, course collections or teacher profiles. Historical records stay stored.
+Student/schedules always forces authenticated StudentId/year; optional class IDs
+can only narrow this scope. Raw pages use one count/IDs/graph snapshot, immutable
+day/period/course/ID order, common creation dates, cancellation/no-store and the
+existing 50-root DTO contract. Foreign branch/subject-book objects are withheld on
+response copies; global books remain valid.
+
+SchoolRepository.FilteredSchedules shares raw and complete-grid root scope. Parent
+scope adds a current active same-school parent/child relationship to ActiveRoster;
+no unbounded child/class ID arrays or per-class fan-out. GetWeeklySchedules probes
+at most 1,001 scalar IDs before any graph and rejects more than 1,000 matching
+active schedule/course/class rows with localized ScheduleReadTooLarge (413).
+Read IDs/references in one repeatable-read snapshot. Caller-owned strong transactions
+stay open; weak transactions fail. Common creation filters narrow original schedule
+rows. School/teacher metadata now describes one complete seven-day grid, regardless
+of requested page or size. All four grid routes use no-store/cancellation/problems.
+Empty grids retain the existing seven-day contract.
+
+Extensions.FlattenSchedules now shares one tuple-based cell pipeline for entity
+and DTO inputs. Weekly routes use reference-only entities directly, avoiding
+unused person/audit DTO mapping and its queries. Core ClassLabels retains localized
+section/grade/type/shift/branch identities, all ten periods and concurrent lines.
+Existing academic-report DTO formatting remains compatible. This change does not
+optimize publication history or claim nested mapping elsewhere is complete.
+
+Validation: initial four focused private PostgreSQL/API cases pass
+(/tmp/dm-schedule-reads-focused.log). Final full isolated Core suite 329 passed,
+zero skipped (/tmp/dm-schedule-reads-full-core.log), including stronger foreign
+branch/book and localized section assertions. Cases cover 70-slot complete weeks,
+50/20 raw pages, date filters before flattening, unrelated class IDs, inactive and
+foreign placements, parent-link removal, no classmates/tracking/credential graph,
+concurrent ID/graph updates, cancellation and transaction ownership. Real JWT tests
+exercise raw/class/mine/children/teacher/school routes in English/Dari/Pashto; all
+four complete routes reject 1,001 lessons with controller-localized no-store 413,
+and actual 1,000-lesson grid JSON is complete. A grid limit failure executes only
+the scalar probe. School/teacher page metadata no longer advertises partial weeks.
+
+Local commits: Core fce8966, API documentation 15b1803. Standard backend pack/install
+completed (/tmp/dm-schedule-reads-sync-dotnet.log). Afghanistan integration passes
+all 106 tests, zero skipped, against rebuilt packages (/tmp/dm-schedule-reads-country.log).
+Precommit build/localization/enum/isolation/route checks pass. Installed API DLLs
+match built Release SHA256:
+Core bdf6da721ba42a287cb4ab850da53a25a25fadd557516c089d9c3e52d4a53401,
+Abstractions 7710f93e220801deb86db35694a6ee0206e9d54260cf728041c0fa0d39f383b1,
+Afghanistan cc98c5f5e7759c8807e061f05d03606a35c75773bc3897e88ff1ae8161144d09.
+No migration, push, manual user-server restart or live user-database modification.
+SPA/mobile source/artifacts are unchanged; this is backend contract/runtime evidence,
+not a new browser/device verification claim. Ship Core/API together for internal
+repository signature changes.
+
+All seven broader completion requirements remain open. Next discovered client gap:
+SPA student/parent timetable screens mirror useScheduleViews data into unscoped local
+rows after mount-only reads, and the table's date filters act on synthetic grid row
+dates rather than source lesson timestamps. Mobile student schedules also consume
+only one raw page and render a legacy time shape. Finish their scoped cancellable
+reads/filter source/presentation through Core instead of copying state into hosts.
+Other remaining reads/writers/reference invariants, scalar class summaries, nested
+actor mappings/module snapshots, shared classroom state/jobs, mobile SignalR and
+country/locale, telemetry and representative multi-school load/recovery/deployment
+remain required. No whole-application completion is inferred from this focused suite.

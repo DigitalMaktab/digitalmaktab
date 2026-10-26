@@ -1504,3 +1504,30 @@ Use existing Core getPersonName in the class table for omitted teachers. No pers
 count/table, alternate DTO, service or UI control is needed for these limits. Nested
 audit-label mapping, scalar class summaries and remaining person/detail/module snapshot
 work remain separate audits. See Core docs/PERSON-LIST-READS.md for exact contracts.
+
+
+## Student scope and complete weekly grids (2026-10-26)
+
+Reuse DailyAttendanceWriter.ActiveRoster for student class/timetable and parent grid
+scope. It already enforces active school/class/student/enrollment and matching year;
+do not create another roster table/service/predicate. Parent scope adds current active
+same-school parent links. Requested class IDs only narrow scope. Student GetClass takes
+school/student/year and must never load classmates' enrollment records or teacher
+profiles. Keep historical records in storage for separate report readers.
+
+SchoolRepository.FilteredSchedules shares raw/weekly root criteria. Raw student
+schedules remain bounded pages through ReadPage with stable day/period/course/ID
+order and no-store/cancellation. Always pass authenticated StudentId; never use the
+school-wide query alone. GetWeeklySchedules reads a complete active grid from one
+repeatable-read snapshot, probing at most 1,001 IDs and rejecting more than 1,000
+lessons before graph expansion with localized ScheduleReadTooLarge. No per-class
+fan-out or first-page truncation. Common creation filters apply to original lessons.
+School/teacher metadata represents one seven-day grid, regardless of requested page.
+
+Extend Extensions.FlattenSchedules through its shared cell pipeline; entity inputs
+avoid mapping unused person/audit DTO graphs and reuse Core ClassLabels. Keep all ten
+periods and concurrent lines. Withhold foreign branch/subject-book objects only on
+response copies; global books stay valid. Existing academic-report DTO inputs remain
+compatible. No new persistent field/table, DTO or index is required. Legacy SPA grid
+session/locale lifecycle, mobile complete schedule rendering and publication-history
+reads remain separate audits. See Core docs/PERSON-LIST-READS.md.
