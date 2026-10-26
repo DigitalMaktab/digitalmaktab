@@ -1667,3 +1667,57 @@ status, native-calendar dates and bounded paging. Report-card/class-overview
 history aggregation, other important writers/editors/invariants, wider query/
 index/export bounds, shared jobs/classroom authority, telemetry and representative
 multi-school load/recovery remain in full scope.
+
+### Accurate bounded mobile attendance (forty-first increment, 2026-10-26)
+
+Discovery traced the actual student/parent attendance screens, their only hook/
+transport callers, duplicated mobile DTOs, country calendar contract, native Core
+components/theme/RTL and existing backend summary projection/headers. No new
+persistent model, server aggregate, calendar implementation or native component
+was needed. Mobile Core now owns one wire projection, validated paged reader,
+query hook and civil-date formatting helper. Both role hosts consume it and their
+unused raw attendance transports were removed. Other readers remain unchanged.
+
+Student totals no longer count the first raw page. Parent totals no longer count
+only returned marks or require another children request/legacy name fields. Both
+use recorded-year present/absent totals and the server student label. False marks
+render visibly as absent. At most thirty recent marks per student are shown,
+explicitly labelled as an excerpt; unmarked days are never inferred. Parent
+summaries page through ten students per explicit navigation, including empty/error
+recovery via Previous. No automatic whole-year loading is introduced. Server
+pagination/shape failures use the existing error/retry flow, never fabricated
+counts. Each hook forwards aborts and remains inside the account-scoped provider.
+
+School-resolved civil days go to the country calendar formatter with UTC, so
+Afghan screens render Solar Hijri dates in all interface languages. Without a
+country formatter, Core explicitly uses Gregorian independently of interface
+language. Touched rows/labels use the existing theme and RTL contexts; host native
+components remain in use. New excerpt/status/paging labels are present in English,
+Dari and Pashto. This does not repair build-time country selection for all mobile
+schools or supply a complete historical mark browser.
+
+Validation: extended `scripts/tests/mobile-runtime.cjs` passes with actual read
+hooks and both mounted screen sources, controlled transport/native presentation
+adapters, real React Query and the actual country calendar/locale bundles.
+Verifies 91/12 totals with only two recent marks, false-status icons/text,
+English/Dari/Pashto school dates, Gregorian fallback despite Dari interface,
+server labels, parent page two beyond ten pupils, cancellation and malformed
+pagination/invalid civil dates/overlong excerpts. Tests do not establish native
+platform behavior, server throughput or new backend authorization guarantees;
+existing Core route/SQL snapshot tests cover the reused endpoints.
+
+Core build and both installed-dependency app TypeScript checks passed. Strict
+mobile i18n and all affected precommit gates passed. Sync rebuilt and installed
+SDK/Core/country artifacts: all fourteen Core dist files, thirty-two SDK files and
+twenty-three country files match both consumers, and all six lock integrities
+match the packed artifacts. Logs: `/tmp/dm-mobile-attendance-{tests,sync,i18n}.log`,
+`/tmp/dm-mobile-{parent,student}-attendance-tsc.log`. No backend/schema/live DB or
+user-owned server changes. Restart Metro to consume the new artifacts.
+
+Local commits: mobile Core `ed60f16`, parent `08abe3c`, student `adc6e36`, mobile
+Afghanistan `8fa6756`. Nothing pushed. All seven overall completion requirements
+remain open: full-history/report-card/class-overview reads, other important
+writers/editors/reference invariants, remaining query/index/import/export bounds,
+SignalR/shared jobs and authority, locale/country scope, telemetry and representative
+multi-school load/recovery remain in scope. These two mobile increments do not
+establish completion of the wider concurrency/performance goal.

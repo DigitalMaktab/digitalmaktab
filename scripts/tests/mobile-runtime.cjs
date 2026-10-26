@@ -36,6 +36,19 @@ const turn=()=>new Promise(resolve=>setImmediate(resolve));
  const small=createMobileApi({baseURL:'https://school.invalid/api',maxJsonNodes:100,adapter:async config=>response(config,Array(101).fill('x'))});await assert.rejects(small.apiClient.get('/oversize'));
  const abort=new AbortController();abort.abort();await assert.rejects(api.apiClient.get('/aborted',{signal:abort.signal}),axios.isCancel);assert.equal(wire.length,7);
  assert(sessionIsBound(session('one')));assert(sessionIsBound(session('parent','PARENT')));assert(!sessionIsBound({...session('one'),user:session('other').user}));assert(!sessionIsBound({...session('one'),user:{...session('one').user,raw:{schoolId:'other'}}}));assert(!sessionIsBound({...session('one'),token:'bad-token'}));
+ // Shared attendance transport preserves true totals/false marks and validates the bounded contract.
+ const sampleSummary={studentId:'student-one',studentLabel:'Core Name',present:91,absent:12,recent:[{date:'2026-10-26',status:false},{date:'2026-10-25',status:true}]};
+ let summaryWire,summaryBody=[sampleSummary],summaryHeader={currentPage:1,itemsPerPage:1,totalItems:1,totalPages:1};
+ const summaryApi=createMobileApi({baseURL:'https://school.invalid/api',adapter:async config=>{summaryWire=config;return {...response(config,summaryBody),headers:{Pagination:JSON.stringify(summaryHeader)}}}});
+ const {readMobileAttendanceSummary,formatMobileAttendanceDay}=exportsCore;
+ const summaryPage=await readMobileAttendanceSummary(summaryApi,'mine');assert.equal(summaryWire.url,'/Attendance/mine/summary');assert.deepEqual(summaryWire.params,{pageNumber:1,pageSize:1,recentDays:30});assert.equal(summaryPage.items[0].present,91);assert.equal(summaryPage.items[0].recent[0].status,false);
+ summaryHeader={CurrentPage:2,ItemsPerPage:10,TotalItems:11,TotalPages:2};await readMobileAttendanceSummary(summaryApi,'children',2);assert.equal(summaryWire.params.pageSize,10);
+ summaryBody=[{...sampleSummary,recent:[{date:'2026-02-30',status:false}]}];await assert.rejects(readMobileAttendanceSummary(summaryApi,'children',2));
+ summaryBody=[{...sampleSummary,recent:Array(31).fill(sampleSummary.recent[0])}];await assert.rejects(readMobileAttendanceSummary(summaryApi,'children',2));
+ summaryBody=[sampleSummary];summaryHeader={currentPage:1,totalItems:11,totalPages:1};await assert.rejects(readMobileAttendanceSummary(summaryApi,'children'));
+ assert.equal(formatMobileAttendanceDay('bad','en-US'),'bad');assert(formatMobileAttendanceDay('2026-10-26','fa-AF').includes('۲۰۲۶'),'Gregorian fallback is independent of interface language');
+ const {afghanistanCalendar}=require(projects+'/digitalmaktab-mobile-country-afghanistan/src/calendar/solarHijriAdapter.ts');
+ let civilOptions;const formatted=formatMobileAttendanceDay('2026-10-26','en-US',(date,locale,options)=>{civilOptions=options;assert.equal(date.toISOString(),'2026-10-26T00:00:00.000Z');return afghanistanCalendar.formatDate(date,locale,options)});assert(formatted.includes('1405'));assert.equal(civilOptions.timeZone,'UTC');
  // Hydration is single-flight and cannot replace a newer successful login.
  let disk=session('old'),reads=0,clear=0;const initial=deferred();const runtime=createMobileApi({baseURL:'https://school.invalid/api'});
  const store=createMobileAuthStore({api:runtime,login:async id=>session(id),storage:{read:()=>{reads++;return initial.promise},store:async value=>{disk=value},clear:async()=>{clear++;disk=null}},errorKey:()=> 'common.error'});
@@ -68,6 +81,49 @@ const turn=()=>new Promise(resolve=>setImmediate(resolve));
   await act(async()=>actualRoot.unmount());assert(requests.every(r=>r.config.signal.aborted));
   await act(async()=>{for(const request of requests)request.task.resolve(response(request.config,[]));await turn();});
  }
+ // Mount both actual attendance screens with native presentation adapters. Keep real read hooks/Core/country dates.
+ const renderSlot=slot=>typeof slot==='function'?React.createElement(slot):slot;
+ const Box=({children,style,...props})=>React.createElement('div',{'data-native':'view',style:Object.assign({},...[style].flat(Infinity).filter(Boolean))},children);
+ const Text=({children,color})=>React.createElement('span',{style:{color}},children);
+ const Flat=props=>React.createElement('div',null,renderSlot(props.ListHeaderComponent),props.data.length?props.data.map((item,index)=>React.createElement(React.Fragment,{key:index},props.renderItem({item,index}))):renderSlot(props.ListEmptyComponent),renderSlot(props.ListFooterComponent));
+ const Sections=props=>React.createElement('div',null,renderSlot(props.ListHeaderComponent),props.sections.length?props.sections.map((section,index)=>React.createElement('section',{key:index},props.renderSectionHeader({section}),section.data.map((item,index)=>React.createElement(React.Fragment,{key:index},props.renderItem({item,index,section}))))):renderSlot(props.ListEmptyComponent),renderSlot(props.ListFooterComponent));
+ let language='en-US';const localeBundles=Object.fromEntries(['en-US','fa-AF','ps-AF'].map(locale=>[locale,JSON.parse(fs.readFileSync(projects+'/digitalmaktab-mobile-country-afghanistan/src/locales/'+locale+'/translation.json'))]));
+ const t=key=>key.split('.').reduce((value,part)=>value?.[part],localeBundles[language])??key;
+ const palette={surface:'#1c1f24',border:'#444444',text:'#f1f3f5',textSecondary:'#dddddd',primary:'#43b9b2',success:'#198754',danger:'#dc3545',white:'#ffffff'};
+ const screenLoad=Module._load;
+ Module._load=function(request,parent,isMain){
+  const screen=parent?.filename.endsWith('/AttendanceScreen.tsx')||parent?.filename.endsWith('/ChildrenAttendanceScreen.tsx');
+  if(screen){
+   if(request==='react-native')return{View:Box,StyleSheet:{create:x=>x},ActivityIndicator:()=>React.createElement('i',null,'loading'),FlatList:Flat,SectionList:Sections};
+   if(request==='react-i18next')return{useTranslation:()=>({t,i18n:{language}})};
+   if(request==='@expo/vector-icons/MaterialCommunityIcons')return({name})=>React.createElement('i',{'data-icon':name});
+   if(request==='../../../core/theme')return{useColors:()=>palette};
+   if(request==='../../../core/country')return{useCountry:()=>({calendar:afghanistanCalendar})};
+   if(request==='../../../core/rtl')return{useRTL:()=>({rowDirection:language==='en-US'?'row':'row-reverse'})};
+   if(request==='../../hooks'){const repo=parent.filename.includes('mobile-parent')?'parent':'student';return require(projects+'/digitalmaktab-mobile-'+repo+'/src/presentation/hooks/'+(repo==='parent'?'useParentData.ts':'useStudentData.ts'));}
+   if(request==='../../components')return{AppScreen:Box,AppCard:Box,AppText:Text,AppEmptyView:({message})=>React.createElement('span',null,message),AppErrorView:()=>React.createElement('span',null,'test-read-error'),AppButton:({label,onPress,disabled})=>React.createElement('button',{onClick:onPress,disabled},label)};
+  }
+  return screenLoad.apply(this,arguments);
+ };
+ const waitFor=async predicate=>{for(let i=0;i<100&&!predicate();i++)await act(async()=>{await new Promise(resolve=>setTimeout(resolve,5));});assert(predicate());};
+ for(const repo of ['student','parent']){
+  const folder=projects+'/digitalmaktab-mobile-'+repo,actualRuntime=require(folder+'/src/core/api/client.ts').mobileApiRuntime;
+  const screen=require(folder+'/src/presentation/screens/'+repo+'/'+(repo==='student'?'AttendanceScreen.tsx':'ChildrenAttendanceScreen.tsx'));
+  const Component=screen[repo==='student'?'AttendanceScreen':'ChildrenAttendanceScreen'];const calls=[];
+  appTransport=async config=>{calls.push(config);const page=config.params.pageNumber,count=repo==='student'?1:11,size=config.params.pageSize;const rows=Array.from({length:Math.min(size,Math.max(0,count-(page-1)*size))},(_,index)=>({...sampleSummary,studentId:'student-'+((page-1)*size+index),studentLabel:'Core Name '+((page-1)*size+index)}));return{...response(config,rows),headers:{Pagination:JSON.stringify({currentPage:page,totalItems:count,totalPages:Math.ceil(count/size)})}}};
+  const mounted=createRoot(document.getElementById('root'));
+  for(const locale of ['en-US','fa-AF','ps-AF']){
+   language=locale;await act(async()=>mounted.render(React.createElement(MobileSessionQueryProvider,{api:actualRuntime},React.createElement(Component,{key:locale}))));
+   await waitFor(()=>document.body.textContent.includes(t('mobileAttendance.recordedTotals')));
+   const body=document.body.textContent;assert(body.includes(t('mobileAttendance.present')));assert(body.includes(t('mobileAttendance.absent')));assert(body.includes(new Intl.NumberFormat(locale).format(91)));assert(body.includes(new Intl.NumberFormat(locale).format(12)));assert(body.includes(afghanistanCalendar.formatDate(new Date('2026-10-26T00:00:00Z'),locale,{dateStyle:'medium',timeZone:'UTC'})));assert(body.includes(t('mobileAttendance.recent')));assert(document.querySelector('[data-icon="close"]'));assert(document.querySelector('[data-icon="check"]'));assert(!body.includes('test-read-error'));
+  }
+  if(repo==='parent'){
+   const next=[...document.querySelectorAll('button')].find(button=>button.textContent===t('mobileAttendance.next'));assert(!next.disabled);await act(async()=>next.click());await waitFor(()=>document.body.textContent.includes('Core Name 10'));assert(calls.some(config=>config.params.pageNumber===2));assert([...document.querySelectorAll('button')].find(button=>button.textContent===t('mobileAttendance.next')).disabled);
+  }
+  assert(calls.every(config=>config.url.endsWith('/summary')&&config.params.recentDays===30));
+  await act(async()=>mounted.unmount());
+ }
+ Module._load=screenLoad;
  dom.window.close();
- console.log('PASS: shared mobile runtime pins credentials, rejects stale responses/401s, bounds work and normalization, coordinates auth/storage races, validates persisted identity pairs, replaces private query caches, and drives both actual app adapters.');
+ console.log('PASS: shared mobile runtime pins credentials, rejects stale responses/401s, bounds work and normalization, coordinates auth/storage races, validates persisted identity pairs, replaces private query caches, drives both actual app adapters, and renders bounded native attendance summaries in all three locales.');
 })().catch(error=>{console.error(error);process.exitCode=1});

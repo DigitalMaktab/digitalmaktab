@@ -1249,11 +1249,8 @@ skips item SQL beyond the counted set, retaining empty-page/header semantics.
 Do not infer all repositories have snapshot/order guarantees from that helper.
 
 SPA raw helpers/useAttendanceViews forward one page plus filters/signal/pinned
-credentials and retain metadata; standalone summaries use /summary. Mobile
-student API already used a paged route; its screen currently counts only a page,
-marks every row as present and formats browser-native Gregorian dates. Its
-query keys/transport also require the remaining account-scope audit. Do not
-claim complete mobile attendance from the backend's optional-date fix.
+credentials and retain metadata; standalone summaries use /summary. Mobile consumers now use the shared summary reader described below. Do not
+claim complete historical browsing from the raw-route or summary fixes.
 
 
 ## Shared mobile session runtime (2026-10-26)
@@ -1281,3 +1278,26 @@ exercise scripts/tests/mobile-runtime.cjs against Core and both actual adapters.
 Tests use controlled native/HTTP adapters and real React Query, not live devices.
 SignalR races, locale/country scoping and accurate bounded mobile attendance screens
 remain separate work; this foundation is not the completed concurrency goal.
+
+
+## Mobile recorded attendance summaries (2026-10-26)
+
+Mobile Core owns useMobileAttendanceSummary/readMobileAttendanceSummary and the
+wire projection of the existing backend AttendanceSummaryDto. No attendance table
+or parallel server aggregate is added. Parent/student hooks reuse this reader;
+remove unused copied raw readers rather than leaving two implementations. Counts
+come from server totals for recorded marks in the selected year, never a loaded
+page length. Absences stay false. Do not infer presence/absence for missing days.
+
+Read one page per action: mine one student, children ten students, at most thirty
+recent marks each. Validate server pagination/row/date/status shape and forward
+cancellation. Parent screens use server studentLabel instead of separately loading
+legacy English/native person fields. Keep recent excerpts explicitly labelled;
+this is not a complete historical mark browser. Use the existing native app
+components/theme/RTL contexts. New labels live in all three mobile country bundles.
+
+formatMobileAttendanceDay passes a server-resolved civil day at UTC to the active
+country formatter. Its Core fallback explicitly selects Gregorian independently
+of interface language. Never use the device timezone or locale calendar default
+to reinterpret the date. Existing backend authorization/snapshot tests remain
+authoritative; mounted mobile screen tests cover presentation with native adapters.
