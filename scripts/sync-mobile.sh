@@ -37,19 +37,7 @@ NODE
     find "$consumer/node_modules/$name" -exec touch {} +
     # Same-version local tarballs change content. Keep npm ci's integrity aligned
     # with the exact artifact installed above without resolving/upgrading peers.
-    node - "$consumer" "$name" "$archive" <<'NODE'
-const fs = require('fs'), path = require('path'), crypto = require('crypto');
-const [consumer, name, archive] = process.argv.slice(2);
-const file = path.join(consumer, 'package-lock.json');
-if (!fs.existsSync(file)) throw new Error('Run npm install first: ' + consumer);
-const lock = JSON.parse(fs.readFileSync(file, 'utf8'));
-const entry = lock.packages?.['node_modules/' + name];
-if (!entry || !entry.resolved?.startsWith('file:')) throw new Error('Expected locked local tarball: ' + name);
-const target = path.resolve(consumer, entry.resolved.slice(5));
-if (target !== path.resolve(archive)) throw new Error('Local artifact path mismatch: ' + name);
-entry.integrity = 'sha512-' + crypto.createHash('sha512').update(fs.readFileSync(archive)).digest('base64');
-fs.writeFileSync(file, JSON.stringify(lock, null, 2) + '\n');
-NODE
+    node "$ROOT/scripts/update-local-tarball-lock.cjs" "$consumer" "$name" "$archive"
   done
 }
 pack_and_swap "$PROJECTS/digitalmaktab-mobile-sdk" "${MODULES[@]}" "${CONSUMERS[@]}"

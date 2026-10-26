@@ -1445,3 +1445,38 @@ repair rather than being silently accepted or replaced. Keep the shared extensio
 Down and preserve data. Actual migration/execution/retry/down and query plans are
 covered by PersonQueryPlanTests in its guarded private database. Warm synthetic
 read gains do not establish whole-app/write-load capacity or fast common/short terms.
+
+
+## Lookup snapshots, sessions and bounded complete reads (2026-10-26)
+
+BaseRepository.ReadSnapshot owns the one repeatable-read lifecycle for graph and
+projected pages. Teacher Lookup applies common filters before projecting the existing
+three-field PersonLookupDto, preserving active choices/own-school inactive resolution,
+request cancellation, immutable tie ordering and no-store. Keep shared reference
+permissions separate from full teacher-profile grants. ClassParams.ClassId extends
+the existing Core query DTO, reusing stored class/course IDs, and both school/teacher
+callers honor it. Saved teacher-class labels resolve one ID/page; never scan every
+class to hydrate a form. Preserve assignment, homeroom and selected-year authority.
+Course pages use shared scalar-first snapshots and sanitize foreign teacher/branch
+copies; don't remove history or relax scope. School class detail/list audits remain.
+
+AppAsyncSelect uses the shared immutable actor resolver plus token/language/resource
+scope. Hide old values during render, clear the underlying widget cache with opaque
+generation keys, cancel defaults/search/resolution and suppress late callbacks.
+Loading/searching never changes form IDs. Bound known-option history to 512 while
+retaining selection; keep Core themes/forms. Ambient lookup options pin credentials,
+no-store and silent local loading before Axios interceptors; explicit transport tokens
+still win. Preserve headers when merging and never mutate caller config. getClassLabel
+is the Core formatter shared by selects/tables; omitted references render safely.
+
+readAllPages captures original credentials/signal/silent options across awaits. It
+rejects more than 200 pages or 10,000 rows without publishing partial results. This bounds
+client work, not a cross-request DB snapshot or every caller's UI lifecycle. Remaining
+consumers must still cancel/suppress their own obsolete scopes. Existing translated
+failure paths handle rejected loads. No automatic mutation/read retry was introduced.
+
+Same-version local packages must update lock integrity with the exact installed
+archive. SPA/mobile sync scripts share update-local-tarball-lock.cjs; it preserves
+unrelated metadata and rejects remote/mismatched paths or changed dependency metadata.
+Metadata changes require npm install; don't silently resolve/upgrade peers in sync.
+Rebuild/install packages before committing consumer changes that require new exports.

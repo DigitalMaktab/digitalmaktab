@@ -2139,3 +2139,76 @@ snapshot composition; remaining expensive outputs; shared classroom state/jobs;
 mobile SignalR/country/locale; telemetry and representative multi-school whole-app
 load/recovery/deployment evidence. This two-school repository fixture does not finish
 the whole-application load requirement.
+
+### Scoped lookup snapshots and client sessions (forty-eighth increment, 2026-10-26)
+
+Discovery traced BaseRepository/PagedList, Teacher.Lookup, class/course query DTOs,
+both controller families, actual teacher/class selectors, AppAsyncSelect, ambient
+Axios request options, readAllPages callers and package sync consumers. Reuse the
+existing PersonLookupDto, ClassParams, stored Class.Id/Course.ClassId, shared actor
+resolver and Core controls. No new stored field/table or country-specific rule.
+
+BaseRepository.ReadSnapshot now shares the existing repeatable-read lifecycle
+between graph pages and projected pages. Teacher lookups apply common date/email
+filters before the existing three-field projection; counts/page share a snapshot,
+request cancellation and stable ordering. Own-school explicit inactive selections
+remain resolvable. GETs are no-store, and shared reference permissions do not grant
+full teacher-profile access. ClassParams.ClassId narrows existing school/teacher
+class and course routes. Teacher saved selections resolve one ID/page rather than
+scanning all classes. Preserve assignment/homeroom/year restrictions. Course lists
+reuse scalar-first ReadPage, combined scope filters and detached foreign-reference
+sanitization. Shared getClassLabel/getPersonName keep shell course rows safe when
+invalid foreign references are omitted. School class graphs/details remain open.
+
+AppAsyncSelect scopes its widget, known values and asynchronous phases by immutable
+actor plus token/language/resource. Hide old options during render before effects,
+cancel defaults/search/selection resolution and reject late callbacks. Inline loader
+identities do not refetch, hydration never changes form IDs, and known history is
+bounded to 512 while protecting the selected ID. Opaque widget generations avoid
+putting credentials into React keys. Existing Core controls/themes are retained.
+Ambient GET options capture credentials/cancellation before asynchronous Axios
+interceptors, preserve caller headers and explicit tokens, and use no-store/silent
+local loading. readAllPages pins original options across awaits and rejects over
+200 pages/10,000 rows without returning partial data. Independent HTTP pages are
+still separate snapshots; other callers retain responsibility for UI lifecycle.
+
+Release verification found stale SPA lock integrity despite installed tarball swaps.
+The SPA/mobile sync scripts now share update-local-tarball-lock.cjs, extending the
+existing mobile behavior rather than copying it. It updates only archive integrity
+and rejects wrong paths, remote locks, version/name or dependency metadata drift;
+metadata changes require normal npm install, without silent peer upgrades. A small
+fixture verifies preservation/refusal behavior; seven actual mobile locks also pass.
+No mobile source/package rebuild was needed. An interrupted SPA sync caused by
+editing the running shell script was rerun completely and finished successfully.
+
+Evidence: final private Core suite 322 passed, zero skipped
+(/tmp/dm-lookup-scope-final-core.log), including actual multilingual JWT lookup/class
+routes, creation/email/search filtering, coherent count/page under concurrent writes,
+transaction ownership/weak snapshot rejection, cancellation and tenant sanitization.
+Country integration 106 passed, zero skipped with rebuilt packages
+(/tmp/dm-lookup-scope-country.log). The complete 104-table UI/export gate passed
+(/tmp/dm-lookup-scope-release-ui.log), including real selector/Axios races in all three
+locales, pre-effect stale-label hiding, staff identities/token renewal, bounded cache,
+multi-page credential/signal preservation and unsafe course-reference rendering.
+Core/country/shell TypeScript and precommit checks pass. React review retained the
+existing controls, primitive scope dependencies, callback refs, bounded history and
+abort/stale-result guards; no new style system, UI library or automatic retry.
+
+Standard sync logs: /tmp/dm-lookup-scope-sync-dotnet.log and
+/tmp/dm-lookup-scope-sync-spa-final.log. Verified 16 local package lock integrities
+and all 8,056 installed archive files against current feed. API installed/built
+Release DLL SHA256 match:
+Core c6e04eceb0817fb0285cd67b33d1f58b5228d05d1083d67c64f6c9f410784d00,
+Abstractions 2c46cd0e6e720fbf1745035498f6349107821ad769817abe60fb5b9cf530cc36,
+Afghanistan 3f75c0ecbf4638219da1109ba1e630d146d0e938e1cb0fc4ed9ab963e5767bf2.
+Local commits: Core 212c322, SPA Core 4ec6647, shell 99ca069c,
+Afghanistan SPA lock d7db918, Austria SPA lock 7aa2e60, API docs 928bb70.
+No push, manual user-server restart, or live user-database mutation.
+
+All seven broader completion requirements remain open. These changes close the
+identified lookup/filter/session holes, not the whole endpoint/editor audit.
+Remaining work includes school class/person details, grade/fee/inventory and other
+reads, nested actor mappings/module snapshots, remaining durable writers/reference
+invariants and expensive outputs, shared classroom state/jobs, mobile SignalR and
+country/locale scopes, telemetry and representative multi-school load/recovery/
+deployment evidence. Mounted lookup recovery is not a persistent draft system.

@@ -26,10 +26,11 @@ SPA_DIR="$PROJECTS/digitalmaktab-spa"
 mkdir -p "$NPM_LOCAL"
 
 swap_package() {
-  # swap_package <tarball_path> <target_node_modules_dir>
-  local tarball target staging
+  # swap_package <tarball_path> <target_node_modules_dir> <consumer_dir>
+  local tarball target staging consumer package_name
   tarball="$1"
   target="$2"
+  consumer="$3"
   staging="$(mktemp -d)"
 
   rm -rf "$target"
@@ -44,6 +45,8 @@ swap_package() {
   # module. Previously this forced the user to Ctrl+C + restart
   # `npm start` after every sync — the touch sidesteps that.
   find "$target" -exec touch {} +
+  package_name="$(node -p 'require(process.argv[1]).name' "$target/package.json")"
+  node "$ROOT/scripts/update-local-tarball-lock.cjs" "$consumer" "$package_name" "$tarball"
 }
 
 # Resolves the tarball name npm pack would emit for a given package
@@ -64,7 +67,7 @@ echo "==> Building + packing SPA SDK"
 SDK_TGZ="$NPM_LOCAL/$(tarball_for "$SDK_DIR")"
 for consumer in "$CORE_DIR" "$SPA_DIR" "$PROJECTS"/digitalmaktab-spa-country-* "$PROJECTS"/digitalmaktab-spa-school-*; do
   [ -f "$consumer/package.json" ] || continue
-  swap_package "$SDK_TGZ" "$consumer/node_modules/@digitalmaktab/spa-sdk"
+  swap_package "$SDK_TGZ" "$consumer/node_modules/@digitalmaktab/spa-sdk" "$consumer"
 done
 
 echo "==> Building spa-core"
@@ -87,7 +90,7 @@ for country_dir in "${COUNTRY_DIRS[@]}"; do
   name="$(basename "$country_dir")"
   echo "==> Swapping spa-core into $name node_modules"
   swap_package "$CORE_TGZ" \
-    "$country_dir/node_modules/@digitalmaktab/spa-core"
+    "$country_dir/node_modules/@digitalmaktab/spa-core" "$country_dir"
 done
 
 # Build + pack each country package.
@@ -103,7 +106,7 @@ done
 
 echo "==> Swapping spa-core into SPA node_modules"
 swap_package "$CORE_TGZ" \
-  "$SPA_DIR/node_modules/@digitalmaktab/spa-core"
+  "$SPA_DIR/node_modules/@digitalmaktab/spa-core" "$SPA_DIR"
 
 # Swap each country package into the shell. Target dir is the npm
 # package name under node_modules (@scope/pkg → node_modules/@scope/
@@ -114,7 +117,7 @@ for i in "${!COUNTRY_DIRS[@]}"; do
   pkg_name="$(cd "$country_dir" && node -p "require('./package.json').name")"
   echo "==> Swapping $pkg_name into SPA node_modules"
   swap_package "$country_tgz" \
-    "$SPA_DIR/node_modules/$pkg_name"
+    "$SPA_DIR/node_modules/$pkg_name" "$SPA_DIR"
 done
 
 echo "==> Clearing CRA webpack cache"

@@ -58,7 +58,7 @@ const pause=async ms=>act(async()=>{await new Promise(resolve=>setTimeout(resolv
  apiClient.defaults.adapter=async config=>{apiCalls.push(config.url);const pagination={totalPages:2};let data=[];
    if(config.url==='/teacher/students')data=[];
    else if(config.url==='/teacher/student/saved-student')data={id:'saved-student',firstName:'Saved',lastName:'Student'};
-   else if(config.url==='/teacher/classes')data=config.params.pageNumber===2?[{id:'saved-class',classNameValue:'Saved class',branch:null}]:[{id:'first-class',classNameValue:'First class',branch:null}];
+   else if(config.url==='/teacher/classes')data=config.params.classId==='saved-class'?[{id:'saved-class',classNameValue:'Saved class',branch:null}]:[{id:'first-class',classNameValue:'First class',branch:null}];
    else if(config.url==='/teacher/courses')data=[{id:'first-course',class:{classNameValue:'First course',branch:null},subject:{subjectName:'Math'}}];
    else if(config.url==='/teacher/all-courses')data=[{id:'saved-course',class:{classNameValue:'Saved course',branch:null},subject:{subjectName:'Math'}}];
    else throw Error('Teacher lookup used unexpected endpoint '+config.url);
@@ -68,5 +68,14 @@ const pause=async ms=>act(async()=>{await new Promise(resolve=>setTimeout(resolv
  ui=render(h(AuthContext.Provider,{value:{user:{role:UserRole.TEACHER,teacher:{id:'teacher-one',schoolId:'school-one'}},userRole:UserRole.TEACHER,isAuthenticated:true}},teacherControls),{wrapper});
  for(const label of ['Saved Student','Saved class','Saved course Math'])await waitFor(()=>assert(ui.getByText(label)));
  assert(!apiCalls.some(url=>url.startsWith('/school/')),'teacher selectors never call admin endpoints');const teacherCount=apiCalls.length;await pause(60);assert.equal(apiCalls.length,teacherCount);cleanup();
+ // Real course tables tolerate omitted foreign reference details and reuse Core labels.
+ const course={id:'course',class:{classNameValue:'Grade 8',branch:null},subject:{subjectName:'Math'},teacher:null};
+ exportsForScreen={getPersonName:require(core+'/src/helper/personNames.ts').getPersonName,getClassLabel:require(core+'/src/helper/classLabels.ts').getClassLabel,
+  useAppLocalizer:require(core+'/src/hooks/useAppLocalizer.ts').useAppLocalizer,useTableColumns:require(core+'/src/hooks/useTableColumns.ts').useTableColumns,useTableActions:require(core+'/src/hooks/useTableActions.ts').useTableActions,
+  AppCard:({children})=>h('div',null,children),AppTable:({data,columns})=>h('div',null,data.flatMap(row=>columns.map((column,index)=>h('span',{key:index},column.render?.(row[column.accessor],row)??'')))),
+  useSchoolOperations:()=>({courseList:async()=>({data:[course]}),data:[course],totalPages:1})};
+ for(const [file,props] of [['screens/course/CourseList.tsx',{titleKey:'course.list.label',data:[course],totalPages:1}],['screens/school/class/subject/SchoolCourseList.tsx',{}]]){
+  const Screen=require(shell+'/src/'+file).default;ui=render(h(Screen,props),{wrapper});assert(ui.getByText('Grade 8'));assert(ui.getByText('Math'));assert(ui.getByText('—'));cleanup();
+ }
  console.log('PASS: real async lookup and all six domain selectors hydrate saved IDs beyond the first page, retain selected labels during search, ignore stale responses, settle failed searches, preserve cleared values and cancel abandoned work without request loops. Teacher reference controls use teacher-scoped APIs.');
 })().catch(error=>{console.error(error);process.exitCode=1});
