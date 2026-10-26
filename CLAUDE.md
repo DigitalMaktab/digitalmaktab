@@ -1425,3 +1425,23 @@ a duplicate year on Course. Shared ReadBounded supplies controller-localized err
 no-store; it does not add a hard timeout. Country enrichment, nested actor fallback,
 detail reads, query plans and representative load remain separate audit work. No new
 schema/DTO/index or country-specific rule. See Core docs/PERSON-LIST-READS.md.
+
+
+## Student search access paths (2026-10-26)
+
+Reuse existing school/name/ID paging indexes. Core's StudentSearchIndexes migration
+owns IX_Student_SearchText (one GIN over names, raw Email and lower(Email)) and
+IX_Student_SchoolRollNumber (partial school/Core AsasNumber B-tree). Common email
+filters use lower/Contains; raw ILIKE indexes alone do not support that expression.
+Do not alter comparison semantics just to fit an index or create a computed/search
+column. EF8 does not model this expression index through HasIndex; the narrow SQL
+migration is authoritative. The numeric index is declared in the model/snapshot.
+Country ministry numbering remains in its existing module; no country copy of these
+shared indexes. Discover these migration-owned indexes before adding any overlap.
+
+pg_trgm is a migration prerequisite. Builds/drops are concurrent with suppressed
+transactions; valid partial builds replay, invalid/different names fail for reviewed
+repair rather than being silently accepted or replaced. Keep the shared extension on
+Down and preserve data. Actual migration/execution/retry/down and query plans are
+covered by PersonQueryPlanTests in its guarded private database. Warm synthetic
+read gains do not establish whole-app/write-load capacity or fast common/short terms.

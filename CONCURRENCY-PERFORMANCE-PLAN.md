@@ -2067,3 +2067,75 @@ snapshot composition still need work. Representative person-list query plans/ind
 measurements, remaining grade/fee/inventory/lookup reads, other writers/reference
 invariants, shared classroom state/jobs, mobile SignalR/country/locale, telemetry and
 multi-school load/recovery/deployment evidence remain required.
+
+
+### Measured person query plans and student search indexes (forty-seventh increment, 2026-10-26)
+
+Discovery inspected the actual scalar-first repository SQL, common email filter,
+existing model/migration/snapshot indexes, Core/country numbering and migration
+execution. Existing school/name/name/ID indexes already cover ordered first/deep
+pages: reuse them. Actual selective substring and email plans still scanned 40,002
+student rows. The common email predicate is lower(Email)/Contains, so a raw-email
+trigram index alone did not improve it; the first isolated experiment caught that.
+Preserve comparisons and current number ownership instead of changing semantics,
+adding a computed column, copying country data or creating a parallel search table.
+
+Core StudentSearchIndexes adds one GIN access path over FirstName/LastName/raw Email/
+lower(Email), plus the partial school/Core AsasNumber B-tree needed for the numeric
+OR branch. The numeric path is in the model/snapshot; EF8 cannot express the GIN
+expression with property-only HasIndex, so its narrow SQL migration is authoritative.
+Core's existing number is reused; country ministry numbering remains independent.
+No new stored field, DTO, search service, country rule or duplicate ordered index.
+
+pg_trgm is required (pre-provision if the deployment role cannot create it). Both
+indexes build/drop concurrently outside the migration transaction. IF NOT EXISTS
+allows valid partial replay; catalog validation checks readiness/validity/access
+method/keys/GIN operators/expression/filter and rejects invalid or differently
+shaped names. No automatic replacement/drop of unknown indexes. Failed concurrent
+builds need reviewed named-index repair before retry. Down retains data and the
+shared extension. Deployment must allow build time, active long transactions and
+write/storage overhead; this audit never applied a migration to the live user DB.
+
+PersonQueryPlanTests uses a guarded harness-owned private socket database, real
+entities/columns and actual repositories/EXPLAIN (ANALYZE, BUFFERS). Fixture: 40,002
+students, 1,002 teachers, 40,002 enrollments and 40,002 schedule rows in two synthetic
+schools, 40 pupils per generated class and 40 slots per generated teacher. It covers
+first/deep pages, Unicode substring, email, creation range, combined class/year,
+number search and teacher schedule pages. Student reads use 3 commands; a 10-teacher
+page uses 7 commands and materializes 10 classes/400 slots. Root tenant scope and all
+results stay unchanged. Ordinary root ID pages use the existing ordered index
+without a sort; selective searches use bitmap index plans with the new paths.
+
+A focused local before/after run (`/tmp/dm-person-query-index-experiment.log`) measured
+five-read warm repository means: Unicode 47.43→4.43 ms, email 22.62→4.97 ms, numeric
+36.53→4.05 ms. Full-suite run: 54.59→4.66, 22.27→4.63, 42.15→3.69 ms respectively.
+Stats were vacuumed/analyzed; measurements exclude HTTP/mapper/module work and
+establish no worst-case common/short-term behavior, sustained-write or whole-app
+throughput guarantee. Numeric plans explicitly use both the GIN and roll-number
+index. No teacher/date index was added without evidence.
+
+Full isolated Core suite 319 passed, zero skipped (`/tmp/dm-student-search-full-core.log`).
+The new case also verifies suppressed DDL transactions, actual EF migration execution
+on an existing-model fixture, stable-index-OID partial recovery, wrong-definition
+rejection, a real failed unique concurrent build leaving an invalid index and its
+rejection, and data/extension-preserving Down. The actual data-copy/index experiment
+refuses non-harness host/database/user/port combinations. Precommit gates pass.
+
+Local commits: Core `4cec647`, API documentation `9a084bf`. Standard pack/install
+`/tmp/dm-student-search-sync-dotnet.log`; installed/built DLL SHA256 match:
+Core `32a0dc7405c7515d17230c9ba77c09c1e37fe74d0515ca77ba88dd9278b9ccca`,
+Abstractions `5f687b05fa707e9593de687214c1763eda3a004f03db0fe05adb7cf5c0b3a3f6`,
+country `58ea8ad6b905fa5192b28eae88c3c7283e712a4e39535230c4795b9e1594efd7`.
+No push/manual user server restart/live DB modification. Frontend source/artifacts
+are unchanged since the complete 104-table UI gate. Core docs/PERSON-LIST-READS.md
+records query/migration scope, reproduction and limitations. Afghanistan integration
+106 passed, zero skipped with the rebuilt packages (`/tmp/dm-student-search-country.log`).
+
+All seven broader completion requirements remain open. Student/teacher list plans
+now have measured evidence, and the measured selective student-search scan is fixed.
+Remaining work includes other editor/durable writers and reference invariants;
+person detail/lookup and grade/fee/inventory reads, nested actor mapping and module
+snapshot composition; remaining expensive outputs; shared classroom state/jobs;
+mobile SignalR/country/locale; telemetry and representative multi-school whole-app
+load/recovery/deployment evidence. This two-school repository fixture does not finish
+the whole-application load requirement.
