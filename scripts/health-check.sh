@@ -94,6 +94,9 @@ run_check "dev-up          · dev-up.sh executable" \
 run_check "mobile i18n     · check-mobile-i18n.sh --strict" \
   "'$ROOT/scripts/check-mobile-i18n.sh' --strict > /dev/null"
 
+run_check "mobile sessions · shared runtime and actual app adapters" \
+  "node '$ROOT/scripts/tests/mobile-runtime.cjs'"
+
 run_check "scripts syntax  · bash -n every scripts/*.sh" \
   "for f in '$ROOT'/scripts/*.sh; do bash -n \"\$f\" || exit 1; done"
 

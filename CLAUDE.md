@@ -55,6 +55,9 @@ Working tree is a set of sibling directories under
 - `digitalmaktab-docs/` — cross-repo markdown docs
   (globalization.md, MULTI-REPO.md, HOWTO-ADD-COUNTRY*.md, etc.).
   No build.
+- `digitalmaktab-mobile-core/` — shared mobile HTTP/session/query runtime
+  (`@digitalmaktab/mobile-core`), consumed as a local npm tarball. No country
+  rules or native screen implementations.
 - `digitalmaktab-mobile-sdk/` — type-only extension contract for
   the React Native apps (`@digitalmaktab/mobile-sdk`). Mirror of
   the spa-sdk shape but for RN.
@@ -182,7 +185,8 @@ into the running `npm start`. Use the automation scripts:
 ```bash
 ./scripts/sync-dotnet.sh   # Core.Abstractions + Core + Afghan .NET → API
 ./scripts/sync-spa.sh      # SDK + spa-core + country/school modules → SPA
-./scripts/sync-all.sh      # both of the above in order
+./scripts/sync-all.sh      # backend + SPA in order
+./scripts/sync-mobile.sh   # mobile SDK + Core + country/school → both Expo apps
 ```
 
 The scripts replay the full pack-and-swap ritual (clean+build+pack
@@ -1250,3 +1254,30 @@ student API already used a paged route; its screen currently counts only a page,
 marks every row as present and formats browser-native Gregorian dates. Its
 query keys/transport also require the remaining account-scope audit. Do not
 claim complete mobile attendance from the backend's optional-date fix.
+
+
+## Shared mobile session runtime (2026-10-26)
+
+Use @digitalmaktab/mobile-core for shared parent/student HTTP, auth coordination,
+existing SecureStore keys and private React Query lifecycle. The SDK remains
+contracts only; calendar/localization remain country-owned. Do not copy another
+HTTP client, session model or credential store into a host/country module.
+Role parsing, environment URL and native storage are host adapters. Requests pin
+credentials at invocation, cancel on token changes, reject stale results/401s,
+and bound concurrent transport and JSON traversal. No automatic write retries.
+
+Keep hydration/login/logout epochs distinct from API session generations; serialize
+physical storage changes and never publish an old accepted login over a newer
+attempt. Login pending state belongs to that coordinated store. Local JWT payload
+binding only detects torn ID/role/school pairs; backend authentication remains
+authoritative. Existing two-key native storage is not crash atomic and erasure can
+fail. Query providers replace and clear clients for each opaque runtime/token
+scope. Read hooks must consume Query's signal, not merely discard responses.
+
+Use scripts/sync-mobile.sh after mobile package changes, and restart Metro. Local
+same-version tarball integrity must match the artifact installed in each consumer.
+Dependency metadata changes still require npm install. Precommit and health checks
+exercise scripts/tests/mobile-runtime.cjs against Core and both actual adapters.
+Tests use controlled native/HTTP adapters and real React Query, not live devices.
+SignalR races, locale/country scoping and accurate bounded mobile attendance screens
+remain separate work; this foundation is not the completed concurrency goal.

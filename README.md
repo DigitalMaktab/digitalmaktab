@@ -20,3 +20,9 @@ A Digital System for all Schools in Afghanistan.
 - Attendance
 - Library (Afghanistan MOE Books)
 - Online Library
+
+
+Mobile shared packages can be rebuilt and installed with
+`./scripts/sync-mobile.sh` (SDK, mobile Core and country/school modules into both
+Expo apps). Restart Metro afterward. Session/cache regression coverage is
+`node scripts/tests/mobile-runtime.cjs`; native device testing remains separate.

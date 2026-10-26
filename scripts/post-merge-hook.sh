@@ -87,6 +87,11 @@ case "$REPO_NAME" in
       echo "post-merge: no ts/tsx/json/css changes, skipping sync-spa"
     fi
     ;;
+  digitalmaktab-mobile-core|digitalmaktab-mobile-sdk|digitalmaktab-mobile-country-*|digitalmaktab-mobile-school-*)
+    if echo "$CHANGED_FILES" | grep -qE '\.(ts|tsx|json)$'; then
+      "$MONOREPO/scripts/sync-mobile.sh"
+    fi
+    ;;
   *)
     # digitalmaktab-api, -spa, and the monorepo stub
     # don't produce artifacts other repos consume — nothing to sync.

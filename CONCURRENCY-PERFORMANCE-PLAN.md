@@ -1593,3 +1593,77 @@ its query keys/transport also need account-scope work. The backend omission fix
 does not claim complete mobile attendance. Other important writers/editors,
 invariants, wider query/index/export bounds, shared jobs/classroom authority,
 telemetry and representative multi-school load/recovery remain in full scope.
+
+### Shared mobile session runtime (fortieth implementation increment, 2026-10-26)
+
+Discovery traced both mobile clients, stores, SecureStore adapters, actual query
+hooks and login screens. Both hosts copied the same runtime; the mobile SDK is
+explicitly type-only and SPA Core is browser-oriented. New shared
+`@digitalmaktab/mobile-core` owns that runtime, with host adapters for API URL,
+role-specific login parsing and native storage. Country calendar/localization
+remain in the country module. Existing identity fields and the two secure keys
+are reused; no database/schema or second credential store was added.
+
+The HTTP facade pins credentials at invocation, forwards aborts, cancels active
+requests when tokens change and rejects late responses/errors. Only a current
+protected 401 can invalidate the current account. Public login and stale 401s
+cannot. Default limits: 16 active transports, 20-second maximum per-call timeout,
+50,000 normalized JSON nodes, 48 nesting levels. No queue, orphan Promise.race,
+automatic write retry or whole-year request loop. A noncooperating cancelled
+adapter retains its slot until settlement. JSON normalization preserves false
+values and avoids prototype setters; traversal limits do not bound wire bytes,
+JSON parsing or native heap usage. Relative-path restriction does not constitute
+complete redirect or transport security validation.
+
+Shared auth separates attempt epochs from opaque API scopes, single-flights
+hydration and serializes bounded native storage jobs. Old login/write/hydration
+outcomes cannot publish over newer intent. Logout removes memory credentials
+before awaiting physical deletion; partial writes/corrupt pairs are retired.
+Local ID/role/school JWT-payload binding detects torn pairs but does not validate
+signatures, expiration or grant access. The API remains authoritative. Existing
+two-key storage is not crash atomic; native read/write/erasure can fail. Queue
+capacity also fails closed instead of accumulating unbounded storage work.
+
+A Core query provider replaces the private QueryClient on each runtime/token
+scope and cancels/clears old clients. No token/identity enters cache keys. All
+current parent/student/shared data read hooks forward Query cancellation to HTTP.
+Login pending state moved into the coordinated store so an old completion cannot
+reenable a newer pending submit. Existing translated error keys are reused. Both
+Expo tsconfigs now allow the existing app.config.ts explicit .ts import with
+noEmit, fixing the pre-existing TS5097 typecheck failure.
+
+Validation: `scripts/tests/mobile-runtime.cjs` passes against actual Core sources,
+both actual host adapters and their read hooks, controlled Axios/storage and real
+React Query. Coverage includes stale success/401, public/current 401 behavior,
+credential capture, capacity/no-queue/noncooperating aborts, timeout caps, JSON
+budgets/prototype safety, binding rejection, hydration/write/logout races,
+private-cache replacement and transport cancellation from unmounting all current
+role/shared read hooks. Parent, student and Core TypeScript checks pass; strict
+mobile i18n and package-version checks pass. Precommit now runs mobile typechecks
+and runtime tests; the root health gate includes the regression. These are
+controlled correctness tests, not native device/live backend/load verification.
+
+New `scripts/sync-mobile.sh` builds/packs SDK, Core and discovered country/school
+packages, installs only declared consumers and refreshes matching local tarball
+lock integrity without resolving unrelated dependencies. Dependency metadata
+changes still require normal npm install. Post-merge invokes this script for
+mobile packages. It was run twice successfully. Every built dist file matches
+both installed consumers: Core 12, SDK 32 and Afghanistan 23 files per app; all
+six consumer package-lock SHA-512 values match the exact tarballs. Country's SDK
+lock also changed to the rebuilt artifact. Restart Metro to load swapped packages;
+no user-owned server/device or live database was changed.
+
+Local commits: mobile Core `0ec07cd`, parent `2ceaba9`, student `a939d31`, mobile
+Afghanistan lock `ef93f94`. Nothing pushed. Logs:
+`/tmp/dm-mobile-runtime-{tests,sync,i18n,versions}.log` and
+`/tmp/dm-mobile-{parent,student,core}-runtime-final-tsc.log`.
+
+All seven completion requirements remain open. This covers HTTP/private-query
+account isolation, not the SignalR connection lifecycle, locale/country cache
+scopes, every mutation's durable/versioned behavior, or native OS failure recovery.
+Token renewal currently resets the private subtree and does not retain unsaved
+forms. Mobile attendance screens still need server totals, accurate presence
+status, native-calendar dates and bounded paging. Report-card/class-overview
+history aggregation, other important writers/editors/invariants, wider query/
+index/export bounds, shared jobs/classroom authority, telemetry and representative
+multi-school load/recovery remain in full scope.

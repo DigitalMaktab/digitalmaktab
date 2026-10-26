@@ -185,7 +185,17 @@ case "$REPO_NAME" in
     run_dotnet_build Debug
     run_ratelimit_routes_check
     ;;
-  digitalmaktab-mobile-parent|digitalmaktab-mobile-student|digitalmaktab-mobile-country-afghanistan|digitalmaktab-mobile-sdk)
+  digitalmaktab-mobile-core)
+    run_tsc
+    node "$MONOREPO/scripts/tests/mobile-runtime.cjs"
+    ;;
+  digitalmaktab-mobile-parent|digitalmaktab-mobile-student)
+    run_tsc
+    run_mobile_i18n_check
+    node "$MONOREPO/scripts/tests/mobile-runtime.cjs"
+    ;;
+  digitalmaktab-mobile-country-*|digitalmaktab-mobile-school-*|digitalmaktab-mobile-sdk)
+    run_tsc
     run_mobile_i18n_check
     ;;
   digitalmaktab)
