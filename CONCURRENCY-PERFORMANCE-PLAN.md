@@ -1807,3 +1807,72 @@ other domain/reference/permission invariants and expensive outputs; module snaps
 composition; shared classroom authority/state and remaining job coordination;
 mobile SignalR/locale/country scope; telemetry export and representative multi-school
 load, recovery and deployment evidence. Focused report tests do not establish these.
+
+
+### Report-comment versions and recovery (forty-third increment, 2026-10-26)
+
+Discovery traced the existing ReportCardComment, Student.Revision, module-profile
+IRevisionedExtension, shared row locks/receipts, selected-year provider, school-year
+banner and all comment callers. The existing student aggregate represents the
+concurrency boundary: comments implement the explicit revision-owner interface,
+including deletion, without a new stored version, history/request table or migration.
+Core ReportCardCommentRepository replaces direct controller upserts. Its small GET
+reads ownership/version/year/comment in a repeatable-read snapshot. The displayed
+start comes from existing school-year settings, with shared-year fallback only when
+settings are absent. PUT requires original revision, explicit year and stable request
+UUID. Student row locks/reload and shared RecordVersions reject missing/stale saves;
+current actor/stamp/impersonator/grants and school ownership are rechecked after waits.
+Text, owner version, audit and encrypted durable receipt commit together. Replaying
+an accepted original result precedes current-year/version validation and never
+restores text after a later clear/profile correction. Login stamps stay unchanged.
+
+SPA Core owns the one shared editor using existing forms, version hook, intent hook
+and comparison modal. Unknown outcomes freeze body/key and lock changes until manual
+recovery. Only known shared version rejections retire the intent. Acknowledgements
+are validated; same-actor student switches create fresh IDs while token renewal
+preserves them. Late account/resource responses are ignored. Conflict comparison
+includes the country-formatted school start and explicit replacement never saves.
+The shell retains the editor during report refreshes so locale/token changes preserve
+drafts. Read-only staff do not render/fetch it. Editor states are excluded from print.
+AppBaseEditor.submitLabel only forwards the existing form-card option. New UI labels
+ship in all three SPA/mobile locales. Recovery is mounted-form, not persistent drafts.
+
+Validation: full isolated PostgreSQL Core suite 312 passed, zero skipped
+(`/tmp/dm-comment-full-core-final.log`); final focused four comment tests passed after
+school-year/explicit-owner refinements (`/tmp/dm-comment-verified-races.log`). Real
+independent Kestrel hosts cover twelve competing identical saves, distinct stale
+intents, clear/profile revisions, restart replay, changed payload, year changes,
+three locale errors/dates, parent/student/foreign-school rejection, current staff
+grants including revocation while waiting, and receipt-failure transaction rollback.
+Existing shared fixture classes use the nonparallel host collection to isolate global
+mapper/year setup; their actual HTTP/database race requests remain concurrent.
+Afghanistan 106 passed, zero skipped (`/tmp/dm-comment-afghan.log`). Complete shared
+104-table UI gate passes on final source (`/tmp/dm-comment-final-ui.log`); actual editor
+and document tests cover frozen retries, malformed responses, pending guards,
+conflict/reload failures, same-actor record changes, account/token/locale changes,
+read-only permissions and retained drafts. Installed shell TypeScript passes
+(`/tmp/dm-comment-final-shell-tsc.log`); strict i18n coverage/parity/mobile pass.
+
+Committed packages rebuilt/installed through standard scripts; no live user DB or
+manual server restart. Final SPA log `/tmp/dm-comment-final-spa.log`, backend
+`/tmp/dm-comment-release-dotnet.log`, mobile `/tmp/dm-comment-sync-mobile.log`.
+All 1,969 SPA Core and 183 country dist files match installed shell; mobile Core14,
+SDK32 and country23 files match both apps. Built/API installed DLL SHA256 matches:
+Core `4d4da3a808313047083057fab7aa6cbb9c1482499b047704cd0a45ae006e885e`,
+Abstractions `7e616a70e59b32ccba7adc82183ff76f555e587d774a0bb0a85d18458392e9e2`,
+Afghanistan `47c518165b3c90c412c0efa1d9ddb15a59027408cce7b4105cd0b2e97d573279`.
+Local commits: Core `0d1dc59`, API `dee6ee1`, backend country `bb1eaa7`, SPA Core
+`76c0f1e`, SPA country `7f9d507`, shell `b55bd54b`, mobile locales `c5aaf6d`,
+parent `f0162a6`, student `b5eb14f`. Nothing pushed. Deploy Core.Abstractions/Core/API/
+SPA together and remove old API writers that ignore versions/keys; restart API/SPA
+jointly and Metro for locale artifacts. Core docs/REPORT-COMMENT-CONCURRENCY.md
+records the contract and limits. This does not lock every year/reference/grant writer
+through commit or protect unrelated editors.
+
+All seven broader completion requirements remain open. Next concrete gap: report
+attendance filters currently call the ordinary attendance-permission endpoint, so
+reports.read staff without attendance.read get403 after seeing initial report totals.
+Use report-authorized bounded scoped readers, never broaden staff grants to hide it.
+Other writers, read/query bounds and actor batching, module snapshots, shared classroom
+state/jobs, mobile SignalR/country/locale, telemetry and representative multi-school
+load/recovery/deployment evidence remain required.

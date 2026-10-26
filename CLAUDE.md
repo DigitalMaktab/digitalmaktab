@@ -1331,6 +1331,46 @@ calendar/UTC civil-day rendering and all table filters. useClassOverview(classId
 and useReportCard(kind,studentId) now reuse useReloadableRead, scoped credentials,
 cancellation, manual retry and same-scope retention. Do not mirror their data into
 unscoped screen state. Admin comment drafts survive same-resource refresh and late
-outcomes cannot update another mounted resource. This is not comment mutation
-versioning or durable replay; those remain required. ID cards use school.getStudent,
+outcomes cannot update another mounted resource. Protected comment mutation versions and durable replay are described below;
+these read contracts do not protect unrelated writers. ID cards use school.getStudent,
 not the multi-domain report-card endpoint. See Core docs/ACADEMIC-REPORT-LIMITS.md.
+
+
+## Report-comment versions and durable recovery (2026-10-26)
+
+ReportCardComment reuses the existing Student.Revision through the explicit
+IRevisionedExtension.RevisionOwner contract, like country person profiles. Do not
+add a separate comment revision, history or request table. Creation/edit/clear
+advance the tracked student owner version; profile/country changes therefore
+conflict conservatively. Load that owner in the same unit of work. No schema
+migration is required; metadata-only version changes must not rotate login stamps.
+
+Core ReportCardCommentRepository replaces the controller's direct upsert. GET of
+/report-card/student/{id}/comment reads only version/year/comment in one small
+snapshot. Use SchoolAcademicYearRepository.GetBannerAsync for the school's actual
+start, with the existing shared year fallback only when school settings are absent.
+The country UI formats that civil date at UTC. No active year means no editable
+metadata. PUT requires the stable Idempotency-Key, original revision and explicit
+calendarYearId. Reuse RecordVersions.LockAccount/Check and MutationReceiptStore;
+check current actor/stamp/impersonator/staff reports.write and school membership
+after receipt/student waits. Replay an accepted original result before checking a
+new active year/version, without reapplying text after a later clear/correction.
+No automatic retries or silent rebase. Keep original clear/delete semantics.
+
+AppReportCardCommentEditor belongs in SPA Core. Compose AppBaseEditor, Core form
+controls, useVersionedRecordEditor/useMutationIntent and shared conflict review.
+Freeze an unknown submission's body/ID; keep editing locked until recovery or a
+known version rejection. Same-actor record switches need a fresh intent, while
+token renewal retains the original one. Validate acknowledgements before resetting;
+ignore old account/resource outcomes. Advance only the acknowledged form token.
+Explicit comparison/replacement includes the country-formatted year context and
+never submits. Mounted-form recovery is not a cross-reload draft store. Keep this
+editor mounted during the independent report refresh so locale/token changes do
+not discard drafts. Hide every editor state from print. AppBaseEditor.submitLabel
+only delegates to existing AppFormCard, retaining defaults for other forms.
+
+Deploy Core.Abstractions/Core/API/SPA together and remove old API writers; they
+ignore this version/key contract. All three locale surfaces and mirrored mobile
+strings must ship. The workflow does not coordinate every unrelated year/reference/
+grant writer through commit, and the overall concurrency/performance goal remains
+open. See Core docs/REPORT-COMMENT-CONCURRENCY.md for the verified contract/limits.
