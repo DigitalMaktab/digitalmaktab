@@ -2440,3 +2440,77 @@ remain open, including remaining durable writers/reference invariants, expensive
 reads/outputs and nested mapping/module snapshots, shared classroom state/jobs,
 mobile SignalR/country/locale, telemetry and representative multi-school
 load/recovery/deployment evidence. This does not redefine the overall completion bar.
+
+
+### Complete shared mobile timetable views and active-theme primitives (fifty-second increment, 2026-10-27)
+
+Discovery traced both native timetable screens/hooks/datasources/DTOs, mobile Core
+HTTP/session/query/attendance patterns, SDK/country/context contracts, native Card/
+Text/RTL/theme primitives and the actual runtime harness. Student used one raw page
+and assumed ScheduleTime.startTime/endTime objects, while the server stores a period
+enum. Parent omitted periods nine/ten and sorted localized labels with an English day
+list. Both text/card primitives also held static light colors. Reuse the existing
+complete-grid endpoints, country.code, theme/RTL, React Query/session isolation and
+native controls. No new stored field/table, backend contract or credential store.
+
+Mobile Core readMobileWeeklyTimetable validates a complete zero-or-seven-day wire
+projection of existing FlattenedScheduleDto, preserving server order and concurrent
+lines and normalizing legacy optional later periods. It pins Accept-Language and
+forwards cancellation; malformed, duplicate-day, partial or object-period grids fail
+through the normal error flow. useMobileWeeklyTimetable namespaces queries by
+kind/locale/country code, disables automatic retry and uses the existing private
+session provider. It exposes only teaching days for the native list; a completely
+empty week yields the standard empty state. Country keys are query isolation, not
+country authorization or a new runtime country-selection implementation.
+
+Move the private parent day-card logic into MobileTimetableDayCard, a platform-neutral
+Core fragment over injected existing Card/Text/Row components. Hosts retain native
+screens/lists/pull-refresh/loading/error/theme/RTL integration. Both use the same
+reader/fragment and localized period ordinals, never fabricated clock times. Remove
+unused host schedule transports and obsolete Schedule/clock/teacher/flattened DTO
+copies after confirming there are no other callers. No React Native dependency or
+native screen implementation is added to mobile Core. Country period labels reuse
+the existing SPA schedule.period.label contract in all three mobile bundles.
+
+The two identical static typography definitions now live in Core mobileTextVariants
+and mobileTextColor; host AppText keeps native fonts/weight/RTL and caller overrides
+but reads the active theme. AppCard likewise reads active surface/border/heading
+border tokens. This corrects dark titles/default text through the actual primitive,
+not a timetable-specific style workaround. Other existing static-color native screens
+and country-provider activation remain separate audits.
+
+The existing mobile-runtime harness was extended rather than adding another runtime
+fixture. Final gate passes (/tmp/dm-mobile-timetable-country-gate.log), as do producer/
+both host precommits. It verifies complete 70-slot weeks including ninth/tenth periods
+and concurrent lines, legacy eight-period input, malformed/partial/duplicate grids,
+invalid locale/header injection and aborted reads. Actual transport/Query tests prove
+pinned language, obsolete locale/country cancellation and late-result rejection,
+matching-country-only cache reuse, 503 manual recovery/no automatic retry and unmount
+cancellation. The query probe subscribes to the error state it asserts, matching
+actual React Query tracked-property behavior.
+
+Both actual timetable screens and real native AppText/AppCard render with presentation
+adapters in English/Dari/Pashto. Assertions cover server day order, localized period
+10, concurrent text, no Unknown/object output, RTL rows, dark title/body/card colors,
+light theme replacement without any extra request, exactly one request per locale,
+empty weeks and errors. Existing attendance/runtime/auth/storage/capacity/normalization
+checks still pass. These are controlled native adapters, not emulator/device or live
+API/load tests. Existing backend authority and complete-grid limits remain covered by
+increment 50's private 329 Core/106 country suite; no backend code/schema changed here.
+
+Local commits: mobile Core e61f90e, mobile country 9626dda, parent 6673bf1,
+student e033654. Standard mobile pack/install completed
+(/tmp/dm-mobile-timetable-sync.log). All producer/host TypeScript, locale coverage and
+precommit checks pass. Verified 16 local package lock integrities and all 8,068
+installed archive files against current feed, with timetable/typography dist files
+matching both hosts. No API/Metro restart, push or live database modification. Backend
+complete-grid endpoints from increment 50 must be deployed before these clients.
+
+All seven broader completion requirements remain open. The student raw-page/legacy
+clock-shape and parent eight-period/localized-day-sort gaps identified in increment
+51 are closed for the actual mobile viewers. This does not repair every mobile
+localized query, SignalR lifecycle, native static-color screen, runtime country
+activation or device behavior. Remaining endpoint/editor/reference audits, local
+composite-grid source dates, nested actor/module snapshots, shared classroom state/
+jobs, telemetry and representative multi-school load/recovery/deployment evidence
+still need completion against the original whole-application requirements.

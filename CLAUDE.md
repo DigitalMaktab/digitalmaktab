@@ -1562,3 +1562,25 @@ useSelect2 must not pass plugin data arrays: Select2's ArrayAdapter replaces tho
 nodes and breaks React reconciliation when options shrink. Use the native DOM
 adapter, retain content-keyed configuration and callback refs, and verify option
 label/shrink/empty/loading/error/restoration plus existing Formik popup behavior.
+
+
+## Shared mobile weekly timetables and typography (2026-10-27)
+
+Use mobile Core readMobileWeeklyTimetable/useMobileWeeklyTimetable for both apps.
+Reuse `/Schedule/mine` and `/Schedule/children`, never one raw Student/schedules page
+as a complete week. Validate the complete grid, retain server day order/all ten
+periods/concurrent lesson lines, pin Accept-Language and forward Query's cancellation.
+Weekly keys include kind/locale/country; session/token scopes remain in the existing
+MobileSessionQueryProvider. No automatic retry; empty weeks use the normal empty view.
+Do not keep parallel host schedule readers or obsolete raw clock-time DTOs.
+
+MobileTimetableDayCard is a platform-neutral Core fragment reusing injected native
+Card/Text/Row primitives, not a native screen or another UI toolkit. Hosts retain
+native list/theme/RTL/loading/error/pull-refresh composition. Show localized period
+ordinals; do not invent bell times from an enum. Countries still own localization.
+
+Reuse Core mobileTextVariants/mobileTextColor for native typography. AppText/AppCard
+must consume useColors rather than static light colors; preserve fonts/weights/RTL
+and explicit caller overrides. This shared fragment/helper does not add React Native
+to mobile Core or repair every existing native static-color screen. Other mobile
+locale/country queries and runtime country activation remain separate work.

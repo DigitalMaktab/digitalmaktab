@@ -19,6 +19,7 @@ const response=(config,data={Student:{FirstName:'Original'},Status:false})=>({co
 const denied=config=>new axios.AxiosError('Denied','ERR_BAD_REQUEST',config,{}, {...response(config),status:401});
 const session=(id,role='STUDENT',school='school-one')=>{const claims={nameid:id,role,'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/sid':school};return{token:'header.'+Buffer.from(JSON.stringify(claims)).toString('base64url')+'.signature',user:{id,role,firstName:'Person',lastName:'One',email:'test@invalid',raw:{id,schoolId:school}}}};
 const turn=()=>new Promise(resolve=>setImmediate(resolve));
+const week=(prefix='Week',days=['Saturday','Sunday','Monday','Tuesday','Wednesday','Thursday','Friday'])=>days.map((day,index)=>({day,...Object.fromEntries(Array.from({length:10},(_,period)=>['hour'+(period+1),prefix+' '+index+'/'+(period+1)+(period===9?'\nConcurrent class':'')]))}));
 (async()=>{
  const wire=[],api=createMobileApi({baseURL:'https://school.invalid/api',maxActive:2,adapter:config=>{const task=deferred();wire.push({config,task});return task.promise;}});let loggedOut=0;api.setUnauthorizedHandler(()=>loggedOut++);api.setAuthToken('token-a');
  const old=api.apiClient.get('/Student/attendance');await turn();assert.equal(wire[0].config.headers.get('Authorization'),'Bearer token-a');assert.equal(wire[0].config.headers.get('Cache-Control'),'no-store');
@@ -49,6 +50,15 @@ const turn=()=>new Promise(resolve=>setImmediate(resolve));
  assert.equal(formatMobileAttendanceDay('bad','en-US'),'bad');assert(formatMobileAttendanceDay('2026-10-26','fa-AF').includes('۲۰۲۶'),'Gregorian fallback is independent of interface language');
  const {afghanistanCalendar}=require(projects+'/digitalmaktab-mobile-country-afghanistan/src/calendar/solarHijriAdapter.ts');
  let civilOptions;const formatted=formatMobileAttendanceDay('2026-10-26','en-US',(date,locale,options)=>{civilOptions=options;assert.equal(date.toISOString(),'2026-10-26T00:00:00.000Z');return afghanistanCalendar.formatDate(date,locale,options)});assert(formatted.includes('1405'));assert.equal(civilOptions.timeZone,'UTC');
+ // The complete weekly contract is shared by both roles, including periods nine/ten.
+ const {readMobileWeeklyTimetable,mobileTimetablePeriods,useMobileWeeklyTimetable}=exportsCore;
+ let weeklyBody=week(),weeklyConfig,weeklyPath;const weeklyApi={apiClient:{get:async(url,config)=>{weeklyPath=url;weeklyConfig=config;return{data:weeklyBody}}}};
+ const weeklySignal=new AbortController();const fullWeek=await readMobileWeeklyTimetable(weeklyApi,'mine','fa-AF',weeklySignal.signal);
+ assert.equal(weeklyPath,'/Schedule/mine');assert.equal(weeklyConfig.headers['Accept-Language'],'fa-AF');assert.equal(weeklyConfig.signal,weeklySignal.signal);assert.equal(weeklyConfig.params,undefined);assert.equal(fullWeek.reduce((sum,day)=>sum+mobileTimetablePeriods(day).length,0),70);assert(fullWeek[0].hour10.includes('\nConcurrent class'));
+ await readMobileWeeklyTimetable(weeklyApi,'children','ps-AF');assert.equal(weeklyPath,'/Schedule/children');
+ weeklyBody=week().map(({hour9,hour10,...rest})=>rest);const legacyWeek=await readMobileWeeklyTimetable(weeklyApi,'mine','en-US');assert.equal(legacyWeek[0].hour10,'');assert.equal(mobileTimetablePeriods(legacyWeek[0]).length,8);
+ for(const invalid of [week().slice(0,6),[...week(),week()[0]],week().map(day=>({...day,day:'duplicate'})),week().map(day=>({...day,hour10:{hidden:'object'}}))]){weeklyBody=invalid;await assert.rejects(readMobileWeeklyTimetable(weeklyApi,'mine','en-US'));}
+ weeklyBody=week();await assert.rejects(readMobileWeeklyTimetable(weeklyApi,'school','en-US'));await assert.rejects(readMobileWeeklyTimetable(weeklyApi,'mine','en-US\r\nInjected: header'));weeklySignal.abort();await assert.rejects(readMobileWeeklyTimetable(weeklyApi,'mine','en-US',weeklySignal.signal));
  // Hydration is single-flight and cannot replace a newer successful login.
  let disk=session('old'),reads=0,clear=0;const initial=deferred();const runtime=createMobileApi({baseURL:'https://school.invalid/api'});
  const store=createMobileAuthStore({api:runtime,login:async id=>session(id),storage:{read:()=>{reads++;return initial.promise},store:async value=>{disk=value},clear:async()=>{clear++;disk=null}},errorKey:()=> 'common.error'});
@@ -81,6 +91,22 @@ const turn=()=>new Promise(resolve=>setImmediate(resolve));
   await act(async()=>actualRoot.unmount());assert(requests.every(r=>r.config.signal.aborted));
   await act(async()=>{for(const request of requests)request.task.resolve(response(request.config,[]));await turn();});
  }
+ // Locale/country query keys cancel obsolete reads without reusing translated rows.
+ let timetableLocale='en-US',timetableCountry='AF',timetableResult;const timetableWire=[];
+ const timetableApi=createMobileApi({baseURL:'https://school.invalid/api',adapter:config=>{const task=deferred();timetableWire.push({config,task});return task.promise;}});
+ timetableApi.setAuthToken('weekly-session');
+ function TimetableProbe(){timetableResult=useMobileWeeklyTimetable(timetableApi,'mine',timetableLocale,timetableCountry);return React.createElement('span',null,timetableResult.isError?'weekly-error':timetableResult.data?.[0]?.hour1??'weekly-loading');}
+ const timetableRoot=createRoot(document.getElementById('root'));const drawTimetable=()=>timetableRoot.render(React.createElement(MobileSessionQueryProvider,{api:timetableApi},React.createElement(TimetableProbe)));
+ await act(async()=>{drawTimetable();await turn();});assert.equal(timetableWire.length,1);assert.equal(timetableWire[0].config.headers.get('Accept-Language'),'en-US');
+ await act(async()=>{timetableLocale='fa-AF';drawTimetable();await turn();});assert.equal(timetableWire.length,2);assert(timetableWire[0].config.signal.aborted);assert.equal(document.querySelector('span').textContent,'weekly-loading');
+ await act(async()=>{timetableWire[1].task.resolve(response(timetableWire[1].config,week('Dari')));await new Promise(resolve=>setTimeout(resolve,10));});assert.equal(document.querySelector('span').textContent,'Dari 0/1');
+ await act(async()=>{timetableWire[0].task.resolve(response(timetableWire[0].config,week('Late English')));await turn();});assert.equal(document.querySelector('span').textContent,'Dari 0/1');
+ await act(async()=>{timetableCountry='AT';drawTimetable();await turn();});assert.equal(timetableWire.length,3);assert.equal(document.querySelector('span').textContent,'weekly-loading');
+ await act(async()=>{timetableWire[2].task.reject(new axios.AxiosError('Busy','ERR_BAD_RESPONSE',timetableWire[2].config,{}, {...response(timetableWire[2].config),status:503}));await new Promise(resolve=>setTimeout(resolve,30));});await waitFor(()=>timetableResult.isError);assert.equal(timetableWire.length,3,'weekly failures never retry automatically');
+ await act(async()=>{void timetableResult.refetch();await turn();});assert.equal(timetableWire.length,4);
+ await act(async()=>{timetableCountry='AF';drawTimetable();await turn();});assert(timetableWire[3].config.signal.aborted);assert.equal(document.querySelector('span').textContent,'Dari 0/1');assert.equal(timetableWire.length,4,'only the matching country may reuse its cached week');
+ await act(async()=>{timetableWire[3].task.resolve(response(timetableWire[3].config,week('Late Austria')));await turn();});assert.equal(document.querySelector('span').textContent,'Dari 0/1');
+ await act(async()=>{timetableCountry='DE';drawTimetable();await turn();});assert.equal(timetableWire.length,5);await act(async()=>timetableRoot.unmount());assert(timetableWire[4].config.signal.aborted);await act(async()=>{timetableWire[4].task.resolve(response(timetableWire[4].config,week('Unmounted')));await turn();});
  // Mount both actual attendance screens with native presentation adapters. Keep real read hooks/Core/country dates.
  const renderSlot=slot=>typeof slot==='function'?React.createElement(slot):slot;
  const Box=({children,style,...props})=>React.createElement('div',{'data-native':'view',style:Object.assign({},...[style].flat(Infinity).filter(Boolean))},children);
@@ -88,24 +114,31 @@ const turn=()=>new Promise(resolve=>setImmediate(resolve));
  const Flat=props=>React.createElement('div',null,renderSlot(props.ListHeaderComponent),props.data.length?props.data.map((item,index)=>React.createElement(React.Fragment,{key:index},props.renderItem({item,index}))):renderSlot(props.ListEmptyComponent),renderSlot(props.ListFooterComponent));
  const Sections=props=>React.createElement('div',null,renderSlot(props.ListHeaderComponent),props.sections.length?props.sections.map((section,index)=>React.createElement('section',{key:index},props.renderSectionHeader({section}),section.data.map((item,index)=>React.createElement(React.Fragment,{key:index},props.renderItem({item,index,section}))))):renderSlot(props.ListEmptyComponent),renderSlot(props.ListFooterComponent));
  let language='en-US';const localeBundles=Object.fromEntries(['en-US','fa-AF','ps-AF'].map(locale=>[locale,JSON.parse(fs.readFileSync(projects+'/digitalmaktab-mobile-country-afghanistan/src/locales/'+locale+'/translation.json'))]));
- const t=key=>key.split('.').reduce((value,part)=>value?.[part],localeBundles[language])??key;
- const palette={surface:'#1c1f24',border:'#444444',text:'#f1f3f5',textSecondary:'#dddddd',primary:'#43b9b2',success:'#198754',danger:'#dc3545',white:'#ffffff'};
+ const t=(key,values={})=>String(key.split('.').reduce((value,part)=>value?.[part],localeBundles[language])??key).replace(/\{\{(\w+)\}\}/g,(_,name)=>values[name]??'');
+ const palette={surface:'#1c1f24',border:'#444444',text:'#f1f3f5',textSecondary:'#dddddd',textMuted:'#adb5bd',primary:'#43b9b2',success:'#198754',danger:'#dc3545',white:'#ffffff'};
+ const NativeText=({children,style,...props})=>{const merged=Object.assign({},...[style].flat(Infinity).filter(Boolean));const direction=merged.writingDirection;delete merged.writingDirection;return React.createElement('span',{style:{...merged,direction},'data-native-text':true},children);};
  const screenLoad=Module._load;
  Module._load=function(request,parent,isMain){
-  const screen=parent?.filename.endsWith('/AttendanceScreen.tsx')||parent?.filename.endsWith('/ChildrenAttendanceScreen.tsx');
+  const primitive=parent?.filename.includes('/presentation/components/common/')&&(parent.filename.endsWith('/AppText.tsx')||parent.filename.endsWith('/AppCard.tsx'));
+  if(primitive){
+   if(request==='react-native')return{View:Box,Text:NativeText,StyleSheet:{create:x=>x},Pressable:Box};
+   if(request==='../../../core/theme')return{useColors:()=>palette};
+   if(request==='../../../core/rtl')return{useRTL:()=>({textAlign:language==='en-US'?'left':'right',writingDirection:language==='en-US'?'ltr':'rtl',fontStyle:()=>({})})};
+  }
+  const screen=parent?.filename.endsWith('/AttendanceScreen.tsx')||parent?.filename.endsWith('/ChildrenAttendanceScreen.tsx')||parent?.filename.endsWith('/TimetableScreen.tsx')||parent?.filename.endsWith('/ChildrenTimetableScreen.tsx');
   if(screen){
    if(request==='react-native')return{View:Box,StyleSheet:{create:x=>x},ActivityIndicator:()=>React.createElement('i',null,'loading'),FlatList:Flat,SectionList:Sections};
    if(request==='react-i18next')return{useTranslation:()=>({t,i18n:{language}})};
    if(request==='@expo/vector-icons/MaterialCommunityIcons')return({name})=>React.createElement('i',{'data-icon':name});
    if(request==='../../../core/theme')return{useColors:()=>palette};
-   if(request==='../../../core/country')return{useCountry:()=>({calendar:afghanistanCalendar})};
+   if(request==='../../../core/country')return{useCountry:()=>({code:'AF',calendar:afghanistanCalendar})};
    if(request==='../../../core/rtl')return{useRTL:()=>({rowDirection:language==='en-US'?'row':'row-reverse'})};
    if(request==='../../hooks'){const repo=parent.filename.includes('mobile-parent')?'parent':'student';return require(projects+'/digitalmaktab-mobile-'+repo+'/src/presentation/hooks/'+(repo==='parent'?'useParentData.ts':'useStudentData.ts'));}
-   if(request==='../../components')return{AppScreen:Box,AppCard:Box,AppText:Text,AppEmptyView:({message})=>React.createElement('span',null,message),AppErrorView:()=>React.createElement('span',null,'test-read-error'),AppButton:({label,onPress,disabled})=>React.createElement('button',{onClick:onPress,disabled},label)};
+   if(request==='../../components'){const native=projects+'/digitalmaktab-mobile-'+(parent.filename.includes('mobile-parent')?'parent':'student')+'/src/presentation/components/common/';return{AppScreen:Box,AppCard:require(native+'AppCard.tsx').AppCard,AppText:require(native+'AppText.tsx').AppText,AppEmptyView:({message})=>React.createElement('span',null,message),AppErrorView:()=>React.createElement('span',null,'test-read-error'),AppButton:({label,onPress,disabled})=>React.createElement('button',{onClick:onPress,disabled},label)};}
   }
   return screenLoad.apply(this,arguments);
  };
- const waitFor=async predicate=>{for(let i=0;i<100&&!predicate();i++)await act(async()=>{await new Promise(resolve=>setTimeout(resolve,5));});assert(predicate());};
+ async function waitFor(predicate){for(let i=0;i<100&&!predicate();i++)await act(async()=>{await new Promise(resolve=>setTimeout(resolve,5));});assert(predicate());}
  for(const repo of ['student','parent']){
   const folder=projects+'/digitalmaktab-mobile-'+repo,actualRuntime=require(folder+'/src/core/api/client.ts').mobileApiRuntime;
   const screen=require(folder+'/src/presentation/screens/'+repo+'/'+(repo==='student'?'AttendanceScreen.tsx':'ChildrenAttendanceScreen.tsx'));
@@ -123,7 +156,26 @@ const turn=()=>new Promise(resolve=>setImmediate(resolve));
   assert(calls.every(config=>config.url.endsWith('/summary')&&config.params.recentDays===30));
   await act(async()=>mounted.unmount());
  }
+ // Both actual native timetable screens render the shared Core day fragment.
+ const nativeDays={'en-US':['Saturday','Sunday','Monday','Tuesday','Wednesday','Thursday','Friday'],'fa-AF':['شنبه','یکشنبه','دوشنبه','سه‌شنبه','چهارشنبه','پنجشنبه','جمعه'],'ps-AF':['شنبه','یکشنبه','دوشنبه','سه‌شنبه','چهارشنبه','پنجشنبه','جمعه']};
+ for(const repo of ['student','parent']){
+  const folder=projects+'/digitalmaktab-mobile-'+repo,actualRuntime=require(folder+'/src/core/api/client.ts').mobileApiRuntime;
+  const Component=require(folder+'/src/presentation/screens/'+repo+'/'+(repo==='student'?'TimetableScreen.tsx':'ChildrenTimetableScreen.tsx'))[repo==='student'?'TimetableScreen':'ChildrenTimetableScreen'];
+  const calls=[];let weeklyMode='ok';appTransport=async config=>{calls.push(config);if(weeklyMode==='error')throw new axios.AxiosError('Busy','ERR_BAD_RESPONSE',config,{}, {...response(config),status:503});const lang=config.headers.get('Accept-Language');return response(config,week('Native '+lang,nativeDays[lang]).map(row=>weeklyMode==='empty'?Object.fromEntries(Object.keys(row).map(key=>[key,key==='day'?row.day:''])):row))};
+  const mounted=createRoot(document.getElementById('root'));
+  for(const locale of ['en-US','fa-AF','ps-AF']){
+   language=locale;await act(async()=>mounted.render(React.createElement(MobileSessionQueryProvider,{api:actualRuntime},React.createElement(Component))));await waitFor(()=>document.body.textContent.includes('Native '+locale+' 0/10'));
+   const body=document.body.textContent;assert(body.includes(t('schedule.period.label',{n:new Intl.NumberFormat(locale).format(10)})));assert(body.includes('Concurrent class'));assert.equal(document.querySelectorAll('span[style*="font-size: 20px"]').length,7);assert.equal(document.querySelector('span[style*="font-size: 20px"]').textContent,nativeDays[locale][0]);assert.equal(document.querySelector('span[style*="font-size: 20px"]').style.color,'rgb(241, 243, 245)');assert(document.querySelector('[data-native="view"][style*="background-color: rgb(28, 31, 36)"]'));assert(!body.includes('[object'));assert(!body.includes('Unknown'));
+   assert(document.querySelector('[style*="flex-direction: '+(locale==='en-US'?'row':'row-reverse')+'"]'));assert(document.querySelector('span[style*="color: rgb(241, 243, 245)"]'));assert.equal(calls.at(-1).url,'/Schedule/'+(repo==='student'?'mine':'children'));assert.equal(calls.at(-1).headers.get('Cache-Control'),'no-store');assert.equal(calls.at(-1).params,undefined);
+  }
+  assert.equal(calls.length,3,'locale changes perform exactly one complete read');
+  palette.text='#1c1f24';palette.surface='#ffffff';palette.border='#dddddd';await act(async()=>mounted.render(React.createElement(MobileSessionQueryProvider,{api:actualRuntime},React.createElement(Component))));assert.equal(document.querySelector('span[style*="font-size: 20px"]').style.color,'rgb(28, 31, 36)');assert(document.querySelector('[data-native="view"][style*="background-color: rgb(255, 255, 255)"]'));assert.equal(calls.length,3,'theme changes do not refetch timetable data');
+  palette.text='#f1f3f5';palette.surface='#1c1f24';palette.border='#444444';await act(async()=>mounted.unmount());
+  // A fresh private scope renders an actually empty week as the shared empty state.
+  actualRuntime.setAuthToken('empty-'+repo);weeklyMode='empty';const emptyRoot=createRoot(document.getElementById('root'));await act(async()=>emptyRoot.render(React.createElement(MobileSessionQueryProvider,{api:actualRuntime},React.createElement(Component))));await waitFor(()=>document.body.textContent.includes(t('common.empty')));assert.equal(document.querySelectorAll('span[style*="font-size: 20px"]').length,0);await act(async()=>emptyRoot.unmount());
+  actualRuntime.setAuthToken('error-'+repo);weeklyMode='error';const errorRoot=createRoot(document.getElementById('root'));await act(async()=>errorRoot.render(React.createElement(MobileSessionQueryProvider,{api:actualRuntime},React.createElement(Component))));await waitFor(()=>document.body.textContent.includes('test-read-error'));const failures=calls.length;await act(async()=>{await new Promise(resolve=>setTimeout(resolve,30));});assert.equal(calls.length,failures);await act(async()=>errorRoot.unmount());
+ }
  Module._load=screenLoad;
  dom.window.close();
- console.log('PASS: shared mobile runtime pins credentials, rejects stale responses/401s, bounds work and normalization, coordinates auth/storage races, validates persisted identity pairs, replaces private query caches, drives both actual app adapters, and renders bounded native attendance summaries in all three locales.');
+ console.log('PASS: shared mobile runtime pins credentials, rejects stale responses/401s, bounds work and normalization, coordinates auth/storage races, validates persisted identity pairs, replaces private query caches, drives both actual app adapters, renders bounded native attendance summaries, and reads complete locale/country-scoped weekly grids with shared native day presentation and all ten periods in all three locales.');
 })().catch(error=>{console.error(error);process.exitCode=1});
