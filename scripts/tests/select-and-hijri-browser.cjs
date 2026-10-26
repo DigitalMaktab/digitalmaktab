@@ -14,7 +14,10 @@ import AppFormOptionSelect from ${JSON.stringify(core+'/src/components/form/AppF
 import AppFormLocalDatePicker from ${JSON.stringify(core+'/src/components/form/AppFormLocalDatePicker.tsx')};
 import {CalendarProvider,gregorianCalendar} from ${JSON.stringify(core+'/src/contexts/CalendarContext.tsx')};
 import AfghanDatePicker from ${JSON.stringify(country+'/src/AfghanDatePicker.tsx')};
+import AppSelect2 from ${JSON.stringify(core+'/src/components/input/AppSelect2.tsx')};
 import $ from 'jquery'; window.jquery=$;
+function DynamicChoices(){const [data,setData]=React.useState([{id:'one',text:'One'},{id:'two',text:'Two'}]);const [value,setValue]=React.useState('one');const [status,setStatus]=React.useState('ready');window.changeChoices=setData;window.changeStatus=setStatus;window.choiceValue=value;window.choiceChanges=window.choiceChanges||0;return <AppSelect2 name="dynamic-choices" label="Dynamic choices" data={data} value={value} placeholderValue="All" loading={status==='loading'} loadingError={status==='error'} onChange={next=>{window.choiceChanges++;setValue(next)}}/>;}
+
 const params=new URLSearchParams(location.search),language=params.get('lang')||'fa-AF',dark=params.get('state')==='dark';
 document.documentElement.setAttribute('data-theme',dark?'dark':'light');document.documentElement.setAttribute('data-bs-theme',dark?'dark':'light');document.documentElement.dir=language==='en-US'?'ltr':'rtl';
 i18n.init({lng:language,resources:${JSON.stringify(translations)},interpolation:{escapeValue:false}}).then(()=>{
@@ -25,7 +28,7 @@ i18n.init({lng:language,resources:${JSON.stringify(translations)},interpolation:
  <AppFormLocalDatePicker name="birth" label="Birth" max="2026-10-13" />
  <AppFormValues>{values=><output id="birth-value">{values.birth}</output>}</AppFormValues>
  <AppTimetableBellFields name="plan" />
- </AppForm></div></div></CalendarProvider></I18nextProvider>);
+ </AppForm><DynamicChoices /></div></div></CalendarProvider></I18nextProvider>);
 });
 `;
 fs.writeFileSync(work+'/entry.tsx',entry);
@@ -66,6 +69,19 @@ webpack(config,async(error,stats)=>{
    assert(await evaluate('window.jquery("#climate").data("select2")===window.initialWidget && window.initialWidget.isOpen()'),'Formik update rebuilt the dropdown');
    await click('.select2-results__option:last-child');
    assert.equal(await evaluate('document.querySelector("#climate").value'),'WARM');
+   await evaluate('window.nativeChoice=document.querySelector("#dynamic-choices option[value=one]");window.changeChoices([{id:"one",text:"Updated one"}])');await wait(150);
+   assert(await evaluate('document.querySelector("#dynamic-choices option[value=one]")===window.nativeChoice'),'Select2 replaced a React-owned option');
+   assert.equal(await evaluate('window.nativeChoice.textContent'),'Updated one');
+   await evaluate('window.changeChoices([])');await wait(150);
+   assert.equal(await evaluate('document.querySelector("#dynamic-choices").options.length'),1);
+   assert.equal(await evaluate('window.choiceValue'),'one','Shrinking choices changed form identity');
+   await evaluate('window.changeStatus("loading")');await wait(100);
+   assert(await evaluate('document.querySelector("#dynamic-choices option").disabled'),'Loading option must not write a form value');
+   await evaluate('window.changeStatus("error")');await wait(100);
+   assert(await evaluate('document.querySelector("#dynamic-choices option").disabled'),'Error option must not write a form value');
+   await evaluate('window.changeChoices([{id:"two",text:"Restored two"}]);window.changeStatus("ready")');await wait(150);
+   await evaluate('window.jquery("#dynamic-choices").val("two").trigger("change");true');await wait(100);
+   assert.equal(await evaluate('window.choiceValue'),'two');assert.equal(await evaluate('window.choiceChanges'),1);
    await click('select[name="plan.bellSchedules.0.shift"] + .select2 .select2-selection');
    assert(await evaluate(`window.jquery(document.querySelector('select[name="plan.bellSchedules.0.shift"]')).data('select2').isOpen()`),'Bell shift picker closed on opening');
    await evaluate(`window.bellWidget=window.jquery(document.querySelector('select[name="plan.bellSchedules.0.shift"]')).data('select2');document.querySelector('input[name="plan.bellSchedules.0.code"]').dispatchEvent(new FocusEvent('focusout',{bubbles:true}))`);await wait(150);
@@ -94,7 +110,7 @@ webpack(config,async(error,stats)=>{
    const layout=await evaluate(`(()=>{const e=document.querySelector('[role="dialog"]'),r=e.getBoundingClientRect(),s=getComputedStyle(e);return{left:r.left,right:r.right,background:s.backgroundColor,color:s.color}})()`);
    assert(layout.left>=0 && layout.right<=width,'Picker overflows viewport '+JSON.stringify(layout));
    const shot=await send('Page.captureScreenshot',{format:'png'},sessionId);fs.writeFileSync(work+'/'+name+'.png',Buffer.from(shot.data,'base64'));
-   console.log('PASS: '+name+'; real mouse opens Select2 through Formik blur, selection works, bell shift selection stays open through validation, eight period controls fit, direct Hijri birth-year entry preserves ISO form value and fits viewport.');
+   console.log('PASS: '+name+'; real mouse opens Select2 through Formik blur, React option nodes survive label/shrink/empty/loading/error/restore updates, selection works, bell shift selection stays open through validation, eight period controls fit, direct Hijri birth-year entry preserves ISO form value and fits viewport.');
   }
   console.log('Picker browser artifacts: '+work);
  }catch(error){console.error(error);console.error('Picker browser artifacts: '+work);process.exitCode=1;}

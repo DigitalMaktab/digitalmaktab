@@ -1531,3 +1531,34 @@ response copies; global books stay valid. Existing academic-report DTO inputs re
 compatible. No new persistent field/table, DTO or index is required. Legacy SPA grid
 session/locale lifecycle, mobile complete schedule rendering and publication-history
 reads remain separate audits. See Core docs/PERSON-LIST-READS.md.
+
+
+## Scoped SPA weekly timetable viewers (2026-10-27)
+
+Use Core ScheduleTable.source="mine"/"children" for student/parent weekly views.
+AppTable owns the only row cache; useScheduleViews owns only seven bounded day-choice
+labels and period-count metadata. Never restore shell-level row mirroring, mount-only
+reads or another table/request implementation. The API helper validates complete
+seven-day grids, pins credentials/signal/no-store and rejects object-valued periods.
+
+Dates apply to original lesson creation timestamps on the server. Day filters use
+stable ordinal row IDs plus Core filterTableRecords, not translated labels or the
+legacy global day-to-classId mapping. Keep both filters in the shared Apply/Reset
+panel; complete-grid pagination metadata prevents filtering synthetic epoch dates.
+Refresh is a Core button. Opaque request generations remount the private table cache
+on token/language/actor/kind changes, cancel work and suppress late results. Retain
+applied criteria for the same actor/kind on token/locale replacement; clear them for
+another actor/kind. Unapplied drafts and table interaction/sort state reset with the
+cache; no cross-reload persistence or automatic retry is implied.
+
+Local ScheduleTable.data report snapshots remain provider-free. Their source-date
+semantics, other AppTable consumers, and mobile student raw schedule rendering are
+separate audits. New labels live in Core English, Afghan Dari/Pashto and all three
+mobile bundles. Rebuild/install Core/country packages before shell verification.
+
+
+Core AppSelect2 owns native option nodes in React, including loading/error choices.
+useSelect2 must not pass plugin data arrays: Select2's ArrayAdapter replaces those
+nodes and breaks React reconciliation when options shrink. Use the native DOM
+adapter, retain content-keyed configuration and callback refs, and verify option
+label/shrink/empty/loading/error/restoration plus existing Formik popup behavior.

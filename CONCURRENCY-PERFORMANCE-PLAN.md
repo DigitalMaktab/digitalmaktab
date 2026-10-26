@@ -2355,3 +2355,88 @@ Other remaining reads/writers/reference invariants, scalar class summaries, nest
 actor mappings/module snapshots, shared classroom state/jobs, mobile SignalR and
 country/locale, telemetry and representative multi-school load/recovery/deployment
 remain required. No whole-application completion is inferred from this focused suite.
+
+
+### Scoped SPA timetable sources and React-owned select options (fifty-first increment, 2026-10-27)
+
+Discovery traced both shell timetable screens, useScheduleViews/useApiRequests,
+ScheduleTable, AppTable's actual paged/filter/empty/cancellation flow, request options,
+Core actor resolver, shared filter mapping and Select2 implementation. Reuse the Core
+source pattern (as in attendance summaries), existing ScheduleData, API options,
+ResponseResult, filterTableRecords, controls and the server's seven-day contract.
+No new persistent field, table, DTO, request service, UI control or country rule.
+
+ScheduleTable.source="mine"/"children" now owns the remote-view composition. AppTable
+is the only row cache; the hook retains at most seven day labels and the period-count
+metadata, not a second copy of the grid. Shell screens only choose the source/card.
+API requests pin credentials/signal/no-store before awaits and validate a complete
+zero-or-seven-row grid with unique day labels and string period cells. Object-valued
+cells cannot reach rendering. Complete response order supplies stable Saturday..Friday
+ordinal row IDs; day labels are presentation, not filter identities.
+
+Creation ranges reach the original lesson query. The day criterion uses the shared
+Core filter helper over the complete result, with explicit accessor/options to avoid
+the legacy global day-to-classId mapping. Return complete one-page metadata so
+AppTable never filters synthetic epoch grid dates locally. All controls remain in
+its draft/Apply/Reset panel. Reset and empty results retain the filters; a shared
+button provides explicit refresh and recovery. Eight/nine/ten-period columns derive
+from bounded metadata. Opaque request-generation keys replace the private table cache
+on actor/kind/token/language changes, cancel pending work and reject late responses.
+Applied criteria remain for the same actor/kind through renewal/locale changes and
+clear for another actor/kind. Unapplied drafts and sort/interaction state reset with
+that cache; there is no cross-reload draft persistence or automatic retry. Local
+report ScheduleTable.data remains provider-free and does not acquire an HTTP loader.
+
+An added empty-result transition exposed a real shared DOM-ownership failure:
+Select2's ArrayAdapter replaces native option nodes that React still owns. Shrinking
+seven choices to zero then caused React NotFoundError during reconciliation. Inspected
+the installed plugin's convertToOptions/replaceWith and all useSelect2 callers (one
+Core wrapper). AppSelect2 now owns all option DOM in React, including translated
+nonselectable loading/error choices. useSelect2 omits plugin data arrays so the native
+select adapter enhances those existing nodes. Existing content-keyed configuration,
+callback refs, modal anchoring, accessibility/theme and no-blink Formik behavior stay.
+This fixes the actual Core primitive for every form/filter consumer, not a timetable
+workaround or duplicate control.
+
+Evidence: actual Core table/request/select components and both shell viewers pass
+English/Dari/Pashto scope tests (/tmp/dm-schedule-view-scopes-release-final.log).
+They cover one settled request per action, drafts versus Apply, combined source dates
+and ordinal day, Reset, empty results with filters, same-token different actors,
+renewal/locale changes with applied criteria, pre-effect stale-row removal, pinned
+credentials/no-store/signals, old-response suppression, unmount cancellation, explicit
+503/malformed/403 recovery, no automatic retry/global-loader activity, ten periods and
+local snapshots without a loader provider. The new case is included in standard
+check-data-flows and the full 104-table UI/export gate, which passes
+(/tmp/dm-schedule-views-ui-release.log).
+
+Real Chrome checks also pass four viewport/language/theme combinations (Dari dark
+1280/320, Pashto dark 360, English light 1280): native option-node identity through
+label changes, shrink/empty/loading/error/restoration, one explicit change callback,
+existing Formik popup stability, bell controls and direct Hijri birth-year selection.
+Log /tmp/dm-schedule-select-browser-final.log; rendered artifacts at
+/var/folders/60/wxvmhsvx2kn6_msk6zgy1qyc0000gn/T/digitalmaktab-picker-f7PXbz.
+The existing browser harness was extended rather than introducing another driver.
+React review retained shared controls, stable source identities, bounded metadata,
+refs for criteria/generation, scoped cancellation and no row-mirroring effects.
+
+Core, Afghanistan/Austria SPA modules, shell, mobile country and both mobile app
+TypeScript/localization/precommit checks pass. Mobile app hooks also run the shared
+runtime/attendance regression gate successfully. Labels ship in Core English,
+Afghan Dari/Pashto and all three mobile bundles. Standard rebuild/install logs:
+/tmp/dm-schedule-views-sync-spa.log and /tmp/dm-schedule-views-sync-mobile.log.
+Verified all 16 local package lock integrities and 8,056 installed archive files
+against current feed, plus the five changed Core timetable/select dist files against
+shell and both SPA countries. No server/Metro restart, live database mutation or push.
+No backend source/schema change in this increment; deploy the complete-grid backend
+from increment 50 before/with these viewers. No new whole-device/live-app proof is
+claimed from controlled transport and local Chrome fixtures.
+
+Local commits: SPA Core 60e9e36, shell c3f1f377, SPA Afghanistan 5698df3,
+SPA Austria lock 211b47d, mobile country c9c7020, parent lock 9c5feaf,
+student lock 67a5cf7. Remaining work includes mobile student's raw/legacy schedule
+presentation, source-date semantics for local composite grids, other AppTable/account
+lifecycles and readonly endpoint audits. All seven broader completion requirements
+remain open, including remaining durable writers/reference invariants, expensive
+reads/outputs and nested mapping/module snapshots, shared classroom state/jobs,
+mobile SignalR/country/locale, telemetry and representative multi-school
+load/recovery/deployment evidence. This does not redefine the overall completion bar.
