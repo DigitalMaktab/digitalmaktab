@@ -77,5 +77,8 @@ const pause=async ms=>act(async()=>{await new Promise(resolve=>setTimeout(resolv
  for(const [file,props] of [['screens/course/CourseList.tsx',{titleKey:'course.list.label',data:[course],totalPages:1}],['screens/school/class/subject/SchoolCourseList.tsx',{}]]){
   const Screen=require(shell+'/src/'+file).default;ui=render(h(Screen,props),{wrapper});assert(ui.getByText('Grade 8'));assert(ui.getByText('Math'));assert(ui.getByText('—'));cleanup();
  }
+ const room={id:'room',classNameValue:'Grade 8',branch:null,teacher:null,enrollments:[{status:false},{status:true}],courses:[course],studentCapacity:40};
+ exportsForScreen={...exportsForScreen,AppButtonLink:({children})=>h('span',null,children),useSchoolOperations:()=>({classList:async()=>({data:[room]}),data:[room],totalPages:1})};
+ const ClassList=require(shell+'/src/screens/school/class/ClassList.tsx').default;ui=render(h(ClassList),{wrapper});assert(ui.getByText('—'));assert(!ui.container.textContent.includes('undefined'));cleanup();
  console.log('PASS: real async lookup and all six domain selectors hydrate saved IDs beyond the first page, retain selected labels during search, ignore stale responses, settle failed searches, preserve cleared values and cancel abandoned work without request loops. Teacher reference controls use teacher-scoped APIs.');
 })().catch(error=>{console.error(error);process.exitCode=1});

@@ -1480,3 +1480,27 @@ archive. SPA/mobile sync scripts share update-local-tarball-lock.cjs; it preserv
 unrelated metadata and rejects remote/mismatched paths or changed dependency metadata.
 Metadata changes require npm install; don't silently resolve/upgrade peers in sync.
 Rebuild/install packages before committing consumer changes that require new exports.
+
+
+## School class graph snapshots (2026-10-26)
+
+School class list/detail reads reuse BaseRepository.ReadPage and ClassDto, preserving
+existing enrollment/course collections used by the class table. Page scalar class IDs
+before probing/expanding; load enrollments and courses as split queries in the same
+repeatable-read snapshot. Keep stable grade/section/ID order and all common/class
+filters. Whole-page bounds are 5,000 valid enrollments and 1,000 courses, with localized
+ClassReadTooLarge (413) before graph materialization, never silent truncation. Narrow
+filters/page size for large pages. These are row bounds, not byte/deadline guarantees.
+
+Keep inactive valid enrollment history, but exclude foreign students and mismatched
+class/enrollment years from response graphs without deleting records. GetClass takes
+schoolId and classId; enforce school ownership before loading anything. Its existing
+course/subject/book graph is capped at 1,000 courses; include branch/year/teacher for
+current editor/select labels. Withhold foreign branch/teacher/subject-book details only
+on detached copies; global books remain available. ReadBounded supplies no-store and
+controller-localized problems, and request cancellation reaches all snapshot queries.
+
+Use existing Core getPersonName in the class table for omitted teachers. No persistent
+count/table, alternate DTO, service or UI control is needed for these limits. Nested
+audit-label mapping, scalar class summaries and remaining person/detail/module snapshot
+work remain separate audits. See Core docs/PERSON-LIST-READS.md for exact contracts.

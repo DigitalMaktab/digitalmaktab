@@ -2212,3 +2212,69 @@ reads, nested actor mappings/module snapshots, remaining durable writers/referen
 invariants and expensive outputs, shared classroom state/jobs, mobile SignalR and
 country/locale scopes, telemetry and representative multi-school load/recovery/
 deployment evidence. Mounted lookup recovery is not a persistent draft system.
+
+
+### Bounded school class graphs (forty-ninth increment, 2026-10-26)
+
+Discovery traced Class/ClassDto and enrollment/course/subject/book relations,
+School/Teacher/Student repository/controller reads, all actual school class/select/
+editor/transcript callers, class-table totals and existing ReadPage/ReadBounded.
+The school list genuinely uses enrollment and course arrays for totals, so retain
+that contract instead of silently returning empty/truncated arrays or storing
+parallel count fields. No new persistent field, table, DTO, service or index.
+
+School GetClasses now applies root filters, counts/pages scalar IDs and probes
+relations before loading the selected graph. Stable grade/section/immutable-ID
+order, common creation filters and all class criteria remain. Existing ReadPage
+provides one repeatable-read snapshot and request cancellation for every phase.
+AsSplitQuery separates enrollments and courses, avoiding their SQL row product.
+Whole-page bounds are 5,000 valid enrollment rows and 1,000 course rows, tested at
+and above both limits; a normal 50-class/40-student page fits. Oversize returns
+localized ClassReadTooLarge (413) before graph loading, never truncation. Reduce
+page size/narrow classes; individually huge classes need enrollment/course flows.
+These bounds are not a payload-byte limit or hard deadline.
+
+GetClass now takes schoolId/classId, with school scope in SQL before expansion.
+Its existing course/subject/book graph remains, bounded at 1,000 courses. Include
+branch/year/homeroom teacher for actual selector/editor labels. Foreign book-backed
+subjects, branches and teachers are withheld on detached copies; global books
+remain available. List enrollment graphs retain inactive history while excluding
+foreign students and mismatched class/year references, without changing storage.
+Both school routes use shared localized no-store/problem handling. Caller-owned
+repeatable-read transactions remain open; weaker transactions fail. Empty/extreme
+pages skip graph/probe work. The shell class table reuses Core getPersonName to
+avoid the previous undefined/undefined label when a teacher is unavailable.
+
+Validation: three focused private PostgreSQL/API tests passed
+(/tmp/dm-class-reads-focused.log). Full isolated Core suite 325 passed, zero skipped
+(/tmp/dm-class-reads-full-core.log). Subsequent stronger serialization assertions
+also passed all three focused cases (/tmp/dm-class-reads-boundary.log), including
+actual list JSON with 5,000 enrollments plus 1,000 courses and detail JSON with
+1,000 courses. Coverage includes 73 tied-order classes over 50/23 pages, creation
+filters, foreign IDs, retained inactive history, mismatched years, scoped subjects/
+books, no tracking/storage correction, concurrent class/course changes after count,
+transaction ownership and cancellation. Real JWT routes return correct no-store
+and localized 413 in English/Dari/Pashto. SQL assertions prohibit combined
+Enrollment/Course joins and prove oversized pages fail before account graph loading.
+
+Shell TypeScript passes (/tmp/dm-class-reads-shell-tsc.log), and the existing real
+selector/course/class render test passes (/tmp/dm-class-reads-ui.log), now covering
+withheld class teacher/branch references. Shared SPA package source is unchanged
+since increment 48's complete 104-table UI/export gate; no repack required for the
+shell-only formatter change. Core/shell/API precommit gates pass. Afghanistan integration also passes all 106
+tests, zero skipped, against the rebuilt packages (/tmp/dm-class-reads-country.log).
+
+Local commits: Core 9de306f, API documentation 7192ff5, shell 0986c8c2.
+Standard backend rebuild/install: /tmp/dm-class-reads-sync-dotnet.log. Installed API
+DLL SHA256 matches built Release:
+Core 1c8f3ba25832da68ccb07e948718b7a5c7d06a4b7dcee0c20be3acffab1b0e7b,
+Abstractions 415465545ca0ed57f069e6f9c9f442237a7c5e8b0a1be4ed4cb2b4ee68826c39,
+Afghanistan 6f0e5d2d1295086f75cd62f283e1315733e9975f61ce52dae244f4769050478c.
+No migration, push, live user-database mutation or manual user-server restart.
+
+All seven broader completion requirements remain open. This closes the identified
+school class SQL expansion/snapshot/scope gaps; it does not prove every class-related
+endpoint or caller correct. Student class/schedule reads remain separate audit work,
+as do scalar class summaries, nested audit-label mapping, person details/module
+snapshots, grade/fee/inventory and other reads/writers, shared classroom state/jobs,
+mobile SignalR/country/locale, telemetry and multi-school load/recovery/deployment.
