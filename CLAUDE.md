@@ -1403,3 +1403,25 @@ labels, cached misses, save invalidation and the 512-entry ceiling. No global ca
 new actor table or copied lookup pipeline. Fallback and primed paths share one query.
 Nested unprimed actor mappings and other callers may still perform synchronous
 lookups; this step does not finish the actor/query audit or guarantee hard deadlines.
+
+
+## Scalar-first person lists (2026-10-26)
+
+Student/teacher repositories reuse BaseRepository.ReadPage and PagedList: one
+repeatable-read snapshot for count, at most 50 scalar IDs, relation probes and page
+expansion. Caller-owned repeatable-read transactions stay open; weaker snapshots
+fail. Preserve stable name/ID ordering, common filters, cancellation, empty/extreme
+page metadata and no tracking. Prime root audit labels with the existing resolver.
+StudentDto never exposes enrollment histories, so don't materialize them for a list;
+keep placement filters in EXISTS and combine class/year on one valid same-school
+same-year enrollment, retaining inactive history. Include existing JoiningClass/Branch
+for the Core table and sanitize foreign references only in copies.
+
+Teacher lists retain related classes/schedules, with 500 per-page rows of each probed
+before graph loading. Oversize is localized 413, not truncation. A single teacher
+above a bound needs the separate detail workflow. Scope classes/schedule course
+classes to the school. Schedule years come from the course's class; do not invent
+a duplicate year on Course. Shared ReadBounded supplies controller-localized errors/
+no-store; it does not add a hard timeout. Country enrichment, nested actor fallback,
+detail reads, query plans and representative load remain separate audit work. No new
+schema/DTO/index or country-specific rule. See Core docs/PERSON-LIST-READS.md.

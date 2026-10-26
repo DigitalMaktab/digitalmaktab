@@ -1995,3 +1995,75 @@ Trace actual table/mobile/teacher callers and module enrichers before changing t
 contracts. Remaining writers/reference invariants, other bounded reads and nested actor
 mapping, module snapshots, shared classroom state/jobs, mobile SignalR/country/locale,
 telemetry and representative multi-school load/recovery/deployment remain in scope.
+
+
+### Scalar-first student and teacher pages (forty-sixth increment, 2026-10-26)
+
+Discovery traced Student/Teacher repositories, BaseRepository/PagedList, all actual
+Core callers (including teacher/students), DTO/mapping shapes, Core/country table
+columns and module response enrichment. StudentDto does not expose Enrollments:
+loading every enrollment/class/branch was unused graph materialization. The Core
+table instead reads the existing JoiningClass/Branch field, previously not included.
+TeacherDto genuinely includes classes/schedules, so removing those collections or
+silently limiting them would change the contract. Extend existing BaseRepository
+rather than adding a parallel list repository/DTO/table.
+
+ReadPage now counts, selects at most 50 scalar page IDs, probes relations and loads
+only the selected graph in one repeatable-read snapshot, preserving PagedList page
+metadata and name/name/immutable-ID ordering. It owns only transactions it creates;
+caller-owned repeatable-read transactions remain open, and weaker snapshots fail.
+Request cancellation reaches these queries and existing root audit-label priming.
+Beyond-count/extreme pages issue no graph/probe queries. ReadBounded extends the
+existing BaseController for controller-localized problems/no-store without inventing
+a hard timeout. School student/teacher lists and the teacher student-list caller use it.
+
+Students keep enrollment-based EXISTS criteria without loading their histories. Class
+and year now match the same valid same-school/class-year enrollment, retaining inactive
+historical records; separate Any predicates previously matched unrelated placements.
+JoiningClass/Branch references are loaded for the existing table. Foreign references
+are removed only on detached copies, preserving students/counts and stored anomalies.
+Teacher page graphs retain all valid related rows up to 500 school classes and 500 school
+schedule rows across the page. Scalar limit-plus-one probes reject larger results
+before graph loading with localized PersonListTooLarge (413), never truncate. Reduce page
+size/filter, or use the separate detail workflow; an individually oversized teacher
+cannot use this list contract. Foreign classes/schedules are excluded and foreign branch
+copies sanitized. Schedule year comes from its course's class, not a duplicate Course
+year field. No schema, stored field, DTO, index, UI or country rule was added.
+
+Validation: four new focused private PostgreSQL/API tests passed
+(`/tmp/dm-person-page-focused.log`); final full Core suite 318 passed, zero skipped
+(`/tmp/dm-person-page-full-core.log`), including subsequent transaction ownership and
+concurrent teacher-class assertions. Coverage includes 73 tied-name students over 50/23
+pages, stable IDs/counts, creation dates, empty/extreme pages, no enrollment graph,
+joining-class visibility, combined historical filters, foreign references/history
+preservation, cancellation and no tracking. Concurrent registration/class writes
+cannot mix count/IDs/graph snapshots. Teacher 500 boundary success uses the real mapper/
+serializer/API/country metadata; 501 class or schedule rows fail before account graph
+loading, with actual English/Dari/Pashto errors. Foreign class/schedule rows remain
+stored but cannot leak or inflate these page graphs.
+
+An initial full-suite run hit PostgreSQL 53200 during simultaneous independent
+EnsureCreated schemas; retained server diagnostics explicitly reported exhausted
+max_locks_per_transaction. The socket-only disposable Core test cluster now reserves
+512 locks per transaction instead of its default 64. No app/live DB setting changed,
+and actual concurrent request races remain concurrent. Final 318 suite passes on that
+harness; no production error suppression or test skipping was introduced.
+
+Local commits: Core `ffc5ac7`, API documentation `d05ea1f`. Standard rebuild/install
+`/tmp/dm-person-page-sync-dotnet.log`; built/API installed DLL SHA256 match:
+Core `fc090fbfa2376440e8e39625d67cea65f9423a9b6f58038bb41e38e52c987ba6`,
+Abstractions `f5ae3cd102ee880ac6534142768605a40809a7106df93d899914f5cbf4f9febb`,
+country `3cd7a188a7b203491a49ca7561afa00f6b9a218a08332a4480ff416d61f7640d`.
+No push, live user DB mutation or manual server restart. Frontend source/artifacts are
+unchanged since the complete 104-table gate; the existing successful DTO shapes and
+country composition remain. Afghanistan integration 106 passed, zero skipped with the
+rebuilt packages (`/tmp/dm-person-page-country.log`). See Core docs/PERSON-LIST-READS.md
+for exact limits.
+
+All seven overall completion requirements remain open. This closes the discovered
+unbounded list-history materialization and count/page consistency gaps, not the
+whole read audit. Person detail reads, nested actor mappings and post-read module
+snapshot composition still need work. Representative person-list query plans/index
+measurements, remaining grade/fee/inventory/lookup reads, other writers/reference
+invariants, shared classroom state/jobs, mobile SignalR/country/locale, telemetry and
+multi-school load/recovery/deployment evidence remain required.
