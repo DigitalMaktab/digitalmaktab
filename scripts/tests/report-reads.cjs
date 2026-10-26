@@ -38,5 +38,17 @@ const wrapper=({children})=>h(I18nextProvider,{i18n},h(MemoryRouter,null,h(Loade
    mode='defer';fireEvent.click(ui.getByRole('button',{name:i18n.t(namespace+'.refresh')}));await waitFor(()=>assert.equal(requests.length,4));ui.unmount();assert(requests[3].config.signal.aborted);await act(async()=>requests[3].task.resolve({status:200,data:Screen===Health?health:feeReport}));cleanup();
   }
  }
+ // Actual academic report hooks also use the scoped lifecycle and pin credentials.
+ const useReportCard=get('hooks/useReportCard.ts'),useClassOverview=get('hooks/useClassOverview.ts');
+ for(const kind of ['mine','child','student','class']){
+  requests=[];mode='defer';let value,resource='one';account={token:'academic-a',role:0};
+  function AcademicProbe(){value=kind==='class'?useClassOverview(resource):useReportCard(kind,resource);return h('output',null,value.data?.marker??'');}
+  const academicNode=()=>h(AuthContext.Provider,{value:{user:account}},h(AcademicProbe));
+  ui=render(academicNode(),{wrapper});await waitFor(()=>assert.equal(requests.length,1));assert.equal(requests[0].config.accountToken,'academic-a');assert.equal(requests[0].config.headers['Cache-Control'],'no-store');
+  const previous=requests[0];account={token:'academic-b',role:0};resource='two';ui.rerender(academicNode());assert.equal(value.data,null);assert(previous.config.signal.aborted);await waitFor(()=>assert.equal(requests.length,2));assert.equal(requests[1].config.accountToken,'academic-b');
+  await act(async()=>previous.task.resolve({status:200,data:{marker:'old-private'}}));assert.equal(value.data,null);
+  await act(async()=>requests[1].task.resolve({status:200,data:{marker:'current'}}));assert.equal(value.data.marker,'current');
+  await act(async()=>{void value.reload();});await waitFor(()=>assert.equal(requests.length,3));const current=requests[2];ui.unmount();assert(current.config.signal.aborted);await act(async()=>current.task.resolve({status:200,data:{marker:'late'}}));cleanup();
+ }
  console.log('PASS: real report screens recover from overload in three locales, retain snapshots, send no-store/cancellation and block duplicate reads; Core read scope clears private data across accounts/permissions, ignores late responses and aborts on unmount.');
 })().catch(error=>{console.error(error);process.exitCode=1}).finally(()=>{cleanup();dom.window.close()});

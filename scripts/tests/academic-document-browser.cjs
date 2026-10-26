@@ -18,7 +18,7 @@ const base={creationDate:'2025-03-20T12:00:00Z',creationUserName:'',updateDate:'
 const student={...base,id:'student',firstName:'احمد',lastName:'Ahmad 10012',countryCode:austria?'AT':'AF',countryDetails:{fatherNameNative:'CountryFather',asasNumber:10012}};
 const courses=Array.from({length:60},(_,index)=>({...base,id:'course-'+index,courseId:'course-'+index,subjectName:'Course '+(index+1),midTermScore:0,finalScore:85}));
 const transcript={student,school:{schoolName:'School document',address:{street:'Street',city:{object:true},district:{districtName:'District',city:{stateName:'Province'}}}},transcriptNumber:'TR-1002',issuedAt:'2025-03-20T12:00:00Z',years:[{calendarYearId:'year',year:'1403',classes:[{classId:'class',className:'دوم',courses}]}]};
-const report={student,grades:[],attendance:[],fees:[],comment:'Teacher narrative',commentUpdatedAt:transcript.issuedAt};
+const report={student,grades:[],attendanceSummary:[],fees:[],comment:'Teacher narrative',commentUpdatedAt:transcript.issuedAt};
 i18n.init({lng:language,resources:${JSON.stringify(translations)},interpolation:{escapeValue:false}}).then(()=>{
  createRoot(document.getElementById('root')).render(<I18nextProvider i18n={i18n}><MemoryRouter><AuthContext.Provider value={{userRole:0}}><CalendarProvider value={austria?gregorianCalendar:afghanistanCalendar}><CountryPersonProvider students={[afghanStudentTableExtension]} teachers={[]}>
  <aside>Dashboard chrome should not print</aside><div className="page-wrapper"><main>{kind==='transcript'?<Transcript transcript={transcript}/>:<Report report={report} actions={<button>Print action must not print</button>}/>}</main><footer>Editor controls must not print</footer></div>

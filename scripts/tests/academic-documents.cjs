@@ -18,17 +18,19 @@ const {afghanistanCalendar}=require(country+'/src/calendarModule.ts'),{afghanStu
 const base={id:'course',creationDate:'2025-03-20T00:00:00Z',creationUserName:'',updateDate:'2025-03-20T00:00:00Z',updateUserName:'',status:true};
 const student={...base,id:'student',firstName:'Core Student',lastName:'Ahmad 10012',countryCode:'AF',countryDetails:{fatherNameNative:'CountryFather',asasNumber:10012}};
 const data={student,school:{schoolName:'Test school',address:{street:'Street',city:{unexpected:'object'},country:{unexpected:'object'},district:{districtName:'District',city:{stateName:'Province'}}}},transcriptNumber:'TR-1002',issuedAt:'2025-03-20T12:00:00Z',years:[{calendarYearId:'year',year:'1403',classes:[{classId:'class',className:'دوم',courses:[{...base,courseId:'course',subjectName:'Mathematics',midTermScore:0,finalScore:85}]}]}]};
-const report={student,grades:[],attendance:[],fees:[],comment:'Teacher narrative',commentUpdatedAt:data.issuedAt};
-let transcriptCalls=[],reportCalls=[],failTranscript=false,failReport=false,pendingTranscript;
+const report={student,grades:[],attendanceSummary:[],fees:[],comment:'Teacher narrative',commentUpdatedAt:data.issuedAt};
+let transcriptCalls=[],reportCalls=[],failTranscript=false,failReport=false,pendingTranscript,pendingReport;
 transcriptApi={get:async(id,signal)=>{transcriptCalls.push({id,signal});if(failTranscript)throw Error('denied');if(pendingTranscript===true)await new Promise(resolve=>pendingTranscript=resolve);return {status:200,data};}};
-reportApi={mine:async signal=>{reportCalls.push(signal);if(failReport)throw Error('denied');return {status:200,data:report,headers:{}};},forStudent:async(id,signal)=>({status:200,data:report,headers:{}})};
+reportApi={mine:async signal=>{reportCalls.push(signal);if(failReport)throw Error('denied');if(pendingReport===true)await new Promise(resolve=>pendingReport=resolve);return {status:200,data:report,headers:{}};},forStudent:async(id,signal)=>({status:200,data:report,headers:{}})};
 const Transcript=load('components/transcript/AppTranscript.tsx'),Report=load('components/reportCard/AppReportCard.tsx'),useReportCard=load('hooks/useReportCard.ts');
-mocks={...mocks,AppTranscript:Transcript,AppReportCard:Report,AppAlert:load('components/AppAlert.tsx'),ResponseResult:require(core+'/src/dtos/ResultEnum.ts').ResponseResult,transcript:transcriptApi,useReportCard};
+mocks={...mocks,AppCard:load('components/card/AppCard.tsx'),AppTextArea:load('components/input/AppTextArea.tsx'),useUser:load('hooks/useUser.ts'),getMutationAccountScope:require(core+'/src/helper/auth/accountIdentity.ts').getMutationAccountScope,AppTranscript:Transcript,AppReportCard:Report,AppAlert:load('components/AppAlert.tsx'),ResponseResult:require(core+'/src/dtos/ResultEnum.ts').ResponseResult,transcript:transcriptApi,useReportCard};
 const TranscriptScreen=require(projects+'/digitalmaktab-spa/src/screens/transcript/Transcript.tsx').default;
+const AdminScreen=require(projects+'/digitalmaktab-spa/src/screens/school/reportCard/AdminStudentReportCard.tsx').default;
 const StudentScreen=require(projects+'/digitalmaktab-spa/src/screens/student/StudentReportCard.tsx').default;
 const view=(component,calendar=afghanistanCalendar)=>render(h(I18nextProvider,{i18n},h(MemoryRouter,{initialEntries:['/transcript/student']},h(AuthContext.Provider,{value:{userRole:0}},h(LoaderProvider,null,h(CalendarProvider,{value:calendar},h(CountryPersonProvider,{students:[afghanStudentTableExtension],teachers:[]},component)))))));
 (async()=>{
  const resources={};for(const language of ['en-US','fa-AF','ps-AF'])resources[language]={translation:require(core+'/node_modules/lodash/merge')({},JSON.parse(fs.readFileSync(core+'/src/locales/en-US/translation.json')),JSON.parse(fs.readFileSync(country+'/src/locales/'+language+'/translation.json')))};
+ for(const resource of Object.values(resources)){assert(resource.translation.reportCard.retry);assert(resource.translation.classOverview.retry);}
  await i18n.init({lng:'fa-AF',resources,interpolation:{escapeValue:false}});
  for(const language of ['fa-AF','ps-AF','en-US']){
   await i18n.changeLanguage(language);let ui=view(h(Transcript,{transcript:data}));
@@ -42,7 +44,17 @@ const view=(component,calendar=afghanistanCalendar)=>render(h(I18nextProvider,{i
  await waitFor(()=>assert(ui.getByText('Mathematics')));assert.equal(transcriptCalls.length,1);cleanup();assert(transcriptCalls[0].signal.aborted);
  failTranscript=true;ui=view(h(Routes,null,h(Route,{path:'/transcript/:studentId',element:h(TranscriptScreen)})));await waitFor(()=>assert(ui.getByText(i18n.t('transcript.notAvailable'))));cleanup();failTranscript=false;
  pendingTranscript=true;ui=view(h(Routes,null,h(Route,{path:'/transcript/:studentId',element:h(TranscriptScreen)})));await waitFor(()=>assert.equal(typeof pendingTranscript,'function'));const last=transcriptCalls.at(-1);cleanup();assert(last.signal.aborted);await act(async()=>pendingTranscript());pendingTranscript=false;
- ui=view(h(StudentScreen));await waitFor(()=>assert(ui.getByText('Teacher narrative')));await act(async()=>new Promise(resolve=>setTimeout(resolve,50)));assert.equal(reportCalls.length,1,'Loader updates must not trigger repeated report requests');cleanup();assert(reportCalls[0].aborted);
- failReport=true;ui=view(h(StudentScreen));await waitFor(()=>assert(ui.getByText(i18n.t('reportCard.notAvailable'))));assert.equal(reportCalls.length,2);cleanup();
+ ui=view(h(StudentScreen));await waitFor(()=>assert(ui.getByText('Teacher narrative')));await act(async()=>new Promise(resolve=>setTimeout(resolve,50)));assert.equal(reportCalls.length,1,'Loader updates must not trigger repeated report requests');cleanup();assert(reportCalls[0] instanceof AbortSignal);
+ failReport=true;ui=view(h(StudentScreen));await waitFor(()=>assert(ui.getByText(i18n.t('reportCard.notAvailable'))));assert.equal(reportCalls.length,2);cleanup();failReport=false;pendingReport=true;ui=view(h(StudentScreen));await waitFor(()=>assert.equal(typeof pendingReport,'function'));const abandonedReport=reportCalls.at(-1);cleanup();assert(abandonedReport.aborted);await act(async()=>pendingReport());
+ reportApi.forStudent=async(id,signal)=>({status:200,data:{...report,student:{...student,id}},headers:{}});
+ await i18n.changeLanguage('en-US');ui=view(h(Routes,null,h(Route,{path:'/transcript/:studentId',element:h(AdminScreen)})));
+ await waitFor(()=>assert.equal(ui.container.querySelector('textarea')?.value,'Teacher narrative'));
+ fireEvent.change(ui.container.querySelector('textarea'),{target:{value:'Unsaved admin comment'}});
+ await act(async()=>i18n.changeLanguage('fa-AF'));
+ await waitFor(()=>assert(ui.getByText(i18n.t('reportCard.comment.editorTitle'))));assert.equal(ui.container.querySelector('textarea').value,'Unsaved admin comment');cleanup();
+ // ID cards need one existing person detail, not a potentially oversized academic report.
+ const idReads=[];Object.assign(mocks,{useReloadableRead:load('hooks/useReloadableRead.ts'),school:{getStudent:async(id,signal)=>{idReads.push({id,signal});return{data:{...student,id}}}},AppStudentIdCard:({student})=>h('span',null,student.firstName)});
+ const IdScreen=require(projects+'/digitalmaktab-spa/src/screens/school/idCard/AdminStudentIdCard.tsx').default;
+ const reportCount=reportCalls.length;ui=view(h(Routes,null,h(Route,{path:'/transcript/:studentId',element:h(IdScreen)})));await waitFor(()=>assert(ui.getByText('Core Student')));assert.equal(idReads.length,1);assert.equal(idReads[0].id,'student');assert.equal(reportCalls.length,reportCount);cleanup();
  console.log('PASS: shared academic documents show Core/country fields, native dates, language/direction and safe structured addresses; real screens accept HTTP 200, cancel abandoned reads, show failures and issue one report request through the real loader provider.');
 })().catch(error=>{console.error(error);process.exitCode=1;});

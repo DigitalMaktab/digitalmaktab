@@ -1301,3 +1301,36 @@ country formatter. Its Core fallback explicitly selects Gregorian independently
 of interface language. Never use the device timezone or locale calendar default
 to reinterpret the date. Existing backend authorization/snapshot tests remain
 authoritative; mounted mobile screen tests cover presentation with native adapters.
+
+## Bounded composite academic reports (2026-10-26)
+
+AcademicReportRepository owns report-card/class-overview multi-domain read snapshots.
+Reuse existing entities/DTOs and AttendanceRepository.ForReport/SummaryPage; never
+restore full attendance history graphs for report totals. ForReport joins an outer
+repeatable-read transaction, accepts at most 200 roster IDs, and runs the shared
+50-student grouping/window pipeline in bounded batches. Standalone summaries may
+own their snapshot; joining a weaker transaction fails. No stored report model or
+new schema is needed. Module person enrichment retains its existing response flow;
+this does not prove an atomic snapshot of every post-read country contribution.
+
+Composite DTOs now expose attendanceSummary instead of raw attendance. Ship Core,
+API and SPA together. Scalar limit-plus-one probes run before includes: roster
+200, grades 5,000, fees 200, schedule slots 200. Oversize is localized 413, never
+silent truncation. GETs use no-store, heavy admission, cancellation and a cooperative
+20-second budget, including checks between mapped roots. Synchronous legacy actor
+label IO is not a hard-deadline or batched-mapping guarantee. Fees are scoped to
+selected year/school. Keep class/course/enrollment year and school consistent;
+sanitize foreign references only on response copies. Parent reports require a
+current active same-school link, consistent with attendance reads; stale cross-school
+links cannot bypass tenancy. Do not delete invalid historical data in a read.
+
+AppAttendanceSummary.initialSummaries reuses a bounded complete report snapshot for
+unfiltered paging; explicit filters/sorting read a new server aggregate over the
+original marks. Report KPIs still describe the composite snapshot. Keep country
+calendar/UTC civil-day rendering and all table filters. useClassOverview(classId)
+and useReportCard(kind,studentId) now reuse useReloadableRead, scoped credentials,
+cancellation, manual retry and same-scope retention. Do not mirror their data into
+unscoped screen state. Admin comment drafts survive same-resource refresh and late
+outcomes cannot update another mounted resource. This is not comment mutation
+versioning or durable replay; those remain required. ID cards use school.getStudent,
+not the multi-domain report-card endpoint. See Core docs/ACADEMIC-REPORT-LIMITS.md.

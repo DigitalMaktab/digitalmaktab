@@ -1721,3 +1721,89 @@ writers/editors/reference invariants, remaining query/index/import/export bounds
 SignalR/shared jobs and authority, locale/country scope, telemetry and representative
 multi-school load/recovery remain in scope. These two mobile increments do not
 establish completion of the wider concurrency/performance goal.
+
+### Bounded composite academic reports (forty-second increment, 2026-10-26)
+
+Discovery traced report-card/class-overview controllers, per-domain repositories,
+DTOs/mappers, actual SPA callers (including ID cards), country response enrichment,
+calendar selection and the shared attendance aggregate. Existing ordinary paged
+lists cannot provide one multi-domain snapshot: class overview's nominal 200-row
+roster silently became 50 through the general page clamp, while attendance/grades/
+fees were materialized separately. New Core AcademicReportRepository owns this
+read orchestration, reusing every stored entity and the existing attendance SQL
+pipeline. No new table, persistent field, calendar or duplicate aggregate was added.
+
+Report-card and class-overview DTOs replace raw attendance with attendanceSummary.
+AttendanceRepository.ForReport accepts at most 200 roster IDs, batches by 50 and
+uses the same filtered grouping/window query as standalone summaries. It requires
+an enclosing repeatable-read snapshot. Ordinary Summary may own or join an exact
+repeatable-read snapshot; weaker transactions fail. Removed the now-unused full
+history attendance methods. Reports no longer load attendance graphs for counts.
+Presence/absence and inactive historical enrollment semantics remain explicit.
+
+All Core report-domain reads share one repeatable-read transaction. Collection
+probes take at most limit + 1 scalar IDs before includes; limits are roster 200,
+grades 5,000, fee rows 200 and schedule slots 200. Over-limit results return a
+translated 413, never a partial report. Report cards scope fees to selected school/
+year. School/class/course/enrollment ownership/year checks exclude invalid foreign
+references; response copies omit foreign branches/teachers. Parent reads now reject
+stale cross-school links, closing an older report-only exception and aligning with
+raw/summary attendance. Stored historical anomalies are preserved. Afghanistan's
+integration test explicitly covers the strengthened boundary and still verifies
+country person enrichment and selected academic years.
+
+GETs use no-store, the shared heavy-operation gate, request aborts and a cooperative
+20-second cancellation budget. Mapping checks cancellation between roots; legacy
+synchronous audit-label queries can finish an already-started provider command.
+This is not a physical hard deadline, a fully batched actor lookup contract or a
+claim of production throughput. Existing post-read module enrichment is preserved;
+its cross-domain snapshot consistency remains separate work.
+
+The Core attendance table reuses complete bounded initial report aggregates for
+unfiltered paging and issues a fresh server summary only after explicit filters/
+sorting. Original mark creation filters, country civil dates and the shared table
+lifecycle remain. Report-level KPIs describe their composite snapshot. Scoped Core
+report hooks now use useReloadableRead: pinned credentials, no-store, cancellation,
+account/language/resource isolation, manual retry and retained same-scope data after
+transient failures. Shell consumers were adapted. Admin comment drafts survive
+same-record refresh, and abandoned view outcomes cannot update another resource.
+Comment write preconditions/durable replay are not supplied by these read changes.
+ID cards now use the existing student-detail read instead of loading a report.
+
+Validation: full isolated PostgreSQL Core suite 308 passed, zero skipped
+(`/tmp/dm-academic-report-full-core.log`); final focused report/summary checks 7
+passed after the final mapping/reference changes (`/tmp/dm-academic-report-final-core.log`).
+New tests cover complete 73-entry rosters, true totals/absences, 201-entry rejection
+before graph loading, selected-year fee isolation, concurrent attendance/fee writes,
+transaction cleanup/cancellation, real JWT policies/school/parent boundaries,
+production mapper/JSON privacy and English/Dari/Pashto oversize errors. Afghanistan
+106 passed, zero skipped (`/tmp/dm-academic-report-afghan.log`). The complete 104-table
+UI/export gate passed after final client changes (`/tmp/dm-academic-report-release-ui.log`).
+Actual hook tests exercise credentials, account/resource cancellation and late-result
+suppression; actual document/admin/ID-card screens cover retained drafts, direct
+person reads and locale rendering. Aggregate table tests cover snapshot paging
+without extra requests and fresh original-mark date filtering in all three locales.
+Shell/Core TypeScript, strict i18n coverage/parity and affected precommit gates pass.
+
+All packages rebuilt/installed through standard scripts; no manual server restart
+or live user DB change. Logs: `/tmp/dm-academic-report-release-{dotnet,spa,mobile}.log`.
+Every SPA Core dist file (1,965) and Afghanistan dist file (183) matches the shell.
+Mobile Core/SDK/country dist files match both hosts, and all six tarball lock
+integrities match. Built/API DLL SHA-256 values match:
+
+- Core: `999668cd8158594f80329697ed2ccd25a1d789bd3b6957bab55072d8a3b32f7d`.
+- Abstractions: `1887526de4d230c2b9601df839057c344ccee9e2595de61c61a9ea6e59fe7be9`.
+- Afghanistan: `68e04052408497f67b9289aa65642f64f651201cf7943f3520e37924874001c8`.
+
+Local commits: Core `b2b5f82`, SPA Core `d8a9c46`, SPA country `1024368`, shell
+`3f9d0810`, API `aadf555`, country integration `522db0a`, mobile locales `e72a504`.
+No pushes. Restart API and SPA together for the DTO change; restart Metro for the
+mirrored locale package. Core docs/ACADEMIC-REPORT-LIMITS.md describes the contract.
+
+The broader goal is not complete; all seven top-level requirements remain open.
+Concrete remaining work includes report-comment and other important editor/write
+preconditions/replay; remaining grade/fee/lookup/inventory reads and actor batching;
+other domain/reference/permission invariants and expensive outputs; module snapshot
+composition; shared classroom authority/state and remaining job coordination;
+mobile SignalR/locale/country scope; telemetry export and representative multi-school
+load, recovery and deployment evidence. Focused report tests do not establish these.
