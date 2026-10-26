@@ -1390,3 +1390,16 @@ no-store/cancellation/report budgets and all locales. Do not load an entire repo
 again just to filter attendance. Include context in read/reload identities, keep
 snapshot-only paging request-free, and treat filtered aggregates as fresh reads.
 No new table, field, DTO or index. Ship Core endpoints before/with SPA consumers.
+
+
+## Batched report-root audit labels (2026-10-26)
+
+UserResolver.PrimeAsync extends the existing scoped scalar label cache and query.
+Prime at most 50 Base roots, at most 100 distinct creation/update actors per batch;
+never gather an unbounded graph/list of actors. AcademicReportRepository maps each
+50-root batch immediately after priming, within its existing snapshot and report
+cancellation budget. Keep identity precedence, school-scoped cache keys, platform
+labels, cached misses, save invalidation and the 512-entry ceiling. No global cache,
+new actor table or copied lookup pipeline. Fallback and primed paths share one query.
+Nested unprimed actor mappings and other callers may still perform synchronous
+lookups; this step does not finish the actor/query audit or guarantee hard deadlines.

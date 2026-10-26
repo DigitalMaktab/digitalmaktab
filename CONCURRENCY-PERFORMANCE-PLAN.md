@@ -1940,3 +1940,58 @@ invariants; read/query bounds and actor batching; module snapshots; shared class
 state/jobs; mobile SignalR/country/locale; telemetry and representative multi-school
 load/recovery/deployment evidence. A bounded report-specific read does not prove the
 whole read/performance audit complete.
+
+
+### Batched report-root audit labels (forty-fifth increment, 2026-10-26)
+
+Discovery traced BaseMapper/MappingHelper, every report mapping profile, nested DTOs,
+UserResolver and DataContext's existing 512-entry school-keyed label cache. The cache
+already avoided repeated lookups for one author but still issued one synchronous
+SQL command per distinct author. Extend that resolver/cache rather than creating a
+parallel actor registry or global cache. Both fallback and primed paths now share
+one scalar query over the existing account tables, preserving platform/school/person
+precedence, school filtering, names, cached misses and SaveChanges invalidation.
+The new private ActorLabel is only a query projection, not a mapped/persistent model.
+
+UserResolver.PrimeAsync accepts at most 50 Base roots/100 distinct creation/update actor
+IDs. It primes missing labels with one async UNION query, at most 600 candidate scalar
+rows, with request and caller cancellation linked. The same 512-entry cache is cleared
+before a new batch would exceed capacity. AcademicReportRepository now maps each
+50-root batch immediately after priming inside its existing repeatable-read snapshot
+and cooperative cancellation budget. No schema, DTO, index, UI or country rule change.
+Nested mappings may still resolve actors absent from the primed roots synchronously;
+other callers retain their fallback behavior. This does not finish actor batching,
+make every mapper async or establish hard deadlines/application capacity.
+
+Validation: ten focused isolated PostgreSQL tests passed
+(`/tmp/dm-actor-batch-focused.log`); full Core suite 314 passed, zero skipped
+(`/tmp/dm-actor-batch-full-core.log`). The real transient mapper comparison over 120
+actors uses 120 SQL fallback reads versus 3 primed reads, with matching labels and existing
+identity precedence. That local full-suite run measured 2,905.9 ms versus 153.8 ms; concurrent
+fixture/JIT/provider effects mean this is only a local comparison, not a throughput
+promise or supported-user count. Tests cover foreign-school exclusion on changed
+bindings, platform identity collision precedence, cached misses/hits, bounded input,
+save invalidation, no credential/navigation fields, no tracked accounts and cancellation.
+A real 73-roster report with distinct root authors requires 2 label queries; interception
+now also observes synchronous fallback queries, so unexpected per-author mapper reads
+cannot hide from that assertion. Existing report snapshot/tenancy/limits tests remain.
+
+Core local commit `d09960b`; standard package rebuild/install
+`/tmp/dm-actor-batch-sync-dotnet.log`. Built/API installed DLL SHA256 match:
+Core `28ec560c78117db59275e0c277d795c7ee02a7f55d7294444f984636fde22569`,
+Abstractions `019ff3a950d7523a9086a3599bc46b1b2c285e93d0e4e8b1468354693f59c4d1`,
+country `2ec17605ac44558607b9edd411ae447a01c39bc176016d1cf05810e61f549bb0`.
+No live user DB, manual server restart or push. No frontend changes in this increment;
+the preceding complete 104-table UI gate and installed SPA artifacts remain current.
+Afghanistan integration 106 passed, zero skipped with the rebuilt packages
+(`/tmp/dm-actor-batch-country.log`).
+See Core docs/ACADEMIC-REPORT-LIMITS.md for precise root/fallback limits.
+
+All seven broader completion requirements remain open. Next concrete read audit:
+StudentRepository.GetStudents includes all matching pupils' enrollment histories and
+TeacherRepository.GetTeachers includes classes/schedules under 50 paged roots. A root
+page clamp does not bound those nested graphs or prove count/page snapshot consistency.
+Trace actual table/mobile/teacher callers and module enrichers before changing these
+contracts. Remaining writers/reference invariants, other bounded reads and nested actor
+mapping, module snapshots, shared classroom state/jobs, mobile SignalR/country/locale,
+telemetry and representative multi-school load/recovery/deployment remain in scope.
