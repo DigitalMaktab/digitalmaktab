@@ -60,10 +60,23 @@ for(const lang of ['fa-AF','ps-AF'])resources[lang]={translation:JSON.parse(fs.r
  for(const lang of Object.keys(resources)){
   await act(async()=>i18n.changeLanguage(lang));requests=[];mode='ok';
   const snapshot=Array.from({length:13},(_,index)=>({...row('Snapshot pupil '+index),studentId:'snapshot-'+index,present:91,absent:9}));
-  const ui=render(wrap(h(Summary,{source:{kind:'school',classId:'report-class'},initialSummaries:snapshot,showStudentName:true,recentDays:30})));
+  const ui=render(wrap(h(Summary,{source:{context:'class-overview',kind:'school',classId:'report-class'},initialSummaries:snapshot,showStudentName:true,recentDays:30})));
   await waitFor(()=>assert(ui.getByText('Snapshot pupil 0')));assert.equal(requests.length,0);assert(ui.getAllByText('91%').length>0);
   fireEvent.click(ui.getByRole('button',{name:i18n.t('pagination.next')}));await waitFor(()=>assert(ui.getByText('Snapshot pupil 10')));assert.equal(requests.length,0);
-  fireEvent.change(ui.getByLabelText(i18n.t('dateRange.from'),{selector:'input'}),{target:{value:'2026-04-02'}});fireEvent.click(ui.getByRole('button',{name:i18n.t('filters.button.label')}));await waitFor(()=>assert.equal(requests.length,1));assert.equal(requests[0].config.params.classId,'report-class');assert.equal(requests[0].config.params.creationDateFrom,'2026-04-02');assert.equal(requests[0].config.params.pageNumber,1);cleanup();
+  fireEvent.change(ui.getByLabelText(i18n.t('dateRange.from'),{selector:'input'}),{target:{value:'2026-04-02'}});fireEvent.click(ui.getByRole('button',{name:i18n.t('filters.button.label')}));await waitFor(()=>assert.equal(requests.length,1));assert.equal(requests[0].url,'/class-overview/report-class/attendance');assert.equal(requests[0].config.params.classId,'report-class');assert.equal(requests[0].config.params.creationDateFrom,'2026-04-02');assert.equal(requests[0].config.params.pageNumber,1);cleanup();
+ }
+ // A report-only user's explicit filters stay on report routes for each account kind.
+ for(const lang of Object.keys(resources)){
+  await act(async()=>i18n.changeLanguage(lang));
+  for(const [kind,expected] of [['school','student/report-student'],['children','child/report-student'],['mine','mine']]){
+   requests=[];mode='ok';
+   const ui=render(wrap(h(Summary,{source:{context:'report-card',kind,studentId:'report-student'},initialSummaries:[row('Report snapshot')],recentDays:30})));
+   await waitFor(()=>assert(ui.getByText('50%')));assert.equal(requests.length,0);
+   fireEvent.change(ui.getByLabelText(i18n.t('dateRange.from'),{selector:'input'}),{target:{value:'2026-04-02'}});
+   fireEvent.click(ui.getByRole('button',{name:i18n.t('filters.button.label')}));await waitFor(()=>assert.equal(requests.length,1));
+   assert.equal(requests[0].url,`/report-card/${expected}/attendance`);assert.equal(requests[0].config.params.studentId,'report-student');assert.equal(requests[0].config.params.creationDateFrom,'2026-04-02');
+   assert.equal(requests[0].config.accountToken,'first-token');assert.equal(requests[0].config.headers['Cache-Control'],'no-store');cleanup();
+  }
  }
  requests=[];mode='ok';let sorted=render(wrap(h(Summary,{source:{kind:'school'},showStudentName:true})));await waitFor(()=>assert.equal(requests.length,1));
  fireEvent.click(sorted.getByRole('button',{name:i18n.t('pagination.next')}));await waitFor(()=>assert.equal(requests.length,2));

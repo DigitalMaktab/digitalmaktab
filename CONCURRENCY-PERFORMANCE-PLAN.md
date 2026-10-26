@@ -1876,3 +1876,67 @@ Use report-authorized bounded scoped readers, never broaden staff grants to hide
 Other writers, read/query bounds and actor batching, module snapshots, shared classroom
 state/jobs, mobile SignalR/country/locale, telemetry and representative multi-school
 load/recovery/deployment evidence remain required.
+
+
+### Report-scoped attendance filtering (forty-fourth increment, 2026-10-26)
+
+Discovery followed the actual AppReportCard/AdminClassOverview tables, shared summary
+transport, report/student/parent ownership predicates and StaffEndpointPermissions.
+Initial attendance snapshots were visible to reports.read staff, but applying any
+filter used /attendance/school/summary and required attendance.read. Broadening grants
+would expose unrelated attendance. Existing AcademicReportRepository now extends its
+read orchestration with report-authorized paged summaries, reusing the exact shared
+AttendanceRepository.Summary and report ownership/year predicates. No stored field,
+table, DTO, query fork or index was added.
+
+New GET routes: report-card/mine/attendance, report-card/child/{studentId}/attendance,
+report-card/student/{studentId}/attendance and class-overview/{classId}/attendance.
+Route identity cannot be replaced by query IDs; a student query only narrows a class.
+Student/parent policies retain actual current account/link restrictions. Foreign and
+wrong-year resources return 404, not another school's data. reports.read does not grant
+general attendance browsing. Each read owns one repeatable-read snapshot across scope,
+selected year and shared aggregate statements, with report heavy admission,
+cancellation/cooperative 20-second budget/no-store and pagination. It loads no grade,
+fee, schedule or complete report-roster graph. Existing page/window bounds remain 50/
+30; mark creation-date criteria and whitelisted sorting precede grouping/paging.
+Common BaseController creation-date validation remains unchanged, including early 400.
+Date-time validation uses the existing translated error in each report controller.
+
+AttendanceSummaryScope.context selects report endpoints in the one Core transport;
+ordinary attendance sources retain their endpoints. Context joins resource/account/
+language/snapshot reload identity. Initial bounded report snapshots still page without
+network reads; only explicit filtering/sorting fetches fresh matching aggregates.
+Report KPIs retain the original composite snapshot. Core and class shell consumers
+use the same shared table/filters/controls; no parallel UI component was introduced.
+
+Validation: full isolated PostgreSQL Core suite 314 passed, zero skipped
+(`/tmp/dm-report-filter-full-core.log`); five focused academic-read tests passed
+(`/tmp/dm-report-filter-core.log`). New real JWT/Kestrel tests cover report-only staff
+success, standalone attendance 403, grant revocation without new tokens, route/query
+scope conflicts, student mine and parent child restrictions, foreign children,
+inactive parents, date filtering and invalid dates in all three locales, selected years,
+concurrent mark writes, cancellation/transaction cleanup, stable bounded summaries
+and no grade/fee/timetable reads. Existing host setup now uses the actual staff access
+registration, with independent race requests still concurrent. Actual shared UI tests
+exercise all report source kinds/paths and creation filters in each locale; initial
+snapshot paging stays request-free. Complete 104-table UI gate passes
+(`/tmp/dm-report-filter-full-ui.log`); Core TypeScript and affected precommit gates pass.
+Afghanistan integration suite 106 passed, zero skipped against the rebuilt packages
+(`/tmp/dm-report-filter-country.log`).
+
+Local commits: Core `4ad9c66`, SPA Core `72fba74`, shell e2f0cbba, API documentation `6b99619`.
+Standard package rebuild/install logs `/tmp/dm-report-filter-sync-{dotnet,spa}.log`.
+All 1,969 SPA Core and 183 country dist files match installed shell. Built/API installed
+DLL SHA256 values match: Core
+`7d5b0482f1c5e2445655c2b6403742644c1cc5a152fde369344ea7826314b337`,
+Abstractions `64e3e7193a1ccebd1a4467dfe4af341098a3a9804c25359e29c2b25f13b80c69`,
+country `75724840fbc55442b489175b745fb6e7c2fc7bab398b8880e68bef034bbdab03`.
+No pushes, live database changes or manual user server restarts. Deploy Core endpoints
+before/with SPA consumers. See Core docs/ACADEMIC-REPORT-LIMITS.md.
+
+All seven overall completion requirements remain open. The report-filter permission
+gap is closed. Remaining work includes other versioned/durable writers and reference
+invariants; read/query bounds and actor batching; module snapshots; shared classroom
+state/jobs; mobile SignalR/country/locale; telemetry and representative multi-school
+load/recovery/deployment evidence. A bounded report-specific read does not prove the
+whole read/performance audit complete.

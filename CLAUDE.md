@@ -1374,3 +1374,19 @@ ignore this version/key contract. All three locale surfaces and mirrored mobile
 strings must ship. The workflow does not coordinate every unrelated year/reference/
 grant writer through commit, and the overall concurrency/performance goal remains
 open. See Core docs/REPORT-COMMENT-CONCURRENCY.md for the verified contract/limits.
+
+
+## Report-authorized attendance filters (2026-10-26)
+
+Report-card/class-overview attendance tables use AttendanceSummaryScope.context to
+select matching report routes through the existing summary transport. Keep ordinary
+attendance sources unchanged. reports.read does not imply attendance.read; never
+broaden dynamic-role grants to make a report filter work. Core AcademicReportRepository
+reuses shared report ownership/year predicates and AttendanceRepository.Summary inside
+one repeatable-read snapshot. Route student/class IDs are authoritative; a student
+query can only narrow a class. Student/parent routes retain account/link restrictions.
+Filter original marks before grouping, preserve bounded pagination/recent windows,
+no-store/cancellation/report budgets and all locales. Do not load an entire report
+again just to filter attendance. Include context in read/reload identities, keep
+snapshot-only paging request-free, and treat filtered aggregates as fresh reads.
+No new table, field, DTO or index. Ship Core endpoints before/with SPA consumers.
