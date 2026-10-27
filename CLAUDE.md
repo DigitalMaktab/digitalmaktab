@@ -1584,3 +1584,52 @@ must consume useColors rather than static light colors; preserve fonts/weights/R
 and explicit caller overrides. This shared fragment/helper does not add React Native
 to mobile Core or repair every existing native static-color screen. Other mobile
 locale/country queries and runtime country activation remain separate work.
+
+
+## Coordinated database retention batches (2026-10-27)
+
+Core DatabaseReaper owns existing notification/audit/device/reset-token batch deletes.
+Reuse original tables/predicates and PostgreSQL transaction advisory locks; do not
+introduce another cleanup/job/receipt table. It requires a clean context with no
+caller transaction, tries one physical-table lock, selects at most 250 scalar IDs,
+retains expiry on the DELETE target and commits each batch. Busy workers return
+committed progress without spinning. Failure/cancellation rolls back the current
+batch, preserves earlier commits and permits a later run to resume. Do not claim
+exactly-once scheduling, immediate failover, hard sweep deadlines or full query-plan
+optimization from these row/transaction bounds.
+
+Retention predicates must remain on DELETE after ID selection: a concurrent device
+refresh/read mark can otherwise be deleted after its row-lock wait. Preserve windows,
+null exceptions and impersonation history. Never use transient-retention policies on
+financial mutation receipts or durable notification/welcome checkpoints. File/message
+cleanup, enrollment repairs and backup work require their own side-effect audit.
+
+DeviceTokenRepository.Register must check its refresh affected count. If cleanup won
+after the read, revalidate the account and reuse the existing fresh-registration path
+under its fingerprint lock; never return a missing binding as successful or add an
+automatic mutation retry. Reaper shutdown cancellation is normal, not a failed health
+run. See Core README and DatabaseReaperTests for independent-session races, blocked
+DELETE observations, rollback/resumption and lock-release evidence.
+
+
+## Measured retention date access paths (2026-10-27)
+
+RetentionReadIndexes adds only the two measured global cleanup gaps: partial
+Notification(ReadAt,Id) WHERE IsRead and expression DeviceToken(COALESCE(LastSeenAt,
+CreationDate),Id). The notification property index is in model/snapshot; the EF8
+expression index is migration-owned. Do not add an expiry field/table or overlapping
+unread/audit/reset indexes without new representative query evidence; existing paths
+served those fixture queries. DatabaseReaper.retentionDate extends the existing
+selector with date/ID ordering for read-notification/device cleanup; others retain ID
+ordering. Preserve the expiry predicate on DELETE as well as selected IDs.
+
+Device COALESCE is the original nullable fallback: recent last-seen wins over old
+creation, old last-seen wins over recent creation, both absent stays ineligible.
+Concurrent builds/drops suppress migration transactions. Validate ready/valid exact
+table/method/keys/order/operators/filter, accept valid partial replay without rebuild,
+and fail incompatible/invalid names for reviewed repair. No automatic destructive
+index replacement. Allow startup migration build time before readiness. See Core
+RetentionQueryPlanTests/README for guarded private plans, real EF migration execution,
+partial/failed-build recovery and data-preserving Down. Warm SQL timings establish no
+HTTP/fleet/write-load capacity. Shared classroom authority and remaining side-effect
+jobs still need their separate lifecycle/coordination audit.

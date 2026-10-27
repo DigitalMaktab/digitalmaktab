@@ -2514,3 +2514,123 @@ activation or device behavior. Remaining endpoint/editor/reference audits, local
 composite-grid source dates, nested actor/module snapshots, shared classroom state/
 jobs, telemetry and representative multi-school load/recovery/deployment evidence
 still need completion against the original whole-application requirements.
+
+
+### Coordinated retention batches and device refresh races (fifty-third increment, 2026-10-27)
+
+Discovery traced the actual notification, audit, device and password-reset reapers,
+credential writers, recurring checkpoints and startup locks. Existing tables and
+transaction advisory locks represent the need; no job/receipt table or stored field
+was added. Core DatabaseReaper now coordinates cooperating hosts by physical table,
+selects at most 250 scalar IDs per read-committed transaction and commits each batch.
+A busy host returns committed progress without queueing. Failure/cancellation rolls
+back the current batch while preserving earlier progress. All four existing policies,
+including impersonation history and nullable-date exceptions, remain unchanged.
+
+The DELETE target retains the original expiry predicate as well as selected IDs.
+PostgreSQL rechecks that predicate after waiting for a concurrent row update, keeping
+a newly refreshed device or newly read notification. DeviceTokenRepository.Register
+also checks the affected refresh count: if cleanup deleted its previously read row,
+it revalidates the account and uses the existing creation path under the existing
+fingerprint lock. It cannot acknowledge a missing binding. Normal shutdown cancellation
+no longer records a failed reaper health run. There is no automatic mutation retry.
+
+Five real PostgreSQL cases cover the actual four job implementations, 620-row backlogs,
+two notification schools, all retention exceptions, scalar reads and at-most-250-row
+DELETEs. Independent sessions prove busy-worker exclusion, committed-batch survival,
+injected rollback/resumption and rejection of dirty/caller-transaction contexts.
+Concurrent refresh/read-mark races observe actual pg_stat_activity Lock waits before
+releasing the writer. Cancellation of a blocked DELETE releases its transaction advisory
+lock, preserves the row and allows a subsequent worker to resume. The registration
+race deletes the binding between its actual SELECT and refresh; the returned replacement
+is persisted, current and reused by the next registration. These are independent DB
+sessions/real DI jobs, not a two-API-process fleet or production load test.
+
+Core full isolated suite: 334 passed, zero skipped
+(/tmp/dm-database-reapers-final-core.log). Rebuilt Afghanistan integration: 106 passed,
+zero skipped (/tmp/dm-database-reapers-country.log). Producer/API precommit gates pass.
+Local commits: Core 253c6ff, API documentation 4cce017. Standard clean/build/pack/install
+completed (/tmp/dm-database-reapers-sync.log). Built/installed SHA256 match:
+Core 30e16a7b9151f5ba9075e2ebf9358bede1553d176fd436df22b0d9d072dbda16,
+Abstractions c9a9e46fe0d2052ca6372d7c291b87ff2256741d2c9225e4538cf92082f76afe,
+country 6e3bcea21126938bb2969b9ca3d4b4e41d920fa07a903e8068d9fe8912df0247.
+No frontend changes, user server restart, push or live database modification.
+Deploy updated workers together; old paths do not honor this coordination contract.
+
+All seven broader requirements remain open. This provides row/transaction bounds,
+not a hard whole-sweep deadline, tenant fairness, immediate failover or exactly-once
+daily execution. Sparse/global retention query plans and indexes still need measurement.
+File/message cleanup, backups, shared classroom authority, other endpoint/editor audits
+and whole-app multi-school telemetry/load/recovery remain separate unfinished work.
+See Core README and DatabaseReaperTests for the verified contract and PostgreSQL
+read-committed DELETE/transaction-lock references.
+
+
+### Measured global retention access paths (fifty-fourth increment, 2026-10-27)
+
+Discovery traced the actual global ID selectors, existing recipient/read/creation,
+school/audit-date and reset-user/expiry indexes, model/snapshot and migration history.
+The existing two-field nullable device fallback already represents its retention
+date. No expiry field, table, country specialization or parallel cleanup service is
+needed. Extend DatabaseReaper with optional date/ID ordering for measured paths;
+other callers retain ID order and every DELETE keeps its original eligibility.
+
+A guarded private real-model fixture contains 60,001 rows in each of Notification,
+Audit, DeviceToken and PasswordResetToken (240,004 total), with two school scopes
+for notifications/audit. Actual previous queries are explained for sparse eligible
+rows and no eligible rows. Read-notification and original OR-device selectors scanned
+the whole table. The other three used their existing composite indexes efficiently
+in this fixture; no overlapping unread/audit/reset index was added without evidence.
+This does not establish their behavior with many distinct recipient/account/tenant
+prefixes, sustained writes or all backlog distributions.
+
+Core migration 20261027010000_RetentionReadIndexes adds only partial
+Notification(ReadAt,Id) WHERE IsRead and expression
+DeviceToken(COALESCE(LastSeenAt,CreationDate),Id). The property index is declared in
+model/snapshot; EF8 cannot model the expression key, so its migration is authoritative.
+The read and device jobs order by these dates and immutable ID, preserving all
+retention windows. Device COALESCE selects exactly the original OR row set, including
+recent last-seen/old creation, old last-seen/recent creation and both-null cases.
+No duplicated stored date or module-owned copy. Before/after sparse warm local SQL:
+read 3.125 to 0.038 ms; device 4.743 to 0.025 ms. Empty read 3.152 to 0.009 ms;
+empty device 4.509 to 0.014 ms. These one-plan measurements exclude HTTP, mapper,
+transport, fleet/write contention and capacity claims. Actual shared helper SELECTs
+also use the expected index without a table scan/sort for sparse and full-backlog
+cases, retaining the 250-row limit (/tmp/dm-retention-plan-final-focused.log).
+
+Build/drop concurrently with suppressed migration transactions. Catalog verification
+checks validity/readiness/table/B-tree/key/order/operators/filter. Valid partial
+replay preserves the first index OID; incompatible names and a genuinely failed
+concurrent unique build are rejected for reviewed repair. No automatic unknown-index
+drop/replacement. The test executes EF's real migrator on an existing schema, then
+Down, verifying all 240,004 records and original notification index survive. Existing
+writers remain compatible; allow startup migration build time/storage/write budget
+and long-transaction effects before readiness. No extension/configuration required.
+
+Six focused plan/retention-race cases pass. An initial full run had 334 passes and
+one failure in the existing daily-attendance index-plan assertion. Its cause remains
+unconfirmed. That assertion now retains the complete plan on failure rather than
+truncating it; no production attendance behavior/index was changed or forced. The
+14-case attendance suite passes (/tmp/dm-retention-attendance-diagnostic.log), and
+the subsequent full isolated Core suite passes all 335 tests, zero skipped
+(/tmp/dm-retention-index-full-core.log). Retain this intermittent-plan observation
+for the broader query/load audit rather than treating a rerun as a root-cause fix.
+Producer/API precommit Release/Debug/locale/enum/health/isolation/403-route gates pass.
+
+Local commits: Core 546f3cc, API documentation 9122ab0. Standard clean/build/pack/
+install completed (/tmp/dm-retention-index-sync.log). Rebuilt Afghanistan integration
+passes 106 tests, zero skipped (/tmp/dm-retention-index-country.log). Built and
+installed API SHA256 match:
+Core 4bb83180cb12d10b23b8577f877347e749333715294afecc0a957c02242005b8,
+Abstractions 922cf7445a01eb1d3eb49bf6e4309f032d264b16e497d9d9fb0941f44af40d73,
+country d6b3b9881ba86add363e27fa7bf6575251247eaf9113509e86a02aa2b20cc976.
+No frontend source/package changes, server restart, push or live DB modification.
+The user must restart the API to load the installed packages/apply normal migrations.
+Shared classroom state, remaining side-effect jobs/backups, endpoint/editor/reference audits and
+representative multi-school telemetry/load/failure recovery still need completion.
+All seven broader requirements remain open; this step closes the two measured
+retention selection scans, not the whole query or multi-instance job requirement.
+
+References: [ordered indexes with LIMIT](https://www.postgresql.org/docs/14/indexes-ordering.html),
+[partial index matching](https://www.postgresql.org/docs/14/indexes-partial.html),
+[concurrent builds and failed-index recovery](https://www.postgresql.org/docs/14/sql-createindex.html).
