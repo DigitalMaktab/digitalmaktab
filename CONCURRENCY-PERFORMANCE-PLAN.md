@@ -3140,3 +3140,83 @@ failure tests remain the next major implementation area. Do not enable ClassHub
 Redis routing before that protocol works. Remaining writer/editor/reference/output
 and side-effect-job audits plus production telemetry/deployment/soak/restore evidence
 remain separate required work; this prerequisite does not complete the broader goal.
+
+
+### Shared classroom component store foundation (sixty-second increment, 2026-10-27)
+
+The previous turn made verified progress (committed disconnect ownership and passing
+Core/country tests). This turn rechecked current state, Core/SDK/model/migration and
+actual hub/registry/gate/publication/cleanup call sites plus Redis registrations.
+Domain Room/RoomAssignment are hostel concepts and MutationReceipt is durable
+business replay; neither represents ephemeral classroom state. Shared behavior
+belongs in Core. Reuse the existing NotificationBackplaneConnection multiplexer
+and component vocabulary from the fourteen maps, without a country implementation,
+new database table/field, additional package or public configuration toggle.
+
+Core now has internal ClassroomFamilyStore: one root-family hash, seven authority/
+accounting metadata fields and bounded per-map/per-child component fields. Selected
+reads avoid whole-family chat/whiteboard copies; patches preserve unrequested fields.
+Client input is snapshotted before validation/argument construction. Component names
+and deployment namespaces are validated, keys hash room identities and share one
+**deployment-wide** Cluster slot so future cross-root/connection/quota operations
+can be atomic. Per-root hash tags would prevent that integration. This concentrates
+storage on one shard and requires capacity measurement, not a horizontal storage
+scaling claim. Existing school metadata rejects cross-school acquisition. Root
+alias normalization still needs integration; no wire identity was silently changed.
+
+Acquisition/renewal/patch/end/release run atomic scripts using Redis server time.
+Random epoch and owner tokens plus revision checks reject expired/paused/replaced
+owners. Missing expected epochs are never recreated; ending/restarting yields new
+random epochs. Successful patches advance revision once; an old handle cannot
+repeat a commit. Release never clears a successor. Renewal cannot extend absolute
+family lifetime. Client and server bound bytes; server checks final aggregate after
+replacements/deletions before writes. Empty bytes and absent values stay distinct.
+No automatic mutation retry: cancellation after dispatch is an uncertain outcome.
+Lua scripts validate before mutation; runtime failures do not imply rollback of
+previous Redis commands. One authoritative primary, protected namespace and correct
+command permissions are assumptions, not asynchronous-replica/HA consistency proof.
+Official Redis scripting and distributed-lease constraints are linked in Core audit.
+
+This is intentionally an **internal unregistered integration foundation**, not a
+finished feature or alternate writable authority. Current ClassHub remains local;
+NotificationHub alone retains Redis routing. Do not expose/enable this store until
+the existing-type codec, shared connection bindings/local abort ownership, host-loss
+recovery, school/global quotas and idle lifecycle, sorted cross-root transitions,
+commit-before-publication with frozen recipients/epoch fences, readiness/configuration
+and actual multi-host socket/process-loss tests are integrated. The store provides
+no shared live membership/quota/idle sweep or event ordering by itself. Absolute
+TTL limits retained primitive keys; it is not the current active-member idle policy.
+Core docs/CLASSROOM-STATE-AUDIT.md records the full activation gates. No live DB or
+user-owned Redis/server was touched, and no application behavior was switched.
+
+Validation: full isolated Core 370 passed/zero skipped
+(/tmp/dm-family-store-full-core.log), including seven real private-Redis cases.
+After caller-input snapshot hardening and deployment-wide key-slot correction,
+all seven affected cases pass again
+(/tmp/dm-family-store-final-focused.log). Tests use independent existing multiplexers
+and cover 32-way acquisition, tenant/deployment/handle isolation, expired-owner
+commit/renew/end/release rejection, sparse reads/deletes/empty values, optimistic
+revision replay rejection, aggregate limit/replacement reclamation with no partial
+mutation, invalid fields/metadata/wrong types, pre-dispatch cancellation, absolute
+expiry despite renewal, real Redis process loss and fresh-epoch recovery. This is
+primitive evidence, not shared ClassHub or throughput/HA-failover evidence.
+Core local commit: 6371d8f. Packaging/consumer validation recorded below when done.
+All seven broader completion requirements remain open; next work must consume this
+foundation through the existing state types and coordinated lifecycle, rather than
+treating a green primitive suite as completed multi-host classroom support.
+
+Final clean/build/pack/install plus API build pass
+(/tmp/dm-family-store-final-sync.log). Afghanistan integration: 106 passed, zero
+skipped (/tmp/dm-family-store-final-country.log). Initial pre-key-layout packaging/
+consumer checks also passed, but only the final artifacts below are current. The
+latest focused test uses the Redis client's actual hash-slot calculation for two
+different root keys; it is not a real Redis Cluster failover test.
+Final producer/API installed DLL SHA256 match:
+Core fc8d4d04b04cbcfaf08dadf16c3b25a7ae362f613fec2a4d0f134bad9c4e5baf,
+Abstractions 143c5b3926b49e640e417cff2eb06c3bb520a4084c1e88505d15b03e1aeaa7a4,
+country 858a1b34d9ebf2877df4e4f647cb34278a722863dca5badd6cc05431873962e6.
+Core commit 6371d8f and normal precommit checks pass. API/country source trees remain
+unchanged; packages were installed without a manual user-server restart or live
+DB mutation. No push. Next implementation work must connect existing-type state
+components to this store, then shared membership/quotas and publication/recovery;
+the broader goal remains active and none of its seven requirements is closed.

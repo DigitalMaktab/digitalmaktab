@@ -1819,3 +1819,23 @@ filter. No new store/table/service or country specialization is needed here.
 This ownership prerequisite remains local; shared authority, remote connection
 metadata, fenced publication, expiry and failure recovery still need integration.
 Cleanup waits with application-shutdown cancellation, not a new total-time promise.
+
+
+## Shared classroom component-store foundation (2026-10-27)
+
+Core ClassroomFamilyStore is internal and unregistered until full shared authority
+integration. Reuse NotificationBackplaneConnection; no new Redis connection, domain
+room/receipt table, country schema or public toggle. Root-family hashes represent
+the existing fourteen maps through bounded requested components and atomic patches,
+with server-time leases, random epoch/owner tokens, revision and byte accounting.
+Do not serialize an entire family on every cursor/signaling operation. Cancellation
+after dispatch is an uncertain outcome, not permission for transparent retry.
+
+This primitive does not activate multi-host classrooms. Implement existing-type
+codecs, shared connection metadata/host recovery and quotas/idle expiry, sorted
+cross-root transitions, commit-before-publication with recipient/epoch fences and
+readiness/recovery together before enabling ClassHub routing. Local writable maps
+must not remain a second authority. A single authoritative Redis primary/coordinated
+recovery is required; do not claim asynchronous-replica or split-primary consistency.
+See Core docs/CLASSROOM-STATE-AUDIT.md for actual behavior, source references and
+remaining integration gates. Private primitive tests are not shared-hub proof.
