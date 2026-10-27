@@ -3387,3 +3387,103 @@ must not run the current singleton epoch lookup against shared transports. Reche
 those call paths before adding fields/services; existing local registry and gate
 semantics must be extended compatibly. All broader completion requirements remain
 open; this is the next integration boundary, not an activation/finish claim.
+
+
+### Shared connection ownership and bounded admission (sixty-fifth increment, 2026-10-28)
+
+The previous turn made verified progress on shared execution frames. Discovery traced
+the existing ClassroomConnection record, every producer/consumer, Add/Room/Remove,
+abort/retirement, filter lifecycle and slots, audience/current DB authority, delivery
+and cleanup, NotificationAccount and registrations. Account/stamp/impersonator/room/
+epoch already exist: preserve one metadata shape and move only the Action callback
+into a private local entry. Neither account stamp nor room epoch identifies physical
+host ownership, so extend this existing Core record with HostId. No new database
+field/table, domain identity DTO, country code, second service or dependency.
+
+Local registry captures owner/slot/snapshot under the same binding monitor. Owner
+changes require an empty registry. Find/Remove preserve existing consumers; aborts
+remain local. AbortIfCurrent/IsCurrent use the exact pre-await local snapshot object,
+not value equality, fencing A -> B -> A moves without another stored revision field.
+Deserialized remote metadata has no abort callback or local abort capability. Existing
+local socket lifecycle/admission/audience behavior remains the regression target.
+
+Extend the same private ClassroomFamilyStore for shared host leases and transport
+admission, reusing its connection, clock and one namespace/Cluster-tag helper. A
+single record snapshot plus operational nonce/status/deadline represents each
+transport. Host/pending/ownership sorted indexes and school counts are derived
+access paths, not independent identity models. Fresh host IDs are random ownership
+generations; dead/missing ownership cannot renew or activate a transport. New owner
+recovery must retire old local connections before changing local ownership.
+
+Reserve -> complete prevents disconnect-before-registration resurrection. Pending
+slots consume bounded global/school capacity but cannot receive events. Completion
+requires the pending nonce/deadline and live host. RegisterConnection checks the real
+local snapshot before/after completion, checks cancellation and retires failed or
+uncertain admission by reservation nonce. A late reserve after local retirement is
+canceled/expired without becoming a recipient; a late completion cannot recreate a
+retired row. No automatic command retry or fake remote callback/local fallback.
+
+Private ConnectionPolicy validates global 1–4096, school within global, hosts 1–256,
+host lease 100–120000ms and pending 50–10000ms below host lease. These are internal
+protocol/test parameters, not new operator configuration or advertised supported-user
+counts. Matching fingerprints prevent incompatible active admission policies. A
+fully drained namespace can change limits; expiry maintenance uses stored deadlines
+independently so expired old ownership can drain under a restarted configuration.
+Fresh reads take at most 100 distinct connection IDs and reject pending/dead-host
+recipients; permission freshness remains ClassroomAudience's existing real SQL.
+
+Sweep plans/validates metadata and affected counts before its first delete, processing
+up to 64 expired hosts and 100 expired pending rows, at most 4096 total connections. It
+updates records/indexes/counts together and returns last snapshots plus host progress
+(including empty hosts). Subsequent batches remain the caller/worker's responsibility;
+capacity can stay busy until cleanup runs. Host lexicographic index members all use
+score 0; official Redis lex-range semantics are linked in the Core audit. Protected
+namespace, compatible permissions, one authoritative primary and Lua runtime-error
+limitations remain explicit; no heap/wall-time/fleet throughput or HA promise.
+
+Validation: focused 18 passed/zero skipped (/tmp/dm-connection-focused.log), exercising
+new admission plus existing real-socket access/disconnect cases. Full isolated Core
+389 passed/zero skipped (/tmp/dm-connection-full-core.log), including seven new cases.
+After allowing deadline-only cleanup across a drained policy change and extracting
+the common namespace helper, final 14 affected protocol tests passed/zero skipped
+(/tmp/dm-connection-final-focused.log). Tests cover independent owners/tenant/deployment
+isolation, pending invisibility, retire/register races, exact local callback fencing,
+finite host/global/school caps, expired pending/host reclamation and no resurrection,
+count corruption without partial cleanup, changed-policy drain, 20 concurrent attempts
+accepting exactly 3 for one school, and actual private Redis stop/restart with no local
+fallback/new ownership required. Local socket permissions still use the existing full
+regression suite. Core local commit cab746c; packaging/consumer checks below when done.
+
+The shared path is still internal/unregistered and live ClassHub remains local.
+All seven broader requirements remain open. Next implement atomic family/binding
+commits and cross-root moves, shared room quotas/idle lifecycle, current-frame actor/
+audience lookup, heartbeat/last-binding reconciliation in the existing worker,
+staged recipient/event publication after accepted commit, policy/readiness/config and
+actual multi-host socket/process-loss recovery. Do not turn on routing or apply the
+current local singleton epoch sweeper to shared transports. Remaining editor/writer/
+reference/query/output/file/job and production telemetry/deployment audits also remain.
+
+Final standard clean/build/pack/install and API build pass
+(/tmp/dm-connection-sync.log); Afghanistan integration 106 passed, zero skipped
+(/tmp/dm-connection-country.log). Producer/API installed DLL SHA256 match:
+Core c2da1a322e037366ddfde8c05ea85bea58828b33548c0ddc73ec178a2c777aa5,
+Abstractions 1503cc985325691250e3b3a71b2561c26ab9072a580ad459c934dede8207bcfb,
+country 481b67224a7471b30cdde834f4dd025bbcbdc4cb1b66625b9b73a0157478866c.
+Core commit cab746c; normal precommit/diff checks pass. API/country source trees
+remain clean. No live DB/user Redis mutation, manual user-server restart, push,
+public DTO/schema/configuration change or added package. No production capacity,
+shared-socket or mixed-load benchmark claim. The user's remaining-work question was
+answered against the seven open checklist areas; the goal stays active.
+
+Next integration discovery: shared metadata must feed frame membership without a
+local fallback (even an empty shared snapshot scope must not fall back to local
+Find). Keep IsCurrent/AbortIfCurrent/Remove tied to their actual local entries.
+Delivery needs fresh shared connection reads before its existing fresh DB audience
+checks, rather than trusting an invocation snapshot forever. Bind room/epoch changes
+with family patches in one atomic operation; don't independently call local Room
+and then persist a family. Cross-root changes require both leased generations and
+all validations before writes. Lifecycle registration must use the high-level
+reserve/complete wrapper with the actual local snapshot/cancellation predicate.
+Reconcile retired metadata and missing bindings through the existing worker/frame
+path, and stage/freeze publications before teardown. Re-inspect actual callers and
+reuse existing contracts before implementation. Shared routing remains disabled.

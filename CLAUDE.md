@@ -1887,3 +1887,31 @@ current-frame audience delivery, staged commit/publication and readiness/multi-h
 failure tests still precede live ClassHub activation. Scratch graph room counters
 are not a fleet retained-room metric. Preserve the normal local singleton path
 until that coordinated integration exists; do not treat frame tests as socket proof.
+
+
+## Shared classroom connection admission (2026-10-28)
+
+ClassroomConnection is the single serializable account/stamp/impersonator/room/epoch/
+HostId metadata record. Keep Action Abort only in ClassroomConnections.LocalConnection;
+never create a fake remote callback. Owner changes require an empty local registry.
+Add/Room/Remove share the binding monitor; AbortIfCurrent/IsCurrent use the original
+local snapshot reference, fencing A -> B -> A without another persistent version.
+A remote deserialized record is not a local abort capability.
+
+ClassroomFamilyStore's internal host/admission protocol shares the family namespace
+helper and multiplexer. Pending reservations consume global/school slots but are
+not recipients; completion requires nonce/deadline/live host. RegisterConnection
+rechecks the real local snapshot around completion and retires failed/canceled
+reservations. Metadata reads are bounded and exclude pending/dead owners; they never
+replace fresh DB account/role/stamp/impersonator/course checks. Expired hosts cannot
+renew/revive, and recovery requires new ownership plus retiring old local transports.
+
+SweepConnections uses stored deadlines and bounded indexes, returns last metadata
+and host progress, and may drain expired old-policy state before new limits activate.
+Admission policies must match while ownership is active. Indexes/counts are derived,
+not another identity model. Run maintenance batches to reclaim expired reservations;
+data bounds are not wall-time/throughput guarantees. This protocol stays unregistered
+until atomic family/binding transitions, room quotas/idle expiry, heartbeat/room
+reconciliation, current-frame audience, staged publication and readiness/multi-host
+socket recovery are integrated. Never run the current local epoch sweep on shared
+transports. See Core CLASSROOM-STATE-AUDIT.md for assumptions and tests.
