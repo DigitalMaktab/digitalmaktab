@@ -3081,3 +3081,62 @@ connection bindings, publication and recovery before changing it. Backplane rout
 alone must not be enabled over the still-local authority. Remaining writer/editor/
 reference/output audits, generic file sweeps, other side-effect jobs, production
 telemetry and full deployment/long-soak/restore/overall-startup verification remain.
+
+
+### Classroom disconnect ownership (sixty-first increment, 2026-10-27)
+
+Discovery traced ClassHub's 14 maps, root-family gates/generations, connection
+registry and actual join/move/leave/teardown callers, guarded publication/audience,
+cleanup worker, notification-only Redis wiring and account/course models. No domain
+classroom/session table exists; the existing Room/RoomAssignment entities are hostel
+concepts and are not candidates for reuse. Shared authority needs connection bindings,
+epoch/capacity/expiry and publication/recovery coordination, not just dictionary
+serialization or SignalR routing. This increment corrects a concrete prerequisite:
+disconnect previously held one family's lease but scanned/mutated all room maps.
+
+Extend the existing Core registry, lease, filter and LeaveClass; no new persistent
+field/table/service/configuration or country implementation. Remove atomically
+retires the transport under the same binding monitor as Room and returns its last
+snapshot. It releases capacity before waiting for the snapshot's matching-epoch
+cleanup lease. A queued join cannot rebind a retired transport or run its hub body.
+DisconnectFromRoom checks state identity, current session identity, same root and
+live lease before reusing LeaveClass. The lifecycle callback no longer scans other
+rooms. Old generations cannot mutate a replacement, even if an alias remains.
+Actual active removals emit UserLeft; pending removals retain host-only queue events.
+No phantom active event is emitted for an absent member.
+
+Touch only the matching epoch before Enter and after cleanup: the last disconnected
+socket must not make a six-minute-idle but still-live room lose its retained notes
+before cleanup. Absolute session-age retirement remains unchanged. Context bindings
+clear in finally and leases dispose on failure. Existing waiting cleanup uses
+application-shutdown cancellation, not a new total-time deadline. Reconnect cannot
+feed a blocked family's roster: binding requires its mutation gate, normal calls
+retain invocation admission, and an unbound disconnect skips room acquisition. No
+new cleanup queue or unchecked out-of-gate metadata mutation was introduced.
+
+Validation: full private-PostgreSQL Core suite 363 passed, zero skipped
+(/tmp/dm-classroom-cleanup-full-core.log); six new cleanup tests cover real sockets,
+independent-root contention, protected replacement aliases, invalid/disposed/cross-
+state leases, transport release while cleanup waits, a queued join after retirement,
+active/pending events and preserved idle notes/expiry. Earlier focused run: 26 passed
+before the final sixth test. Manual filter tests now honor real registry lifecycle.
+Standard clean/build/pack/install and API build pass
+(/tmp/dm-classroom-cleanup-sync.log); Afghanistan integration 106 passed, zero skipped
+(/tmp/dm-classroom-cleanup-country.log). No new mixed-load benchmark was needed or
+claimed for this lifecycle change; the real-socket tests exercise the affected flow.
+
+Producer/API installed DLL SHA256 match:
+Core 123c9eff70678f0f4fa0fb50e1fe6ee6654e3998f3983f899859cdc37e261bf4,
+Abstractions ed4e1aaf165796659f272136137d7eb1c32a7ec4dca255082fab0d948ef21dc4,
+country 1e39f82cd2311bf7f7c7da31e6300c8fc5142f80a3d356f673c38a0026325cdc.
+Local commits: Core 80845e2, API documentation c70ed4b; normal precommit checks pass.
+No live DB mutation, user-server restart, new package dependency, schema/client
+contract change or push. Packages are installed; running workers must load them.
+
+All seven broader requirements remain open. This is local mutation ownership only:
+shared classroom authority/storage, remote connection metadata and abort recovery,
+efficient changed-content persistence, commit/publication fencing and multi-host
+failure tests remain the next major implementation area. Do not enable ClassHub
+Redis routing before that protocol works. Remaining writer/editor/reference/output
+and side-effect-job audits plus production telemetry/deployment/soak/restore evidence
+remain separate required work; this prerequisite does not complete the broader goal.

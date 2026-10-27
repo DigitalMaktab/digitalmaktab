@@ -1799,3 +1799,23 @@ Verify real sync/async/streamed timeout/cancellation, original/default-token cal
 null/restored settings, ordinary-flow isolation, observer disposal and fresh-owner
 recovery with the private Core harness. No automatic DDL retry, invalid-index drop,
 live migration or manual user-server restart is authorized by these checks.
+
+
+## Classroom disconnect mutation ownership (2026-10-27)
+
+ClassHub lifecycle callbacks must not scan/mutate every room map. Retire the
+connection atomically with Room binding in ClassroomConnections, release transport
+capacity before waiting, and use its last room/epoch snapshot with the existing
+root-family cleanup lease. DisconnectFromRoom verifies state identity, current
+session generation, same family and an undisposed lease, then reuses LeaveClass.
+A queued join must fail if its connection was retired; never recreate its binding.
+
+Touch only the matching epoch before acquisition and after cleanup to preserve
+idle history after the last transport disappears without extending session age.
+Keep active UserLeft distinct from pending host-only PendingParticipantRemoved;
+no phantom UserLeft for an absent member. Clear context binding and dispose leases
+in finally. Tests must register transports through OnConnected before invoking the
+filter. No new store/table/service or country specialization is needed here.
+This ownership prerequisite remains local; shared authority, remote connection
+metadata, fenced publication, expiry and failure recovery still need integration.
+Cleanup waits with application-shutdown cancellation, not a new total-time promise.
