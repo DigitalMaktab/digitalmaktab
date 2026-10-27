@@ -3013,3 +3013,71 @@ All seven broader completion requirements remain open: shared classroom authorit
 routing, remaining writer/editor/reference/output audits, generic upload ownership
 and eager file sweeps, other side-effect lifecycles, production telemetry and full
 deployment/long-soak/restore/timeout verification still require completion.
+
+
+### Independent startup command budgets (sixtieth increment, 2026-10-27)
+
+Discovery traced the existing coordinator, all Core/API callers and real startup
+migrate/heal/seed sequence, provider settings, command interceptors and EF typed
+query diagnostics. The existing lock timeout governs only waiting, while long
+index builds previously shared ordinary provider command deadlines. Extend the
+same coordinator/session and existing DatabaseStartup section; no duplicate lock,
+service, configuration store, database field/table or reader implementation.
+
+Preserve the original four-argument/default-token overload; the explicit five-arg
+budget overload validates 1–1800 whole seconds before connect. API defaults its
+CommandTimeoutSeconds to 300 independently of LockWaitSeconds=120. Only the
+non-pooled startup connection/EF override changes; ordinary options stay intact,
+the prior nullable EF timeout is restored, and the finished context remains fenced.
+Infinite/excessive command overrides are capped; shorter ones are honored. Startup
+cancellation acknowledgement is finite (zero -> 2s, positive max 5s; -1 skips wait).
+Server/network limits and provider cancellation/close overhead still apply.
+
+Testing found streamed query errors can bypass command-failure interception. The
+coordinator now temporarily observes existing typed QueryIterationFailed and
+QueryCanceled events in the initializer's AsyncLocal flow; context-type-only events
+cannot fence unrelated ordinary contexts. Dispose subscription/restore flow at exit.
+A swallowed command or streamed timeout/cancellation still prevents completion and
+later EF work on that session; fresh initialization can recover. No formatted-log
+parsing, result/authority cache, provider reader wrapper or transparent retry. All
+startup EF work must use/await the supplied context. Arbitrary native/unsafe/
+independent/fire-and-forget callbacks and total CPU/file/initializer wall time remain
+outside this per-command ceiling; canceled concurrent indexes still need reviewed
+repair, not destructive automatic replacement.
+
+Validation: full Core 357 passed, zero skipped (/tmp/dm-startup-budget-full-core.log),
+including five new startup cases. Real provider/server cancellation, sync/async
+execute, scalar and streamed reads after rows arrive, shorter/longer/infinite EF
+overrides, wait/command independence, restored/null settings, old default-token
+source compatibility, ordinary same-provider/type/coordinator flow isolation,
+observer disposal and fresh-owner recovery pass. Full source includes streamed
+local cancellation after rows arrive as well as streamed provider timeout. The
+initial reader test diagnosed EF's transient exception wrapper; the subsequent
+streaming test demonstrated the actual missed-interceptor failure and now proves
+it is fenced. The pre-existing six startup tests still pass alongside five new ones.
+
+Standard clean/build/pack/install and API build pass (/tmp/dm-startup-budget-sync.log).
+Country integration: 106 passed, zero skipped (/tmp/dm-startup-budget-country.log).
+Actual two-process API smoke with the new Program overload passes
+(/tmp/dm-startup-budget-api-smoke.log, --seconds 1): 468 mixed attempts/466 successes,
+two expected structured 503s, eight successful ZIP exports and four 204/four 409
+profile edits. All four school invariant sets and process-loss payment recovery
+pass. The observed 1.274s interval includes in-flight work; this is an integration
+smoke, not a sustained performance benchmark. Current driver hashes match source.
+
+Final producer/API installed DLL SHA256 match:
+Core b4bbad9ab4aa5762087926dee079bdad12d12e863a68864ffe9e35102560fe4a,
+Abstractions 8e410d0b9b7cdcc186e1c1ff39b6ff6da1714d4670b5b06f2396684bc3840ef4,
+country fd338fd7347625d7dbe3464f1d012c3fb92b62a05d3b0cee2b6bbd20b191a6cd.
+Local commits: Core cc79d4a, API 49dc936; precommit/diff checks pass. No schema/client
+contract change, new package dependency, live DB mutation, manual user-server
+restart or push. Packages are installed; update running workers to load the new
+Core and host call together. No appsettings rewrite is required: the existing
+configuration providers/DatabaseStartup section expose the setting.
+
+All seven broader requirements remain open. Shared classroom authority/routing is
+the next major implementation area: re-inspect existing models, root gates/state,
+connection bindings, publication and recovery before changing it. Backplane routing
+alone must not be enabled over the still-local authority. Remaining writer/editor/
+reference/output audits, generic file sweeps, other side-effect jobs, production
+telemetry and full deployment/long-soak/restore/overall-startup verification remain.

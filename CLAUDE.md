@@ -1773,3 +1773,29 @@ both immediate and analyzed plans, migration executor Up/Down/reapplication and
 preserved rows in the private message_query_tests fixture. Warm local SQL gains do
 not prove HTTP, sustained write/fleet capacity or remove the remaining generic
 upload/reference, message endpoint and shared classroom audits.
+
+
+## Startup-only command budgets and streamed failure fencing (2026-10-27)
+
+Extend StartupDatabaseCoordinator rather than adding another startup lock/service.
+Keep the existing four-argument/default-token RunAsync source/binary shape; the new
+five-argument overload accepts an independent 1–1800-whole-second command ceiling.
+Host DatabaseStartup:CommandTimeoutSeconds defaults to 300; LockWaitSeconds remains
+120 and governs only ownership waiting. Scope provider/EF overrides to the dedicated
+non-pooled startup context, restore its old EF timeout and preserve ordinary context
+options. Cap infinite/excessive EF overrides; shorter ones remain valid. Bound the
+startup copy's cancellation acknowledgement wait, never mutate shared options/pools.
+
+A swallowed timeout/cancellation must still fence initialization. Command failures
+alone miss streamed reader errors: use existing typed EF query diagnostics while
+initialization runs, scoped by its AsyncLocal identity because the payload carries
+only context type. Dispose the observer and restore flow on exit. Do not parse logs,
+wrap provider readers, introduce another authority/cache or poison unrelated query
+flows. Existing interceptor/default EF DiagnosticListener wiring is required; all
+initialization must await EF work on the supplied context. Arbitrary native/unsafe/
+independent/fire-and-forget work and total CPU/file/startup wall time are not covered.
+
+Verify real sync/async/streamed timeout/cancellation, original/default-token calls,
+null/restored settings, ordinary-flow isolation, observer disposal and fresh-owner
+recovery with the private Core harness. No automatic DDL retry, invalid-index drop,
+live migration or manual user-server restart is authorized by these checks.
