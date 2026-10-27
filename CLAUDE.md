@@ -1717,3 +1717,36 @@ the prior file intact and clean its own temporary file; propagate shutdown witho
 failure accounting. Page active root notification recipients too. This is not
 shared job ownership, shared storage, fsync durability or crash-temp recovery.
 Those need explicit storage/deployment contracts before adding a database job lock.
+
+
+## Message cleanup metadata and file recovery (2026-10-27)
+
+Extend DatabaseReaper for side-effect metadata, not a second retention table/job.
+Select at most 250 IDs, lock surviving rows in stable UUID order, recheck the
+original expiry predicate while reading scalar metadata, and keep expiry on DELETE.
+Affected count must equal metadata count or roll back. Dispose the committed
+transaction and its advisory/row locks before afterCommit filesystem callbacks.
+Scalar-only reapers keep their existing cheaper path. Callback failure cannot undo
+a committed delete; file recovery must use the existing orphan lifecycle.
+
+MessageReaper keeps pinned forever/read 180d/unread 365d rules. Never collect every
+attachment path before DELETE or unlink paths from candidates whose pin/read/path
+changed while waiting. MessageAttachmentFiles is the shared bounded 250-path policy
+for immediate retention and nested orphan recovery. Keep retained message refs
+across schools/slashes/case, accept only numeric-school message-upload folders,
+and reject absolute/traversal/sibling/other-resource paths and symlinks. Fold both
+sides in PostgreSQL, returning only the supplied candidates; client/database
+Unicode case folding must not create false orphans. Scan old
+message files after seven days through the existing nested job, including both
+historical physical-path spellings; no new file queue/ledger. This does not solve
+arbitrary module references or adversarial filesystem swaps, nor replace the
+remaining flat/assignment/material writer and eager-reference audits.
+
+MessageReactionCascade reuses the original FK, restoring cascade after the global
+Restrict model convention. Up/Down change only the constraint and preserve rows;
+reactions must follow later retention or authorized sender deletion of their parent.
+Do not generalize cascade to other relationships. Verify row preservation, reversal,
+normal unsend and actual cleanup races against private PostgreSQL. The existing
+Core harness provides a dedicated CORE_MESSAGE_MIGRATION_TEST_DATABASE for the
+real EF executor Up/Down/reapplication check, isolated from other test histories. Never migrate
+the user's running database or restart their servers as part of verification.

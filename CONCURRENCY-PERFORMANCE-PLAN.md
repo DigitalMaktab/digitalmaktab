@@ -2866,3 +2866,86 @@ workers together to load this contract. All seven broader requirements remain op
 remaining editor/reference/output audits, side-effect jobs/file cleanup, shared
 classroom authority/routing, production telemetry and deployment/soak/restore
 verification are not established by this backup increment.
+
+
+### Coordinated message retention and attachment recovery (fifty-eighth increment, 2026-10-27)
+
+Discovery traced the message/reaction entities, model/migration constraints, send,
+read, pin, edit and unsend callers, upload naming/physical paths, existing database
+reaper and both orphan jobs. MessageReaper originally collected every path before
+an unbounded DELETE; a winning pin/read/path edit could therefore leave the row
+but lose its attachment. Its comment also incorrectly promised reaction cascade:
+the actual FK was Restrict and any reacted-to parent deletion failed with 23503.
+
+Extend DatabaseReaper with a bounded scalar-metadata overload. Under the existing
+physical-table advisory transaction lock, select at most 250 IDs, acquire surviving
+row locks in UUID order, then recheck expiry/projection before DELETE. Values remain
+parameterized and identifiers come from EF's mapped metadata/SQL delimiter. Keep
+expiry on DELETE and require its affected count to equal metadata count. Only after
+commit and transaction disposal do callbacks receive deleted paths. The original
+scalar-only path retains its cheaper query shape. No new persistent field/table or
+parallel cleanup coordinator. Pin/read/path edits that win before the lock wait
+are now respected; cancellation/failed batches roll back without losing earlier
+commits. Callback failure after commit leaves recoverable orphan files.
+
+Message retention uses that shared path with its original pinned/read-180d/
+unread-365d windows. MessageAttachmentFiles extends the private unlink helper for
+reuse by retention and nested orphan recovery, bounding each candidate/reference
+query to 250 paths. Preserve any retained message reference across schools and
+legacy casing/slashes; only numeric-school message-attachment folders qualify.
+Reject absolute, traversal, sibling Resources-prefix, other resource families and
+symlinks. Support UploadService's lowercased physical folder vs stored spelling.
+The existing nested job now scans message orphans older than seven days in bounded
+batches, recovering commit/unlink interruption and normal unsend without a new job,
+queue or file ledger. Message/nested shutdown cancellation is no longer logged as
+a failed run. All other flat/assignment/material eager sets and writer/reference
+races remain a separate audit; these changes do not prove generic filesystem
+ownership, hostile symlink-swap protection, bounded directory scan time or optimized
+normalized reference query plans. Multiple local-storage hosts still scan their
+own files; shared-storage unlink attempts are idempotent, not exactly once.
+
+MessageReactionCascade changes only the existing reaction FK to Cascade; the model
+restores that explicit exception after its blanket Restrict convention and the
+snapshot matches it. Up/Down replace the FK, preserve rows and alter only future
+parent deletion. This also fixes normal authorized sender unsend with reactions.
+No copied message/reaction table, new field or unrelated cascade change. The real
+migration must run at startup before readiness; verification uses private databases.
+
+Validation: 351 Core tests pass, zero skipped (/tmp/dm-message-full-core.log),
+including seven new message cases. Actual hosted job windows, 250/250/120 scalar
+batches, reaction cleanup and post-commit visibility pass. Independent PostgreSQL
+sessions observe real row-lock waits while pin/read/path updates win; metadata
+contains only the current paths of deleted rows. A competing worker returns busy
+without publishing uncommitted metadata; second-batch failure preserves the first
+250 commits and another worker drains the remaining 370. Cancellation releases its
+locks; a failed post-commit callback leaves rows deleted and a recoverable file.
+
+A dedicated private message_migration_tests database now belongs to the existing
+Core test script. Starting from the current model/prior FK-history checkpoint,
+EF's actual MigrateAsync/IMigrator executor applies, downgrades and reapplies this
+migration; row preservation, old Restrict behavior and targeted sender/reaction
+removal are verified. This is the new FK migration's executor proof, not full
+legacy/fresh Core migration-chain verification. File tests preserve pinned and
+foreign-school refs, Unicode filenames, both slash conventions, current uploads,
+other resource families and symlink targets. Both candidate/stored case folding
+now happen in PostgreSQL; a bounded parameterized unnest/EXISTS returns at most
+250 supplied paths, avoiding client/database Unicode-lowercase disagreements or
+an unbounded result of legacy case variants. Orphan recovery removes 600 files in
+three reference queries while keeping retained/fresh files.
+
+Country integration: 106 passed, zero skipped (/tmp/dm-message-country.log).
+Standard clean/build/pack/install and API build pass (/tmp/dm-message-sync.log).
+Final producer/API installed DLL SHA256 match:
+Core d1218a1fd3fa2b5b2cdbc0331fd93870dc7b49409966116db3973eb87889d3b2,
+Abstractions cb874f878efed4cdbc9df6cee140e577f0f314c33a3e721d034bd583132410cf,
+country 0a42411a110c6601d2e380871a0bd4d3a7542197e0e64531c3987de80185ee6b.
+Local commits: Core 970a852, API documentation 8bdf5aa; precommit, shell syntax and
+diff checks pass. No live DB mutation, manual user server restart or push. Update
+all workers and allow the new startup migration before readiness. The actual-API
+workload reports from earlier increments identify their own prior package hashes;
+they are not a fresh HTTP/soak benchmark of this cleanup change.
+
+All seven broader completion requirements remain open. Shared classroom authority/
+routing, remaining writer/editor/reference/output audits, generic upload ownership
+and eager orphan scans, other side-effect job lifecycles, measured message access
+paths, production telemetry and deployment/long-soak/restore verification remain.
