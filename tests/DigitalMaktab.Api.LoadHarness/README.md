@@ -89,3 +89,16 @@ mix or supported-capacity/SLA claim. Imports, profile races and explicit recover
 also checked after the pressure window. Classroom cross-host state is still unsupported.
 Other endpoint/reference/editor audits, large-output bounds, remaining side-effect
 jobs and production telemetry/deployment verification remain part of the broader goal.
+
+
+The bounded-backup follow-up is recorded separately in
+[backup-baseline.json](backup-baseline.json), preserving the original authorization
+baseline. The same workload additionally verifies ZIP no-store/content type/known
+length, complete format-2 manifest and AF/AT module activation. It accepts the
+backup endpoint's localized bounded-export 503 codes with Retry-After: 5 as well
+as the existing shared admission response; other failures still fail the run.
+Eight successful ZIP responses cover pressure and post-import completeness. This
+small fixture does not establish large-archive heap/disk/slow-client limits or
+cross-host nightly ownership. Core backup tests cover rejection, cancellation,
+expiry and failed-copy preservation separately. Driver/source and installed
+assembly hashes in each report identify the exact verifier/package generation.

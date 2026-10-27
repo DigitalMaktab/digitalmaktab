@@ -1691,3 +1691,29 @@ record assembly/source hashes and exact synthetic quotas, and never infer produc
 capacity or an SLA from local timings. See tests/DigitalMaktab.Api.LoadHarness/README.md
 and baseline.json. Shared classroom authority, remaining jobs/output bounds, writer/
 reference audits and production observability/deployment checks remain open.
+
+
+## Bounded school backup snapshots (2026-10-27)
+
+Extend BackupService/ISchoolBackupContributor through Core SchoolBackupWriter;
+never restore eager whole-table/module snapshots to HTTP or nightly exports.
+Queries stream sequentially without tracking into a private DeleteOnClose file,
+inside one repeatable-read transaction; expose only a finalized ZIP after commit.
+Keep format-2 flat/core aliases and manifest compatible and count aliases against
+budgets. Afghanistan owns its existing roots/person extension predicates, using
+the same writer. No new backup table or copied country schema is needed.
+
+Register AddSchoolBackups once for validated BackupExport options and a singleton
+process-wide gate shared by HTTP/background work. Prepared artifacts retain their
+slot until disposal/expiry; one per school. Finite row/entry/JSON/ZIP/lifetime limits
+fail with localized no-store 413/503; 503 includes Retry-After. FileStreamResult
+owns the stream and expiry aborts blocked response writes. Preserve the public
+four-argument constructor and bounded legacy byte adapter. Legacy contributors
+without WriteAsync fail closed rather than invoking an unbounded eager fallback.
+
+Nightly work pages 100 school IDs, uses fresh scopes and atomically renames a closed
+same-directory temporary copy over the final path. Failure/cancellation must leave
+the prior file intact and clean its own temporary file; propagate shutdown without
+failure accounting. Page active root notification recipients too. This is not
+shared job ownership, shared storage, fsync durability or crash-temp recovery.
+Those need explicit storage/deployment contracts before adding a database job lock.

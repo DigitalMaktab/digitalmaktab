@@ -2792,3 +2792,77 @@ collection/export/dashboard setup, other endpoint/editor/reference and output au
 shared classroom authority/routing, remaining side-effect jobs/backups and broader
 operational recovery/deployment verification still need completion. Do not close the
 whole observability or multi-instance requirement from this verifier's results.
+
+
+### Bounded streaming backup artifacts (fifty-seventh increment, 2026-10-27)
+
+Discovery traced IBackupService, BackupController, nightly work, mapped-school
+reader, the existing Afghanistan contributor, all byte[] callers and current ZIP
+consumers. The old flow eagerly loaded ten legacy tables, all Core tables and all
+module tables, then duplicated its in-memory ZIP into another byte array. Shared
+RequestCapacity only governs HTTP, so it cannot cover scheduled work/file lifetime.
+Extend Core's existing service/contributor contract with one query-streaming writer,
+prepared artifact and process gate. No persistent table/field or parallel format.
+
+PrepareSchoolAsync serializes no-tracking IQueryable tables sequentially into a
+private random DeleteOnClose file inside repeatable-read; commit and ZIP completion
+precede exposure. Afghanistan supplies its existing country root/person predicates
+through the same writer. Activation and format 2 (including legacy flat/core aliases,
+manifest keys, entries and secret-checkpoint exclusions) stay compatible. Aliases
+consume budget too. Old eager contributors fail closed until updated, not fallback
+to unchecked ToList calls. The public four-argument constructor stays compatible;
+legacy byte[] export has an additional 16 MiB allocation cap, and old assembly/
+country list adapters have combined row caps.
+
+Validated BackupExport defaults: 500,000 rows, 256 entries including manifest,
+256 MiB cumulative JSON, 128 MiB ZIP, 120-second cooperative lifetime, two active
+artifacts per process/one per school. A prepared download holds its slot through
+stream disposal or expiry. Cancellation/error cleans files, snapshot and admission;
+expiry also aborts HTTP response writes. Oversize is localized 413; admission,
+timeout and unavailable errors are localized 503 with Retry-After: 5; all are
+no-store and no partial ZIP is returned. Limits don't preempt a huge individual
+value, arbitrary module code or synchronous serializer/ZIP cleanup.
+
+Nightly work pages 100 active schools using existing native UUID keyset comparison,
+disposes each school's scope, copies the completed ZIP into a private same-directory
+temporary file, closes it and atomically renames over the destination. Failure or
+cancellation preserves the prior backup and removes its own temporary copy. Prune
+only after publication. Shutdown propagates without counting as a failed school;
+failure notification recipients page 100 active roots. Cross-host job ownership,
+shared storage/offsite capacity, filesystem durability, crash-temp recovery and
+restore verification remain open; a database lock with host-local files is not a
+substitute for their design.
+
+Validation: 344 Core tests pass, zero skipped, including six backup tests using real
+private PostgreSQL sessions (/tmp/dm-backup-full-core.log). Verify early row stopping
+(two pupils materialized out of 100 with a one-row limit), no tracking, tenant and
+format compatibility, repeatable-read exclusion of a concurrent commit, all four
+size budgets plus legacy byte cap, clean transactions/files/gates after failure,
+download admission, expiry/caller cancellation and subsequent recovery, localized
+HTTP problems and preservation/cleanup on failed/canceled nightly publication.
+Afghanistan integration: 106 passed, zero skipped (/tmp/dm-backup-country.log),
+including AF/AT activation/scope and country rows consuming the shared row budget.
+Standard clean/build/pack/install and API build pass (/tmp/dm-backup-sync.log).
+Actual-process workload passes (/tmp/dm-backup-full-api.log): 6,788 pressure requests
+in 10.045 seconds, 6,786 successes and two expected structured 503s; all four ZIPs
+under pressure and all four complete post-import ZIPs succeed. The verifier now
+checks no-store/type/known Content-Length, complete format-2 manifest, tenant and
+country activation as well as all 402 committed students. It accepts only the
+endpoint-specific localized backup overload codes/Retry-After or existing request
+admission shape. Profile races remain four 204/four 409; process-loss recovery,
+registration/payment replay and persisted capacity/tenant invariants all pass.
+Student-list p50/p95 13.33/18.92 ms, dashboard 6.00/8.55 ms; backup p50/p95
+36.44/64.43 ms after pressure and 178.83/377.03 ms during pressure. These are local
+synthetic observations, not a production capacity/SLA or memory/large-archive soak.
+New report: [backup-baseline.json](tests/DigitalMaktab.Api.LoadHarness/backup-baseline.json);
+prior authorization baseline is preserved. All saved driver SHA256 values match
+current verifier sources. Package producer/API installed DLL hashes match:
+Core 0a07287a9affc45086e06171eb9a37882809cef1c8675d9ffd6d64ec393337ce,
+Abstractions b310b07a7ba3947295f330cf73101a436d0af7c52f9a0bb15ef69147e88fc13c,
+country 9d74eb20f039eee91e9b717e9c44daec8c3fabe0f42023a492f235967b280bbe.
+Local commits: Core e4378ba, country bde0c5b, API a6cf9b5. Precommit gates pass.
+No live DB mutation, manual user server restart or push. Install/restart deployed
+workers together to load this contract. All seven broader requirements remain open;
+remaining editor/reference/output audits, side-effect jobs/file cleanup, shared
+classroom authority/routing, production telemetry and deployment/soak/restore
+verification are not established by this backup increment.

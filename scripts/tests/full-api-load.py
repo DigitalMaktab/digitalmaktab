@@ -108,11 +108,24 @@ try:
         status,headers,data,ms=result
         if status not in expected:raise RuntimeError(operation+" returned unexpected status "+str(status)+" "+data[:2048].decode(errors="replace"))
         evidence.append({"operation":operation,"country":session["school"]["country"],"status":status,"ms":round(ms,2),"bytes":len(data)})
-        if status==503 and (headers.get("Retry-After")!="2" or b"server_busy" not in data):raise RuntimeError("Unstructured overload response")
+        if status==503:
+            problem=json.loads(data)
+            backup_busy=path=="/api/backup/export" and problem.get("code") in ("BackupBusy","BackupTimedOut","BackupUnavailable")
+            if headers.get("Retry-After")!=("5" if backup_busy else "2") or (not backup_busy and problem.get("code")!="server_busy"):
+                raise RuntimeError("Unstructured overload response")
+            if "no-store" not in headers.get("Cache-Control",""):raise RuntimeError("Overload response was cacheable")
         if status==429 and (not headers.get("Retry-After") or not headers["Retry-After"].isdigit()):raise RuntimeError("Missing rate-limit recovery hint")
         if operation in ("backup-export","export-under-pressure") and status==200:
+            if "no-store" not in headers.get("Cache-Control","") or headers.get("Content-Type")!="application/zip":
+                raise RuntimeError("Backup response cache/type contract changed")
+            if int(headers.get("Content-Length","-1"))!=len(data):raise RuntimeError("Backup was not exposed as a completed length-known archive")
             with zipfile.ZipFile(io.BytesIO(data)) as archive:
                 if archive.getinfo("students.json").file_size>33554432:raise RuntimeError("Private fixture student archive exceeded its verification budget")
+                manifest=json.loads(archive.read("manifest.json"))[0]
+                if manifest["formatVersion"]!=2 or manifest["schoolId"]!=session["school"]["Id"] or set(manifest["entries"])!=set(archive.namelist())-{"manifest.json"}:
+                    raise RuntimeError("Backup manifest contract/scope changed")
+                has_afghan=any(name.startswith("afghanistan/") for name in archive.namelist())
+                if has_afghan!=(session["school"]["country"]=="AF"):raise RuntimeError("Backup country activation changed")
                 pupils=json.loads(archive.read("students.json"))
                 if not pupils or any(row["schoolId"]!=session["school"]["Id"] for row in pupils):raise RuntimeError("Export crossed school scope")
                 if operation=="backup-export" and len(pupils)!=402:raise RuntimeError("Export omitted a committed student")
