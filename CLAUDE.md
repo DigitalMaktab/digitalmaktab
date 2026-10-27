@@ -1862,3 +1862,28 @@ bound explicitly in isolated execution frames; shared membership/abort ownership
 quotas/idle lifecycle, read/write planning, atomic moves and staged commit/publication
 with recovery/readiness remain before live ClassHub routing. Tests of state/mutation
 bodies plus private Redis transfer do not prove shared socket authentication/routing.
+
+
+## Shared classroom execution frames (2026-10-27)
+
+Use ClassroomFamilyStore.OpenFrame to bind a fresh existing-type ClassroomState
+graph to the acquired school's root/epoch/original creation/absolute expiry. Never
+rebind an existing local graph or reset its generation/deadline during hydration.
+Private protocol v2 adds the existing Core creation concept to Redis metadata;
+there was no live v1 classroom deployment and no automatic v1 migration is added.
+Process-local monotonic observation timestamps must never be exchanged across hosts.
+Host UTC and changed local policy cannot extend the observed shared lifetime.
+
+One acquired handle owns at most one execution frame. A frame permits one commit
+attempt and only writes loaded components; uncommitted state is discarded. Explicit
+root end and disposal use existing epoch/owner/revision fences. Disposal clears the
+private graph and attempts release without retry; failed OpenFrame leaves the shared
+handle with its caller for release. Never publish accepted state on a false or
+uncertain commit. Explicit renewal does not silently extend an old frame's budget.
+
+This path remains internal/unregistered. Shared bindings/abort ownership and host
+recovery, global/school quotas and idle lifecycle, read/write planning, atomic moves,
+current-frame audience delivery, staged commit/publication and readiness/multi-host
+failure tests still precede live ClassHub activation. Scratch graph room counters
+are not a fleet retained-room metric. Preserve the normal local singleton path
+until that coordinated integration exists; do not treat frame tests as socket proof.

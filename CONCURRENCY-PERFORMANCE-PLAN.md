@@ -3296,3 +3296,94 @@ actual lifecycle caller is the local age check; shared execution frames still ne
 explicit authoritative epoch/time binding rather than blindly acquiring a new local
 session and treating it as the shared one. Complete that binding next, then shared
 connections/quotas and publication/recovery. The broader goal remains active.
+
+
+### Shared session execution frames (sixty-fourth increment, 2026-10-27)
+
+The previous turn made verified progress on the existing-type adapter. Discovery
+rechecked store/current registrations, State.Session and all metadata/age callers,
+constructor consumers, codec, root/breakout lifecycle, mutation bodies and monotonic
+TimeProvider behavior. Session.School/Epoch/Created already represent identity and
+creation; bind those in a fresh graph rather than adding another room/domain/DTO.
+Redis already had absolute expiry, but cannot recover original creation when host
+lifetime configuration changes. Extend the private authority metadata with that
+existing concept, not a database field/table or independent policy source. Reuse
+Core's constructor, reservation accounting, component adapter and store fences.
+
+ClassroomFamilyStore.OpenFrame now transfers one acquired handle into an isolated
+ClassroomState, adopting the exact root/school/epoch/original creation and absolute
+expiry. BindSharedSession refuses an existing graph or invalid/expired metadata;
+local sessions keep their prior creation-plus-configured-age behavior. Shared
+frames use the observed absolute deadline instead of restarting local age. Private
+key protocol v2 returns original creation, expiry, server observation and lease
+expiry; field accounting reflects its eight metadata fields. v1 was never active,
+so there is no live migration or automatic reinterpretation of v1 data. Preserve
+the earlier internal five-argument constructor; an explicit clock overload supports
+normal shared TimeProvider and deterministic tests. All workers need compatible
+protocol before activation. No domain/client schema, package dependency or country
+implementation was added.
+
+Record a process-local monotonic start before acquisition. Project Redis observation
+time forward by elapsed monotonic time, conservatively including the whole round
+trip. Host wall clock skew and later longer configuration cannot extend a frame's
+observed lifetime. Never exchange monotonic origins between hosts. Redis still
+checks current owner/epoch/revision/server expiry on mutation; a local deadline is
+not authoritative under clock jumps/HA failover. Explicit renewal does not mutate
+an old frame's observed budget or imply automatic replay.
+
+One acquired handle can open only one frame. Commit is one-attempt, bounds its
+selected capture and rejects writes to unloaded components (avoiding deletion of
+unseen shared content from scratch maps). Normal commits use the existing atomic
+component patch; explicit root end uses the existing fenced delete. Discard/disposal
+clears the private graph and releases its local lease plus the matching Redis token;
+old disposal cannot clear a successor/replacement. Failed store release relies on
+its finite server lease, without retry/spinning/fallback. A failed OpenFrame discards
+its local graph but leaves the acquired shared handle with its caller for release.
+Uncommitted body changes disappear. No accepted-state publication may follow false
+or uncertain commit; staged transport is still future integration, not hidden here.
+
+Validation: initial focused 26 passed, zero skipped (/tmp/dm-frame-focused.log).
+Full isolated Core 382 passed/zero skipped (/tmp/dm-frame-full-core.log). A final
+single-frame-per-handle guard was then added; all seven affected frame tests pass
+again (/tmp/dm-frame-final-focused.log). Cases cover independent clients, exact
+generation/creation/expiry through longer host policy, discarded local state,
+loaded-field and cancellation guards, old disposal against new ownership, terminal
+end/recreation, malformed load recovery, existing-graph refusal and skewed UTC/
+advanced monotonic time with a longer local age policy. An initial full run rejected
+an already-expired 150ms cold-start fixture; the corrected test explicitly expires
+only its owned Redis key before a successor acquires, exercising the final server
+fence while the old local budget may still be live. No production deadline was
+weakened. Existing primitive natural-expiry tests retain their separate coverage.
+
+Core local commit: 5bddc03. Packaging/consumer proof recorded below when complete.
+All seven broader requirements remain open. Store/adapter/frames are still internal
+and unregistered: current live ClassHub remains local. Next integrate shared
+connection bindings/local abort ownership and host recovery, school/global quotas
+and idle lifecycle, read/write sets and atomic cross-root transitions, current-frame
+audience resolution and staged recipient/event publication after accepted commit,
+readiness and real multi-host socket/process-loss tests. Frame-local counters are
+scratch-graph accounting, not fleet retained-room metrics. The rest of the goal's
+writer/editor/reference/output/job/telemetry/deployment audits also remain required.
+
+Final standard clean/build/pack/install and API build pass (/tmp/dm-frame-sync.log).
+Afghanistan integration: 106 passed, zero skipped (/tmp/dm-frame-country.log).
+Final producer/API installed DLL SHA256 match:
+Core e6f6c415cfb6753cc23b060ccc98c6275ed766995c271a62916c9e8780010153,
+Abstractions fa6089d9aa37afca8507941a1563c6bade015a377294bf6aae76b601ea330c24,
+country 85e039ebca159da937aa2fc5d16522f452fd115c314cbea3de717393c20f09bd.
+Core commit 5bddc03; normal precommit/diff checks pass. API/country source trees stay
+clean. No live database/user Redis mutation, user-server restart, push, new package
+or public DTO/schema/configuration change. No mixed-load/HA benchmark was claimed.
+
+Next discovery/implementation must focus on the existing ClassroomConnection record
+(account/stamps/impersonator/room/epoch plus local Action Abort) and actual Add/Room/
+Remove, audience/delivery, admission and cleanup callers. Share authenticated binding
+metadata while retaining abort callbacks only on the owning host; no fake remote
+no-op abort or independent duplicate identity. Coordinate connection retirement and
+binding with shared family commits, heartbeats/host-loss recovery and global/school
+capacity. Keep per-publication DB authority fresh and evaluate recipients through
+the current frame/shared binding, rather than the local singleton. Shared cleanup
+must not run the current singleton epoch lookup against shared transports. Recheck
+those call paths before adding fields/services; existing local registry and gate
+semantics must be extended compatibly. All broader completion requirements remain
+open; this is the next integration boundary, not an activation/finish claim.
