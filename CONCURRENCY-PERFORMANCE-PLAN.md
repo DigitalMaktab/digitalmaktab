@@ -2698,3 +2698,97 @@ and routing remain unfinished, along with side-effect jobs/backups, remaining
 endpoint/editor/reference audits and reproducible whole-app multi-school load,
 telemetry, failure recovery and deployment evidence. The repeated private-call
 identity-read path is consolidated; it does not stand in for those requirements.
+
+
+### Actual-process mixed workload and cold-policy corruption fix (fifty-sixth increment, 2026-10-27)
+
+Discovery compared the existing isolated HTTP builders with the actual Program
+composition. Those fixtures pre-register role policies and cannot establish that the
+real host's singleton lazy policy provider is safe on cold concurrent requests.
+The new root-only console harness references the API/package graph and invokes its
+entry point in independent child processes, preserving its application identity and
+actual API runtimeconfig (all three measured process lifetimes use server GC). No API startup test branch, copied DI/
+auth/controllers/repositories, alternate domain DTOs or persistent field/table was
+introduced. Only outbound mail is replaced before DI publication by a fail-closed
+host-building diagnostic hook. The API's existing push/SMS/payment no-ops remain.
+
+A shell owns fresh socket-only PostgreSQL, fixed harness DB/user identity and marker,
+private content/key roots and cleanup. Child environments exclude developer app
+settings/credentials; LoadVerification skips .env/demo seeding, uses random loopback
+listeners and real production-path middleware/JWT validation. DB/key/listener guards
+fail before serving if settings escape the fixture. Failure retains bounded private
+logs; only recorded child processes/private PostgreSQL are stopped. Schema bootstrap
+uses current real Core/country models plus actual expression-index migrations before
+recording Core history. Actual startup coordination/forward repair/country schema
+startup run, but this is not legacy/fresh-install migration-chain verification.
+
+The initial real-host mixed run reproduced HTTP 500: AuthorizationPolicyProvider
+called AuthorizationOptions.AddPolicy concurrently while another request read its
+ordinary dictionary. The stack identified Dictionary.TryInsert and GetPolicyAsync.
+Core now compiles the existing catalogue once during singleton construction and
+inherits read-only default lookups. Explicit registered policies win; case-insensitive
+names, exact role requirements, default/fallback and unknown-name rejection remain.
+No second cache or request-time dictionary writes. Configured role-policy changes
+now require restart consistently; staff grants remain live in their DB/JWT path.
+Two new tests cover 10,000 parallel configured/unknown lookups, ready-at-publication
+catalogue, explicit/default/fallback precedence and startup snapshot behavior.
+
+The reproducible actual-process workload has four schools (two Austria/two Afghanistan),
+1,600 pupils/enrollments, 40 full classes, 1,600 fees and 8,000 attendance marks.
+It uses existing calendar providers/year plans and creator/updater metadata to exercise
+audit-label reads. It pins one civil date and derives valid academic bounds rather
+than assuming the new Gregorian academic start already happened. Twelve workers mix
+ordinary list/dashboard/fee/attendance reads, concurrent duplicate registration,
+payment and attendance intents, with reports/templates/ZIP exports under pressure.
+After pressure it verifies explicit same-intent recovery/replay, competing profile
+versions, real XLSX template/fill/multipart import/replay and complete scoped exports.
+Foreign person/report reads must be 404; ZIP students must all belong to the caller.
+
+The financial recovery test holds the actual target fee row, observes host A's
+PostgreSQL Lock wait, terminates only A, releases the row and explicitly recovers the
+same intent on surviving B. A replacement process on a fresh port must replay that
+result and all prior accepted intents. Persisted results: 402 pupils/enrollments per
+school, exactly 11 classes, maximum 40 pupils/class, zero capacity/duplicate-placement
+violations, two selected-day marks per school and one persisted winning profile edit
+per race. AT schools have zero Afghan person profiles; each AF school has three.
+Each ordinary payment is recorded once; the interrupted extra intent is recorded
+once too (first school: two payments/160 paid, others: one payment/150).
+
+The final local run completed 6,844 pressure requests in 10.028 seconds, with 6,842
+2xx successes and two structured 503 attendance admissions; explicit recovery succeeds.
+There were no unexpected 5xx. Four competing profile edits win (204), four conflict
+(409). Student-list p50/p95: 13.36/17.74 ms; dashboard: 6.12/8.79 ms. The measured
+682.26 successful requests/second is this short synthetic local run only, not a
+supported production traffic/user count or SLA. Other operation/status/byte/latency
+summaries, assembly versions/SHA256, driver hashes and production Meter snapshots
+are in [baseline.json](tests/DigitalMaktab.Api.LoadHarness/baseline.json).
+
+Fixture quotas: per-process 64 active requests/16 per school, expensive 2/1, DB pool
+24 per API host; shared per-IP/per-endpoint limits 500/second and 10,000/minute.
+These are explicit test settings, not operational recommendations. RuntimeProbe
+bounds series to 256 and retains only route/method/status/reason tags. A dead host's
+last active sample can be stale; do not sum it with replacement-host gauges. No
+password, JWT, key XML or response body enters the report. The driver caps responses
+and the student archive it inspects; these are verifier guards, not new server-wide
+backup/output bounds.
+
+Core full suite: 338 passed, zero skipped (/tmp/dm-policy-catalogue-full-core.log).
+Afghanistan integration: 106 passed, zero skipped (/tmp/dm-policy-catalogue-country.log).
+Actual-process run passes (/tmp/dm-full-api-load-final.log); private DB guard refusal,
+Python syntax, shell syntax and diff checks pass. Core/API precommit gates pass.
+Local commits: Core 8a7bc38, API documentation d328668. Standard clean/build/pack/install
+completed (/tmp/dm-policy-catalogue-sync.log); built/installed API DLL SHA256 match:
+Core ce043c9ad1007e9939e9175fa92065a1d5c5a9aaf7c9d9e3259373b79e4ae78a,
+Abstractions c29536f93acd78cf85f6c9d3f9df57f637abc9b9f812a2f1a9e32e5b512987cf,
+country 05120be332e07aeb4f3a39a3cd872f824cc86cb23cd24f77fcd8ce2a425cda0c.
+No schema/client/frontend change for the policy fix, live DB modification, manual user
+server restart or push. Restart all API workers to load the fix and clear old policy
+maps. The executable/readiness processes in this test are private, not user servers.
+
+All seven broader completion requirements remain open. This establishes an actual
+multi-school TCP workload and process-loss recovery baseline, not a long soak,
+large-binary/browser/native/provider or full deployment test. Production telemetry
+collection/export/dashboard setup, other endpoint/editor/reference and output audits,
+shared classroom authority/routing, remaining side-effect jobs/backups and broader
+operational recovery/deployment verification still need completion. Do not close the
+whole observability or multi-instance requirement from this verifier's results.

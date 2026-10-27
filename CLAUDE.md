@@ -1652,3 +1652,42 @@ multi-host classroom routing, coordinate those authorities plus publication/expi
 recovery and root/breakout moves; serializing only dictionaries is insufficient.
 See Core README and real-socket late-collision/query-count tests. This consolidation
 does not prove multi-host classroom behavior or whole-app load capacity.
+
+
+## Authorization catalogue and actual-process workload (2026-10-27)
+
+AuthorizationPolicyProvider must compile configured named roles into the existing
+AuthorizationOptions catalogue during singleton construction, before publishing it.
+Request-time AddPolicy corrupted the ordinary dictionary under concurrent cold
+requests. Keep inherited read-only lookups, explicit-policy precedence, default/
+fallback and case-insensitive names; do not add another policy cache or request-time
+mutation. Configuration changes require restart. Dynamic staff grants remain in
+existing database/JWT checks, not this static configured-role catalogue.
+
+Use `bash scripts/tests/run-full-api-load.sh` for the root-only actual API harness.
+It consumes the API project/packages and invokes its real entry point in separate
+private processes with the API's actual runtimeconfig and application identity. Only mail delivery is replaced, by a fail-closed diagnostic hook;
+no alternate auth/controller/repository pipeline is permitted. Keep private socket
+DB/root-marker/key/listener guards, sanitized child environments, random loopback
+ports, local mail handling, bounded failure logs and cleanup of owned handles only.
+Never run its seed/inspect modes against user DBs or restart user API/SPA processes.
+The schema starts from current Core/country models plus migration-owned expression
+indexes; do not describe it as legacy migration-chain verification.
+
+The fixture reuses country calendar providers, SchoolAcademicYear plans, class
+capacity and existing person/enrollment/fee/attendance fields. Pin its civil date
+once in invariant Gregorian wire format; select provider academic bounds containing it and use DailyAttendanceWriter.Day
+for persisted mark checks. UTC midnight is not a school's civil-day boundary.
+Actual worksheets come from the API template. Preserve original intent bodies/keys
+through explicit recovery and cross-process replay; never hide 409s with a rebase.
+Financial crash recovery must observe the held fee row on the target API connection
+before terminating that owned process, then assert persisted balances/counts.
+
+RuntimeProbe consumes existing production instruments with bounded series and only
+route/method/status/reason tags. It is verifier telemetry, not a deployed collector
+or monitoring dashboard; stale active samples from killed processes are not current
+global gauges. Keep benchmark reports free of fixture passwords/JWTs/bodies/key XML,
+record assembly/source hashes and exact synthetic quotas, and never infer production
+capacity or an SLA from local timings. See tests/DigitalMaktab.Api.LoadHarness/README.md
+and baseline.json. Shared classroom authority, remaining jobs/output bounds, writer/
+reference audits and production observability/deployment checks remain open.

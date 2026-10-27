@@ -1,0 +1,263 @@
+"""Guarded actual-API process driver; credentials and payloads never enter results."""
+import argparse
+import hashlib
+import io
+import zipfile
+import http.client
+import urllib.parse
+import datetime
+import statistics
+import concurrent.futures
+import json
+import os
+from pathlib import Path
+import queue
+import signal
+import tempfile
+import subprocess
+import sys
+import threading
+import time
+import urllib.error
+import urllib.request
+import uuid
+
+parser=argparse.ArgumentParser(description=__doc__)
+parser.add_argument("api")
+parser.add_argument("--seconds",type=float,default=10,help="mixed pressure duration (1..60, default 10)")
+options=parser.parse_args()
+if not 1<=options.seconds<=60:parser.error("--seconds must be between 1 and 60")
+root=Path(os.environ["DM_LOAD_ROOT"])
+api=Path(options.api).resolve()
+if not root.is_absolute() or root.is_symlink() or not root.name.startswith("digitalmaktab-core-support."):
+    raise RuntimeError("Refusing a non-private load directory")
+(root/".dm-full-app-load").write_text(str(uuid.uuid4()))
+keys=root/"keys";keys.mkdir()
+key_id=str(uuid.uuid4());(keys/".digitalmaktab-key-ring").write_text(key_id)
+settings=json.loads((api/"appsettings.json").read_text())
+settings["Kestrel"]={"Endpoints":{"Http":{"Url":"http://127.0.0.1:0"}}}
+settings["DataProtection"]={"KeyRingPath":str(keys),"KeyRingId":key_id,"AllowUnencryptedKeyStorage":True}
+settings["Logging"]={"LogLevel":{"Default":"Warning","Microsoft.EntityFrameworkCore":"Warning"}}
+(root/"appsettings.json").write_text(json.dumps(settings))
+# Never inherit application configuration/credentials from the user's shell.
+env={k:v for k,v in os.environ.items() if k in {"PATH","HOME","TMPDIR","DOTNET_ROOT","DOTNET_CLI_HOME","NUGET_PACKAGES","DM_LOAD_ROOT","DM_LOAD_DATABASE"}}
+env["DOTNET_CLI_TELEMETRY_OPTOUT"]="1"
+runner=Path(__file__).resolve().parents[2]/"tests/DigitalMaktab.Api.LoadHarness/bin/Debug/net8.0/DigitalMaktab.Api.LoadHarness.dll"
+subprocess.run(["dotnet",str(runner),"seed"],cwd=root,env=env,check=True,stdout=subprocess.DEVNULL)
+children=[]
+running={}
+process_runtime=[]
+api_runtime_config=api/"bin/Debug/net8.0/digitalmaktabapi.runtimeconfig.json"
+def interrupt(_signum,_frame):raise KeyboardInterrupt()
+signal.signal(signal.SIGTERM,interrupt)
+opener=urllib.request.build_opener(urllib.request.ProxyHandler({}))
+
+def start(name):
+    process=subprocess.Popen(["dotnet","exec","--runtimeconfig",str(api_runtime_config),str(runner),"host",name],cwd=root,env=env,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,text=True)
+    children.append(process)
+    running[name]=process
+    ready=queue.Queue()
+    def consume():
+        with (root/("host-"+name+".log")).open("a") as log:
+            for line in process.stdout:
+                log.write(line);log.flush()
+                if line.startswith("DM_LOAD_RUNTIME "):process_runtime.append({"host":name,**json.loads(line.split(" ",1)[1])})
+                if line.startswith("DM_LOAD_READY "):ready.put(line.strip().split(" ",1)[1])
+        ready.put(None)
+    threading.Thread(target=consume,daemon=True).start()
+    try: address=ready.get(timeout=120)
+    except queue.Empty: raise RuntimeError("Private API did not become ready within 120 seconds")
+    if address is None: raise RuntimeError("Private API startup failed; inspect host-"+name+".log")
+    return address
+
+def request(address,path,token=None,body=None,method=None,extra=None):
+    headers={"Accept":"application/json","Accept-Language":"en-US"}
+    if token:headers["Authorization"]="Bearer "+token
+    if body is not None and not isinstance(body,bytes):headers["Content-Type"]="application/json"
+    headers.update(extra or {})
+    encoded=body if isinstance(body,bytes) else None if body is None else json.dumps(body).encode()
+    req=urllib.request.Request(address+path,data=encoded,headers=headers,method=method)
+    start_time=time.monotonic()
+    try:
+        with opener.open(req,timeout=30) as response:result=(response.status,dict(response.headers),response.read(16777217))
+    except urllib.error.HTTPError as error:result=(error.code,dict(error.headers),error.read(16777217))
+    if len(result[2])>16777216:raise RuntimeError("Private fixture response exceeded its 16 MiB verification budget")
+    return (*result,(time.monotonic()-start_time)*1000)
+
+try:
+    # Independent processes share only PostgreSQL and the private key ring.
+    with concurrent.futures.ThreadPoolExecutor(max_workers=2) as pool:
+        hosts=list(pool.map(start,["a","b"]))
+    fixture=json.loads((root/"fixture.json").read_text())
+    evidence=[]
+    for host in hosts:
+        for path in ["/health/live","/health/ready"]:
+            status,headers,body,elapsed=request(host,path)
+            if status!=200:raise RuntimeError("Private API health failed: "+path+" status "+str(status))
+            evidence.append({"operation":path,"status":status,"ms":round(elapsed,2)})
+    sessions=[]
+    for school in fixture["schools"]:
+        status,headers,body,elapsed=request(hosts[0],"/api/auth",body={"email":school["Email"],"password":school["password"]})
+        if status!=200:raise RuntimeError("Private school login failed with status "+str(status))
+        token=json.loads(body)["token"]
+        status,headers,body,elapsed=request(hosts[1],"/api/auth",body={"email":school["teacherEmail"],"password":school["password"]})
+        if status!=200:raise RuntimeError("Private teacher login failed with status "+str(status))
+        sessions.append({"school":school,"token":token,"teacher":json.loads(body)["token"]})
+    def checked(session,operation,path,body=None,method=None,key=None,actor="token",host=0,expected=(200,)):
+        result=request(hosts[host],path,session[actor],body,method,{"Idempotency-Key":key} if key else None)
+        status,headers,data,ms=result
+        if status not in expected:raise RuntimeError(operation+" returned unexpected status "+str(status)+" "+data[:2048].decode(errors="replace"))
+        evidence.append({"operation":operation,"country":session["school"]["country"],"status":status,"ms":round(ms,2),"bytes":len(data)})
+        if status==503 and (headers.get("Retry-After")!="2" or b"server_busy" not in data):raise RuntimeError("Unstructured overload response")
+        if status==429 and (not headers.get("Retry-After") or not headers["Retry-After"].isdigit()):raise RuntimeError("Missing rate-limit recovery hint")
+        if operation in ("backup-export","export-under-pressure") and status==200:
+            with zipfile.ZipFile(io.BytesIO(data)) as archive:
+                if archive.getinfo("students.json").file_size>33554432:raise RuntimeError("Private fixture student archive exceeded its verification budget")
+                pupils=json.loads(archive.read("students.json"))
+                if not pupils or any(row["schoolId"]!=session["school"]["Id"] for row in pupils):raise RuntimeError("Export crossed school scope")
+                if operation=="backup-export" and len(pupils)!=402:raise RuntimeError("Export omitted a committed student")
+        if operation=="student-list" and status==200:
+            rows=json.loads(data)
+            if not rows or any(row["schoolId"]!=session["school"]["Id"] or not row.get("firstName") for row in rows):raise RuntimeError("Student scope/name regression")
+        return result
+    def reads(session,host=0,repeat=1):
+        school=session["school"];cls=school["classes"][0]
+        cases=[("student-list","/api/school/students?pageSize=50&pageNumber=2"),("dashboard","/api/school/dashboard"),
+            ("fees","/api/fee/list?pageSize=50"),("attendance-summary","/api/attendance/school/summary?classId="+cls["classId"])]
+        for _ in range(repeat):
+            for operation,path in cases:checked(session,operation,path,host=host)
+    for session in sessions:
+        reads(session)
+    foreign=sessions[2]["school"]["classes"][0]["pupils"][0]["studentId"]
+    checked(sessions[0],"foreign-profile-denied","/api/school/student/"+foreign,expected=(404,))
+    checked(sessions[0],"foreign-report-denied","/api/report-card/student/"+foreign,expected=(404,))
+    start_time=time.monotonic()
+    mixed_deadline=start_time+options.seconds
+    mixed_start=len(evidence)
+    writes=[]
+    for index,session in enumerate(sessions):
+        school=session["school"];cls=school["classes"][0];pupil=cls["pupils"][0]
+        registration={"firstName":"Registered","lastName":"Private","joiningClassId":cls["classId"],"primaryAddress":{},"secondaryAddress":{},
+            "dateOfBirth":"2015-03-21","gender":"MALE","email":"registered-"+str(index)+"@load.invalid","monthlyFee":500}
+        payment={"feeId":pupil["feeId"],"amount":150,"paymentMethod":"CASH","paidAt":datetime.datetime.now(datetime.UTC).isoformat().replace("+00:00","Z")}
+        attendance={"calendarYearId":school["calendarYearId"],"date":fixture["civilDate"],
+            "attendances":[{"enrollmentId":row["enrollmentId"],"status":True} for row in cls["pupils"]]}
+        for operation,path,body,actor in [("registration","/api/school/registerStudent",registration,"token"),("payment","/api/fee/payments",payment,"token"),
+            ("attendance-write","/api/teacher/addAttendance",attendance,"teacher")]:
+            writes.append((session,operation,path,body,str(uuid.uuid4()),actor))
+    def pressure_reads(session,host):
+        cls=session["school"]["classes"][0]
+        cases=[("student-list","/api/school/students?pageSize=50&pageNumber=2"),("dashboard","/api/school/dashboard"),
+            ("fees","/api/fee/list?pageSize=50"),("attendance-summary","/api/attendance/school/summary?classId="+cls["classId"])]
+        while time.monotonic()<mixed_deadline:
+            for operation,path in cases:
+                response=checked(session,operation,path,host=host,expected=(200,429))
+                if response[0]==429:
+                    time.sleep(min(float(response[1]["Retry-After"]),max(0,mixed_deadline-time.monotonic())))
+                    break
+    def pressure_outputs(selection,host):
+        for session in selection:
+            pupil=session["school"]["classes"][0]["pupils"][0]
+            for operation,path in [("report-under-pressure","/api/report-card/student/"+pupil["studentId"]),("export-under-pressure","/api/backup/export"),("template-under-pressure","/api/school/importTemplate/students")]:
+                checked(session,operation,path,host=host,expected=(200,429,503))
+    with concurrent.futures.ThreadPoolExecutor(max_workers=12) as pool:
+        pending=[pool.submit(pressure_reads,session,host) for session in sessions for host in range(2)]
+        pending.extend([pool.submit(pressure_outputs,sessions[:2],0),pool.submit(pressure_outputs,sessions[2:],1)])
+        for session,op,path,body,key,actor in writes:
+            for host in range(2):pending.append(pool.submit(checked,session,op,path,body,None,key,actor,host,(200,429,503)))
+        for future in pending:future.result()
+    mixed_seconds=time.monotonic()-start_time
+    mixed_requests=len(evidence)-mixed_start
+    mixed_successes=sum(200<=row["status"]<300 for row in evidence[mixed_start:])
+    time.sleep(1.1) # let the fixture's one-second IP window expire before recovery
+    # Explicit recovery/replay after pressure, preserving each original body/key.
+    originals=[]
+    for session,op,path,body,key,actor in writes:
+        recovered=checked(session,op+"-recovery",path,body,key=key,actor=actor)
+        replay=checked(session,op+"-replay",path,body,key=key,actor=actor,host=1)
+        if recovered[2]!=replay[2]:raise RuntimeError("Durable response changed across processes")
+        originals.append(recovered[2])
+    # Competing edits preserve the original version and cannot both win.
+    for session in sessions:
+        pupil=session["school"]["classes"][0]["pupils"][0]
+        detail={k:v for k,v in json.loads(checked(session,"profile-read","/api/school/student/"+pupil["studentId"])[2]).items() if v is not None}
+        detail["firstName"]="Edited private";detail["primaryAddress"]=detail.get("primaryAddress") or {};detail["secondaryAddress"]=detail.get("secondaryAddress") or {}
+        with concurrent.futures.ThreadPoolExecutor(max_workers=2) as pool:
+            outcomes=list(pool.map(lambda h:checked(session,"profile-race","/api/school/student/"+pupil["studentId"],detail,"PUT",host=h,expected=(200,204,409)),range(2)))
+        if sorted(o[0] for o in outcomes) not in ([200,409],[204,409]):raise RuntimeError("Both profile editors won or both lost")
+    # Real workbook template -> fill existing sheet -> actual multipart import.
+    for index,session in enumerate(sessions):
+        template=checked(session,"import-template","/api/school/importTemplate/students")[2]
+        (root/("template-"+str(index)+".xlsx")).write_bytes(template)
+        subprocess.run(["dotnet",str(runner),"workbook",str(index)],cwd=root,env=env,check=True,stdout=subprocess.DEVNULL)
+        boundary="dmload"+uuid.uuid4().hex
+        upload=("--"+boundary+'\r\nContent-Disposition: form-data; name="file"; filename="import.xlsx"\r\nContent-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet\r\n\r\n').encode()+(root/("import-"+str(index)+".xlsx")).read_bytes()+("\r\n--"+boundary+"--\r\n").encode()
+        key=str(uuid.uuid4());extra={"Idempotency-Key":key,"Content-Type":"multipart/form-data; boundary="+boundary}
+        imported=request(hosts[0],"/api/school/import/students",session["token"],upload,extra=extra)
+        if imported[0]!=200 or json.loads(imported[2]).get("createdCount")!=1:raise RuntimeError("Actual workbook import did not create one row: "+str(imported[0])+" "+str(json.loads(imported[2]).get("errors",[])))
+        replay=request(hosts[1],"/api/school/import/students",session["token"],upload,extra=extra)
+        if replay[0]!=200 or replay[2]!=imported[2]:raise RuntimeError("Workbook replay changed across processes")
+        evidence.append({"operation":"workbook-import","country":session["school"]["country"],"status":imported[0],"ms":round(imported[3],2)})
+        pupil=session["school"]["classes"][0]["pupils"][0]
+        checked(session,"academic-report","/api/report-card/student/"+pupil["studentId"])
+        exported=checked(session,"backup-export","/api/backup/export")
+        if not exported[2]:raise RuntimeError("Empty school export")
+    # Observe an actual PostgreSQL row-lock wait in the financial request,
+    # kill only that API process, then recover the same intent on the survivor.
+    holder=subprocess.Popen(["dotnet",str(runner),"hold-fee"],cwd=root,env=env,stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,text=True)
+    children.append(holder)
+    if holder.stdout.readline().strip()!="DM_LOAD_ROW_HELD":raise RuntimeError("Private fee barrier did not acquire its row")
+    interrupted_key=str(uuid.uuid4());interrupted_body=dict(writes[1][3]);interrupted_body["amount"]=10
+    address=urllib.parse.urlsplit(hosts[0]);pending=http.client.HTTPConnection(address.hostname,address.port,timeout=30)
+    try:
+        pending.request("POST","/api/fee/payments",json.dumps(interrupted_body),{"Content-Type":"application/json","Authorization":"Bearer "+sessions[0]["token"],"Idempotency-Key":interrupted_key})
+        deadline=time.monotonic()+10
+        while True:
+            waiting=subprocess.run(["dotnet",str(runner),"waits"],cwd=root,env=env,check=True,capture_output=True,text=True)
+            if int(waiting.stdout)>0:break
+            if time.monotonic()>deadline:raise RuntimeError("Financial request never reached the held fee row")
+            time.sleep(0.02)
+        running["a"].kill();running["a"].wait(timeout=10)
+    finally:
+        pending.close();holder.stdin.write("\n");holder.stdin.flush();holder.wait(timeout=10)
+    interrupted=checked(sessions[0],"interrupted-payment-recovery","/api/fee/payments",interrupted_body,key=interrupted_key,host=1)
+    hosts[0]=start("a")
+    restarted=checked(sessions[0],"interrupted-payment-replay","/api/fee/payments",interrupted_body,key=interrupted_key)
+    if interrupted[2]!=restarted[2]:raise RuntimeError("Interrupted financial intent did not replay after process recovery")
+    for (session,op,path,body,key,actor),original in zip(writes,originals):
+        if checked(session,op+"-restart-replay",path,body,key=key,actor=actor)[2]!=original:raise RuntimeError("Replay did not survive host loss")
+    inspection=subprocess.run(["dotnet",str(runner),"inspect"],cwd=root,env=env,check=True,capture_output=True,text=True)
+    invariants=json.loads(inspection.stdout)
+    for index,school in enumerate(invariants):
+        if school["students"]!=402 or school["enrollments"]!=402 or school["classes"]!=11 or school["capacityViolations"] or school["duplicatePlacements"] or school["payments"]!=(2 if index==0 else 1) or school["paid"]!=(160 if index==0 else 150) or school["todayMarks"]!=2 or school["editedProfiles"]!=1 or (school["CountryCode"]=="AT" and school["afghanProfiles"]!=0) or (school["CountryCode"]=="AF" and school["afghanProfiles"]<2):
+            raise RuntimeError("Persisted mixed-workload invariant failed: "+str(school))
+    build_info=json.loads(subprocess.run(["dotnet",str(runner),"build-info"],cwd=root,env=env,check=True,capture_output=True,text=True).stdout)
+    sources={str(path.relative_to(Path(__file__).resolve().parents[2])):hashlib.sha256(path.read_bytes()).hexdigest()
+        for path in [Path(__file__).resolve(),*sorted((Path(__file__).resolve().parents[2]/"tests/DigitalMaktab.Api.LoadHarness").glob("*.cs"))]}
+    time.sleep(0.6)
+    runtime=[]
+    for file in root.glob("metrics-*.json"):
+        runtime.append({"process":file.stem,"measurements":json.loads(file.read_text())})
+    if not any(m["name"]=="digitalmaktab.requests.duration" and m["count"]>0 for process in runtime for m in process["measurements"]):raise RuntimeError("Production runtime metrics were not observed")
+    summaries=[]
+    for operation in sorted({e["operation"] for e in evidence}):
+        rows=[e for e in evidence if e["operation"]==operation];values=sorted(e["ms"] for e in rows)
+        summaries.append({"operation":operation,"requests":len(rows),"statuses":{str(status):sum(e["status"]==status for e in rows) for status in {e["status"] for e in rows}},
+            "p50ms":round(statistics.median(values),2),"p95ms":values[min(len(values)-1,int(len(values)*0.95))],"maxMs":max(values)})
+    print(json.dumps({"scope":"actual two-process API mixed workload; local synthetic fixture, no supported-user or production-SLA claim",
+        "schools":4,"fixtureCivilDate":fixture["civilDate"],"initialStudents":1600,"initialAttendanceRows":8000,"mixedSeconds":round(mixed_seconds,3),"mixedRequests":mixed_requests,"mixedAttemptsPerSecond":round(mixed_requests/mixed_seconds,2),"mixedSuccessfulRequests":mixed_successes,"mixedSuccessesPerSecond":round(mixed_successes/mixed_seconds,2),
+        "pressureClients":12,"fixtureLimits":{"requestsPerHost":64,"perSchoolPerHost":16,"expensivePerHost":2,"expensivePerSchoolPerHost":1,"databasePoolPerHost":24,"sharedIpEndpointPerSecond":500,"sharedIpEndpointPerMinute":10000},
+        "build":build_info,"apiRuntimeConfig":json.loads(api_runtime_config.read_text()),"observedProcessRuntime":process_runtime,"driverSha256":sources,"operations":summaries,"persistedInvariants":invariants,"runtimeMetrics":runtime},indent=2))
+
+except BaseException:
+    failure=Path(tempfile.mkdtemp(prefix="digitalmaktab-api-load-failure."))
+    for log in root.glob("host-*.log"):
+        (failure/log.name).write_bytes(log.read_bytes()[-262144:])
+    print("Private API failure logs: "+str(failure),file=sys.stderr)
+    raise
+finally:
+    for process in children:
+        if process.poll() is None:process.terminate()
+    for process in children:
+        try:process.wait(timeout=15)
+        except subprocess.TimeoutExpired:process.kill();process.wait(timeout=5)

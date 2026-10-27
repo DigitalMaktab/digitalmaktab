@@ -1,0 +1,924 @@
+{
+  "scope": "actual two-process API mixed workload; local synthetic fixture, no supported-user or production-SLA claim",
+  "schools": 4,
+  "fixtureCivilDate": "2026-10-27",
+  "initialStudents": 1600,
+  "initialAttendanceRows": 8000,
+  "mixedSeconds": 10.028,
+  "mixedRequests": 6844,
+  "mixedAttemptsPerSecond": 682.46,
+  "mixedSuccessfulRequests": 6842,
+  "mixedSuccessesPerSecond": 682.26,
+  "pressureClients": 12,
+  "fixtureLimits": {
+    "requestsPerHost": 64,
+    "perSchoolPerHost": 16,
+    "expensivePerHost": 2,
+    "expensivePerSchoolPerHost": 1,
+    "databasePoolPerHost": 24,
+    "sharedIpEndpointPerSecond": 500,
+    "sharedIpEndpointPerMinute": 10000
+  },
+  "build": {
+    "runtime": "8.0.21",
+    "api": {
+      "version": "1.0.0+d328668077afbcd777e70b1b6669f2d15b3d80e2",
+      "sha256": "5114fe257a099316629734cf400641a8c6ad008bf16c12fdbc1e577152294d53"
+    },
+    "core": {
+      "version": "0.1.0-alpha+8a7bc38e347d86dfa506ceb55f9c8100164d4517",
+      "sha256": "ce043c9ad1007e9939e9175fa92065a1d5c5a9aaf7c9d9e3259373b79e4ae78a"
+    },
+    "abstractions": {
+      "version": "0.1.0-alpha+8a7bc38e347d86dfa506ceb55f9c8100164d4517",
+      "sha256": "c29536f93acd78cf85f6c9d3f9df57f637abc9b9f812a2f1a9e32e5b512987cf"
+    },
+    "country": {
+      "version": "0.1.0-alpha+bb1eaa71a68be3878c39bfd3adc5e621fb0c9f62",
+      "sha256": "05120be332e07aeb4f3a39a3cd872f824cc86cb23cd24f77fcd8ce2a425cda0c"
+    }
+  },
+  "apiRuntimeConfig": {
+    "runtimeOptions": {
+      "tfm": "net8.0",
+      "frameworks": [
+        {
+          "name": "Microsoft.NETCore.App",
+          "version": "8.0.0"
+        },
+        {
+          "name": "Microsoft.AspNetCore.App",
+          "version": "8.0.0"
+        }
+      ],
+      "configProperties": {
+        "System.GC.Server": true,
+        "System.Reflection.NullabilityInfoContext.IsSupported": true,
+        "System.Runtime.Serialization.EnableUnsafeBinaryFormatterSerialization": false
+      }
+    }
+  },
+  "observedProcessRuntime": [
+    {
+      "host": "b",
+      "application": "digitalmaktabapi",
+      "isServerGC": true
+    },
+    {
+      "host": "a",
+      "application": "digitalmaktabapi",
+      "isServerGC": true
+    },
+    {
+      "host": "a",
+      "application": "digitalmaktabapi",
+      "isServerGC": true
+    }
+  ],
+  "driverSha256": {
+    "scripts/tests/full-api-load.py": "dca85f6483ce4db81b1b1746890100f39010ee39c46dcfa68fad84ff57cb6f58",
+    "tests/DigitalMaktab.Api.LoadHarness/Program.cs": "1881f576f00ee7188a7ecd922f6fb7b62edd5f10dd87a0c8057327757a01c504",
+    "tests/DigitalMaktab.Api.LoadHarness/RuntimeProbe.cs": "b82301d38d52fe9d068e841226ed59ccb1094e3caebb480dbe5dc3149069b3a4"
+  },
+  "operations": [
+    {
+      "operation": "/health/live",
+      "requests": 2,
+      "statuses": {
+        "200": 2
+      },
+      "p50ms": 48.42,
+      "p95ms": 48.64,
+      "maxMs": 48.64
+    },
+    {
+      "operation": "/health/ready",
+      "requests": 2,
+      "statuses": {
+        "200": 2
+      },
+      "p50ms": 4.96,
+      "p95ms": 5.18,
+      "maxMs": 5.18
+    },
+    {
+      "operation": "academic-report",
+      "requests": 4,
+      "statuses": {
+        "200": 4
+      },
+      "p50ms": 10.55,
+      "p95ms": 12.35,
+      "maxMs": 12.35
+    },
+    {
+      "operation": "attendance-summary",
+      "requests": 1706,
+      "statuses": {
+        "200": 1706
+      },
+      "p50ms": 5.54,
+      "p95ms": 8.21,
+      "maxMs": 36.48
+    },
+    {
+      "operation": "attendance-write",
+      "requests": 8,
+      "statuses": {
+        "200": 6,
+        "503": 2
+      },
+      "p50ms": 16.21,
+      "p95ms": 116.77,
+      "maxMs": 116.77
+    },
+    {
+      "operation": "attendance-write-recovery",
+      "requests": 4,
+      "statuses": {
+        "200": 4
+      },
+      "p50ms": 3.41,
+      "p95ms": 4.96,
+      "maxMs": 4.96
+    },
+    {
+      "operation": "attendance-write-replay",
+      "requests": 4,
+      "statuses": {
+        "200": 4
+      },
+      "p50ms": 3.42,
+      "p95ms": 4.15,
+      "maxMs": 4.15
+    },
+    {
+      "operation": "attendance-write-restart-replay",
+      "requests": 4,
+      "statuses": {
+        "200": 4
+      },
+      "p50ms": 7.12,
+      "p95ms": 39.38,
+      "maxMs": 39.38
+    },
+    {
+      "operation": "backup-export",
+      "requests": 4,
+      "statuses": {
+        "200": 4
+      },
+      "p50ms": 44.1,
+      "p95ms": 65.95,
+      "maxMs": 65.95
+    },
+    {
+      "operation": "dashboard",
+      "requests": 1706,
+      "statuses": {
+        "200": 1706
+      },
+      "p50ms": 6.12,
+      "p95ms": 8.79,
+      "maxMs": 32.06
+    },
+    {
+      "operation": "export-under-pressure",
+      "requests": 4,
+      "statuses": {
+        "200": 4
+      },
+      "p50ms": 170.18,
+      "p95ms": 340.14,
+      "maxMs": 340.14
+    },
+    {
+      "operation": "fees",
+      "requests": 1706,
+      "statuses": {
+        "200": 1706
+      },
+      "p50ms": 19.13,
+      "p95ms": 25.34,
+      "maxMs": 149.33
+    },
+    {
+      "operation": "foreign-profile-denied",
+      "requests": 1,
+      "statuses": {
+        "404": 1
+      },
+      "p50ms": 14.96,
+      "p95ms": 14.96,
+      "maxMs": 14.96
+    },
+    {
+      "operation": "foreign-report-denied",
+      "requests": 1,
+      "statuses": {
+        "404": 1
+      },
+      "p50ms": 16.32,
+      "p95ms": 16.32,
+      "maxMs": 16.32
+    },
+    {
+      "operation": "import-template",
+      "requests": 4,
+      "statuses": {
+        "200": 4
+      },
+      "p50ms": 7.49,
+      "p95ms": 9.94,
+      "maxMs": 9.94
+    },
+    {
+      "operation": "interrupted-payment-recovery",
+      "requests": 1,
+      "statuses": {
+        "200": 1
+      },
+      "p50ms": 78.41,
+      "p95ms": 78.41,
+      "maxMs": 78.41
+    },
+    {
+      "operation": "interrupted-payment-replay",
+      "requests": 1,
+      "statuses": {
+        "200": 1
+      },
+      "p50ms": 219.16,
+      "p95ms": 219.16,
+      "maxMs": 219.16
+    },
+    {
+      "operation": "payment",
+      "requests": 8,
+      "statuses": {
+        "200": 8
+      },
+      "p50ms": 18.05,
+      "p95ms": 112.46,
+      "maxMs": 112.46
+    },
+    {
+      "operation": "payment-recovery",
+      "requests": 4,
+      "statuses": {
+        "200": 4
+      },
+      "p50ms": 2.24,
+      "p95ms": 4.37,
+      "maxMs": 4.37
+    },
+    {
+      "operation": "payment-replay",
+      "requests": 4,
+      "statuses": {
+        "200": 4
+      },
+      "p50ms": 2.04,
+      "p95ms": 2.76,
+      "maxMs": 2.76
+    },
+    {
+      "operation": "payment-restart-replay",
+      "requests": 4,
+      "statuses": {
+        "200": 4
+      },
+      "p50ms": 3.87,
+      "p95ms": 7.94,
+      "maxMs": 7.94
+    },
+    {
+      "operation": "profile-race",
+      "requests": 8,
+      "statuses": {
+        "409": 4,
+        "204": 4
+      },
+      "p50ms": 8.82,
+      "p95ms": 43.19,
+      "maxMs": 43.19
+    },
+    {
+      "operation": "profile-read",
+      "requests": 4,
+      "statuses": {
+        "200": 4
+      },
+      "p50ms": 5.37,
+      "p95ms": 5.83,
+      "maxMs": 5.83
+    },
+    {
+      "operation": "registration",
+      "requests": 8,
+      "statuses": {
+        "200": 8
+      },
+      "p50ms": 72.98,
+      "p95ms": 256.19,
+      "maxMs": 256.19
+    },
+    {
+      "operation": "registration-recovery",
+      "requests": 4,
+      "statuses": {
+        "200": 4
+      },
+      "p50ms": 2.75,
+      "p95ms": 6.04,
+      "maxMs": 6.04
+    },
+    {
+      "operation": "registration-replay",
+      "requests": 4,
+      "statuses": {
+        "200": 4
+      },
+      "p50ms": 2.31,
+      "p95ms": 4.29,
+      "maxMs": 4.29
+    },
+    {
+      "operation": "registration-restart-replay",
+      "requests": 4,
+      "statuses": {
+        "200": 4
+      },
+      "p50ms": 6.73,
+      "p95ms": 48.37,
+      "maxMs": 48.37
+    },
+    {
+      "operation": "report-under-pressure",
+      "requests": 4,
+      "statuses": {
+        "200": 4
+      },
+      "p50ms": 63.7,
+      "p95ms": 172.56,
+      "maxMs": 172.56
+    },
+    {
+      "operation": "student-list",
+      "requests": 1706,
+      "statuses": {
+        "200": 1706
+      },
+      "p50ms": 13.36,
+      "p95ms": 17.74,
+      "maxMs": 182.95
+    },
+    {
+      "operation": "template-under-pressure",
+      "requests": 4,
+      "statuses": {
+        "200": 4
+      },
+      "p50ms": 232.58,
+      "p95ms": 447.92,
+      "maxMs": 447.92
+    },
+    {
+      "operation": "workbook-import",
+      "requests": 4,
+      "statuses": {
+        "200": 4
+      },
+      "p50ms": 29.77,
+      "p95ms": 106.1,
+      "maxMs": 106.1
+    }
+  ],
+  "persistedInvariants": [
+    {
+      "CountryCode": "AT",
+      "students": 402,
+      "enrollments": 402,
+      "editedProfiles": 1,
+      "afghanProfiles": 0,
+      "classes": 11,
+      "maximumClassSize": 40,
+      "capacityViolations": 0,
+      "payments": 2,
+      "paid": 160,
+      "todayMarks": 2,
+      "duplicatePlacements": 0
+    },
+    {
+      "CountryCode": "AT",
+      "students": 402,
+      "enrollments": 402,
+      "editedProfiles": 1,
+      "afghanProfiles": 0,
+      "classes": 11,
+      "maximumClassSize": 40,
+      "capacityViolations": 0,
+      "payments": 1,
+      "paid": 150,
+      "todayMarks": 2,
+      "duplicatePlacements": 0
+    },
+    {
+      "CountryCode": "AF",
+      "students": 402,
+      "enrollments": 402,
+      "editedProfiles": 1,
+      "afghanProfiles": 3,
+      "classes": 11,
+      "maximumClassSize": 40,
+      "capacityViolations": 0,
+      "payments": 1,
+      "paid": 150,
+      "todayMarks": 2,
+      "duplicatePlacements": 0
+    },
+    {
+      "CountryCode": "AF",
+      "students": 402,
+      "enrollments": 402,
+      "editedProfiles": 1,
+      "afghanProfiles": 3,
+      "classes": 11,
+      "maximumClassSize": 40,
+      "capacityViolations": 0,
+      "payments": 1,
+      "paid": 150,
+      "todayMarks": 2,
+      "duplicatePlacements": 0
+    }
+  ],
+  "runtimeMetrics": [
+    {
+      "process": "metrics-a-9968",
+      "measurements": [
+        {
+          "name": "digitalmaktab.requests.active",
+          "tags": {},
+          "count": 26,
+          "sum": 0,
+          "min": -1,
+          "max": 1
+        },
+        {
+          "name": "digitalmaktab.requests.duration",
+          "tags": {
+            "route": "api/Fee/payments",
+            "method": "POST",
+            "status": "200"
+          },
+          "count": 5,
+          "sum": 0.19697320000000001,
+          "min": 0.0026207,
+          "max": 0.180636
+        },
+        {
+          "name": "digitalmaktab.requests.duration",
+          "tags": {
+            "route": "api/School/registerStudent",
+            "method": "POST",
+            "status": "200"
+          },
+          "count": 4,
+          "sum": 0.0581102,
+          "min": 0.0029234,
+          "max": 0.044107
+        },
+        {
+          "name": "digitalmaktab.requests.duration",
+          "tags": {
+            "route": "api/Teacher/addAttendance",
+            "method": "POST",
+            "status": "200"
+          },
+          "count": 4,
+          "sum": 0.055360700000000006,
+          "min": 0.0040541,
+          "max": 0.0387998
+        }
+      ]
+    },
+    {
+      "process": "metrics-b-9915",
+      "measurements": [
+        {
+          "name": "digitalmaktab.requests.active",
+          "tags": {},
+          "count": 6846,
+          "sum": 0,
+          "min": -1,
+          "max": 1
+        },
+        {
+          "name": "digitalmaktab.requests.duration",
+          "tags": {
+            "route": "api/Auth",
+            "method": "POST",
+            "status": "200"
+          },
+          "count": 4,
+          "sum": 0.29536589999999996,
+          "min": 0.008339,
+          "max": 0.2501459
+        },
+        {
+          "name": "digitalmaktab.requests.duration",
+          "tags": {
+            "route": "api/report-card/student/{studentId}",
+            "method": "GET",
+            "status": "200"
+          },
+          "count": 2,
+          "sum": 0.2044404,
+          "min": 0.0340339,
+          "max": 0.1704065
+        },
+        {
+          "name": "digitalmaktab.requests.duration",
+          "tags": {
+            "route": "api/School/students",
+            "method": "GET",
+            "status": "200"
+          },
+          "count": 845,
+          "sum": 11.318955900000002,
+          "min": 0.0096625,
+          "max": 0.1789329
+        },
+        {
+          "name": "digitalmaktab.requests.duration",
+          "tags": {
+            "route": "api/School/dashboard",
+            "method": "GET",
+            "status": "200"
+          },
+          "count": 845,
+          "sum": 4.446869399999996,
+          "min": 0.0034567,
+          "max": 0.0272062
+        },
+        {
+          "name": "digitalmaktab.requests.duration",
+          "tags": {
+            "route": "api/School/registerStudent",
+            "method": "POST",
+            "status": "200"
+          },
+          "count": 8,
+          "sum": 0.4083979,
+          "min": 0.0018969,
+          "max": 0.2549641
+        },
+        {
+          "name": "digitalmaktab.requests.duration",
+          "tags": {
+            "route": "api/Fee/payments",
+            "method": "POST",
+            "status": "200"
+          },
+          "count": 9,
+          "sum": 0.21855389999999997,
+          "min": 0.001666,
+          "max": 0.0964236
+        },
+        {
+          "name": "digitalmaktab.requests.duration",
+          "tags": {
+            "route": "api/Fee/list",
+            "method": "GET",
+            "status": "200"
+          },
+          "count": 845,
+          "sum": 16.358581700000016,
+          "min": 0.0146421,
+          "max": 0.1482418
+        },
+        {
+          "name": "digitalmaktab.requests.duration",
+          "tags": {
+            "route": "api/Attendance/school/summary",
+            "method": "GET",
+            "status": "200"
+          },
+          "count": 845,
+          "sum": 4.174779600000005,
+          "min": 0.0033855,
+          "max": 0.0217394
+        },
+        {
+          "name": "digitalmaktab.requests.duration",
+          "tags": {
+            "route": "api/Teacher/addAttendance",
+            "method": "POST",
+            "status": "200"
+          },
+          "count": 7,
+          "sum": 0.17218999999999998,
+          "min": 0.002901,
+          "max": 0.1152479
+        },
+        {
+          "name": "digitalmaktab.requests.duration",
+          "tags": {
+            "route": "api/backup/export",
+            "method": "GET",
+            "status": "200"
+          },
+          "count": 2,
+          "sum": 0.42956419999999995,
+          "min": 0.0904731,
+          "max": 0.3390911
+        },
+        {
+          "name": "digitalmaktab.requests.rejected",
+          "tags": {
+            "reason": "school_expensive"
+          },
+          "count": 1,
+          "sum": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "name": "digitalmaktab.requests.duration",
+          "tags": {
+            "route": "api/Teacher/addAttendance",
+            "method": "POST",
+            "status": "503"
+          },
+          "count": 1,
+          "sum": 0.0064417,
+          "min": 0.0064417,
+          "max": 0.0064417
+        },
+        {
+          "name": "digitalmaktab.requests.duration",
+          "tags": {
+            "route": "api/School/importTemplate/students",
+            "method": "GET",
+            "status": "200"
+          },
+          "count": 2,
+          "sum": 0.4520872,
+          "min": 0.010676,
+          "max": 0.4414112
+        },
+        {
+          "name": "digitalmaktab.requests.duration",
+          "tags": {
+            "route": "api/School/student/{studentId}",
+            "method": "PUT",
+            "status": "409"
+          },
+          "count": 4,
+          "sum": 0.0669434,
+          "min": 0.0072335,
+          "max": 0.0426437
+        },
+        {
+          "name": "digitalmaktab.requests.duration",
+          "tags": {
+            "route": "api/School/import/students",
+            "method": "POST",
+            "status": "200"
+          },
+          "count": 4,
+          "sum": 0.10861200000000001,
+          "min": 0.0065622,
+          "max": 0.084457
+        }
+      ]
+    },
+    {
+      "process": "metrics-a-9916",
+      "measurements": [
+        {
+          "name": "digitalmaktab.requests.active",
+          "tags": {},
+          "count": 7008,
+          "sum": 0,
+          "min": -1,
+          "max": 1
+        },
+        {
+          "name": "digitalmaktab.requests.duration",
+          "tags": {
+            "route": "api/Auth",
+            "method": "POST",
+            "status": "200"
+          },
+          "count": 4,
+          "sum": 0.3059661,
+          "min": 0.0050585,
+          "max": 0.2831235
+        },
+        {
+          "name": "digitalmaktab.requests.duration",
+          "tags": {
+            "route": "api/School/students",
+            "method": "GET",
+            "status": "200"
+          },
+          "count": 861,
+          "sum": 11.259841500000002,
+          "min": 0.0083177,
+          "max": 0.1125552
+        },
+        {
+          "name": "digitalmaktab.requests.duration",
+          "tags": {
+            "route": "api/School/dashboard",
+            "method": "GET",
+            "status": "200"
+          },
+          "count": 861,
+          "sum": 4.6870544999999995,
+          "min": 0.0035077,
+          "max": 0.0216285
+        },
+        {
+          "name": "digitalmaktab.requests.duration",
+          "tags": {
+            "route": "api/Fee/list",
+            "method": "GET",
+            "status": "200"
+          },
+          "count": 861,
+          "sum": 16.332246199999986,
+          "min": 0.0122064,
+          "max": 0.1078248
+        },
+        {
+          "name": "digitalmaktab.requests.duration",
+          "tags": {
+            "route": "api/Attendance/school/summary",
+            "method": "GET",
+            "status": "200"
+          },
+          "count": 861,
+          "sum": 4.516778399999998,
+          "min": 0.0033797,
+          "max": 0.0249096
+        },
+        {
+          "name": "digitalmaktab.requests.duration",
+          "tags": {
+            "route": "api/School/student/{studentId}",
+            "method": "GET",
+            "status": "404"
+          },
+          "count": 1,
+          "sum": 0.0144634,
+          "min": 0.0144634,
+          "max": 0.0144634
+        },
+        {
+          "name": "digitalmaktab.requests.duration",
+          "tags": {
+            "route": "api/report-card/student/{studentId}",
+            "method": "GET",
+            "status": "404"
+          },
+          "count": 1,
+          "sum": 0.0157299,
+          "min": 0.0157299,
+          "max": 0.0157299
+        },
+        {
+          "name": "digitalmaktab.requests.duration",
+          "tags": {
+            "route": "api/report-card/student/{studentId}",
+            "method": "GET",
+            "status": "200"
+          },
+          "count": 6,
+          "sum": 0.1551041,
+          "min": 0.0092202,
+          "max": 0.0913617
+        },
+        {
+          "name": "digitalmaktab.requests.duration",
+          "tags": {
+            "route": "api/School/registerStudent",
+            "method": "POST",
+            "status": "200"
+          },
+          "count": 8,
+          "sum": 0.4447778,
+          "min": 0.0020003,
+          "max": 0.2491465
+        },
+        {
+          "name": "digitalmaktab.requests.duration",
+          "tags": {
+            "route": "api/backup/export",
+            "method": "GET",
+            "status": "200"
+          },
+          "count": 6,
+          "sum": 0.5000452999999999,
+          "min": 0.0280408,
+          "max": 0.2487325
+        },
+        {
+          "name": "digitalmaktab.requests.duration",
+          "tags": {
+            "route": "api/Fee/payments",
+            "method": "POST",
+            "status": "200"
+          },
+          "count": 8,
+          "sum": 0.1761317,
+          "min": 0.001765,
+          "max": 0.1111206
+        },
+        {
+          "name": "digitalmaktab.requests.rejected",
+          "tags": {
+            "reason": "school_expensive"
+          },
+          "count": 1,
+          "sum": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "name": "digitalmaktab.requests.duration",
+          "tags": {
+            "route": "api/Teacher/addAttendance",
+            "method": "POST",
+            "status": "503"
+          },
+          "count": 1,
+          "sum": 0.0145248,
+          "min": 0.0145248,
+          "max": 0.0145248
+        },
+        {
+          "name": "digitalmaktab.requests.duration",
+          "tags": {
+            "route": "api/Teacher/addAttendance",
+            "method": "POST",
+            "status": "200"
+          },
+          "count": 7,
+          "sum": 0.10422000000000001,
+          "min": 0.002931,
+          "max": 0.060704
+        },
+        {
+          "name": "digitalmaktab.requests.duration",
+          "tags": {
+            "route": "api/School/importTemplate/students",
+            "method": "GET",
+            "status": "200"
+          },
+          "count": 6,
+          "sum": 0.4975455,
+          "min": 0.0054956,
+          "max": 0.4470633
+        },
+        {
+          "name": "digitalmaktab.requests.duration",
+          "tags": {
+            "route": "api/School/student/{studentId}",
+            "method": "GET",
+            "status": "200"
+          },
+          "count": 4,
+          "sum": 0.0182603,
+          "min": 0.0030765,
+          "max": 0.0052728
+        },
+        {
+          "name": "digitalmaktab.requests.duration",
+          "tags": {
+            "route": "api/School/student/{studentId}",
+            "method": "PUT",
+            "status": "204"
+          },
+          "count": 4,
+          "sum": 0.0434936,
+          "min": 0.0067197,
+          "max": 0.0207864
+        },
+        {
+          "name": "digitalmaktab.requests.duration",
+          "tags": {
+            "route": "api/School/import/students",
+            "method": "POST",
+            "status": "200"
+          },
+          "count": 4,
+          "sum": 0.1819142,
+          "min": 0.0187607,
+          "max": 0.1053218
+        }
+      ]
+    }
+  ]
+}

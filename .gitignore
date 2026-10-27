@@ -55,3 +55,7 @@ src/**/digitalmaktab*.db
 src/DigitalMaktab.Api/wwwroot/**/*.jpg
 src/DigitalMaktab.Api/wwwroot/**/*.jpeg
 
+
+# Python verification-driver bytecode
+__pycache__/
+*.py[cod]
