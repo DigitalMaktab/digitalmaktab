@@ -2634,3 +2634,67 @@ retention selection scans, not the whole query or multi-instance job requirement
 References: [ordered indexes with LIMIT](https://www.postgresql.org/docs/14/indexes-ordering.html),
 [partial index matching](https://www.postgresql.org/docs/14/indexes-partial.html),
 [concurrent builds and failed-index recovery](https://www.postgresql.org/docs/14/sql-createindex.html).
+
+
+### Shared private-call authority reads (fifty-fifth increment, 2026-10-27)
+
+Discovery traced ClassroomState root-family epochs/gates/maps/capacity/expiry,
+ClassroomConnections local account bindings/abort callbacks, ClassHubAccessFilter,
+ClassroomAudience/Delivery and notification Redis registration. Current rooms are
+still authoritative only per host; transport-only routing would split that authority
+and the audience would omit remote peers. Shared ownership, connection presence,
+fenced expiration/recovery and publication ordering must be designed together,
+including root-to-root moves, breakout validation before locking, and the existing
+global local-map disconnect scan. This work does not enable Redis for ClassHub or
+claim that a dictionary snapshot alone satisfies the multi-instance requirement.
+
+The delivery audit found repeated own/peer queries for the same legacy role-less
+private-call pair. Extend the existing ClassHubAccessFilter lookup rather than add
+an identity service/table, DTO contract or cache. DirectRoomAuthority parses the
+same two IDs and queries all five existing account tables in one UNION ALL/snapshot
+(at most ten scalar rows). Each ID must resolve globally to exactly one active
+identity before school comparison. Both must belong to the same school; the result
+matches immutable ID/actual permitted role, never a name or caller-supplied role.
+A bounded grant read covers either/both staff participants. Shared CallGrants now
+owns the existing classroom messages.send predicate for invocation, pair authority
+and actual recipient membership checks, removing copied expressions.
+
+Admission reuses the pair query before and after root-gate waits; each delivery
+batch resolves a thread once rather than querying own/peer for each socket. Actual
+recipient active-school/role/security-stamp checks and impersonator validity remain
+separate and current. There is no cross-publication authority cache or unchecked
+fallback after failure/ambiguity. Generic caller controls and course-roster delivery
+retain their distinct existing behavior. A valid private-call message to two
+recipients performs three pair queries (two actor validations and one shared
+audience check), rather than the previous eight separate identity queries.
+This is query-count evidence, not an HTTP latency/throughput or fleet capacity claim.
+
+The real-socket regression injects a foreign-school identity collision immediately
+before the audience authority query, after sender authorization. Neither recipient
+receives the publication. Inactivating the collision permits a fresh later message.
+An injected audience authority-store failure likewise supplies no unchecked delivery;
+an explicit later publication recovers. Pair parameters stay at two IDs, and the
+valid send uses one actual-recipient membership query for both sockets. Existing
+revoked stamp/actual-role/staff-grant/impersonator/course/overload/cancellation tests
+pass. The test uses InvokeWithEvents for sender echoes because ordinary Invoke
+consumes events while awaiting completion; the initial test's missing-echo wait was
+a harness-observation error, not suppressed valid delivery.
+
+Focused socket/invocation suite: 12 passed, zero skipped
+(/tmp/dm-classroom-direct-focused.log). Full isolated Core suite: 336 passed, zero
+skipped (/tmp/dm-classroom-direct-full-core.log). Core/API precommit Release/Debug,
+locale/enum/health/isolation and 403-route gates pass. Local commits: Core 906b6bb,
+API documentation 48a0cee. Standard clean/build/pack/install completed
+(/tmp/dm-classroom-direct-sync.log); built and installed API DLL SHA256 match:
+Core afaecd8036efa8aa0a0cf0cbb94b50915f9bf708f37b937ddf069cb94aec968e,
+Abstractions a87782495d88442f433b671ba0aa5a520af6b6cd57e868b0ee7998dd66e564b9,
+country e40bf41e4e3cead6c5dc988f44c72702e85353b66bd54fcf584f861ab42e9488.
+Rebuilt Afghanistan integration: 106 passed, zero skipped
+(/tmp/dm-classroom-direct-country.log). No schema/configuration/frontend change,
+external send, user server restart, push or live DB modification.
+
+All seven broader requirements remain open. In particular, shared classroom state
+and routing remain unfinished, along with side-effect jobs/backups, remaining
+endpoint/editor/reference audits and reproducible whole-app multi-school load,
+telemetry, failure recovery and deployment evidence. The repeated private-call
+identity-read path is consolidated; it does not stand in for those requirements.

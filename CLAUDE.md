@@ -1633,3 +1633,22 @@ RetentionQueryPlanTests/README for guarded private plans, real EF migration exec
 partial/failed-build recovery and data-preserving Down. Warm SQL timings establish no
 HTTP/fleet/write-load capacity. Shared classroom authority and remaining side-effect
 jobs still need their separate lifecycle/coordination audit.
+
+
+## Shared private-call authority reads (2026-10-27)
+
+Core ClassHubAccessFilter.DirectRoomAuthority replaces separate own/peer identity
+queries with one bounded pair UNION over five existing account tables. Count global
+active identity collisions before school narrowing, require both IDs in the same
+school, and resolve either/both staff grants through the shared CallGrants query.
+Admission and ClassroomAudience reuse this authority, with fresh reads after the
+root gate and per-publication batch. Do not cache it or add identity/permission
+records. Keep actual-recipient active school/role/stamp and impersonator checks.
+Failure or ambiguity has no unchecked delivery fallback.
+
+ClassHub is still local: notification Redis routing does not share classroom maps,
+root-family epochs/gates/capacity, connection bindings or abort callbacks. Before
+multi-host classroom routing, coordinate those authorities plus publication/expiry/
+recovery and root/breakout moves; serializing only dictionaries is insufficient.
+See Core README and real-socket late-collision/query-count tests. This consolidation
+does not prove multi-host classroom behavior or whole-app load capacity.
