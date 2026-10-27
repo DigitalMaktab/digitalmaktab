@@ -102,3 +102,10 @@ small fixture does not establish large-archive heap/disk/slow-client limits or
 cross-host nightly ownership. Core backup tests cover rejection, cancellation,
 expiry and failed-copy preservation separately. Driver/source and installed
 assembly hashes in each report identify the exact verifier/package generation.
+
+The current bootstrap also applies MessageReadIndexes before marking the Core
+model checkpoint, so its migration-owned normalized message-path index is present
+alongside the model's read/unread date indexes. Historical reports retain their
+original source/package hashes; do not describe them as new runs of this bootstrap.
+MessageQueryPlanTests separately capture actual cleanup/helper plans on 60,001
+messages and exercise real index migration/recovery behavior in a guarded database.

@@ -191,7 +191,7 @@ async Task Seed()
     // Start from the current real model, not destructive legacy table rewrites.
     // Startup still runs the real coordinator, additive repair and module startup.
     var generator=db.GetService<IMigrationsSqlGenerator>();
-    foreach(var migration in new Migration[]{new DigitalMaktab.Core.Migrations.StudentSearchIndexes(),new DigitalMaktab.Core.Migrations.RetentionReadIndexes()})
+    foreach(var migration in new Migration[]{new DigitalMaktab.Core.Migrations.StudentSearchIndexes(),new DigitalMaktab.Core.Migrations.RetentionReadIndexes(),new DigitalMaktab.Core.Migrations.MessageReadIndexes()})
         foreach(var command in generator.Generate(migration.UpOperations))await db.Database.ExecuteSqlRawAsync(command.CommandText);
     var history=db.GetService<IHistoryRepository>();await db.Database.ExecuteSqlRawAsync(history.GetCreateIfNotExistsScript());
     foreach(var id in db.Database.GetMigrations())await db.Database.ExecuteSqlRawAsync(history.GetInsertScript(new HistoryRow(id,ProductInfo.GetVersion())));

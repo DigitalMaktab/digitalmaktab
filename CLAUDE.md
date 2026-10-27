@@ -1750,3 +1750,26 @@ normal unsend and actual cleanup races against private PostgreSQL. The existing
 Core harness provides a dedicated CORE_MESSAGE_MIGRATION_TEST_DATABASE for the
 real EF executor Up/Down/reapplication check, isolated from other test histories. Never migrate
 the user's running database or restart their servers as part of verification.
+
+
+## Measured message retention/reference access paths (2026-10-27)
+
+MessageReadIndexes adds only the measured global message cleanup gaps: unpinned
+ReadAt/Id partial for read rows, unpinned SentAt/Id partial for unread rows, and the
+existing database-side lower/replace attachment expression partial for non-null
+paths. Keep property indexes in model/snapshot and expression index migration-owned;
+never duplicate expiry/path fields. Existing SchoolId/PK/reaction indexes still
+serve their own scopes. MessageReaper uses the shared reaper in separate read/unread
+windows with date/ID ordering; preserve pinned/null/180d/365d, post-wait expiry and
+post-commit callbacks. Reference SQL retains exact Unicode/slash behavior and the
+explicit non-null condition.
+
+ConcurrentReadIndex is the extracted internal btree DDL/validation from the earlier
+retention migration, reused rather than copied. Preserve old definitions; validate
+ready/valid table/keys/order/operators/predicate/include count. Concurrent builds/
+drops suppress transactions, accept valid partial replay and reject incompatible/
+invalid same names for reviewed repair; never auto-drop an unknown index. Record
+both immediate and analyzed plans, migration executor Up/Down/reapplication and
+preserved rows in the private message_query_tests fixture. Warm local SQL gains do
+not prove HTTP, sustained write/fleet capacity or remove the remaining generic
+upload/reference, message endpoint and shared classroom audits.

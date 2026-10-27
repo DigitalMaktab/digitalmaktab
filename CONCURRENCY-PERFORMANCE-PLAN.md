@@ -2949,3 +2949,67 @@ All seven broader completion requirements remain open. Shared classroom authorit
 routing, remaining writer/editor/reference/output audits, generic upload ownership
 and eager orphan scans, other side-effect job lifecycles, measured message access
 paths, production telemetry and deployment/long-soak/restore verification remain.
+
+
+### Measured message cleanup access paths (fifty-ninth increment, 2026-10-27)
+
+Discovery traced current Message/MessageReaction model/snapshot indexes, global
+expiry and normalized reference queries, both existing validated concurrent-index
+migrations and their actual helper/EF-executor tests. PK/SchoolId and reaction FK
+indexes already exist; they do not cover the new global date/normalized-path reads.
+A guarded 60,001-message/two-school private fixture captured the actual reader and
+reaper plans before proposing indexes: sparse/empty expiry reads scan all rows,
+and 250-path reference reads build/spill a whole-table hash (about 15 ms locally).
+
+MessageReadIndexes adds three measured paths only: unpinned ReadAt/Id where read,
+unpinned SentAt/Id where unread, and the existing lower/replace attachment expression
+where non-null. Property indexes are model/snapshot-owned, expression migration-owned;
+no copied expiry/path column or new table. The message job reuses DatabaseReaper
+separately for read/unread, sorted date/ID, preserving original pinned/null/180d/365d
+and post-wait metadata checks. The file reader keeps database-side Unicode folding
+and adds the explicit partial-index non-null condition. School/PK/reaction paths
+are preserved. Existing btree DDL/validation is extracted into ConcurrentReadIndex
+and reused by RetentionReadIndexes and MessageReadIndexes; no parallel guard copy.
+
+Captured plans in Core docs/MESSAGE-CLEANUP-PLANS.txt cover baseline sparse/empty,
+indexed read/unread sparse/empty/backlog, actual reaper ID queries stopped before
+DELETE, and actual reference batches before/after ANALYZE. Indexed reference probes
+are about 0.25–0.47 ms without scan/hash spill on this local fixture. Date selectors
+avoid sort/scan and retain the 250 bound. No production user count, HTTP, write-load,
+long-soak or fleet capacity is inferred. Source test checks split/original predicate
+equivalence, valid partial replay/OID preservation, each incompatible index name,
+genuine failed concurrent unique build, suppression flags, actual EF migration
+Up/Down/reapplication and preservation of all messages and old SchoolId index.
+The private Core harness now provides message_query_tests with strict connection
+ownership guards. The actual API load fixture bootstrap also applies this new
+migration-owned expression index before marking its model checkpoint history.
+
+Focused message/retention plan and lifecycle tests pass: 9, zero skipped
+(/tmp/dm-message-query-focused.log). Full Core suite: 352, zero skipped
+(/tmp/dm-message-index-full-core.log). Country integration: 106, zero skipped
+(/tmp/dm-message-index-country.log). Standard clean/build/pack/install and API build
+pass (/tmp/dm-message-index-sync.log). The updated actual API bootstrap passes its
+short two-process smoke (/tmp/dm-message-index-api-smoke.log, --seconds 1): 416 mixed
+attempts/414 successes/two expected structured 503s; eight ZIPs succeed, profile
+races remain four 204/four 409, all four school invariant sets and process-loss
+payment recovery pass. The observed mixed interval is 1.545s including in-flight
+work. This is a schema/integration smoke, not a new sustained throughput benchmark;
+the earlier full workload reports retain their own package/source hashes. Current
+smoke driver hashes match the exact verifier source files.
+
+Final producer/API installed DLL SHA256 match:
+Core c36946ab5ae5d1e2c3df01e8ca1673a8203e1d13f8e02ad7293bef779462984d,
+Abstractions 9cfcd7f42fc3a3bae732d35c45f812045b36b02b4a027a9276e6ea4fd4dde2cf,
+country 86d23557503bae23c30775e52b4948a6a7bdf56962088e06e1915b1c802c9859.
+Local commits: Core 3eaa2df, API documentation 9a7f5f6; precommit, shell syntax and
+diff checks pass. No live DB mutation, manual user server restart or push. The
+new migration needs all workers updated and startup completion before readiness.
+DatabaseStartup:LockWaitSeconds is only the initializer-lock wait; migration
+commands still use the existing provider command timeout. Separate finite startup
+command budgeting/large-index deployment planning remains an operational audit,
+not something these private fast-build tests establish.
+
+All seven broader completion requirements remain open: shared classroom authority/
+routing, remaining writer/editor/reference/output audits, generic upload ownership
+and eager file sweeps, other side-effect lifecycles, production telemetry and full
+deployment/long-soak/restore/timeout verification still require completion.

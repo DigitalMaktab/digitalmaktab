@@ -12,6 +12,8 @@ createdb -h "$database_dir" -p 55439 -U support_test person_query_tests
 export CORE_PERSON_QUERY_TEST_DATABASE="Host=$database_dir;Port=55439;Username=support_test;Database=person_query_tests;Pooling=false"
 createdb -h "$database_dir" -p 55439 -U support_test retention_query_tests
 export CORE_RETENTION_QUERY_TEST_DATABASE="Host=$database_dir;Port=55439;Username=support_test;Database=retention_query_tests;Pooling=false"
+createdb -h "$database_dir" -p 55439 -U support_test message_query_tests
+export CORE_MESSAGE_QUERY_TEST_DATABASE="Host=$database_dir;Port=55439;Username=support_test;Database=message_query_tests;Pooling=false"
 createdb -h "$database_dir" -p 55439 -U support_test message_migration_tests
 export CORE_MESSAGE_MIGRATION_TEST_DATABASE="Host=$database_dir;Port=55439;Username=support_test;Database=message_migration_tests;Pooling=false"
 createdb -h "$database_dir" -p 55439 -U support_test academic_report_reads_tests
