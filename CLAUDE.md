@@ -1839,3 +1839,26 @@ must not remain a second authority. A single authoritative Redis primary/coordin
 recovery is required; do not claim asynchronous-replica or split-primary consistency.
 See Core docs/CLASSROOM-STATE-AUDIT.md for actual behavior, source references and
 remaining integration gates. Private primitive tests are not shared-hub proof.
+
+
+## Existing-type classroom component adapter (2026-10-27)
+
+Reuse Core ClassroomComponents for selected capture/restore of the existing fourteen
+maps, under their current family lease. Its descriptors are also the store's single
+component vocabulary. Do not add parallel state DTOs or copy the hub's byte/reaction
+formulas and limits. Private JSON populates readonly collections, drops monitors and
+preserves ParticipantInfo.AccountKey only for storage; participant wire JSON retains
+JsonIgnore. Anonymous history restores as JsonElement values, preserving bootstrap.
+
+Decode/validate the complete patch and byte budget before replacing any maps; use
+existing reservation accounting through ReplaceChildren/ConfigureChildren so capacity
+rejection is atomic and removed children clear without disturbing retained children
+or unrequested root content. BudgetedWriteStream is the extracted backup counter;
+reuse it for bounded writes without taking ownership of the underlying stream.
+Dictionary JSON order is not canonical and is not a reliable dirty-component signal.
+
+The adapter/store remain internal and unregistered. Local and shared epochs must be
+bound explicitly in isolated execution frames; shared membership/abort ownership,
+quotas/idle lifecycle, read/write planning, atomic moves and staged commit/publication
+with recovery/readiness remain before live ClassHub routing. Tests of state/mutation
+bodies plus private Redis transfer do not prove shared socket authentication/routing.

@@ -3220,3 +3220,79 @@ unchanged; packages were installed without a manual user-server restart or live
 DB mutation. No push. Next implementation work must connect existing-type state
 components to this store, then shared membership/quotas and publication/recovery;
 the broader goal remains active and none of its seven requirements is closed.
+
+
+### Existing-type classroom component adapter (sixty-third increment, 2026-10-27)
+
+The previous turn made verified progress on the internal shared-store foundation.
+Discovery in this turn traced each of the fourteen state maps, JSON/wire snapshots,
+readonly collections and ignored fields, feature locks, byte/reaction accounting,
+root/child reservation lifecycle and actual mutation/bootstrap callers. Existing
+ClassHub/ClassroomState fields already represent all needed data; reuse them instead
+of adding persisted fields/tables, country data, parallel DTOs or a second domain.
+The existing BackupWriteStream already counts before writes and leaves its stream
+open: extract it to Core Runtime BudgetedWriteStream and reuse both backup callers
+and the component adapter, preserving backup behavior rather than copying a stream.
+
+ClassroomComponents is an internal selected-map adapter under the current family
+lease. Its descriptors are the one field vocabulary/count also used by the store.
+Private .NET JSON contracts populate fresh readonly collections, omit lock objects
+and preserve the existing ParticipantInfo.AccountKey only in storage. Participant
+wire JsonIgnore remains intact; existing QA/reaction/vote wire projections do not
+change. Anonymous chat entries restore as JsonElement values handled by the same
+history serializer. Existing IDs, reaction contributors/charges, stroke owners and
+payloads, upvoters, poll votes and byte metadata remain in their original fields.
+Reuse Core's exact history-byte/reaction-charge helpers and constants; no copied
+formula or independent cap. Readonly-member/contract behavior was checked against
+primary .NET documentation linked in the Core audit.
+
+Capture serializes only requested components, with existing feature locks, caller
+cancellation and a finite aggregate output budget. Restore first checks all incoming
+bytes, decodes/validates every component and child reservation, then changes maps.
+ConfigureChildren extends the original ReserveChildren accounting with a replacement
+path: capacity checks precede mutation, removed child graphs clear, retained children
+survive and room counters update together. A malformed payload, missing participant
+storage key, pre-apply cancellation, unreserved child or quota rejection cannot leave
+some earlier fields replaced. Partial patches preserve unrequested root fields;
+clearing breakouts releases child slots/graphs. No user/database schema or client
+wire contract changed. Stream/serialized bounds are not exact heap-allocation SLAs.
+Dictionary object key order is semantically irrelevant and not canonical; callers
+must not derive dirty fields from incidental order alone.
+
+Validation: focused 26 passed, zero skipped (/tmp/dm-components-focused.log), covering
+component/store/lifecycle and actual BackupExportTests. Full isolated Core 375 passed,
+zero skipped (/tmp/dm-components-full-core.log), including five new adapter tests.
+They populate all fourteen maps through actual hub mutation bodies; transfer them
+between independent state instances/private Redis clients; preserve storage keys
+while checking participant browser JSON privacy; mutate restored chat/reactions/
+upvotes/polls; reject corrupt accounting/missing keys/quota overflow before changing
+other fields; preserve unrequested data while deleting closed-child graphs; and
+verify byte budgets, cancellation and invalid/disposed/cross-state leases. These
+fixtures use mutation bodies, not a substitute claim of shared socket authority.
+The initial fixture correctly hit the hub's no-attendee/no-breakout rule; it now
+creates a real attendee before starting breakouts. Initial byte-equality assertions
+also exposed dictionary order differences; semantic JSON equality verifies content.
+
+The adapter and store remain **internal and unregistered**. Live classrooms are still
+local; no dual-write authority or Redis routing switch is introduced. Shared epoch/
+metadata binding for isolated execution frames, shared connection/abort ownership,
+school/global capacity and idle lifecycle, actual read/write sets, atomic cross-root
+moves, commit-before-publication with frozen recipients/epoch fences and recovery/
+readiness/multi-host socket/process-loss verification remain mandatory next work.
+All seven broader requirements stay open. Packaging/consumer checks recorded below.
+
+Packaging/consumer verification: standard clean/build/pack/install and API build pass
+(/tmp/dm-components-sync.log). Afghanistan integration: 106 passed, zero skipped
+(/tmp/dm-components-country.log). Final producer/API installed DLL SHA256 match:
+Core e5e23571199707bd3ab97f40bd9ebea33ba48512567d7759f028d366573bf14c,
+Abstractions 523094507bec9850dda1f6cbb52825f8f93fed6604cd716b43a5e0e95f6fe1b2,
+country e238fd679c75cef1f1103f9a729e06b56b365e8b0009619fa9905ce08f23f384.
+Core local commit fe0211d; normal precommit/diff checks pass. API and country source
+remain clean; no live DB mutation, manual user-server restart, added dependency,
+public API/DTO/schema change or push. Packages are installed. No mixed-load benchmark
+was repeated or claimed for this internal state adapter/shared stream extraction.
+Further discovery confirms SessionLease.Created only exposes Session.Created, whose
+actual lifecycle caller is the local age check; shared execution frames still need
+explicit authoritative epoch/time binding rather than blindly acquiring a new local
+session and treating it as the shared one. Complete that binding next, then shared
+connections/quotas and publication/recovery. The broader goal remains active.
