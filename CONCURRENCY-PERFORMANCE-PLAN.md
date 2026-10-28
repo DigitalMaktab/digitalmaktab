@@ -3487,3 +3487,88 @@ reserve/complete wrapper with the actual local snapshot/cancellation predicate.
 Reconcile retired metadata and missing bindings through the existing worker/frame
 path, and stage/freeze publications before teardown. Re-inspect actual callers and
 reuse existing contracts before implementation. Shared routing remains disabled.
+
+
+### Atomic family/binding transitions (sixty-sixth increment, 2026-10-28)
+
+The previous turn made verified progress on connection metadata/admission. Discovery
+traced family patch/end accounting, frame ownership/read sets, shared metadata and
+local Room updates, actual join/leave/end/breakout code, membership/pending DTO shapes
+and sorted cross-root gate callers. Existing frames/metadata/components represent
+all domain data; an independent one-root patch plus binding update cannot represent
+one atomic move. Extend the same authority. Internal FrameEdit/FamilyChange wrap
+existing handles/patches for bounded prevalidation; they are operation plans, not
+another domain DTO/table or persistent source of truth. No country special case,
+new database field/table, binding revision or package dependency.
+
+CommitBinding prepares at most two distinct old/new-root frames, same authority and
+school, in ordinal root order. Preserve one-attempt and loaded-field rules and bound
+bytes across the whole transition. The shared script checks live host/connection,
+all original account/stamp/impersonator/binding metadata and every family's school/
+epoch/owner/revision/expiry before writes. Extract FamilyPatch prepare/apply from the
+old single-root implementation; ordinary patches and multi-root binding operations
+share accounting rather than diverging copied code. All keys retain one Cluster tag.
+
+Validate prospective components, including supplied deletes. A new binding needs
+its actor in classes/pending, and a child needs its root reservation. A live old room
+needs the matching leased family, with the actor removed before changing/leaving
+its binding. Missing/replaced generations permit read-only unbinding without touching
+new graphs. Unrelated frames and changed authentication snapshots are rejected.
+Encoding and all family budgets finish before writes to either family or binding.
+ApplyBindingIfCurrent accepts the committed metadata only while the exact original
+local snapshot remains, preserving authenticated identity. It cannot resurrect a
+retired connection. A failed local update after accepted remote commit needs normal
+retirement/reconciliation, not replay or invented remote rollback.
+
+Validation: focused 22 passed, zero skipped (/tmp/dm-binding-focused.log), covering
+eight new transition cases plus existing family/frame protocols. Full isolated Core
+397 passed, zero skipped (/tmp/dm-binding-full-core.log). Cases use real mutation
+bodies/private Redis for joined roster+binding, both-root moves/auth preservation,
+missing old lease/forgotten leave with neither graph changed, retired actors, second-
+family budget rejection preserving both graphs, stale unbinding against protected
+replacement, missing prospective child reservation, unrelated frames/altered stamp
+and local snapshot-only application. The breakout fixture honors actual waiting/
+attendee/minimum-two-room rules; no production rule was weakened for a fixture.
+
+Full-suite verification exposed two fixture issues, resolved with evidence:
+- Multiple private Redis/Kestrel setups contended for thread-pool startup with 500ms
+  fixture connections. Reuse existing RegistrationHostCollection for Redis-owning
+  suites; explicit concurrent protocol calls remain. Production timeouts unchanged.
+- An existing attendance EXPLAIN fixture put 8,000 days on one enrollment, and selected
+  a sequential plan under the full preceding distribution while passing alone. Seed
+  the same 8,000 historical rows as 40 enrollments x 200 days using existing entities,
+  verify physical index keys/ready/valid state and retain normal planner/query. All 14
+  daily attendance tests pass (/tmp/dm-binding-attendance-class.log), followed by the
+  full 397. No index/production data/planner configuration changed or speed claim made.
+The first full attempts failed 4 fixture Redis startups, then 1 attendance fixture;
+the final clean run above passes without skips. No automatic mutation retries added.
+
+Core local commit/package consumer verification recorded below when complete. All
+seven broader requirements remain open. Shared store/frames/admission/transitions
+are still internal/unregistered: next integrate current-frame shared membership and
+audience without local fallback, actual invocation coordinator and dirty-field plans,
+shared room quotas/idle lifecycle, heartbeat/last-binding cleanup, staged recipient/
+event publication after accepted commit, readiness/config and real multi-host socket/
+process-loss tests. The rest of editor/writer/reference/query/output/file/job and
+production observability/deployment verification remains required as well.
+
+Final standard clean/build/pack/install and API build pass (/tmp/dm-binding-sync.log).
+Afghanistan integration: 106 passed, zero skipped (/tmp/dm-binding-country.log).
+Producer/API installed DLL SHA256 match:
+Core e82b5385291811b4909ec3da883fc2e39891bac50fa614aa0a068acfcb984c74,
+Abstractions c27773bf96463e37dcb248437228afb2c2dc11b7620f3caea2887507d76d70b7,
+country 8c23d463afd15782de5e983383f102f3b24adcf5946f89edfdaf96bed24e1071.
+Core local commit f83efbf; normal precommit/diff checks pass. API/country source
+remain clean. No live database/user Redis mutation, manual user-server restart,
+push, public API/config/schema change or dependency added. No production/multi-host
+socket capacity or benchmark claim. Goal remains active with all seven completion
+requirements open.
+
+Next implement invocation-scoped shared metadata/frame selection for existing
+ClassroomState/Delivery without local fallback, preserving local IsCurrent/Remove/
+abort capability and fetching fresh shared metadata before existing DB audience
+checks. Then integrate the actual filter/coordinator, shared room capacity/idle and
+host heartbeat/reconciliation, freeze/stage events and recipients before teardown,
+commit before delivery, readiness/config and actual multi-host recovery tests. Do
+not activate routing based on atomic-store tests alone. Re-read actual callers and
+reuse existing state/contracts rather than adding parallel lookup/delivery services.

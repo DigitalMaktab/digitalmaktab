@@ -1915,3 +1915,28 @@ until atomic family/binding transitions, room quotas/idle expiry, heartbeat/room
 reconciliation, current-frame audience, staged publication and readiness/multi-host
 socket recovery are integrated. Never run the current local epoch sweep on shared
 transports. See Core CLASSROOM-STATE-AUDIT.md for assumptions and tests.
+
+
+## Atomic classroom family/binding transitions (2026-10-28)
+
+Use the internal authority's CommitBinding to settle up to two related school-owned
+frames and the authenticated connection binding together. Reuse FamilyPatch's common
+prepare/apply functions; don't copy its byte/field/revision accounting or independently
+call local Room and remote state writes. Validate all frames/actor metadata before
+writes. The prospective old roster must release the actor, the new roster/pending
+map must contain it, and child binding needs its prospective reservation. Missing/
+replaced old generations allow read-only cleanup without mutating replacements.
+
+Frames preserve one-attempt/loaded-field rules and aggregate transition byte bounds.
+ApplyBindingIfCurrent updates a local cache only from its original snapshot and
+cannot change authentication/ownership or recreate a retired transport. A failed
+local apply cannot justify retrying an accepted remote commit. DB permission checks,
+current shared membership/audience, shared room quotas/idle lifecycle, heartbeat/
+reconciliation, staged publication and actual multi-host recovery/readiness remain
+before activation. The current local path and routing remain unchanged.
+
+Redis-owning test classes reuse RegistrationHostCollection to isolate fixture startup;
+keep real in-test concurrency. Production deadlines are not changed to hide fixture
+contention. Attendance lookup plan fixtures use a class/year distribution (40x200),
+verify physical index validity/keys and retain the actual planner/query; don't force
+planner switches or infer production capacity from their warm local timings.
