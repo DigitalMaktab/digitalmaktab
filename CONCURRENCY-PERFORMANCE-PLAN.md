@@ -3958,3 +3958,83 @@ Afghanistan integration: 106 passed, zero skipped
 their installed binaries match the committed producers above. Continue with client
 generation/resync and shared configuration/readiness/routing, followed by multi-host
 socket/process-loss tests before exposing the mode. Broader goal stays active.
+
+### Accepted classroom bootstrap and client event scopes (seventy-second increment, 2026-10-28)
+
+Discovery followed Core ClassHub sends, frame/revision/metadata authority, staged
+arguments/delivery and actual SPA wrapper, observer, reconnect/breakout/media callers.
+Mobile/SDK/shell have no direct ClassHub callers. Reuse existing family revision with
+room epoch to fence A -> B -> A; no second stored binding version, DB schema, durable
+Redis field, transport identity, dependency or country rule is introduced. New
+ClassroomEventScope is a wire projection at the existing Core boundary.
+
+Privately shared output wraps method/arguments in ClassroomEvent with accepted room/
+epoch/revision scope; local wire stays unchanged. Original transport metadata remains
+separate from frozen scope intent. Old-room cleanup is not relabeled as new-room
+output when its actor moves. BeginJoinOutput marks target bootstrap; terminal events
+retain the ending session after actor metadata unbinds. Equal scopes batch per existing
+100-recipient lookup chunk, with normal fresh DB/metadata fences and charged overhead.
+
+Shared JoinClass completion supplies protocol 1, accepted binding/outcome and expected
+event count. The existing SPA wrapper buffers pending shared events until the accepted
+scope and complete bootstrap are known, resets retained UI, then dispatches matching
+events. Wrong room/epoch and revisions before the join floor are rejected. Same-room
+resync uses the new floor; rejected targets preserve old content. Entering shared wire
+is sticky: raw legacy events no longer update that connection.
+
+Publication acknowledgement may precede Redis socket delivery, so allow a bounded
+five-second wait for events at the exact acknowledged scope/revision. Future revisions
+can queue without satisfying this bootstrap. Partial/duplicate/invalid bootstrap,
+overflow or unknown shared join outcome closes the transport using existing localized
+error/inactive handling; no mutation retry. Reconnect invalidates outstanding old
+completions. Buffers are bounded by 16,384 events and 80 MiB conservative serialized
+UTF-16 charge, with constant-time derived scope counts; this is not a JS heap promise.
+
+SPA reconnect rejoins its current breakout ref instead of a stale initial closure.
+Initial pending/denied/locked defaults reset before bootstrap. Existing peer callback
+wiring is reused and fenced by actual current peer and connection references, so a
+retired same-ID peer cannot signal/remove/replace its successor's media.
+
+Logical backend event tests now explicitly assert every shared wire envelope. A
+coordinator A -> B -> A case preserves epoch, advances the floor, preserves notes and
+distinguishes old cleanup/new bootstrap scopes. Real JWT socket tests inspect actual
+shared scopes/completion. Client checks cover all three locales, delayed/partial
+delivery, old session events, rejected joins, same-room resync, reconnect/late results,
+overflow, single-flight joins and no automatic replay. Evidence follows after final
+full-suite and package validation. Earlier affected protocols: 40 passed, zero skipped
+(/tmp/dm-classroom-fence-final-focused.log), before the final scope-intent/count changes.
+
+Remaining before activation: protocol admission, configuration/readiness, Redis ClassHub
+routing, actual multi-host sockets/process loss/recovery. This is not fleet readiness,
+exactly-once delivery, Redis failover consensus or supported-user capacity evidence.
+All seven broader completion requirements and remaining editor/write/invariant/query/
+output/file/job/deployment/soak/restore audits remain open; keep the full goal active.
+
+Final isolated Core: 447 passed, zero skipped
+(/tmp/dm-classroom-fence-final-full-core.log), after scope-intent/event-count changes.
+An earlier 447 pass preceded those changes and is not used as final evidence.
+Client protocol checks pass in en-US/fa-AF/ps-AF, including delayed Redis delivery and
+partial-bootstrap failure (/tmp/dm-classroom-fence-client.log); Core and installed
+shell TypeScript pass (/tmp/dm-classroom-fence-spa-types.log,
+/tmp/dm-classroom-fence-shell-types.log). Source commits: Core f55d8e2, SPA Core d02a93c.
+Standard dotnet clean/build/pack/install/API build and SPA SDK/Core/country builds/
+pack/install pass (/tmp/dm-classroom-fence-sync-dotnet.log,
+/tmp/dm-classroom-fence-sync-spa.log). Country integration result follows below.
+
+Producer/API installed SHA256 match:
+Core 2cdfd1f513b039797965d786771d7964fcbbe9c7e94ceeff251b4a6c509938a2,
+Abstractions 042e32a3a994eadf26509e47cc52eed7fdc1dd0f7150dbc34ed907216663da58,
+country 4d3132b3fde76bbe295466aacb567939b5c9344d6b04b0ae45970424654e439d.
+SPA producer/shell installed helper SHA256
+0a8ec0189e8c4bcf0d1e1e0796facaa1d05c43f951e01333332a4dab8219c02e;
+AppOnlineClass SHA256
+67e5a3be5b3ca32ec14ca811e5d78b1d5addabde0a8f231287148d547416a789.
+Lock integrity changes only consume this Core tarball: shell 27770df8, Afghanistan
+SPA 5e6f24c, Austria SPA 87716de. All precommit build/type/locale/reuse gates pass.
+No live DB/user Redis changes, user-server restart, public shared activation or push.
+
+Afghanistan integration: 106 passed, zero skipped
+(/tmp/dm-classroom-fence-country.log). API and backend country sources remain clean.
+Next trace existing startup/backplane initialization and readiness; integrate shared
+factory/policy/protocol admission and Redis ClassHub routing, then actual multi-host
+socket/process-loss tests before activation. Retain all broader goal requirements.

@@ -2074,3 +2074,29 @@ These paths remain internally attached only. Public configuration/readiness, Red
 ClassHub routing, client epoch/resync fences and actual multi-host socket/process-loss
 verification are still required before activation. Single-host WebSocket, private
 Redis restart and recording-transport tests do not prove fleet recovery or capacity.
+
+## Accepted classroom bootstrap and client scopes (2026-10-28)
+
+Shared output projects existing room/epoch/family revision into ClassroomEventScope;
+do not add another persisted binding version for A -> B -> A. Local wire stays intact.
+Freeze scope intent separately from actual recipient eligibility: old-room cleanup
+keeps its source binding, BeginJoinOutput marks target bootstrap, terminal output
+keeps its ending session even after metadata becomes unbound. Batch equal scopes and
+charge framing overhead against the existing staged publication budget.
+
+Shared JoinClass completion acknowledges protocol 1, accepted scope/outcome and event
+count. The existing SPA connection wrapper buffers until acknowledgement and complete
+matching bootstrap, then resets retained UI before replay. It rejects old room/epoch/
+revision events and raw legacy events in shared mode; failed targets keep old content.
+Redis acknowledgement may beat socket delivery: wait at most five seconds, without
+replaying the join mutation. Incomplete/duplicate bootstrap or unknown outcome closes
+the connection through existing localized handling. Keep count lookup constant-time;
+buffer bounds are 16,384 events and 80 MiB serialized UTF-16 charge, not exact JS heap.
+Reconnect/disposal invalidate old completions, release buffers and cancel the timer.
+
+Rejoin the live room/breakout ref. Reset initial pending/denied/locked values before
+join, preserving bootstrap. Actual current peer/connection identity fences old media
+callbacks, including same-ID replacement. Reuse existing wrapper/observer and peer
+wiring instead of another UI/session store. No mobile/shell/SDK ClassHub caller exists.
+Shared mode still needs protocol admission, configuration/readiness, Redis ClassHub
+routing and real multi-host socket/process-loss verification before activation.
