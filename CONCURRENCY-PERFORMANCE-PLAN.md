@@ -4038,3 +4038,80 @@ Afghanistan integration: 106 passed, zero skipped
 Next trace existing startup/backplane initialization and readiness; integrate shared
 factory/policy/protocol admission and Redis ClassHub routing, then actual multi-host
 socket/process-loss tests before activation. Retain all broader goal requirements.
+
+### Configured shared classroom lifecycle and readiness (seventy-third increment, 2026-10-28)
+
+Discovery traced existing SchoolAccessRegistration, API and fixture registration order,
+NotificationBackplane/RedisOptions/multiplexer, worker/registry, hosted health, ready
+checks, policy/index scripts and SPA URL. Extend existing delivery options and worker;
+do not introduce another runtime/factory/provider or stored config/version. New Core
+IHealthCheck projects actual host/worker/policy/index authority because notification
+ping alone cannot verify classroom ownership or successful cleanup.
+
+SharedState defaults false. When configured, shared admission/local sweeps stay closed
+from construction, even before authority initialization and during outages. The existing
+worker initializes the store with the notification multiplexer/prefix, 64 MiB family
+cap, twice-operation lease and existing lifetime. Configured heartbeat cadence applies
+before attachment, avoiding a spurious 30-second local-mode retry delay. Same worker
+instance serves hosted execution and health. Core hosts without SignalR/Redis still start.
+
+Existing @limits fingerprints runtime protocol/content/retention/lifetime/lease and
+fleet policy; mismatches fail closed and require drain. Extend existing delivery options
+with fleet school connections, host count/lease and pending admission. Require enabled
+valid notification backplane and at least three operation budgets per host lease.
+No DB schema, additional durable Redis field, service provider or dependency is added.
+
+Core resolves local versus Redis ClassHub manager together with shared state, sharing
+the notification connection factory. Public shared admission requires exact protocol 1
+before consuming a slot; SPA Core advertises it. Internal attachment fixtures remain
+available, but public configuration always enforces protocol. Readiness checks live
+monotonic ownership, healthy recent cleanup, actual Redis manager and atomic existing
+policy/index/host authority, with rechecks after awaits. Existing notification health
+checks command/subscription connections. No provider details escape. Cleanup freshness
+prevents healthy heartbeats masking a stalled cleanup indefinitely; repeated worker
+warnings are rate limited while health records every cycle.
+
+Twelve new checks cover local Core without SignalR, startup configuration validation,
+two configured real JWT Kestrel/WebSocket hosts, cross-host notes, graceful restart/
+retained content, fleet cap/retirement, unsupported clients, incompatible policy,
+initial Redis outage/no local admission and runtime private Redis restart/new actual
+ownership/session. No test manually attaches a shared store for these public paths.
+Full isolated Core: 459 passed, zero skipped (/tmp/dm-classroom-registration-full-core.log).
+Final registration cases with stronger direct admission/policy assertions: 12 passed,
+zero skipped (/tmp/dm-classroom-registration-verified-focused.log). An earlier test-only
+helper access error was corrected by reusing the existing internal reflection helper.
+Client checks in all three locales and Core TypeScript pass
+(/tmp/dm-classroom-registration-client.log, /tmp/dm-classroom-registration-spa-types.log).
+Package/consumer evidence follows after the standard sync.
+
+This supplies an opt-in public path, superseding internal-only routing; no live/default
+setting was enabled. Matching client deployment, protected no-eviction authoritative
+Redis, affinity and policy drain are required. Two hosts share one test process:
+actual abrupt separate API process loss, representative multi-school load/soak and
+restore/recovery evidence remain before production rollout. Non-persistent fixture
+Redis restart loses history; it does not prove durable restore or HA consensus.
+All seven broader requirements and editor/write/invariant/query/output/file/job/
+deployment audits remain open; retain the full goal rather than claiming fleet capacity.
+
+Source commits: Core c45ac47, SPA Core 9580353, API deployment docs 60b6662.
+Standard clean/build/pack/install/API build and SPA SDK/Core/country builds/swaps
+pass (/tmp/dm-classroom-registration-sync-dotnet.log,
+/tmp/dm-classroom-registration-sync-spa.log). Installed shell TypeScript passes
+(/tmp/dm-classroom-registration-shell-types.log). Afghanistan integration: 106 passed,
+zero skipped (/tmp/dm-classroom-registration-country.log).
+Producer/API SHA256 match:
+Core 252dd379bb14247b14bc7ca234e714554200ddca25f18eea1c0918a11f806313,
+Abstractions f185366ef2ca8003a6fb24830f3f52616ff387c6d261b55b99549c625f55541e,
+country 4381dc04677ecd765cf0ab2c3b36560ad2ee3d3bb98d79c0350f61d2a53c004f.
+SPA Core producer/shell installed connection helper SHA256 match
+e6dfc1b3fbda1ea9c1983ead1bc2c87b9551b2b2e0dbb6eb9c42d688e94c41e4.
+Tarball-lock-only consumers: shell 61d74cf5, Afghanistan SPA f0a42fb, Austria SPA a1a6f42.
+Precommit build/type/locale/reuse/route/hosted-service/isolation gates pass. Backend
+country source stays clean. No live DB/user Redis changes, manual API/SPA restart,
+enabled live shared setting, new dependency or push.
+
+Next extend the existing isolated full-API process harness for abrupt classroom-host
+loss and surviving-host cleanup/reconnect, with private PostgreSQL/Redis and actual
+process handles. Do not substitute graceful same-process host restart for this gate.
+Then continue the wider query/editor/write/job/output/file/load/deployment audits;
+all seven completion requirements remain open and the original goal stays active.

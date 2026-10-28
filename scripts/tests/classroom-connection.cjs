@@ -30,7 +30,7 @@ const {createClassroomConnection,observeClassroomSession}=require(path.join(root
     const errors=[],events=[];
     const connection=createClassroomConnection('http://fixture/classhub',language,()=>user,message=>errors.push(message),'localized fallback');
     const native=created.at(-1);
-    assert.equal(native.options.accessTokenFactory(),'first');assert.equal(new URL(native.url).searchParams.get('culture'),language);
+    assert.equal(native.options.accessTokenFactory(),'first');assert.equal(new URL(native.url).searchParams.get('culture'),language);assert.equal(new URL(native.url).searchParams.get('classroomProtocol'),'1');
     user={...user,token:'renewed'};assert.equal(native.options.accessTokenFactory(),'renewed');
     connection.on('ChatMessage',message=>events.push(message));native.events.get('chatmessage')('valid');assert.deepEqual(events,['valid']);
     const removed=()=>events.push('removed');connection.on('Removed',removed);connection.off('Removed',removed);assert.equal(native.events.has('removed'),false);

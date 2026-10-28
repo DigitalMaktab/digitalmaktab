@@ -2100,3 +2100,36 @@ callbacks, including same-ID replacement. Reuse existing wrapper/observer and pe
 wiring instead of another UI/session store. No mobile/shell/SDK ClassHub caller exists.
 Shared mode still needs protocol admission, configuration/readiness, Redis ClassHub
 routing and real multi-host socket/process-loss verification before activation.
+
+## Configured shared classroom mode and readiness (2026-10-28)
+
+ClassroomDelivery.SharedState now opts the existing worker/authority/Redis ClassHub
+lifetime manager in together; default false and live settings remain unchanged. This
+supersedes the earlier internal-only restriction. Reuse NotificationBackplane's one
+multiplexer/prefix/RedisOptions, not another provider or runtime service. Configured
+shared admission/sweeps stay closed before initialization and through outages; never
+briefly allow local state while waiting for Redis. Initialize on the existing heartbeat
+using configured cadence, including before attachment. Keep the same worker instance
+for hosted execution and readiness, and preserve Core hosts without SignalR/Redis.
+
+Extend existing delivery options: per-school fleet connections, host count/lease and
+pending admission. Host lease is at least three operation budgets; family lease is
+twice operation budget, family cap 64 MiB, lifetime from MaxSessionHours. Existing
+@limits fingerprints runtime protocol/content/retention/lifetime/lease plus fleet
+policy. Reject incompatible replicas; drain before policy changes, never guess/repair
+or silently share incompatible settings. No extra stored configuration key is needed.
+
+Public shared clients must advertise exact classroomProtocol=1 before taking slots;
+SPA Core does so. Local wire remains compatible. Core's added IHealthCheck projects
+the existing host/worker/policy/index authority: notification ping alone is insufficient.
+Require fresh ownership, healthy recent cleanup, actual Redis manager and atomic policy/
+index/live-host validation; recheck after awaits. Existing notification probe handles
+command/subscription health. No provider details in responses. Throttle repeated
+worker warnings while continuing aggregate health updates.
+
+Configured two-host JWT/WebSocket tests cover real routing, graceful restart/history,
+global caps, policy/protocol rejection and initial/runtime Redis loss. These hosts
+share one test process, so abrupt separate API process death still needs its own
+verification. Keep defaults off and require matching client deployment, protected
+no-eviction authoritative Redis, affinity, policy drain and actual process-loss/
+load/soak/recovery evidence before production rollout. Do not infer fleet capacity.
