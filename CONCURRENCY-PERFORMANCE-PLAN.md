@@ -3798,3 +3798,96 @@ notifications through accepted frame changes, and implement client generation fe
 readiness/config and real multi-host socket/process-loss recovery before activation.
 The rest of the broad editor/write/invariant/query/output/file/job/production audit
 and earlier attendance fixture concern remain part of the full goal.
+
+### Shared retained-room quota/expiry authority (seventieth increment, 2026-10-28)
+
+Discovery traced existing Created/Expires/Touched, child reservations, local empty/
+idle cleanup, every family acquire/patch/end/release, binding moves, host/connection
+sweep and cleanup-worker callers. Reuse ClassroomDeliveryOptions and Core ephemeral
+state. Persist existing Touched as @touched because fixed creation/expiry, cleared
+lease-until and revision cannot represent elapsed activity. Three derived same-slot
+indexes maintain fenced root projections, global/school retained counts and bounded
+due scheduling; they are not another domain store/table. Root hashes and child
+reservations remain content authority. Private v3 has nine metadata fields; v2 never
+had registered/live routing, so no live data migration is introduced or performed.
+Old private constructors preserve compatibility by forwarding to default settings.
+
+Acquire allocates one root; prospective 0/breakouts determines child slots. Ordinary
+patch/end and atomic binding/multi-root moves prevalidate content, metadata, encoding
+and net global/school deltas before any write. No intermediate quota failure after
+changing a first root. Preserve school/epoch/expiry fences across deletion/recreation.
+Incompatible policies require drain; expiry cleanup can reclaim stored old-policy
+indexes. Validate key types, due cardinality, negative/impossible counts and observed
+root/reservation matches rather than automatically repairing/overwriting unknown state.
+Protected namespace, no eviction and coordinated single-primary recovery remain needed.
+
+Server-time @touched drives retention; due scores only schedule probes. Payloadless
+creation is due at lease deadline and a valid release queues prompt cleanup; owned
+EndIfIdle can remove empty content without history retention. Retained content waits
+for idle, and any active/pending roster conservatively blocks deletion until actual
+worker reconciliation. Quiet maintenance release does not reset activity/probe timing;
+stale release/renewal never extends activity or absolute expiry. DueRooms is bounded
+at 64 projections; SweepExpiredRoom validates exact school/epoch/expiry/generation
+before releasing orphaned/expired indexes. Other expired slots remain counted until
+bounded maintenance; targeted recreation can replace its own expired index atomically.
+Finite script compositions are memoized, avoiding rebuilding policy/ledger text for
+every gesture. These are resource invariants, not a measured production capacity SLA.
+
+Ten new private Redis cases cover 20 competing admissions across authorities, school/
+global caps, child reservations/deletion, quota/index/counter failures without content
+changes, history idle/quiet release, pending occupancy, expired index reclamation and
+replacement fences, changed-policy drain, rejected two-root quota changes plus net-zero
+child transfer, stale release/renewal and prompt blank-room cleanup. Focused protocols
+44 passed before the final structural/empty-probe changes; final quota/attendance
+fixtures 24 passed, zero skipped (/tmp/dm-room-ledger-final-fixtures.log). Full isolated
+Core 433 passed, zero skipped (/tmp/dm-room-ledger-final-full-core.log); subsequent
+memoization of unchanged script text passed all 45 affected protocols, zero skipped
+(/tmp/dm-room-ledger-final-protocols.log). Package/consumer results follow when done.
+
+Earlier full attempt: 430 passed/2 failed (/tmp/dm-room-ledger-full-core.log): the
+attendance plan used a sequential scan with a valid/ready index, indcheckxmin=true,
+xmin=3322, and one private Redis startup failed while another private suite overlapped.
+PostgreSQL documents the old-snapshot index safety fence in
+[pg_index](https://www.postgresql.org/docs/current/catalog-pg-index.html).
+Reuse RegistrationHostCollection isolation for the migration/EXPLAIN class, preserve
+all in-test races, query/index/data and the real index assertion, and log its snapshot
+from the same repeatable-read transaction as EXPLAIN. Run private processes sequentially;
+no production planner setting/index/timeout or live database was changed. Initial Lua
+composition newline and fixture variable naming errors were fixed before final passes.
+
+All seven top-level requirements remain open. Shared routing is still disabled pending
+existing worker integration with room/host maintenance and full membership reconciliation,
+generation-fenced client output/resync, readiness/config and actual multi-host socket/
+process-loss recovery. Do not sweep shared transports using local singleton epochs.
+Other editor/write/invariant/query/output/file/job/production audits remain in the goal.
+
+Core local commit b6eb3f3; normal precommit/diff gates pass. RoomCandidate is an
+index projection for expired generations, not a substitute lease: Lease requires
+live ownership and cannot truthfully represent a TTL-expired root. No fabricated
+owner/abort capability or parallel room DTO is introduced. Standard consumer/package
+verification is recorded below after completion.
+
+Standard clean/build/pack/install and API build pass (/tmp/dm-room-ledger-sync.log).
+Afghanistan integration: 106 passed, zero skipped (/tmp/dm-room-ledger-country.log).
+Producer/API installed SHA256 match:
+Core d857be9239756bb983c191148a6f5f65f74c5a51fab47468d28872956544850f,
+Abstractions 5546cdd7d28a83ed5034be4dae771efb67b21177755d239ebff4f9fcb13bb745,
+country 4f9bf2ae2be89be0c1e0d56279cac60765d2e23a1698d54b8b3bbb184bc05a91.
+Core commit b6eb3f3; API/country source remain clean. No live DB/user Redis mutation,
+manual user-server restart, push, public API/mode/schema change or dependency added.
+This implements authority invariants and bounded maintenance APIs, not a running
+shared cleanup/host-recovery worker or supported production concurrency figure.
+
+Next integrate with existing ClassroomCleanupBackgroundService and connection/hub
+lifecycle after tracing actual notification/backplane initialization and shutdown.
+Own/renew the existing HostLease before admission, reserve/complete real local
+transports, atomically retire and reconcile their last bindings, drain stale hosts
+and room candidates in bounded batches, and stop local singleton sweeps for shared
+mode. Use existing frame/selection/commit/staged delivery for accepted cleanup changes;
+never fabricate a live actor for an expired/retired connection. Quiet probes must not
+postpone idle; reconcile stale rosters before conservative idle checks. Add epoch-
+fenced client resync/delivery, policy/readiness/config and actual multi-host socket/
+process-loss/recovery verification before activation. All seven broad requirements
+and the remaining editor/write/invariant/query/output/file/job/production audits stay
+open. Keep the full goal intact rather than treating these protocol tests as fleet
+readiness or whole-application completion.

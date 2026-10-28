@@ -2014,3 +2014,34 @@ workers, generation-fenced client output, readiness/configuration and real multi
 socket/process-loss tests still precede activation. Do not run the local singleton
 epoch sweeper against shared transports or claim recording-transport tests prove
 shared socket delivery. No country specialization or new persistent model is needed.
+
+## Shared room quotas and expiry (2026-10-28)
+
+ClassroomFamilyStore private protocol v3 extends existing Core retention options and
+Session.Touched as @touched (nine metadata fields). Root/child reservations remain
+content authority; room records/counts/due keys are derived atomic indexes/fences,
+not another domain table. V2 was internal/unregistered; do not mutate user Redis or
+auto-adopt unindexed live hashes. Old private constructors forward to default options.
+All family operations and binding moves validate content and net global/school room
+deltas before writes, with the same Cluster slot. Child reservations consume slots;
+lease release alone does not release retained content. Incompatible active policies
+fail closed; bounded expiry cleanup may drain stored old-policy generations.
+
+Use DueRooms (max 64), epoch/school/expiry-fenced SweepExpiredRoom, owned EndIfIdle and
+ReleaseQuiet for maintenance. Activity is server-time @touched, not due-probe score.
+Empty rooms are due promptly; history waits for idle retention, while any active or
+pending serialized roster conservatively blocks deletion until worker reconciliation.
+Quiet/stale release and renewal cannot extend activity/absolute age. Root TTL can
+leave an indexed slot until bounded cleanup, or targeted recreation releases its own
+expired fence atomically. Never sweep/drop a replacement or repair corrupt counters
+by guessing. Protected namespace/no eviction/single authoritative primary and readiness
+checks remain necessary; this is not a failover-consensus or capacity guarantee.
+Memoize the finite private script compositions instead of rebuilding text per send.
+
+The attendance index migration/EXPLAIN class reuses RegistrationHostCollection to
+avoid old concurrent snapshots fencing new indexes via indcheckxmin. Keep real planner/
+index/query/data and in-test races; record its repeatable-read inspection snapshot.
+Run private test processes sequentially; collection isolation is per process and does
+not prevent another suite consuming a 500ms private Redis startup budget. Production
+timeouts/planner settings were not changed. Shared worker/host lifecycle, client epoch
+fences, readiness and multi-host recovery still precede any routing activation.
