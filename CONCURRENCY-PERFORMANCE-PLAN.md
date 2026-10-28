@@ -3644,3 +3644,71 @@ shared authority. Shared room admission/idle expiry, host heartbeat/last-binding
 cleanup, policy/readiness and actual multi-host socket/process-loss recovery remain
 activation gates. Also retain the intermittent attendance plan-fixture concern in
 the wider query audit. All seven broad completion requirements remain open.
+
+### Staged shared classroom publications (sixty-eighth increment, 2026-10-28)
+
+Discovery traced all ClassHub sends/group operations and actual mutable/terminal
+payload behavior, selected membership, atomic commits, configured SignalR JSON and
+Core BudgetedWriteStream. Existing state/selection/delivery own the concepts; extend
+ClassroomDelivery with internal invocation-only capture rather than a new store,
+outbox table, public DTO/service/configuration or country implementation. Repeated
+owned wrapping is idempotent to avoid recursive staging during lifecycle/filter reuse.
+
+StageShared enters synchronously before the shared body. Each send freezes bounded
+original recipient metadata and arguments with actual SignalR wire JSON through the
+shared byte-counting stream. Mutable ParticipantInfo/rosters cannot alter previous
+events. Do not serialize the private component codec or expose AccountKey. Terminal
+group audiences survive room/frame cleanup. Shared transport group operations have
+no external effects: existing delivery targets explicit connection IDs and shared
+membership comes from selected frames/metadata, not another transport group cache.
+Local group behavior remains intact.
+
+Bound each invocation by min(16,384, connections * 16 + 64) events, connections * 32
+recipient references, existing chat/board/reaction byte budgets + 1 MiB (including
+method/recipient allowances), 256-character method names and 16 arguments/event.
+Limits/serialization/cancellation failures poison and clear the entire batch before
+commit even if caught. These are resource bounds, not a production memory/latency
+SLA. Future coordinator errors must reuse existing localized Core content/unavailable
+responses.
+
+Batch Commit seals capture before one-attempt CommitBinding; false/uncertain results
+cannot flush. Preserve an accepted remote outcome even if concurrent disposal cancels
+publication. Flush once in event order via existing admission, deadlines, fresh shared
+metadata and fresh DB authority. Only the accepted actor can adopt its own committed
+binding for its captured bootstrap; freeze all other recipient metadata exactly.
+Selection retains staged ownership so disposed batches cannot re-enable direct sends.
+Cancelled/partial transport does not replay the commit or output automatically.
+
+Focused 13 tests passed (/tmp/dm-staging-focused.log), including eight new cases:
+mutable/private wire values, join bootstrap, terminal audience after clearing room
+and disposing frame, rejected transition, byte/event limits, cancellation during
+capture/flush, late DB stamp revocation, no direct bypass and one-attempt settlement.
+Use private Redis/real PostgreSQL with the recording transport; this is not actual
+multi-host socket recovery evidence. Full suite/package results follow when complete.
+All seven broader completion requirements remain open; shared routing stays disabled.
+
+Full isolated Core: 410 passed, zero skipped (/tmp/dm-staging-full-core.log).
+Standard clean/build/pack/install and API build pass (/tmp/dm-staging-sync.log).
+Afghanistan integration: 106 passed, zero skipped (/tmp/dm-staging-country.log).
+Producer/API installed SHA256 match:
+Core 0ae5540228a2a753222969859fc0810047fff7cc790fed00006875afefff3af7,
+Abstractions 0db087b782b2c66351274e52ba393d8f369eed2ac980aa5ccf77b1f41d23d074,
+country 38ff3debefcb55ff328a519163c2f63d1c26533f3ffccf32519ed69cf957ebb4.
+Core local commit 35ac501; normal precommit/diff checks pass. API/country source
+trees remain clean. No live DB/user Redis mutation, manual user-server restart,
+push, public API/schema/configuration change or dependency added. The prior
+intermittent attendance planner-choice concern is not diagnosed by this clean run.
+
+Next connect these pieces to the actual invocation coordinator, after tracing each
+method's reads/writes and bootstrap/stale-roster behavior. Select/hydrate existing
+frames and current metadata before body execution, retain actual fresh DB actor/
+peer checks, acquire old/new roots in deterministic order, stage first, settle once,
+apply accepted local binding only to its original snapshot, then flush captured
+output. Ensure overloaded/content-limit/unknown outcomes use existing localized
+Core responses; never auto-retry an accepted or uncertain mutation. Complete shared
+room quota/idle lifecycle and host heartbeat/last-binding recovery, generation-fenced
+client output, readiness/config and actual multi-host socket/process-loss tests
+before activation. Remaining editor/write/invariant/query/output/file/job audits and
+production monitoring/deployment/load/restore evidence stay in the full goal. All
+seven top-level requirements remain open; do not infer fleet readiness from these
+private protocol/recording-transport tests.

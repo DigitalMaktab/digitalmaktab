@@ -1961,3 +1961,26 @@ multi-host recovery tests remain necessary before activation. The shared path st
 internal/unregistered until coordinator, lifecycle/quotas/heartbeat/reconciliation,
 readiness and full publication integration are complete. Reuse the same Core state,
 registry, audience and delivery; do not introduce parallel services or country data.
+
+## Staged shared classroom events (2026-10-28)
+
+Use ClassroomDelivery.StageShared synchronously in the selected invocation before
+executing shared hub bodies. Capture original recipient metadata and immutable wire
+JSON at each send call; terminal audiences and earlier ParticipantInfo snapshots
+must survive later room clears/mutations. Reuse configured SignalR JSON and Core
+BudgetedWriteStream, never the private component codec. Respect finite derived event,
+recipient-reference and aggregate byte budgets. Any capture failure closes the whole
+batch; catching an error cannot enable a partial commit. Map limits/unavailability
+through existing localized Core errors when the coordinator activates this path.
+
+Batch Commit seals recording and uses existing CommitBinding once. Only accepted
+results can Flush once through existing delivery admission, deadline and fresh shared/
+DB audience checks; uncertain outcomes/partial transport never justify automatic
+retry. The committed actor alone may adopt its accepted new binding for its frozen
+bootstrap; retain exact staged metadata for every other recipient. Disposing staged
+output cannot allow direct sends again. Shared delivery uses explicit connection IDs,
+so shared transport group add/remove have no effect and are not another membership
+authority. Local group behavior stays intact. Owned wrappers are idempotent to avoid
+recursive capture. Staging remains internal/unregistered until the coordinator,
+quotas/lifecycle/heartbeat/reconciliation, client generation fences, readiness and
+real multi-host recovery are integrated; recording-transport tests are not that proof.
