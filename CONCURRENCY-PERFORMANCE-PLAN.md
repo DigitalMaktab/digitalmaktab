@@ -3712,3 +3712,89 @@ before activation. Remaining editor/write/invariant/query/output/file/job audits
 production monitoring/deployment/load/restore evidence stay in the full goal. All
 seven top-level requirements remain open; do not infer fleet readiness from these
 private protocol/recording-transport tests.
+
+### Internal shared classroom invocation coordinator (sixty-ninth increment, 2026-10-28)
+
+Discovery traced all 56 public operation bodies plus lifecycle, actual map reads/
+writes/bootstrap/fanout, filter/local binding callers, DB authority, frames and staged
+output. Reuse those same Core implementations. ClassroomInvocationPlan is a private
+operation read/write set over existing component descriptors; ClassHub.UseState
+selects/restores an existing isolated frame. Neither is another retained state store,
+domain DTO/table or service. No country schema, public toggle/contract/DI registration
+or shared routing activation is introduced.
+
+Every operation has a closed reviewed plan. Ordinary typing/laser/cursor/signaling
+load three fields (current active/pending rosters and root reservation), not histories.
+Bootstrap/admission loads the current room's components; related breakout fanout/end
+adds its actual related roster/cleanup fields. Root end uses existing fenced hash
+end; child cleanup declares every field cleared. Merge previous membership reads for
+within-family moves; acquire different roots in deterministic order. Unknown methods
+fail closed and tests enumerate the actual public operation surface.
+
+InvokeShared uses normal invocation admission/deadline/error handling and extracted
+RequireActor/RoomAccess/method/peer checks. The registry's existing identity parser is
+now reused for Add and MatchesContext, including nonzero impersonator IDs/stamps.
+Verify actual local snapshot and live remote identity/binding after waits and before
+body/commit; repeatedly check current DB actor/course/direct-room permissions. Leaving
+uses only the caller's authoritative binding and remains possible after revocation.
+Bound shared metadata reads to 100 records per batch, tenant-narrow, reuse fresh DB
+audience checks and prune loaded stale/wrong-room/wrong-epoch/revoked members through
+existing LeaveConnection, preserving active versus pending notification semantics.
+Unrequested history remains untouched.
+
+Stage all output before reconciliation/body. Reuse actual CheckJoin so a locked/kicked
+target preserves the old room and no uncommitted target cleanup is published. Run the
+actual hub body against selected frames, settle both room graphs/binding once, apply
+accepted local metadata only to the original snapshot and then flush. A final local
+apply race aborts the actual transport, reports unavailable and requires reconciliation;
+no accepted remote rollback/retry is invented. Release acquired frames in reverse order.
+Context.Items/local binding remain caches rather than shared authority. Capacity limits
+now reuse ClassroomCapacityException; normal Busy localization also handles Redis/
+invalid stored JSON failures. Ownership/programming violations aren't blanket caught.
+
+Focused final 39 passed, zero skipped (/tmp/dm-coordinator-final-focused.log), including
+13 new cases covering closed plans/hot reads, actual joins/edits/leave without singleton
+mutation, independent owners, stale bootstrap pruning, rejected and accepted root moves,
+pending admission and host escalation rejection, revoked cleanup, local/remote retirement,
+localized output/corrupt-state failure, breakout join/fanout/end/return, busy old-family
+move rollback and all chat/pins/reactions/QA/poll/board/participant state across calls.
+Tests use private Redis/real PostgreSQL and actual hub/filter bodies in independent DI
+registries with a recording transport; this is not authenticated multi-host socket or
+process-loss evidence. An earlier full 423 passed before reducing hot reads to current
+membership only (/tmp/dm-coordinator-full-core.log); final full/package evidence follows.
+
+Shared routing remains disabled. Complete shared room/global/school quotas and idle
+lifecycle, host admission/heartbeat/disconnect/last-binding reconciliation in the
+existing worker, generation-fenced client output/resync, readiness/configuration and
+actual multi-host socket/process-loss recovery before activation. The local singleton
+epoch sweeper must not run against shared transports. All seven broader requirements
+and remaining editor/write/invariant/query/output/file/job/production audits stay open.
+
+Final full isolated Core: 423 passed, zero skipped
+(/tmp/dm-coordinator-final-full-core.log), validating the final three-field hot-read
+plans and all ordinary local socket regressions. Core local commit c165118; normal
+precommit/diff gates pass. The older attendance plan-fixture intermittent failure
+remains undiagnosed despite these clean runs. Final package/consumer checks follow.
+
+Standard clean/build/pack/install and API build pass (/tmp/dm-coordinator-sync.log).
+Afghanistan integration: 106 passed, zero skipped (/tmp/dm-coordinator-country.log).
+Producer/API installed SHA256 match:
+Core 550946779f5402fbd3965aaf08c4424f7eca2b71fc24b6003a0825670bd1c22f,
+Abstractions 2844e0542819a525bfba2a67c2ef920e9e338053e02502ba931d0f8c953ffcaf,
+country 7aa2d1820932d9f08e36910350ea4141232f990792fd6400634a486750c095c5.
+Core commit c165118; API/country source remain clean. No live DB/user Redis mutation,
+manual user-server restart, push, public mode/API/schema change or dependency added.
+All seven goal requirements remain open; no shared production capacity, deployed
+fleet readiness, authenticated multi-host socket or HA claim follows from this work.
+
+Next extend the existing authority/worker for retained room quota and idle lifecycle,
+using the existing root/child reservation, school ownership, creation/expiry and
+connection metadata concepts rather than another domain table/provider. Admission,
+family patch/end and stale-host reclamation must maintain one fenced authoritative
+room count; don't mistake isolated frame counters for fleet quotas or let release/
+renewal extend absolute lifetime. Trace actual sweeper/registration/disconnect callers
+before integration. Keep current local sweeps off shared transports, stage lifecycle
+notifications through accepted frame changes, and implement client generation fences,
+readiness/config and real multi-host socket/process-loss recovery before activation.
+The rest of the broad editor/write/invariant/query/output/file/job/production audit
+and earlier attendance fixture concern remain part of the full goal.

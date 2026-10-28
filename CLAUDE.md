@@ -1984,3 +1984,33 @@ authority. Local group behavior stays intact. Owned wrappers are idempotent to a
 recursive capture. Staging remains internal/unregistered until the coordinator,
 quotas/lifecycle/heartbeat/reconciliation, client generation fences, readiness and
 real multi-host recovery are integrated; recording-transport tests are not that proof.
+
+## Shared classroom invocation coordinator (2026-10-28)
+
+The internal ClassHubAccessFilter.InvokeShared reuses normal admission/deadline/
+localization and extracted actor/room/peer policies. ClassroomInvocationPlan is a
+closed read/write contract over the existing component vocabulary; every public
+operation needs a reviewed plan. Hot gestures/signaling read only current rosters
+and the root reservation, never histories. Bootstrap loads current-room components;
+related fanout/cleanup explicitly loads its related memberships/fields. Acquire
+cross-root requests in ordinal order and merge old-room reads for same-family moves.
+
+Use ClassHub.UseState for the actual hub body with existing isolated frames and
+restore it afterwards. Read live metadata in bounded batches, reuse fresh DB audience
+checks and remove stale/revoked loaded members through existing LeaveConnection
+before bootstrap. Reuse the actual CheckJoin: locked/kicked target rejection must
+preserve old membership and must not publish uncommitted target cleanup. Stage
+notifications before body/cleanup, then settle declared dirty fields/binding once,
+apply the accepted local cache only to the original snapshot and flush. Check local
+and remote ownership after waits and before commit; actual context identity reuses
+registry CaptureIdentity. A final local-apply race aborts the actual transport and
+requires reconciliation, never rollback/retry of accepted state. Context.Items is a
+cache, not shared authority. Revoked callers may still clean their own binding.
+
+Capacity/resource and invalid stored JSON/Redis failures use existing localized
+Busy handling. This coordinator remains internal/unregistered. Shared room quotas/
+idle lifecycle, host admission/heartbeat/disconnect reconciliation in existing
+workers, generation-fenced client output, readiness/configuration and real multi-host
+socket/process-loss tests still precede activation. Do not run the local singleton
+epoch sweeper against shared transports or claim recording-transport tests prove
+shared socket delivery. No country specialization or new persistent model is needed.
