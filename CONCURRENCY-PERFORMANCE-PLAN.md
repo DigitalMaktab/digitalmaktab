@@ -3572,3 +3572,75 @@ host heartbeat/reconciliation, freeze/stage events and recipients before teardow
 commit before delivery, readiness/config and actual multi-host recovery tests. Do
 not activate routing based on atomic-store tests alone. Re-read actual callers and
 reuse existing state/contracts rather than adding parallel lookup/delivery services.
+
+### Invocation-scoped classroom membership/delivery (sixty-seventh increment, 2026-10-28)
+
+Discovery traced actual registry ownership/lookup callers, state membership/group
+enumeration, frame ownership, proxy creation and fresh DB audience checks. Extend
+those existing Core implementations with internal invocation context; no new domain
+DTO, database field/table, provider, public option, country data or DI registration.
+SharedSelection selects at most two distinct frames and bounded existing metadata,
+validating authority/school/registry. Synchronous AsyncLocal entry flows into callers;
+empty selections hide local lookups, and disposed child-flow scopes stay closed.
+Local ownership/removal/abort remain tied to actual local snapshot references.
+
+Selection settlement reuses CommitBinding, permits one attempt and enables sends
+only on acceptance. Selected actor metadata adopts the committed binding. Group
+resolution uses the proper selected frame and existing membership logic. Delivery
+proxies capture selection at creation, suppress uncommitted/disposed use and local
+proxy reuse inside shared execution. Fresh shared metadata precedes and follows
+existing fresh DB authorization, requiring the exact original identity/host/binding.
+Retirement or movement during DB checks cannot authorize old content using the new
+binding. Lookup failure has no local/unchecked fallback. This does not make DB,
+Redis and network one transaction or solve post-check transport races.
+
+Five focused tests pass (/tmp/dm-selection-focused.log): nested/empty/disposed-child
+lookup isolation, local abort ownership, successful/failed one-attempt settlement,
+foreign school/registry rejection, remote group delivery without local callback,
+retirement during actual PostgreSQL audience resolution, credential revocation,
+precommit suppression and captured proxy disposal. They reuse the existing private
+Redis fixture, actual mutation bodies and real DB audience with a recording transport;
+they do not establish cross-host SignalR sockets. Shared routing remains disabled.
+
+First full run: 401 passed, one failed, zero skipped (/tmp/dm-selection-full-core.log).
+The existing attendance plan fixture selected a sequential scan despite a physical
+valid/ready index. The full daily-attendance class passed 14/14 in isolation
+(/tmp/dm-selection-daily.log). Index failure diagnostics now include indcheckxmin/xmin;
+no production index, planner settings or test assertion was weakened. Full diagnostic
+run/package integration results will be recorded below after completion.
+
+All seven broad requirements remain open. Next integrate actual invocation planning/
+coordinator, staged recipients/events, shared room quotas/idle lifecycle and host
+heartbeat/reconciliation, readiness/configuration and real multi-host process-loss
+socket tests. The remaining editor/writer/invariant/query/output/file/job audits and
+production monitoring/deployment/load/restore verification remain in the full goal.
+
+Full diagnostic run: 402 passed, zero skipped
+(/tmp/dm-selection-full-core-diagnostic.log). Core local commit 8b65a15; normal
+precommit gates pass. This later clean run does not diagnose or establish a fix
+for the earlier order-sensitive attendance planner result; retain that concern in
+the remaining query/fixture audit rather than claiming it is resolved. No assertion,
+production planner setting or index was changed. Final package/consumer verification
+is recorded below when complete.
+
+Final standard clean/build/pack/install and API build pass (/tmp/dm-selection-sync.log).
+Afghanistan integration: 106 passed, zero skipped (/tmp/dm-selection-country.log).
+Producer/API installed SHA256 match:
+Core c473abe5a9597a6f18c68ffaf48390b08edd4b1ae21e5efff4389360a6f489ae,
+Abstractions 7b721a9886984212d9794c0585b953b4c2b9cc98f390e92d1501c58cba7167bb,
+country 0d15b7472ea149a84e1b8144911fa52d92032e20e8b5f539c939479a103e48dc.
+Core commit 8b65a15; API/country source trees remain clean. No live DB/user Redis
+mutation, manual user-server restart, push, public API/schema/configuration change
+or added dependency. No production/multi-host socket benchmark or capacity claim.
+
+Next integration discovery must trace all ClassHub methods and state helpers before
+choosing frame read/write sets. Hydrated roster values may contain stale transports:
+selection-based lookup alone does not trim bootstrap snapshots of room.Values. The
+coordinator must reconcile current metadata before authorization/body/bootstrap,
+acquire old/new roots in stable order, retain actual DB actor checks, stage/freeze
+all events and recipients, settle the accepted family/binding change, then deliver.
+Do not auto-retry uncertain commits or mutate the local singleton as a second
+shared authority. Shared room admission/idle expiry, host heartbeat/last-binding
+cleanup, policy/readiness and actual multi-host socket/process-loss recovery remain
+activation gates. Also retain the intermittent attendance plan-fixture concern in
+the wider query audit. All seven broad completion requirements remain open.

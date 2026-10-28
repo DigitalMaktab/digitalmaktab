@@ -1940,3 +1940,24 @@ keep real in-test concurrency. Production deadlines are not changed to hide fixt
 contention. Attendance lookup plan fixtures use a class/year distribution (40x200),
 verify physical index validity/keys and retain the actual planner/query; don't force
 planner switches or infer production capacity from their warm local timings.
+
+## Invocation-scoped shared classroom membership (2026-10-28)
+
+ClassroomConnections.SelectShared synchronously selects existing execution frames
+and connection metadata for one invocation. AsyncLocal writes inside an awaited
+loader do not flow back into its caller. Empty/disposed selections must never
+fall back to local membership. Keep FindOwned/IsCurrent/Remove/abort capability
+local; a deserialized remote record is not a local abort callback. Group lookups
+reuse the selected frame's existing membership with an explicit metadata resolver.
+
+Only an accepted CommitBinding enables publication for that selection. Capture the
+selection when creating a delivery proxy; uncommitted/disposed shared proxies and
+local proxies reused inside shared execution cannot send. Read exact current shared
+account/stamp/host/room/epoch metadata before and after fresh DB audience checks;
+exclude moved/retired records rather than authorizing old content against a new
+binding. Errors have no local/unchecked transport fallback. The two stores/network
+are not one atomic transaction: staged events/client generation fencing and actual
+multi-host recovery tests remain necessary before activation. The shared path stays
+internal/unregistered until coordinator, lifecycle/quotas/heartbeat/reconciliation,
+readiness and full publication integration are complete. Reuse the same Core state,
+registry, audience and delivery; do not introduce parallel services or country data.
