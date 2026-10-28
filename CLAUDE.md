@@ -2045,3 +2045,32 @@ Run private test processes sequentially; collection isolation is per process and
 not prevent another suite consuming a 500ms private Redis startup budget. Production
 timeouts/planner settings were not changed. Shared worker/host lifecycle, client epoch
 fences, readiness and multi-host recovery still precede any routing activation.
+
+## Privately attached shared classroom lifecycle (2026-10-28)
+
+Extend the existing registry/filter/cleanup worker and authority indexes; never add a
+parallel host service, cleanup queue or fake actor for maintenance. Internal attachment
+requires an empty matching runtime, then shared mode stays sticky through outages and
+shutdown. Pin the actual nonce reservation before completing transport admission.
+Use the existing Context.Items reference to fence transport callbacks, not the identity
+of a possibly wrapped HubCallerContext or an equal connection/account snapshot alone.
+Retire actual local slots before awaits and reconcile the authoritative last binding.
+
+Heartbeat and cleanup run independently in the existing worker; aggregate their health.
+Conservative monotonic freshness starts before the ownership RPC. Lost ownership closes
+actual transports and requires a new host generation. Resolve SignalR transport only
+in shared maintenance so ordinary Core API hosts without SignalR still start. Audit
+100 by-host entries per page against real pinned callbacks, fresh DB authorization,
+shared membership and metadata; inspect eight due families per cleanup cycle.
+
+Actorless cleanup reuses ReadRoster/PruneRoster, ClassHub.LeaveConnection, frames,
+selection and staged delivery. Its fenced commit only removes unchanged membership
+values; it cannot add/rename members or use caller-only delivery. Keep urgent due
+scores across same-epoch commits/releases, and inspect live shared metadata before
+an idle probe postpones stale roster cleanup. Quiet maintenance never touches activity.
+No new domain model, durable Redis field or transport identity is needed.
+
+These paths remain internally attached only. Public configuration/readiness, Redis
+ClassHub routing, client epoch/resync fences and actual multi-host socket/process-loss
+verification are still required before activation. Single-host WebSocket, private
+Redis restart and recording-transport tests do not prove fleet recovery or capacity.

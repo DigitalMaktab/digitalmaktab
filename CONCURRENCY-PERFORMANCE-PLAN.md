@@ -3891,3 +3891,70 @@ process-loss/recovery verification before activation. All seven broad requiremen
 and the remaining editor/write/invariant/query/output/file/job/production audits stay
 open. Keep the full goal intact rather than treating these protocol tests as fleet
 readiness or whole-application completion.
+
+### Shared host admission and actorless maintenance (seventy-first increment, 2026-10-28)
+
+Discovery traced the existing Core registry/filter/cleanup worker, health tracker,
+host/reservation/nonce/by-host authority, room due ledger, DB audience, frames,
+selection, staged publication and ClassHub.LeaveConnection. Extend those rather than
+introducing another service, transport identity, cleanup queue, DB model, Redis field
+or country implementation. HostPage is a bounded projection of actual reservations.
+
+Internal AttachShared requires an empty matching runtime and remains sticky through
+outages/shutdown. The existing filter registers actual transports against a live host,
+pins the actual nonce before completion, and retires their authoritative last binding.
+Context.Items reference fences old callbacks and invocations, including same-ID/account/
+stamp replacement; transient HubCallerContext wrapper identity cannot provide that fence.
+Release local slots before remote waits. Never manufacture a user context for cleanup.
+
+The existing worker runs independent heartbeat and cleanup loops, with aggregate health.
+Conservative monotonic freshness begins before ownership RPCs. Expiry/loss closes actual
+owned transports; recovery requires a new host generation, with no local-state fallback.
+Audit 100 own-host records per page using pinned local reservations, fresh DB authority,
+membership and a final metadata read, reclaim existing indexed orphans, and inspect up
+to eight due families. Existing cancellation/operation/school/publication budgets apply.
+SignalR transport resolution belongs only in shared maintenance: Core API hosts that
+do not register SignalR must still start normally.
+
+Actorless reconciliation reuses ReadRoster/PruneRoster and actual LeaveConnection in
+isolated frames, selection, and commit-before-flush output. Its Lua commit can only
+remove unchanged members under live host/school/epoch/revision/lease fences. Caller-
+only delivery is unavailable without a real actor. Urgent due scores survive same-
+epoch commit/release; idle probes inspect actual shared metadata before postponing
+stale roster cleanup. Quiet maintenance never updates activity or extends lifetime.
+
+Thirteen lifecycle cases cover actual admission/disconnect publication, queued cleanup
+and later release, expired ownership/stale same-ID callbacks, orphan pagination, DB
+revocation, removal-only reconciliation, idle history expiry, shutdown/local-sweep
+exclusion, a real JWT WebSocket, Redis restart/new generation, and heartbeat while DB
+cleanup is blocked. Focused lifecycle/room/invocation: 36 passed, zero skipped
+(/tmp/dm-host-lifecycle-focused.log), before the final monotonic return refinement.
+The first full run found mandatory transport injection broke three non-SignalR API
+hosts (443 passed/3 failed). Resolve transport only inside shared maintenance and
+rerun the full suite. An earlier socket fixture double disposal was corrected without
+changing production timeouts or behavior. Final full/consumer evidence follows below.
+
+Shared mode is still privately attached only; no public option or Redis ClassHub
+routing is enabled. Next: configuration/readiness, client generation/resync fences,
+and actual multi-host socket/process-loss/recovery integration before activation.
+All seven top-level areas and remaining editor/write/invariant/query/output/file/job/
+deployment/soak/restore audits remain open. Single-host sockets/private Redis restart
+do not establish fleet recovery, failover consensus or production capacity.
+
+Final full isolated Core suite: 446 passed, zero skipped
+(/tmp/dm-host-lifecycle-full-core.log), including the startup compatibility fix and
+final monotonic freshness return. Core local commit f7914cb; precommit Release build,
+strict locale/enum/hosted-service/isolation checks and diff checks pass. Standard clean/
+build/pack/install and API build pass (/tmp/dm-host-lifecycle-sync.log).
+Producer/API SHA256 match:
+Core 2e918c768782a1276882e1c29e9dfac2781b4fd2b54df0225dc32ea34cc068f5,
+Abstractions 1d3cb7e6670820e708307f370d59d09d965779c3f032b4c5d7ecfa48bab5d183,
+country 2690d624cdc34ad6dcde379ff495a52512f5db5b975a1535b330ac8988fe7f55.
+No live database/user Redis mutation, manual user-server restart, public activation,
+dependency addition or push was performed. Country test results follow below.
+
+Afghanistan integration: 106 passed, zero skipped
+(/tmp/dm-host-lifecycle-country.log). API and country source trees remain clean;
+their installed binaries match the committed producers above. Continue with client
+generation/resync and shared configuration/readiness/routing, followed by multi-host
+socket/process-loss tests before exposing the mode. Broader goal stays active.
