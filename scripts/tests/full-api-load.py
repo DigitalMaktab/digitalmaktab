@@ -32,7 +32,9 @@ classroom_modes=parser.add_mutually_exclusive_group()
 classroom_modes.add_argument("--classroom-recovery",action="store_true",help="verify shared classroom recovery after killing an owned API process")
 classroom_modes.add_argument("--classroom-load",action="store_true",help="run bounded multi-school shared classroom traffic and resource checks")
 parser.add_argument("--classroom-seconds",type=int,default=30,help="classroom load duration (5..600, default 30)")
+parser.add_argument("--classroom-payloads",action="store_true",help="exercise large retained notes, whiteboard and attachment payloads in classroom load")
 options=parser.parse_args()
+if options.classroom_payloads and not options.classroom_load:parser.error("--classroom-payloads requires --classroom-load")
 if not 1<=options.seconds<=60:parser.error("--seconds must be between 1 and 60")
 if not 5<=options.classroom_seconds<=600:parser.error("--classroom-seconds must be between 5 and 600")
 root=Path(os.environ["DM_LOAD_ROOT"])
@@ -62,6 +64,7 @@ env={k:v for k,v in os.environ.items() if k in {"PATH","HOME","TMPDIR","DOTNET_R
 env["DOTNET_CLI_TELEMETRY_OPTOUT"]="1"
 if options.classroom_recovery:env["DM_CLASSROOM_RECOVERY"]="1"
 if options.classroom_load:env["DM_CLASSROOM_LOAD"]="1"
+if options.classroom_payloads:env["DM_CLASSROOM_PAYLOADS"]="1"
 runner=Path(__file__).resolve().parents[2]/"tests/DigitalMaktab.Api.LoadHarness/bin/Debug/net8.0/DigitalMaktab.Api.LoadHarness.dll"
 subprocess.run(["dotnet",str(runner),"seed"],cwd=root,env=env,check=True,stdout=subprocess.DEVNULL)
 children=[]

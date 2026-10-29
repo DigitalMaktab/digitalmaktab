@@ -34,6 +34,7 @@ test-owned process handles:
 bash scripts/tests/run-full-api-load.sh --seconds 10
 bash scripts/tests/run-full-api-load.sh --classroom-recovery
 bash scripts/tests/run-full-api-load.sh --classroom-load --classroom-seconds 120
+bash scripts/tests/run-full-api-load.sh --classroom-load --classroom-payloads --classroom-seconds 120
 ```
 
 The classroom mode also needs `redis-server` and `redis-cli`. It creates a private
@@ -55,3 +56,14 @@ classroom meters and sampled process/GC summaries are included; Redis memory and
 counts are read only from the private namespace. The fixture's login IP limit is raised
 for setup; its smaller invocation/publication budgets and resource guards are recorded.
 These are synthetic measurements, not a supported-user or production-memory guarantee.
+
+Add `--classroom-payloads` to exercise the same profile with large retained content:
+99,999-character Dari notes, eight 240 Ki-character whiteboard strokes per school,
+and 384 Ki-character base64 attachments. A ninth stroke must fail with the existing
+localized content limit, preserving the prior board. Initial and final joins verify
+the full board and notes; chat eviction must keep the existing 2 MiB byte bound.
+The verifier raises only its own receive-frame guard to 16 Mi characters to inspect
+large snapshots; production transport, history and resource limits are unchanged.
+Attachment bytes/name and room/session/school scope are checked alongside ordinary
+student-list progress. This is transport/state verification, not rendered canvas,
+file-content validity, WebRTC media quality or browser-device memory proof.

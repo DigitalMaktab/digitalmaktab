@@ -2204,3 +2204,22 @@ locales verify no note write for held gate/lease, no routine dispatcher error lo
 preserved unexpected-failure logging. Reuse these tests and the same bounded actual-
 process load profile for performance evidence; do not compare different resource caps
 or hide busy results in accepted-operation counts. All broader requirements stay open.
+
+## Large classroom payload verification (2026-10-29)
+
+Reuse root's actual-process ClassroomLoad, ScopeSocket, four-school accounts and
+existing production history/notes/stroke limits. --classroom-payloads is valid only
+with --classroom-load. Seed nearly full retained boards, large Dari notes and binary
+attachments; verify join snapshots, localized overflow without partial board writes,
+attachment integrity, tenant/session scope and retained byte budgets while ordinary
+list reads run concurrently. The verifier's larger bounded receive-frame allowance
+is not a production transport change. Keep default short-message profile available.
+No parallel server implementation, persisted field or dependency is necessary.
+
+Record setup and timed-phase distinctions, exact limits, source/build identities and
+sampled resource semantics. File transport coverage is not file-content validity,
+rendered canvas/browser-device memory or WebRTC quality proof. Do not infer capacity
+or full-goal completion from a two-minute scenario. All broader completion requirements
+remain subject to their own evidence. Next discovered general read gap: inspect the
+school-calendar aggregator's date span, cancellation, materialized row bounds and
+module contributors before implementing a shared fix.

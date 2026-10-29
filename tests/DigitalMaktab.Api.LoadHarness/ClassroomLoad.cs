@@ -2,6 +2,8 @@ using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Net.Http.Headers;
 using System.Text.Json;
+using System.Text;
+using DigitalMaktab.Core.Services.OnlineClass;
 using DigitalMaktab.Core.Services.Runtime;
 using DigitalMaktab.Core.Tests;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,7 +25,7 @@ internal static class ClassroomLoad
     }
     private sealed record School(JsonElement Data,string Marker,string Admin,string Teacher,string Room,ScopeSocket Host,string Epoch,int Index);
     private sealed record Pupil(School School,ScopeSocket Socket);
-    internal static async Task Run(string root,string first,string second,int seconds)
+    internal static async Task Run(string root,string first,string second,int seconds,bool largePayloads=false)
     {
         var addresses=new[]{Address(first),Address(second)};
         using var http=new HttpClient(new HttpClientHandler{UseProxy=false}){BaseAddress=addresses[1],Timeout=TimeSpan.FromSeconds(5)};
@@ -31,6 +33,23 @@ internal static class ClassroomLoad
         var busy=localizers.GetRequiredService<IStringLocalizer<RequestCapacity>>()["Busy"].Value;Require(busy!="Busy","Load verifier could not resolve the actual localized overload contract.");
         using var fixture=JsonDocument.Parse(File.ReadAllText(Path.Combine(root,"fixture.json")));
         var schools=new List<School>();var pupils=new List<Pupil>();var owned=new List<ScopeSocket>();
+        const int attachmentCharacters=393216,strokeCharacters=245760,strokeCount=8;
+        var frameCharacters=largePayloads?16*1024*1024:4*1024*1024;
+        var attachment="data:application/octet-stream;base64,"+new string('A',attachmentCharacters);
+        string Notes(School school)=>"load-"+school.Marker+"-"+new string('ی',99990);
+        string Stroke(School school)=>JsonSerializer.Serialize(new{school=school.Marker,points=new string('x',strokeCharacters)});
+        object FilePayload(School school)=>new{name="load-"+school.Marker+".bin",mime="application/octet-stream",dataUrl=attachment};
+        long CheckLargeSnapshot(School school,Bootstrap snapshot) {
+            var board=Payload(snapshot.Events.Single(row=>row.GetProperty("arguments")[1].GetString()=="WhiteboardHistory"));
+            Require(board.GetArrayLength()==strokeCount,"Large whiteboard retention changed after rejected overflow or traffic.");
+            long bytes=0;foreach(var entry in board.EnumerateArray()) {
+                var text=entry.GetString()!;bytes+=Encoding.UTF8.GetByteCount(text);using var stroke=JsonDocument.Parse(text);
+                Require(stroke.RootElement.GetProperty("stroke").GetProperty("school").GetString()==school.Marker&&stroke.RootElement.GetProperty("stroke").GetProperty("points").GetString()!.Length==strokeCharacters,"Large board crossed tenant scope or changed payload.");
+            }
+            Require(bytes<=2*1024*1024,"Retained board exceeded default byte budget.");
+            Require(Payload(snapshot.Events.Single(row=>row.GetProperty("arguments")[1].GetString()=="NotesUpdated")).GetProperty("text").GetString()==Notes(school),"Large Dari notes were corrupted or crossed tenants.");
+            return bytes;
+        }
         var samples=new ConcurrentDictionary<string,Histogram>(StringComparer.Ordinal);long delivered=0,structuredBusy=0,exceptionBusy=0;var drain=1;
         void Record(string key,double ms)=>samples.GetOrAdd(key,_=>new()).Add(ms);
         void CheckEvents(School school,IEnumerable<JsonElement> events)
@@ -38,7 +57,11 @@ internal static class ClassroomLoad
             foreach(var value in events.Where(row=>row.TryGetProperty("target",out _))) {
                 Require(value.GetProperty("target").GetString()=="ClassroomEvent","Shared load received a raw event.");var args=value.GetProperty("arguments");var scope=args[0];
                 Require(scope.GetProperty("roomId").GetString()==school.Room&&scope.GetProperty("sessionId").GetString()==school.Epoch,"Load event crossed room/school/generation.");
-                if(args[1].GetString()=="ChatMessage")Require(args[2][0].GetProperty("body").GetString()!.StartsWith("load-"+school.Marker+"-",StringComparison.Ordinal),"Chat crossed tenant payload scope.");
+                if(args[1].GetString()=="ChatMessage") {
+                    var message=args[2][0];Require(message.GetProperty("body").GetString()!.StartsWith("load-"+school.Marker+"-",StringComparison.Ordinal),"Chat crossed tenant payload scope.");
+                    if(message.TryGetProperty("file",out var file)&&file.ValueKind==JsonValueKind.Object)
+                        Require(largePayloads&&file.GetProperty("name").GetString()=="load-"+school.Marker+".bin"&&file.GetProperty("dataUrl").GetString()==attachment,"Attachment changed content or crossed tenants.");
+                }
                 Interlocked.Increment(ref delivered);
             }
         }
@@ -46,12 +69,20 @@ internal static class ClassroomLoad
             foreach(var data in fixture.RootElement.GetProperty("schools").EnumerateArray()) {
                 var index=schools.Count;var marker=data.GetProperty("country").GetString()+index.ToString(System.Globalization.CultureInfo.InvariantCulture);
                 var password=data.GetProperty("password").GetString()!;var admin=await Login(http,data.GetProperty("Email").GetString()!,password);
-                var teacher=await Login(http,data.GetProperty("teacherEmail").GetString()!,password);var host=await Connect(addresses[index%2],teacher,4*1024*1024);owned.Add(host);
+                var teacher=await Login(http,data.GetProperty("teacherEmail").GetString()!,password);var host=await Connect(addresses[index%2],teacher,frameCharacters);owned.Add(host);
                 var room=data.GetProperty("classes")[0].GetProperty("courseId").GetString()!;var joined=await Join(host,room);await Call(host,"SetWaitingRoom",room,false);
                 var school=new School(data,marker,admin,teacher,room,host,joined.Scope.GetProperty("sessionId").GetString()!,index);schools.Add(school);
+                if(largePayloads) {
+                    await Call(host,"SetNotes",room,Notes(school));
+                    for(var stroke=0;stroke<strokeCount;stroke++)await Call(host,"SendWhiteboardStroke",room,Stroke(school));
+                    var overflow=await host.InvokeWithEvents("SendWhiteboardStroke",room,Stroke(school));
+                    var limit=localizers.GetRequiredService<IStringLocalizer<ClassHub>>()["ContentLimit"].Value;
+                    Require(limit!="ContentLimit"&&overflow.Completion.TryGetProperty("error",out var error)&&error.GetString()!.Contains(limit,StringComparison.Ordinal),"Board overflow did not return the actual localized content limit.");
+                    for(var item=0;item<6;item++)await Call(host,"SendChatMessage",room,$"load-{marker}-seed-{item}",null,FilePayload(school),null);
+                }
                 var emailCode=data.GetProperty("Email").GetString()!["school-".Length..].Split('@')[0];
                 for(var row=1;row<=(index==0?8:4);row++) {
-                    var token=await Login(http,$"pupil-{emailCode}-{row}@load.invalid",password);var socket=await Connect(addresses[row%2],token,4*1024*1024);owned.Add(socket);await Join(socket,room,"ATTENDEE");pupils.Add(new(school,socket));
+                    var token=await Login(http,$"pupil-{emailCode}-{row}@load.invalid",password);var socket=await Connect(addresses[row%2],token,frameCharacters);owned.Add(socket);var initial=await Join(socket,room,"ATTENDEE");if(largePayloads)CheckLargeSnapshot(school,initial);pupils.Add(new(school,socket));
                 }
             }
             var drains=schools.Select(async school=>{
@@ -61,8 +92,8 @@ internal static class ClassroomLoad
             var workers=pupils.Select(async pupil=>{
                 var seq=0;
                 while(elapsed.Elapsed<end) {
-                    var operation=seq%3;var method=operation==0?"SendChatTyping":operation==1?"SetMic":"SendChatMessage";
-                    object?[] args=operation==0?[pupil.School.Room]:operation==1?[pupil.School.Room,seq%2==0]:[pupil.School.Room,$"load-{pupil.School.Marker}-{seq}",null,null,null];
+                    var operation=seq%(largePayloads?4:3);var method=operation==0?"SendChatTyping":operation==1?"SetMic":"SendChatMessage";
+                    object?[] args=operation==0?[pupil.School.Room]:operation==1?[pupil.School.Room,seq%2==0]:[pupil.School.Room,$"load-{pupil.School.Marker}-{seq}",null,operation==3?FilePayload(pupil.School):null,null];
                     var watch=Stopwatch.StartNew();var result=await pupil.Socket.InvokeWithEvents(method,args);var status="accepted";
                     if(result.Completion.TryGetProperty("error",out var error)) {Require(error.GetString()!.Contains(busy,StringComparison.Ordinal),"Unexpected classroom load error: "+error.GetString());status="busy";Interlocked.Increment(ref exceptionBusy);}
                     else if(result.Completion.TryGetProperty("result",out var payload)&&payload.ValueKind==JsonValueKind.Object) {
@@ -87,13 +118,16 @@ internal static class ClassroomLoad
             var duration=elapsed.Elapsed.TotalSeconds;var history=new List<object>();
             foreach(var school in schools) {
                 Require(samples.Any(row=>row.Key.StartsWith(school.Marker+"/Send",StringComparison.Ordinal)&&row.Key.EndsWith("/accepted",StringComparison.Ordinal)&&row.Value.Count>0),"A school made no progress under hot-tenant pressure.");
-                var snapshot=await Join(school.Host,school.Room);var chat=snapshot.Events.SingleOrDefault(row=>row.GetProperty("arguments")[1].GetString()=="ChatHistory");
+                var snapshot=await Join(school.Host,school.Room);var boardBytes=largePayloads?CheckLargeSnapshot(school,snapshot):0;var chat=snapshot.Events.SingleOrDefault(row=>row.GetProperty("arguments")[1].GetString()=="ChatHistory");
                 Require(chat.ValueKind!=JsonValueKind.Undefined,"Load did not exercise retained chat.");var messages=Payload(chat).EnumerateArray().ToArray();
                 Require(messages.Length is >0 and <=500,"Retained chat count exceeded its existing bound.");Require(messages.Select(row=>row.GetProperty("id").GetString()).Distinct().Count()==messages.Length,"Chat history duplicated messages.");
-                Require(messages.All(row=>row.GetProperty("body").GetString()!.StartsWith("load-"+school.Marker+"-",StringComparison.Ordinal)),"Retained history crossed tenant scope.");history.Add(new{school=school.Marker,messages=messages.Length});
+                Require(messages.All(row=>row.GetProperty("body").GetString()!.StartsWith("load-"+school.Marker+"-",StringComparison.Ordinal)),"Retained history crossed tenant scope.");var chatBytes=messages.Sum(row=>(long)JsonSerializer.SerializeToUtf8Bytes(row,new JsonSerializerOptions(JsonSerializerDefaults.Web)).Length);
+                Require(chatBytes<=2*1024*1024,"Retained chat exceeded default byte budget.");
+                if(largePayloads)Require(messages.Any(row=>row.TryGetProperty("file",out var file)&&file.ValueKind==JsonValueKind.Object),"Large media profile did not retain any attachment.");
+                history.Add(new{school=school.Marker,messages=messages.Length,chatBytes,boardBytes});
             }
             foreach(var socket in owned)await socket.DisposeAsync();owned.Clear();
-            Console.WriteLine("DM_CLASSROOM_LOAD_RESULT "+JsonSerializer.Serialize(new{schools=4,countries=new[]{"AT","AF"},connections=24,hotSchoolClients=8,otherSchoolClients=4,requestedSeconds=seconds,observedSeconds=Math.Round(duration,3),deliveredEvents=delivered,structuredBusy,exceptionBusy,
+            Console.WriteLine("DM_CLASSROOM_LOAD_RESULT "+JsonSerializer.Serialize(new{schools=4,countries=new[]{"AT","AF"},connections=24,hotSchoolClients=8,otherSchoolClients=4,profile=largePayloads?"large-retained-payloads":"short-messages",payloads=largePayloads?new{attachmentCharacters,strokeCharacters,strokeCount,notesCharacters=99999,frameCharacters}:null,requestedSeconds=seconds,observedSeconds=Math.Round(duration,3),deliveredEvents=delivered,structuredBusy,exceptionBusy,
                 noMutationRetries=true,ordinaryHttpSucceeded=true,allSchoolsProgressed=true,retainedHistory=history,latencyHistogram="512 fixed logarithmic buckets; percentile upper bounds at 2.5% resolution",operations=samples.OrderBy(row=>row.Key).Select(row=>new{operation=row.Key,latency=row.Value.Value()})}));
         }
         finally {Volatile.Write(ref drain,0);foreach(var socket in owned)await socket.DisposeAsync();}

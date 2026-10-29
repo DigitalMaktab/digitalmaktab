@@ -4372,3 +4372,77 @@ Mixed-mode installed-package regression passes
 enrollment/capacity, attendance, tenant and financial assertions plus interrupted-
 payment restart/replay. This one-second phase is compatibility evidence, not a new
 throughput benchmark. All affected repositories receive local commits only.
+
+### Large retained classroom payload verifier (seventy-seventh increment, 2026-10-29)
+
+Discovery traced existing ClassHub chat/file/body limits, WireBytes/HistoryMessageBytes,
+notes truncation, whiteboard stroke/total limits, join bootstrap, ClassroomComponents,
+ScopeSocket and root's process/load/resource helpers. Reuse the same authoritative
+state and byte budgets. No production field, service, component, protocol or dependency
+is added. This increment extends the existing isolated verifier only; shared behavior
+remains in Core and all production packages are unchanged from increment 76.
+
+`run-full-api-load.sh --classroom-load --classroom-payloads --classroom-seconds 120`
+keeps the two API processes/four AT-AF schools/24 sockets and ordinary student reads.
+Seed each room with 99,999-character Dari notes, eight opaque JSON strokes with 245760-character
+point strings (under each existing 262144-character limit) and six 393216-character
+base64 binary attachments. The ninth stroke crosses the existing 2 MiB board budget
+and must return the actual localized ContentLimit. Initial/final full snapshots verify
+all eight original strokes and exact Dari notes, establishing no partial overflow
+write. Chat eviction obeys the existing 2 MiB/500-message limits. Steady traffic mixes
+attachments with chat, typing and mic operations. Check attachment names/data and
+room/epoch/tenant scope; no retries or silently accepted busy results.
+
+The optional receive-frame guard is 16 Mi characters for the verification client,
+within ScopeSocket's existing allowed range; short-message mode keeps its 4 Mi guard
+and ScopeSocket's ordinary default stays 64 Ki. Production hub receive limit, Redis
+history/content budgets, resource ceilings and gates are unchanged. Snapshot parsing
+and transport integrity are not browser rendering, valid file contents, device heap,
+WebRTC/media quality or malicious attachment scanning evidence. The initial 5.246s
+smoke passes (/tmp/dm-classroom-payload-smoke.log); it predates the final additional
+attachment-byte/name and retained-board-byte reporting assertions, so final evidence
+must use the subsequent run rather than relabel the first smoke.
+
+Final-source two-minute run passes (/tmp/dm-classroom-payload-soak.log): 120.163s,
+8327 accepted hub calls, 7740 successful ordinary list reads, 191684 structured busy
+completions and zero exception-form busy completions; 48561 scoped events delivered.
+All four schools progress and retain valid file-bearing chat histories. Final chat
+counts AT0/AT1/AF2/AF3 are 7/10/12/10 with 1968323/1969053/1969545/1969055 bytes;
+each board retains exactly eight strokes totaling 1966952 bytes and unchanged notes.
+Ordinary list p95 histogram upper bounds are 24.63–25.87 ms. This larger workload is
+not equivalent to increment 76's short-message traffic and cannot establish a before/
+after optimization comparison. Content-limit exceptions here are intentional board
+validation, distinct from overload results; unexpected failures still fail the run.
+
+Sampled API B/A working-set peaks: 630341632/611500032 bytes. Managed heap peaks:
+336912080/337451640, final heaps 198032080/165475272. Cumulative lifetime allocation
+142132827032/136852018512 bytes, CPU 532.67/522.85 seconds, including setup. Limits
+passed without forced GC; these aggregates do not attribute allocation stacks or
+establish retained-heap/leak/production sizing. Absolute allocation remains an open
+profiling target. Redis used 20204208 bytes/peak 34681184, four retained historical
+roots, zero connection/pending/by-host records after disconnect; all active gates
+settled to zero and both API hosts regained readiness. Retained history is expected
+state, not disconnected-peer metadata leakage.
+
+The report records exact deployed identities (Core 63c51cf, API ea86bf3, country
+bde0c5b) and source hashes, including ClassroomLoad SHA256
+d5c57355a30274987aae7ba2c5c0a20cfd5ca9f3b0347bf1da4c0fe6dcd15596.
+No production source/package changed, so increment 76's 462 Core/106 country results
+remain the applicable package evidence; no clean/build/pack swap is needed here.
+Verifier builds, Python syntax, shell syntax and invalid CLI combination rejection
+pass. Short-message compatibility run follows below. No live database, user API/SPA
+or developer Redis was touched, restarted or stopped. Only private owned fixtures
+and processes were reclaimed; no deployment or push.
+
+Next discovered shared read gap: SchoolCalendarController.GetCalendar has no maximum
+date span, no row bound and no cancellation on its three initial materializations;
+module contributors are added afterward. Trace existing calendar query contracts,
+SPA month navigation and country contribution behavior before extending shared Core.
+All seven broader requirements remain open; large-payload transport/state evidence
+closes this verification gap only. Longer representative deployment soak, restore,
+profiling and remaining editor/mutation/invariant/query/output/job audits still apply.
+
+Final short-message profile regression passes
+(/tmp/dm-classroom-payload-short-regression.log), including the original workload,
+retained-history/scope assertions, ordinary read progress and zero released gates/
+admission indexes. Both workload choices now have actual installed-API evidence.
