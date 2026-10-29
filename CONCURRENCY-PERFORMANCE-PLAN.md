@@ -4115,3 +4115,80 @@ loss and surviving-host cleanup/reconnect, with private PostgreSQL/Redis and act
 process handles. Do not substitute graceful same-process host restart for this gate.
 Then continue the wider query/editor/write/job/output/file/load/deployment audits;
 all seven completion requirements remain open and the original goal stays active.
+
+### Actual separate API classroom process loss (seventy-fourth increment, 2026-10-28)
+
+Reuse discovery traced the guarded full-API load driver/entry point, private DB/key
+ring, actual child handles and prior financial crash recovery, plus Core's existing
+ScopeSocket. Extract/link that verification client instead of copying a WebSocket
+implementation or adding a dependency. Subscription rejection throws a framework
+exception rather than a test-framework assertion so the same source can run outside
+xUnit. No production Core/runtime/domain/schema behavior changes in this increment.
+
+`bash scripts/tests/run-full-api-load.sh --classroom-recovery` reuses the existing
+fixture/multi-process setup, adding private Unix Redis and matching shared settings.
+It runs actual API entry points/installed packages, JWT login/auth, real middleware,
+SignalR/state/worker implementations and separate API processes. Only outbound mail
+is replaced; an explicitly enabled bounded inner test filter pauses the real SetNotes
+body after Core auth/admission/lease selection. The driver independently reads the
+selected family's actual unexpired Redis owner, SIGKILLs its owned process handle,
+waits for exit and verifies the kill signal. Redis stays alive; no developer service,
+user data, listener 5000/3000 or live configuration is used or stopped.
+
+The survivor reclaims three transports in AT main/breakout and AF main rooms, while
+ordinary liveness remains available. Exact dead-peer events, retained notes/session
+epochs, absence of the paused uncommitted write and cross-school denial are verified.
+Restart the killed actual API on another random private port, require readiness and
+verify fresh join/history plus cross-host routing. Do not replace this with graceful
+host shutdown or test-only authority attachment. The C# client waits for acknowledged
+complete scoped bootstrap, including Redis delivery arriving after completion.
+
+Initial successful run: /tmp/dm-classroom-process-recovery-final.log, three reclaimed
+connections, 5033.67 ms cleanup after confirmed kill, retained epochs/notes, absent
+uncommitted write, tenant denial and restarted routing all true. It used Core c45ac47
+before the shared helper extraction was committed. The first attempt reached the
+actual kill but mistook a prior pupil breakout UserLeft for crash cleanup; explicitly
+verify/consume that legitimate move before arming, preserving exact dead-peer checks.
+Final installed-package run and stronger explicit child-epoch assertion follow below.
+
+Full isolated Core after helper extraction: 459 passed, zero skipped
+(/tmp/dm-classroom-socket-extraction-core.log). Core local commit b76261f; precommit
+Release/locale/enum/hosted-service/isolation gates pass. Final package and unchanged
+mixed-workload regression evidence follow. No production capacity or throughput is
+inferred from one bounded crash scenario. Redis failover/durable restore, representative
+classroom load/soak, deployment recovery and all seven wider editor/write/invariant/
+query/output/file/job/performance audits remain open. Preserve the full goal.
+
+Final installed-package crash run: /tmp/dm-classroom-process-installed.log, including
+the explicit child-epoch assertion. Actual unexpired lease observed, SIGKILL confirmed,
+three dead transports reclaimed in 4939.82 ms after driver confirmation, retained AT/
+AF main and child notes/epochs, absent paused write, tenant denial and restarted
+routing all pass. This is one bounded local recovery observation, not a latency SLA.
+It ran Core b76261f and API 60b6662; the subsequent API f05c5e4 change is deployment
+documentation only. The existing mixed mode was then rebuilt against API f05c5e4.
+
+Unchanged mixed-workload regression: /tmp/dm-classroom-process-mixed-regression.log,
+four schools (two AT/two AF), 1.15 seconds mixed phase, 532 attempts/530 successful
+responses. The verifier also completed its original replay, cancellation, report,
+import/export and interrupted-payment process-loss/restart checks. All four persisted
+schools have 402 students/enrollments, 11 classes, maximum class size 40, zero capacity
+violations/duplicate active placements, two current attendance marks and one edited
+profile; AT has zero Afghan extensions. Financial counts/balances match the original
+recovery assertions. This one-second regression is not a replacement for the earlier
+longer benchmark or production load/soak evidence.
+
+Standard clean/build/pack/install/API build pass (/tmp/dm-classroom-process-sync.log).
+Afghanistan integration: 106 passed, zero skipped (/tmp/dm-classroom-process-country.log).
+Producer/API installed SHA256 match:
+Core 8971718997b14ae3c356cd0c1d3d6ada59e17b1e17d3c2cc699ea28b149bfb9b,
+Abstractions 555d5f4c48d893dc1533c5e7e9ba35ede61c50eccbbb614e30f099cb183d35ae,
+country c8e715a25db1c6486b4b7bd448876c04e534bca20a574473c6a21239e69440fd.
+API docs commit f05c5e4; backend country and all SPA sources remain clean/unchanged.
+Source hashes/runtime identities are included in both actual-process reports. No
+user process, live database, developer Redis, configuration or server was changed;
+no dependency or public test route was added and nothing was pushed.
+
+Next: representative classroom load/resource/soak checks using the same actual process
+harness, Redis recovery/restore constraints, and the wider remaining query/editor/
+mutation/job/output/file/deployment audits. This closes the specific abrupt API-process
+scenario, not the seven broader completion requirements or whole goal.

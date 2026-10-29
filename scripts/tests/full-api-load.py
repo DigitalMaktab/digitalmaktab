@@ -13,6 +13,7 @@ import os
 from pathlib import Path
 import queue
 import signal
+import shutil
 import tempfile
 import subprocess
 import sys
@@ -25,6 +26,7 @@ import uuid
 parser=argparse.ArgumentParser(description=__doc__)
 parser.add_argument("api")
 parser.add_argument("--seconds",type=float,default=10,help="mixed pressure duration (1..60, default 10)")
+parser.add_argument("--classroom-recovery",action="store_true",help="verify shared classroom recovery after killing an owned API process")
 options=parser.parse_args()
 if not 1<=options.seconds<=60:parser.error("--seconds must be between 1 and 60")
 root=Path(os.environ["DM_LOAD_ROOT"])
@@ -38,15 +40,21 @@ settings=json.loads((api/"appsettings.json").read_text())
 settings["Kestrel"]={"Endpoints":{"Http":{"Url":"http://127.0.0.1:0"}}}
 settings["DataProtection"]={"KeyRingPath":str(keys),"KeyRingId":key_id,"AllowUnencryptedKeyStorage":True}
 settings["Logging"]={"LogLevel":{"Default":"Warning","Microsoft.EntityFrameworkCore":"Warning"}}
+classroom_prefix="dm-classroom-"+uuid.uuid4().hex
+if options.classroom_recovery:
+    settings["NotificationBackplane"]={"Enabled":True,"ConnectionString":"!"+str(root/"classroom.sock"),"ChannelPrefix":classroom_prefix,"TimeoutMs":1000}
+    settings["ClassroomDelivery"]={"SharedState":True,"MaxConnections":32,"MaxConnectionsPerSchool":16,"MaxHosts":2,"HostLeaseMs":6000,"PendingAdmissionMs":1000,"OperationTimeoutMs":2000,"IdleRetentionMinutes":1}
 (root/"appsettings.json").write_text(json.dumps(settings))
 # Never inherit application configuration/credentials from the user's shell.
 env={k:v for k,v in os.environ.items() if k in {"PATH","HOME","TMPDIR","DOTNET_ROOT","DOTNET_CLI_HOME","NUGET_PACKAGES","DM_LOAD_ROOT","DM_LOAD_DATABASE"}}
 env["DOTNET_CLI_TELEMETRY_OPTOUT"]="1"
+if options.classroom_recovery:env["DM_CLASSROOM_RECOVERY"]="1"
 runner=Path(__file__).resolve().parents[2]/"tests/DigitalMaktab.Api.LoadHarness/bin/Debug/net8.0/DigitalMaktab.Api.LoadHarness.dll"
 subprocess.run(["dotnet",str(runner),"seed"],cwd=root,env=env,check=True,stdout=subprocess.DEVNULL)
 children=[]
 running={}
 process_runtime=[]
+owned_redis=None
 api_runtime_config=api/"bin/Debug/net8.0/digitalmaktabapi.runtimeconfig.json"
 def interrupt(_signum,_frame):raise KeyboardInterrupt()
 signal.signal(signal.SIGTERM,interrupt)
@@ -84,11 +92,64 @@ def request(address,path,token=None,body=None,method=None,extra=None):
     if len(result[2])>16777216:raise RuntimeError("Private fixture response exceeded its 16 MiB verification budget")
     return (*result,(time.monotonic()-start_time)*1000)
 
+def wait_ready(address):
+    deadline=time.monotonic()+20
+    while request(address,"/health/ready")[0]!=200:
+        if time.monotonic()>deadline:raise RuntimeError("Shared classroom API never became ready")
+        time.sleep(0.05)
+
+def classroom_recovery(hosts,fixture):
+    client=subprocess.Popen(["dotnet",str(runner),"classroom-recovery",*hosts],cwd=root,env=env,stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,text=True)
+    children.append(client);messages=queue.Queue()
+    def consume():
+        with (root/"classroom-client.log").open("w") as log:
+            for line in client.stdout:
+                log.write(line);log.flush()
+                if line.startswith("DM_CLASSROOM_"):messages.put(line.strip())
+        messages.put(None)
+    threading.Thread(target=consume,daemon=True).start()
+    def expect(prefix):
+        value=messages.get(timeout=90)
+        if value is None or not value.startswith(prefix):raise RuntimeError("Classroom recovery client did not reach "+prefix+"; inspect classroom-client.log")
+        return value
+    expect("DM_CLASSROOM_KILL_READY")
+    course=fixture["schools"][0]["classes"][0]["courseId"]
+    key=classroom_prefix+":classroom:v3:{"+classroom_prefix+":classrooms}:"+hashlib.sha256(course.encode()).hexdigest().upper()
+    # Inspect only the explicitly selected private family, without printing its owner.
+    probe="local t=redis.call('TIME'); local m=redis.call('HMGET',KEYS[1],'@owner','@until'); return m[1] and tonumber(m[2] or '0')>tonumber(t[1])*1000+math.floor(tonumber(t[2])/1000) and 1 or 0"
+    observed=subprocess.run([shutil.which("redis-cli") or "redis-cli","-s",str(root/"classroom.sock"),"--raw","EVAL",probe,"1",key],check=True,capture_output=True,text=True,timeout=5)
+    if observed.stdout.strip()!="1":raise RuntimeError("Crash barrier did not hold the actual unexpired classroom lease")
+    running["a"].kill();running["a"].wait(timeout=10)
+    if running["a"].returncode!=-signal.SIGKILL:raise RuntimeError("Owned API process did not exit via abrupt kill")
+    client.stdin.write("killed\n");client.stdin.flush()
+    # Ordinary health remains available on the survivor while it reclaims peers.
+    if request(hosts[1],"/health/live")[0]!=200:raise RuntimeError("Surviving API liveness failed")
+    expect("DM_CLASSROOM_RESTART_READY");wait_ready(hosts[1]);hosts[0]=start("a");wait_ready(hosts[0])
+    client.stdin.write(hosts[0]+"\n");client.stdin.flush()
+    result=json.loads(expect("DM_CLASSROOM_RESULT ").split(" ",1)[1]);client.wait(timeout=15)
+    if client.returncode!=0:raise RuntimeError("Classroom recovery client failed after its result")
+    build=json.loads(subprocess.run(["dotnet",str(runner),"build-info"],cwd=root,env=env,check=True,capture_output=True,text=True).stdout)
+    source_files=[Path(__file__).resolve(),*sorted((Path(__file__).resolve().parents[2]/"tests/DigitalMaktab.Api.LoadHarness").glob("*.cs")),api.parent/"digitalmaktab-core/tests/DigitalMaktab.Core.Tests/ScopeSocket.cs"]
+    print(json.dumps({"scope":"actual separate API process SIGKILL while holding classroom lease; private synthetic AT/AF fixture; no production-capacity claim",**result,"heldLeaseObserved":True,"exitSignal":"SIGKILL","survivorReady":True,"build":build,"observedProcessRuntime":process_runtime,"sourceSha256":{str(path.relative_to(api.parent)):hashlib.sha256(path.read_bytes()).hexdigest() for path in source_files}},indent=2))
+
 try:
+    if options.classroom_recovery:
+        executable=shutil.which("redis-server")
+        if executable is None or shutil.which("redis-cli") is None:raise RuntimeError("Classroom recovery needs redis-server and redis-cli")
+        with (root/"classroom-redis.log").open("w") as log:
+            owned_redis=subprocess.Popen([executable,"--port","0","--unixsocket",str(root/"classroom.sock"),"--unixsocketperm","700","--save","","--appendonly","no","--daemonize","no","--dir",str(root),"--loglevel","warning"],env=env,stdout=log,stderr=subprocess.STDOUT)
+        deadline=time.monotonic()+5
+        while not (root/"classroom.sock").exists():
+            if owned_redis.poll() is not None or time.monotonic()>deadline:raise RuntimeError("Private classroom Redis failed to start")
+            time.sleep(0.01)
     # Independent processes share only PostgreSQL and the private key ring.
     with concurrent.futures.ThreadPoolExecutor(max_workers=2) as pool:
         hosts=list(pool.map(start,["a","b"]))
     fixture=json.loads((root/"fixture.json").read_text())
+    if options.classroom_recovery:
+        for host in hosts:wait_ready(host)
+        classroom_recovery(hosts,fixture)
+        sys.exit(0)
     evidence=[]
     for host in hosts:
         for path in ["/health/live","/health/ready"]:
@@ -262,9 +323,11 @@ try:
         "pressureClients":12,"fixtureLimits":{"requestsPerHost":64,"perSchoolPerHost":16,"expensivePerHost":2,"expensivePerSchoolPerHost":1,"databasePoolPerHost":24,"sharedIpEndpointPerSecond":500,"sharedIpEndpointPerMinute":10000},
         "build":build_info,"apiRuntimeConfig":json.loads(api_runtime_config.read_text()),"observedProcessRuntime":process_runtime,"driverSha256":sources,"operations":summaries,"persistedInvariants":invariants,"runtimeMetrics":runtime},indent=2))
 
+except SystemExit:
+    raise
 except BaseException:
     failure=Path(tempfile.mkdtemp(prefix="digitalmaktab-api-load-failure."))
-    for log in root.glob("host-*.log"):
+    for log in [*root.glob("host-*.log"),*root.glob("classroom-*.log")]:
         (failure/log.name).write_bytes(log.read_bytes()[-262144:])
     print("Private API failure logs: "+str(failure),file=sys.stderr)
     raise
@@ -274,3 +337,7 @@ finally:
     for process in children:
         try:process.wait(timeout=15)
         except subprocess.TimeoutExpired:process.kill();process.wait(timeout=5)
+    if owned_redis is not None:
+        if owned_redis.poll() is None:owned_redis.terminate()
+        try:owned_redis.wait(timeout=10)
+        except subprocess.TimeoutExpired:owned_redis.kill();owned_redis.wait(timeout=5)

@@ -2133,3 +2133,26 @@ share one test process, so abrupt separate API process death still needs its own
 verification. Keep defaults off and require matching client deployment, protected
 no-eviction authoritative Redis, affinity, policy drain and actual process-loss/
 load/soak/recovery evidence before production rollout. Do not infer fleet capacity.
+
+## Actual classroom API process-loss verifier (2026-10-28)
+
+Reuse root scripts/tests/run-full-api-load.sh --classroom-recovery and its actual API
+entry-point process/DB/key-ring guards. Link the extracted existing Core test ScopeSocket
+source rather than copying a second SignalR client or adding a dependency. It is test
+support only, not a shipped Core component. Core's normal tests still compile it.
+
+Classroom mode owns private Unix Redis, all API/client Process handles and fixture
+directories. Its bounded inner HubFilter pause runs after real access/lease selection;
+the driver independently observes the chosen family's unexpired Redis owner, SIGKILLs
+only its owned API process, verifies the exit signal, then checks survivor cleanup and
+restarted routing. No fabricated actor, alternate authorization/state, live database,
+developer Redis or user API/SPA restart is involved. Verify pupil breakout-move events
+before arming; do not confuse old legitimate UserLeft events with crash reclamation.
+
+The scenario covers three dead connections in AT main/breakout and AF main, retained
+notes/epochs, absent paused write, cross-school denial and fresh reconnect/routing.
+Redis remains alive, so this is API process-loss evidence, not Redis durability,
+failover consensus, production capacity or complete deployment recovery. The existing
+mixed workload is a separate unchanged mode and needs its own regression evidence.
+Keep all seven broader requirements open; classroom load/soak/restore and wider
+editor/write/query/invariant/job/output/file/deployment audits still remain.

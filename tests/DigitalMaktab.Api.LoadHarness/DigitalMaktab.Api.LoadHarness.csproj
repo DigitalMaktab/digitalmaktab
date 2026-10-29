@@ -8,5 +8,6 @@
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <ProjectReference Include="../../../digitalmaktab-api/DigitalMaktab.Api.csproj" />
+    <Compile Include="../../../digitalmaktab-core/tests/DigitalMaktab.Core.Tests/ScopeSocket.cs" Link="Verification/ScopeSocket.cs" />
   </ItemGroup>
 </Project>

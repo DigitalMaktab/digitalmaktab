@@ -11,6 +11,7 @@ using DigitalMaktab.Core.Services.Mail;
 using DigitalMaktab.Country.Afghanistan;
 using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Hosting.Server.Features;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
@@ -20,8 +21,9 @@ using Microsoft.Extensions.Hosting;
 using Npgsql;
 
 // Separate executable: the actual API entry point and its package graph run in
-// each child process. Only outbound mail is replaced, before building its DI.
-// No alternate controller/middleware/repository/authentication implementation.
+// each child process. Outbound mail is replaced before building its DI; optional
+// classroom recovery adds a bounded inner-filter pause at the actual leased body.
+// No alternate controller/middleware/repository/authentication/state implementation.
 var root=Path.GetFullPath(Environment.GetEnvironmentVariable("DM_LOAD_ROOT") ?? throw new InvalidOperationException("Missing private load root."));
 var connection=Environment.GetEnvironmentVariable("DM_LOAD_DATABASE") ?? throw new InvalidOperationException("Missing private load database.");
 var cs=new NpgsqlConnectionStringBuilder(connection);
@@ -30,6 +32,10 @@ if(!Path.IsPathFullyQualified(root)||Path.GetFileName(root).StartsWith("digitalm
     ||!Guid.TryParse(File.ReadAllText(Path.Combine(root,".dm-full-app-load")).Trim(),out _))
     throw new InvalidOperationException("Full API verification requires its harness-owned private database and directory.");
 if(args is ["seed"]) { await Seed();return; }
+if(args is ["classroom-recovery", var firstAddress, var secondAddress]) {
+    if(Environment.GetEnvironmentVariable("DM_CLASSROOM_RECOVERY")!="1")throw new InvalidOperationException("Classroom recovery is verification-only.");
+    await ClassroomRecovery.Run(root,firstAddress,secondAddress);return;
+}
 if(args is ["build-info"]) {
     object Identity(System.Reflection.Assembly assembly)=>new{version=assembly.GetCustomAttributes(typeof(System.Reflection.AssemblyInformationalVersionAttribute),false)
         .Cast<System.Reflection.AssemblyInformationalVersionAttribute>().Single().InformationalVersion,
@@ -110,6 +116,13 @@ using var hooks=DiagnosticListener.AllListeners.Subscribe(new Observer<Diagnosti
                 ||context.Configuration["Kestrel:Endpoints:Http:Url"]!="http://127.0.0.1:0")
                 throw new InvalidOperationException("API configuration escaped the private load fixture.");
             services.RemoveAll<IMailService>();services.AddSingleton<IMailService,LocalMail>();installed=true;
+            if(Environment.GetEnvironmentVariable("DM_CLASSROOM_RECOVERY")=="1") {
+                if(context.Configuration["NotificationBackplane:ConnectionString"]!="!"+Path.Combine(root,"classroom.sock")
+                    ||!bool.TryParse(context.Configuration["ClassroomDelivery:SharedState"],out var shared)||!shared)
+                    throw new InvalidOperationException("Classroom recovery escaped its private Redis.");
+                services.AddSingleton(new ClassroomCrashBarrier(root,name));
+                services.Configure<Microsoft.AspNetCore.SignalR.HubOptions>(options=>options.AddFilter<ClassroomCrashBarrier>());
+            }
         });
         if(e.Key=="HostBuilt"&&e.Value is IHost host){
             if(!installed||host.Services.GetRequiredService<IMailService>() is not LocalMail)throw new InvalidOperationException("Outbound mail isolation was not installed.");
