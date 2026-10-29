@@ -4516,3 +4516,75 @@ Final installed Afghanistan integration: 106 passed, zero skipped
 and Core/country/school composition in all three locales. Shell modal-source commit
 19a04a51 passes its TypeScript/locale/reuse gates. Producer and consumer worktrees are
 clean before the root evidence commit. No whole-goal completion is inferred.
+
+### Measured calendar read indexes (seventy-ninth increment, 2026-10-29)
+
+Discovery inspected existing Holiday/SchoolEvent/Exam columns, model/snapshot, PK/FK
+indexes, migrations, bounded controller SQL, monthly caller and plan helpers. Existing
+indexes do not serve tenant/window reads. Reuse ConcurrentReadIndex's canonical-key/
+operator-class/validity validation and transaction-suppressed concurrent creation,
+plus ReportQueryCapture and the existing calendar controller/fixture tests. No new
+service/helper, persisted field, table, SQL extension or duplicate calendar state.
+
+Guarded private PostgreSQL measurement seeds 40001 rows per table across two tenants
+with repeated multi-year dates, then invokes the actual controller for one month.
+Baseline uses three full-table scans. Trial indexes improve holidays/exams, but a
+simple SchoolEvent(SchoolId,StartAt,Id) still gets a full scan for effective-end
+overlap. A second trial matching COALESCE(EndAt,StartAt) improves the event plan.
+Trial measurements are /tmp/dm-calendar-access-baseline.log and
+/tmp/dm-calendar-access-expression.log; only the verified final migration is shipped.
+
+CalendarReadIndexes uses Holiday(SchoolId,FromDate,ToDate,Id),
+SchoolEvent(SchoolId,COALESCE(EndAt,StartAt),StartAt,Id), and
+Exam(SchoolId,StartAt,Id). These index existing values; no duplicated effective-end
+column. EF property indexes/model snapshot cover Holiday and Exam; the event expression
+is migration-owned because EF8 cannot describe expression keys. Existing PK/FK indexes
+remain authoritative for constraints/other joins. Core owns these shared access paths;
+country modules require no new indexes or forked query logic here.
+
+Focused actual-migration verifier passes (/tmp/dm-calendar-access-migration.log):
+195 complete month entries both before/after. Holiday bitmap scan: executor
+1.807→0.237 ms, shared buffers 622→100; event bitmap scan 1.868→0.178 ms,
+buffers 662→79; exam index scan 2.006→0.024 ms, buffers 858→56. Planner choices
+are asserted without disabling scans or forcing indexes. Small interval-result sorts
+are retained; no unbounded result or hidden partial calendar is accepted.
+
+Warm local EXPLAIN ANALYZE numbers are not production HTTP latency/capacity, cold I/O,
+or full-app throughput. Controller stopwatch includes extra EXPLAIN executions and
+is not a normal request timing. This profile has null event EndAt; the earlier Core
+calendar behavior tests cover non-null spanning overlap, but additional distributions
+remain useful. No broad index-performance claim is inferred from one fixture.
+
+The same verifier replays Up without rebuilding a valid index (OID preserved), rejects
+a wrong named exam definition, exercises controlled Down/Up/Down and verifies source
+row preservation. CREATE/DROP operations are transaction-suppressed. Validation never
+automatically removes unknown/invalid production definitions; inspect/repair and
+coordinated retry remain operator actions. No live user database/schema was changed.
+Full suite, final packages and country integration follow below.
+
+Final Core: 466 passed, zero skipped (/tmp/dm-calendar-access-full-core.log), including
+migration rollback/replay/invalid-definition and actual plan checks. Core commit
+61b40f0; API rollout documentation 9304869. Normal clean/build/pack/install/API build
+passes (/tmp/dm-calendar-access-sync.log), with producer/API installed SHA256 equal:
+Core 09f54076368a21c7330fbcdf416aab10743b3a7e46227cbc641da637b867c203,
+Abstractions 1fde1aab88518635b9823530a05af72184236435e4e00176906707e5e8d73005,
+country ac3101ec155c775238367f3f83b136a426b7725635087dab7e12ecd4b4eda09c.
+Backend-country source remains 8f4b4bd; all SPA/mobile sources/packages are unchanged
+this increment. Existing locale, enum, worker-health, abstraction-isolation and API
+rate-limit-route gates pass. Country integration follows below. No user server was
+restarted and no database/index outside disposable fixtures was touched; nothing pushed.
+
+Next confirmed calendar gaps: ListHolidays still materializes the entire school list
+without cancellation; the Holidays screen fetches that list into local state, and
+create/delete have no durable request-intent/unknown-outcome handling. Trace existing
+paging/filter/export, mutation receipts and Core intents before changing these paths.
+Keep all seven broader completion requirements open, including remaining editors,
+important writes, invariants, query/output/job audits, allocation profiling and
+longer deployment-specific load/recovery/restore proof. This measured index change
+does not complete those requirements or establish a full historic migration-chain
+upgrade: its migration test executes generated commands against existing fixture
+schema, not every historic schema version.
+
+Installed-package Afghanistan compatibility: 106 passed, zero skipped
+(/tmp/dm-calendar-access-country.log). All affected producer/consumer worktrees are
+clean before the root evidence commit; only its persistent instructions/plan changed.

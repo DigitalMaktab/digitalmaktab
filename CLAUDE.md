@@ -2242,3 +2242,21 @@ cannot survive scope changes. Keep Core/module composition and Gregorian/Solar H
 month semantics; do not create parallel event/year/holiday representations. Calendar
 holiday CRUD/list reads and representative calendar SQL/index plans remain separate
 open audit items, alongside the broader goal's original seven requirements.
+
+## Measured calendar read indexes (2026-10-29)
+
+CalendarReadIndexes reuses ConcurrentReadIndex's validated concurrent btree creation.
+Use existing Holiday(SchoolId,FromDate,ToDate,Id), Exam(SchoolId,StartAt,Id) and
+SchoolEvent(SchoolId,COALESCE(EndAt,StartAt),StartAt,Id) values. No effective-end field,
+new table, copied index validator or extension is needed. Property indexes belong in
+the EF model/snapshot; EF8 cannot represent the event expression, so its migration
+owns that definition. Keep existing PK/FK access paths and constraints intact.
+
+The actual bounded controller/ReportQueryCapture verifier uses a guarded private
+multi-year fixture (40001 rows/table, two tenants). A simple event start index did not
+help that overlap query; the measured expression does. Record warm EXPLAIN timings/
+buffers and profile limits, never a production latency promise. Test repeat Up without
+rebuilding valid indexes, reject wrong named definitions, preserve rows on controlled
+rollback and transaction suppression. Use the coordinated DDL/startup migration budget;
+never repair invalid production indexes by silently dropping them. No live migration
+or user-server restart is authorized merely by these isolated measurements.
