@@ -5016,3 +5016,122 @@ into a supported-user-count claim.
 Final shell source/lock commit e5487aed. Its installed-contract tsc and locale coverage
 checks pass, along with shared-control reuse and raw-alert/textarea/select guards.
 All affected producer/consumer changes are local commits; no push.
+
+## Resume increment 85 — atomic announcement inbox fan-out and bounded publication (2026-10-29)
+
+Previous turn classification: progress (versioned event administration committed and
+verified). Discovery followed actual announcement controller/repository/DTO/mapper/
+validator, Notification and mutation/read receipt models, StageMany/PublishPersisted/
+NotifyMany, account/audience/preferences/access mappings, delivery/capacity budgets,
+existing indexes, current-year provider composition and shipped SPA composer/hooks.
+No duplicate announcement/inbox/outbox table, delivery ledger or persistent field.
+Extend existing SchoolNotificationAudience with a queryable target source and existing
+INotificationService with async-stream publication under its aggregate deadline; an
+individual-publish method cannot bound an entire lazy DB-backed fan-out. Compatibility
+default preserves module service implementations; Core supplies the bounded override.
+
+POST announcement requires Idempotency-Key and reuses the shared receipt transaction.
+Canonical payload is fingerprinted before publish-now is computed. Own-school actor/
+impersonator/staff announcements.create checks run after receipt waits and staging.
+CLASS locks the active own-school/selected-year Class FOR SHARE through commit and
+rechecks authority. Existing announcement/audit, all preference-filtered inbox rows and
+receipt commit/rollback together, including failure after earlier batches were saved.
+Targets and staged notices are keyset-paged in 250-row batches; detach only completed
+notices, retain unrelated state and never accumulate every account/notice. Shared
+ExpensiveOperation, request-size and cancellation paths bound the HTTP work. Different
+explicit intents may legitimately create different announcements; no business uniqueness
+on title/body is imposed and no automatic replay is introduced.
+
+Targets reuse active account/enrollment/parent/homeroom/teacher-role relationships.
+ALL includes granted operators, actual teacher-family roles and active school members;
+foreign/inactive/ungranted/muted accounts are excluded. Matching parents get one CLASS
+notice even with several children. Announcement staff grants are rechecked at staging/
+publication, not cached from initial target selection. Teacher-family feed and homeroom
+scope now reflect actual role and selected school/year/status. This is per-batch current
+membership, not a whole-school point-in-time snapshot; account/role changes across pages,
+course-teacher class visibility and year-selection changes through commit remain open.
+
+After commit stream existing own-school/type/related/id inbox rows in 250-row pages
+under the shared aggregate publication deadline, including enumeration/DB work. Live
+failure cannot turn committed creation into a failed HTTP result; replay never
+republishes. Inbox persistence is authoritative, external delivery remains best effort.
+No exactly-once broker, durable push retry or scheduled future-delivery worker is
+claimed. Future/expired messages have no immediate fan-out. Other NotifyMany/StageMany
+callers still require their own bounds/transaction audit; this new overload does not
+magically bound every producer.
+
+NotificationRelatedFanout adds only a shared partial school/type/related/id index using
+the existing validated concurrent-index migration helper. Existing recipient/retention
+indexes cannot seek this related-entity publication independently of recipient. Model
+and snapshot agree. In a private synthetic 50,000-row fixture (1,000 related target rows),
+EXPLAIN used scan/sort before, the named index after: warm local execution 2.414ms/
+1163 shared hits versus 0.054ms/247 hits. Detailed proof:
+/tmp/dm-announcement-create-index-plan.log. Tests also cover Up replay retaining OID,
+wrong-definition fail-closed behavior and Down preserving all rows. This is a synthetic
+query improvement, not production capacity/SLA or a complete representative-data audit.
+Interrupted invalid builds require operator inspection, not automatic destructive repair.
+
+Editor hydration is scoped, untracked, cancellable/no-store and primes bounded audit
+labels. Instants require offsets, normalize UTC and preserve original seconds/offset
+when local input is unchanged. SPA create wrappers require stable intents and pin
+credentials; the existing composer is keyed by logical account/record, hydrates once,
+retains drafts through token/language refresh, gates duplicate pending callbacks and
+ignores stale account/unmounted completion. Explicit unchanged retry keeps its ID;
+a new operation is a separate explicit action after checking potentially saved work.
+Success navigates immediately rather than via a timer that can affect a later account.
+Core controls and their disabled contracts are reused; no copied UI primitives or
+country behavior fork. Server update/delete versions and receipt races/privacy remain
+open, despite safer editor read/draft handling.
+
+Final full isolated Core suite: 476 passed, zero skipped
+(/tmp/dm-announcement-create-full-core.log). Earlier broad-run fixture-year failure
+was not ignored: the class test initially picked another fixture's globally active year.
+It now uses the actual school-year provider composition with a finite-selection option
+on the existing cancellable provider fixture, without mutating anybody else's global
+active flags. Core production year validation was retained. Focused tests and detailed
+index test pass (/tmp/dm-announcement-create-focused.log,
+/tmp/dm-announcement-create-index-plan.log); the final full suite contains that fixture
+correction.
+
+Actual JWT/HTTP/PG proof includes eight concurrent same-intent requests; 1,005 valid
+recipients/five batches with <=250 tracked notices; no credential projections; bounded
+target/inbox SQL; parent deduplication; preferences/foreign/inactive/ungranted exclusion;
+actual principal-role delivery/feed; mid-batch and receipt-failure rollback; explicit
+recovery; class archive winning the lock race; and authority revocation while replay
+waits. An independent connection observes domain/receipt commit before injected live
+failure; creation still succeeds and replay never republishes. Existing delivery tests
+exercise async-enumeration deadline, caller cancellation and iterator disposal. These
+are independent test hosts in one process, not a new abrupt process-loss/load proof.
+
+Client regressions pass in Asia/Kabul and America/New_York
+(/tmp/dm-announcement-create-client-kabul.log,
+/tmp/dm-announcement-create-client-new-york.log). Actual composer/Core inputs/hooks/API
+configuration with controlled transport verify duplicate gating, stable retries across
+token renewal, deliberate reset/new IDs, pinned tokens, draft retention, stale account/
+unmount navigation isolation and exact untouched instants. Picker/class/enum widgets
+remain their separate test layer; no real DB-to-browser timezone benchmark is claimed.
+SPA Core and installed shell TypeScript pass. React checklist preserves shared controls,
+logical resource ownership, complete read effects and no effect-driven draft resets.
+
+Core producer ef7988a; SPA Core 568c40a; API rollout docs 8c02b75. Standard backend
+clean/build/pack/install/API build passes (/tmp/dm-announcement-create-sync-dotnet.log),
+as does SPA build/pack/install (/tmp/dm-announcement-create-sync-spa.log). No producer
+source changed after packing. Installed Afghanistan suite: 106 passed, zero skipped
+(/tmp/dm-announcement-create-country.log), including default-interface module service
+compatibility. Final producer/API SHA256 pairs match:
+Core 52086a086e640b4646d0a58d3bfea5a0b58cb9264daaa807b5a649cbdff10c9c;
+Abstractions dd2f3448afcc9e0c870513f06531b871ff3be2e1bdaa504ca79deef8a7d6ced3;
+country 7194a418d5fb210a0f0d8ce3940d684f3a9143b5ef3b1c002f14145ef6d0fa73.
+SPA AF translations/lock f0f3061, AT lock 09a1986, shell source/lock 6330c8a3.
+Locale/enum/shared-control/abstraction/worker-health/API route gates pass. No new
+runtime dependency, live DB/developer Redis mutation, user-server stop/restart or push.
+Deploy the index and Core/SPA/country/shell together; user controls server restarts.
+
+All seven original broader requirements remain open. Next prioritize announcement
+read-receipt eligibility and first-read races, bounded/privacy-scoped receipt rosters
+and active/admin reads; then versioned announcement edit/delete and shared form conflict
+review. Scheduled later delivery, broader audience semantics/producer audit, remaining
+module mutation/query coverage, dense calendar payload budgets, school-local semantics,
+classroom allocation profiling and longer mixed-school deployment load/recovery/restore
+proof still remain. This closes the audited immediate announcement create/inbox path,
+not the overall concurrency/performance objective.

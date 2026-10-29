@@ -2379,3 +2379,36 @@ operation after uncertain outcome is explicit. Delete uses selected version plus
 modal/comparison, never silently reloads and deletes a changed record. Upcoming read
 refresh never replays mutations. Ship migration/packages/shell together and keep the
 broader seven concurrency/performance requirements open.
+
+## Atomic announcement creation (2026-10-29)
+
+Reuse Announcement/Notification/MutationReceiptStore, StageMany, SchoolNotificationAudience,
+existing class/enrollment/parent/teacher-role relationships and capacity/delivery budgets.
+No new inbox/outbox/announcement table or field. POST announcement requires Idempotency-Key;
+actor/impersonator/staff announcements.create checks run after waits and staging. CLASS
+locks its active own-school/selected-year parent FOR SHARE, rechecks authority and retains
+that reference through commit. Stage all inbox rows in the receipt transaction in 250-row
+keyset batches, detach only completed notices, and keep tracked audit saves atomic. Never
+hold every recipient/notice or clear unrelated tracker state. Current memberships/preferences
+are checked per batch, not claimed as a whole-school point-in-time snapshot.
+
+After commit stream existing inbox rows by school/type/related/id. The Core notification
+service's async-stream PublishPersisted overload owns one aggregate deadline including
+DB enumeration, with cancellation/disposal; compatibility default supports module services.
+Failure after commit cannot return a failed create, and replay never republishes. Inbox
+is authoritative; external delivery is best effort. Future/expired messages do not fan out
+immediately. Scheduled later delivery, versioned announcement edit/delete and read-receipt
+race/privacy/bounds remain open. NotificationRelatedFanout adds only the shared partial
+index (existing recipient/retention indexes cannot seek by related entity), using validated
+concurrent creation and operator-led repair after invalid/mismatched builds.
+
+Keep all roles/parents/targets school/year/status scoped. ALL uses actual teacher-family
+roles and granted operators; CLASS includes matching parents and homeroom teachers. Staff
+announcement grant checks happen again during staging/publication. Scoped editor reads
+are untracked/no-store/cancellable; instants require offsets and writes normalize UTC.
+Reuse shared local clock formatting and preserve unchanged seconds/offset. Key the existing
+composer by logical account/resource, hydrate once, retain draft/intent on explicit retry,
+pin credentials, block pending duplicates, ignore stale account/unmount results and avoid
+navigation timers. No copied UI primitives or country fork. Existing finite/cancellable
+academic-year provider fixtures supply the test school's selection instead of mutating
+other fixtures' global active years. All seven broader goal requirements remain open.
