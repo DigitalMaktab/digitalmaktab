@@ -6,22 +6,22 @@ using DigitalMaktab.Core.Tests;
 internal static class ClassroomRecovery
 {
     private sealed record Session(JsonElement School, string Admin, string Teacher);
-    private sealed record Bootstrap(JsonElement Scope, List<JsonElement> Events);
-    private static void Require(bool condition,string message) { if(!condition)throw new InvalidOperationException(message); }
-    private static Uri Address(string text) {
+    internal sealed record Bootstrap(JsonElement Scope, List<JsonElement> Events);
+    internal static void Require(bool condition,string message) { if(!condition)throw new InvalidOperationException(message); }
+    internal static Uri Address(string text) {
         var uri=new Uri(text);Require(uri.Scheme=="http"&&uri.Host=="127.0.0.1"&&uri.Port is not(5000 or 3000)&&uri.Port>0,"Recovery listener is not private.");return uri;
     }
-    private static async Task<string> Login(HttpClient client,string email,string password) {
+    internal static async Task<string> Login(HttpClient client,string email,string password) {
         using var response=await client.PostAsJsonAsync("/api/auth",new{email,password});response.EnsureSuccessStatusCode();
         using var json=JsonDocument.Parse(await response.Content.ReadAsStringAsync());return json.RootElement.GetProperty("token").GetString()!;
     }
-    private static Task<ScopeSocket> Connect(Uri address,string token) => ScopeSocket.Connect(address,default,bearer:token,path:"/classhub",query:"classroomProtocol=1");
-    private static async Task<JsonElement> Event(ScopeSocket socket,string method) {
+    internal static Task<ScopeSocket> Connect(Uri address,string token,int maximumFrameCharacters=65536) => ScopeSocket.Connect(address,default,bearer:token,path:"/classhub",query:"classroomProtocol=1",maximumFrameCharacters:maximumFrameCharacters);
+    internal static async Task<JsonElement> Event(ScopeSocket socket,string method) {
         using var stop=new CancellationTokenSource(TimeSpan.FromSeconds(20));
         for(var index=0;index<128;index++) { var value=await socket.Event("ClassroomEvent",timeoutMs:20000).WaitAsync(stop.Token);if(value.GetProperty("arguments")[1].GetString()==method)return value; }
         throw new InvalidOperationException("Expected scoped recovery event was not delivered.");
     }
-    private static async Task<Bootstrap> Join(ScopeSocket socket,string room,string role="HOST") {
+    internal static async Task<Bootstrap> Join(ScopeSocket socket,string room,string role="HOST") {
         var result=await socket.InvokeWithEvents("JoinClass",room,"Private recovery",role);
         Require(!result.Completion.TryGetProperty("error",out _),"Recovery join rejected.");
         var ack=result.Completion.GetProperty("result");Require(ack.GetProperty("joined").GetBoolean(),"Recovery join did not bind.");
@@ -31,13 +31,13 @@ internal static class ClassroomRecovery
         while(result.Events.Count(Match)<expected)result.Events.Add(await socket.Event("ClassroomEvent").WaitAsync(stop.Token));
         Require(result.Events.Count(Match)==expected,"Recovery bootstrap was incomplete/duplicated.");return new(scope,result.Events.Where(Match).ToList());
     }
-    private static JsonElement Payload(JsonElement row)=>row.GetProperty("arguments")[2][0];
-    private static string Peer(Bootstrap value)=>Payload(value.Events.Single(row=>row.GetProperty("arguments")[1].GetString()=="ExistingUsers"))[0].GetProperty("connectionId").GetString()!;
-    private static void Retained(Bootstrap value,string notes,string? missing=null) {
+    internal static JsonElement Payload(JsonElement row)=>row.GetProperty("arguments")[2][0];
+    internal static string Peer(Bootstrap value)=>Payload(value.Events.Single(row=>row.GetProperty("arguments")[1].GetString()=="ExistingUsers"))[0].GetProperty("connectionId").GetString()!;
+    internal static void Retained(Bootstrap value,string notes,string? missing=null) {
         Require(value.Events.Any(row=>row.GetProperty("arguments")[1].GetString()=="NotesUpdated"&&Payload(row).GetProperty("text").GetString()==notes),"Retained recovery notes changed.");
         if(missing!=null)Require(!Payload(value.Events.Single(row=>row.GetProperty("arguments")[1].GetString()=="ExistingUsers")).EnumerateArray().Any(row=>row.GetProperty("connectionId").GetString()==missing),"Dead peer survived authoritative cleanup.");
     }
-    private static async Task Call(ScopeSocket socket,string method,params object?[] arguments) {
+    internal static async Task Call(ScopeSocket socket,string method,params object?[] arguments) {
         var result=await socket.Invoke(method,arguments);Require(!result.TryGetProperty("error",out _),"Recovery call rejected: "+method);
     }
     internal static async Task Run(string root,string first,string second) {

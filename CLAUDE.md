@@ -2156,3 +2156,26 @@ failover consensus, production capacity or complete deployment recovery. The exi
 mixed workload is a separate unchanged mode and needs its own regression evidence.
 Keep all seven broader requirements open; classroom load/soak/restore and wider
 editor/write/query/invariant/job/output/file/deployment audits still remain.
+
+## Classroom load/resource verifier (2026-10-29)
+
+Reuse run-full-api-load.sh --classroom-load --classroom-seconds 120 (5–600 seconds),
+existing fixture accounts, login/bootstrap/socket helpers and RuntimeProbe. No parallel
+client or production meter is needed. ScopeSocket's optional frame-character budget
+keeps its 64 Ki default and allows bounded larger snapshots in the standalone verifier.
+Use fixed-size latency histograms and sampled aggregate process/GC summaries, never
+an unbounded per-request sample collection. Classroom meter tags remain bounded.
+
+The profile uses two real API processes, four AT/AF schools and 24 sockets with a hot
+unpaced school, plus ordinary authenticated student-list traffic. Validate localized
+busy responses, no mutation retries, all-school progress, room/session/tenant content,
+bounded history and post-disconnect gate/index cleanup. Scratch frame room counters
+are not fleet retention counts; read existing Redis room indexes separately. Raising
+the private login window for setup and choosing smaller fixture gate budgets must be
+explicit in results, not silently presented as production defaults.
+
+Resource samples/ceilings and two-minute runs are scenario evidence, not production
+memory sizing, a user-count promise or long leak/soak/restore proof. Current unpaced
+baseline shows high cumulative allocation/busy volume despite bounded retained state.
+Keep rejection-path allocation/CPU efficiency open and investigate it; do not mark the
+performance goal complete because resource bounds passed. Retain all broader audits.

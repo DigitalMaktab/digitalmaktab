@@ -33,6 +33,7 @@ test-owned process handles:
 ```sh
 bash scripts/tests/run-full-api-load.sh --seconds 10
 bash scripts/tests/run-full-api-load.sh --classroom-recovery
+bash scripts/tests/run-full-api-load.sh --classroom-load --classroom-seconds 120
 ```
 
 The classroom mode also needs `redis-server` and `redis-cli`. It creates a private
@@ -43,3 +44,14 @@ uncommitted-write absence, tenant denial and restarted routing are verified. Red
 remains alive during this test; it does not establish Redis failover or durable restore.
 The existing mixed workload remains a separate mode, not a classroom capacity claim.
 No development server, live database or running Redis is accessed or stopped.
+
+Classroom load uses four existing seeded schools (AT/AF), 24 sockets across two real
+API processes, one unpaced hot school and three paced schools, while ordinary paged
+student reads run concurrently. Duration is bounded to 5–600 seconds. It verifies
+tenant/session isolation, all-school progress, existing 500-message history bounds,
+gate/index release after disconnect, and readiness. Fixed histograms report approximate
+latency percentile upper bounds without retaining per-request samples. Existing runtime/
+classroom meters and sampled process/GC summaries are included; Redis memory and index
+counts are read only from the private namespace. The fixture's login IP limit is raised
+for setup; its smaller invocation/publication budgets and resource guards are recorded.
+These are synthetic measurements, not a supported-user or production-memory guarantee.

@@ -4192,3 +4192,94 @@ Next: representative classroom load/resource/soak checks using the same actual p
 harness, Redis recovery/restore constraints, and the wider remaining query/editor/
 mutation/job/output/file/deployment audits. This closes the specific abrupt API-process
 scenario, not the seven broader completion requirements or whole goal.
+
+### Classroom traffic/resource short soak (seventy-fifth increment, 2026-10-29)
+
+Discovery reused actual-process setup, four-school fixture accounts, ScopeSocket,
+login/bootstrap helpers, RuntimeProbe and existing production classroom meters. No
+new parallel client, production instrument, domain model or dependency. Shared test
+socket keeps its 64 Ki frame-character default with a bounded optional larger limit;
+load uses 4 Mi for actual retained histories. Existing recovery helpers are exposed
+within the verifier rather than copied. Core production behavior is unchanged here.
+
+`run-full-api-load.sh --classroom-load --classroom-seconds 120` (5–600 seconds) selects
+a closed synthetic profile: four AT/AF schools, two actual API processes, 24 sockets,
+eight unpaced clients in a hot school and four paced clients in each other school.
+Distinct typing/mic/chat operations run with concurrent authenticated paged student
+reads. Busy responses must match Core's actual localized resource; unexpected errors
+fail, and failed mutations are not replayed. Validate all-school progress, tenant/
+room/epoch payloads, unique bounded histories and acknowledged bootstrap.
+
+Fixed 512-bucket logarithmic latency histograms store no per-request samples. Existing
+runtime/classroom meters and 500ms bounded process/GC summaries are observed; no forced
+GC. After disconnect, connection/method/publication/scratch-frame accounting must
+settle to zero, alongside Redis connection/pending/by-host indexes, with four retained
+historical roots. Frame counters are not fleet retained-room counts. Known private
+Redis indexes/memory are read separately; no scan/delete of developer state occurs.
+
+The report explicitly records smaller fixture budgets (8 calls per host, 2 calls per
+school per host, 4 publications per host), fleet connection caps (32/16), and login IP limit
+1000 instead of production's ten. Resource checks are sampled scenario guards: 1 GiB
+working set/512 MiB uncollected managed heap per API. They are not hard process caps,
+exact retained heap or production sizing. No error is silently accepted to meet them.
+
+Two-minute run /tmp/dm-classroom-load-soak.log: 120.103 observed seconds, 288002 delivered
+events, 49582 accepted hub calls plus 8398 ordinary list requests, and 1277373 busy hub
+completions. Every school progressed; all four histories reached exactly 500 unique
+messages without cross-tenant content. Ordinary list p95 histogram upper bounds were
+11.74–12.96 ms; all lists succeeded. Redis used 2567776 bytes/peak 3798352, four roots,
+zero connection/pending/by-host records after disconnect.
+
+Sampled working-set peaks: API B 680869888 bytes, A 679690240. Managed heap peaks:
+B 402866200, A 422521008. Final sampled heaps were 189587016/135910272 respectively.
+Cumulative allocation was 131852361360/128450859008 bytes and CPU 499.97/491.14 seconds.
+The unpaced flood keeps retained state bounded but exposes costly overload churn.
+This is an unresolved allocation/CPU optimization target; investigate expected-busy
+handling while preserving visible rejection, diagnostics and no mutation replay.
+Do not conclude that bounded memory means rejection efficiency or the goal is done.
+
+The soak used Core b76261f; its source/runtime identities and fixed histogram/resource
+summaries are in the report. Five-second smoke /tmp/dm-classroom-load-smoke.log passed
+before it. Full Core after the helper option: 459 passed, zero skipped
+(/tmp/dm-classroom-load-socket-core.log). Core helper/docs commit a199f36; standard
+package/consumer checks and final stronger gate-accounting smoke follow below.
+
+Two minutes is not long-duration leak proof, deployment load or production capacity.
+Redis recovery/restore, longer representative soak, overload efficiency and all seven
+wider editor/write/invariant/query/output/file/job/deployment requirements remain open.
+
+Resource counters above cover API process lifetime, including startup/preparation,
+not only the timed traffic interval; they are sampled aggregates, not heap snapshots
+or allocation-stack attribution. The high allocation/rejection correlation is a
+profiling lead, not proof that one specific logger or serializer causes it. Captured
+verification stdout is now rotated at 1 MiB plus one backup, and bounded failure
+diagnostics also retain metric/resource summaries. API logger behavior is unchanged.
+The two-minute run predates this stdout-retention change and stronger final gate-sum
+checks; it is not silently relabeled as a final-source benchmark.
+
+Final five-second installed-package scenario passes
+(/tmp/dm-classroom-load-final-smoke.log), including zero connection/method/publication/
+frame sums after disconnect, zero admission indexes and rotated stdout. Core a199f36
+and API deployment-doc commit 5906752; all precommit build/locale/reuse/route gates pass.
+Standard clean/build/pack/install/API build passes (/tmp/dm-classroom-load-sync.log).
+Afghanistan integration: 106 passed, zero skipped (/tmp/dm-classroom-load-country.log).
+Producer/API SHA256 match:
+Core 150f94fdeb9aa391f12efaefc05558d49ba857cf3519bcbc8dadea09b2cb51e7,
+Abstractions 0fd4c421242d0efb5edd1851f45c9937922f4678897bdbeb3806708f03665cb8,
+country 58d238510e40c4ab22c8abb2a7754c51ffcefa9dfe13fcab6c35df1849225bd5.
+The unchanged mixed-mode regression result follows below. No live database, developer
+Redis, user API/SPA restart, live setting, dependency addition or push.
+
+Mixed-mode compatibility regression passes after the shared probe/log-capture changes
+(/tmp/dm-classroom-load-mixed-regression.log), including its existing persisted
+registration/payment/enrollment/attendance/tenant invariants and interrupted-payment
+restart/replay. This is a short one-second regression, not a new throughput benchmark.
+All SPA and backend-country sources stay unchanged; no package/API contract was added.
+The root verifier and documentation carry the new profile and recorded evidence.
+
+Next investigate the measured overload-path allocation/CPU cost, tracing existing
+RequestCapacity/HubFilter error contracts, framework dispatch and actual SPA handling
+before changing behavior. Preserve visible localized failures, outcome uncertainty,
+diagnostics, compatibility and no automatic mutation replay. Large-payload/media/board
+traffic, longer deployment-specific soak/restore and the wider outstanding audits
+remain required. All seven completion requirements stay open; do not shrink the goal.

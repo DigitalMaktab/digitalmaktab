@@ -9,6 +9,8 @@ import datetime
 import statistics
 import concurrent.futures
 import json
+import logging
+import logging.handlers
 import os
 from pathlib import Path
 import queue
@@ -26,9 +28,13 @@ import uuid
 parser=argparse.ArgumentParser(description=__doc__)
 parser.add_argument("api")
 parser.add_argument("--seconds",type=float,default=10,help="mixed pressure duration (1..60, default 10)")
-parser.add_argument("--classroom-recovery",action="store_true",help="verify shared classroom recovery after killing an owned API process")
+classroom_modes=parser.add_mutually_exclusive_group()
+classroom_modes.add_argument("--classroom-recovery",action="store_true",help="verify shared classroom recovery after killing an owned API process")
+classroom_modes.add_argument("--classroom-load",action="store_true",help="run bounded multi-school shared classroom traffic and resource checks")
+parser.add_argument("--classroom-seconds",type=int,default=30,help="classroom load duration (5..600, default 30)")
 options=parser.parse_args()
 if not 1<=options.seconds<=60:parser.error("--seconds must be between 1 and 60")
+if not 5<=options.classroom_seconds<=600:parser.error("--classroom-seconds must be between 5 and 600")
 root=Path(os.environ["DM_LOAD_ROOT"])
 api=Path(options.api).resolve()
 if not root.is_absolute() or root.is_symlink() or not root.name.startswith("digitalmaktab-core-support."):
@@ -41,14 +47,21 @@ settings["Kestrel"]={"Endpoints":{"Http":{"Url":"http://127.0.0.1:0"}}}
 settings["DataProtection"]={"KeyRingPath":str(keys),"KeyRingId":key_id,"AllowUnencryptedKeyStorage":True}
 settings["Logging"]={"LogLevel":{"Default":"Warning","Microsoft.EntityFrameworkCore":"Warning"}}
 classroom_prefix="dm-classroom-"+uuid.uuid4().hex
-if options.classroom_recovery:
+if options.classroom_recovery or options.classroom_load:
     settings["NotificationBackplane"]={"Enabled":True,"ConnectionString":"!"+str(root/"classroom.sock"),"ChannelPrefix":classroom_prefix,"TimeoutMs":1000}
     settings["ClassroomDelivery"]={"SharedState":True,"MaxConnections":32,"MaxConnectionsPerSchool":16,"MaxHosts":2,"HostLeaseMs":6000,"PendingAdmissionMs":1000,"OperationTimeoutMs":2000,"IdleRetentionMinutes":1}
+    if options.classroom_load:
+        settings["ClassroomDelivery"].update({"MaxConcurrentInvocations":8,"MaxInvocationsPerSchool":2,"MaxConcurrentPublications":4})
+        # Only the synthetic login phase needs more than the production IP login
+        # window; steady-state classroom operations keep their real Core budgets.
+        for rule in settings["IpRateLimiting"]["GeneralRules"]:
+            if rule["Endpoint"].lower()=="post:/api/auth":rule["Limit"]=1000
 (root/"appsettings.json").write_text(json.dumps(settings))
 # Never inherit application configuration/credentials from the user's shell.
 env={k:v for k,v in os.environ.items() if k in {"PATH","HOME","TMPDIR","DOTNET_ROOT","DOTNET_CLI_HOME","NUGET_PACKAGES","DM_LOAD_ROOT","DM_LOAD_DATABASE"}}
 env["DOTNET_CLI_TELEMETRY_OPTOUT"]="1"
 if options.classroom_recovery:env["DM_CLASSROOM_RECOVERY"]="1"
+if options.classroom_load:env["DM_CLASSROOM_LOAD"]="1"
 runner=Path(__file__).resolve().parents[2]/"tests/DigitalMaktab.Api.LoadHarness/bin/Debug/net8.0/DigitalMaktab.Api.LoadHarness.dll"
 subprocess.run(["dotnet",str(runner),"seed"],cwd=root,env=env,check=True,stdout=subprocess.DEVNULL)
 children=[]
@@ -66,12 +79,16 @@ def start(name):
     running[name]=process
     ready=queue.Queue()
     def consume():
-        with (root/("host-"+name+".log")).open("a") as log:
+        log=logging.getLogger("dm-private-api-"+name+"-"+str(process.pid));log.propagate=False;log.setLevel(logging.INFO)
+        handler=logging.handlers.RotatingFileHandler(root/("host-"+name+".log"),maxBytes=1048576,backupCount=1,encoding="utf-8")
+        handler.setFormatter(logging.Formatter("%(message)s"));log.addHandler(handler)
+        try:
             for line in process.stdout:
-                log.write(line);log.flush()
+                log.info("%s",line.rstrip("\n"))
                 if line.startswith("DM_LOAD_RUNTIME "):process_runtime.append({"host":name,**json.loads(line.split(" ",1)[1])})
                 if line.startswith("DM_LOAD_READY "):ready.put(line.strip().split(" ",1)[1])
-        ready.put(None)
+        finally:
+            handler.close();log.removeHandler(handler);ready.put(None)
     threading.Thread(target=consume,daemon=True).start()
     try: address=ready.get(timeout=120)
     except queue.Empty: raise RuntimeError("Private API did not become ready within 120 seconds")
@@ -132,8 +149,48 @@ def classroom_recovery(hosts,fixture):
     source_files=[Path(__file__).resolve(),*sorted((Path(__file__).resolve().parents[2]/"tests/DigitalMaktab.Api.LoadHarness").glob("*.cs")),api.parent/"digitalmaktab-core/tests/DigitalMaktab.Core.Tests/ScopeSocket.cs"]
     print(json.dumps({"scope":"actual separate API process SIGKILL while holding classroom lease; private synthetic AT/AF fixture; no production-capacity claim",**result,"heldLeaseObserved":True,"exitSignal":"SIGKILL","survivorReady":True,"build":build,"observedProcessRuntime":process_runtime,"sourceSha256":{str(path.relative_to(api.parent)):hashlib.sha256(path.read_bytes()).hexdigest() for path in source_files}},indent=2))
 
+def classroom_load(hosts):
+    process=subprocess.Popen(["dotnet",str(runner),"classroom-load",*hosts,str(options.classroom_seconds)],cwd=root,env=env,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,text=True)
+    children.append(process);messages=queue.Queue()
+    def consume():
+        with (root/"classroom-load-client.log").open("w") as log:
+            for line in process.stdout:
+                log.write(line);log.flush()
+                if line.startswith("DM_CLASSROOM_LOAD_RESULT "):messages.put(line.strip())
+        messages.put(None)
+    threading.Thread(target=consume,daemon=True).start()
+    value=messages.get(timeout=options.classroom_seconds+120)
+    if value is None:raise RuntimeError("Classroom load client failed; inspect classroom-load-client.log")
+    result=json.loads(value.split(" ",1)[1]);process.wait(timeout=15)
+    if process.returncode!=0:raise RuntimeError("Classroom load client failed after its result")
+    deadline=time.monotonic()+10
+    while True:
+        metrics=[{"process":file.stem,"measurements":json.loads(file.read_text())} for file in root.glob("metrics-*.json")]
+        gates={"classrooms.connections.active","classrooms.methods.active","classrooms.publications.active","classrooms.rooms.retained"}
+        counts=[row["sum"] for item in metrics for row in item["measurements"] if row["name"] in gates]
+        if len(counts)==8 and all(count==0 for count in counts):break
+        if time.monotonic()>deadline:raise RuntimeError("Classroom sockets/frames did not release existing active-resource accounting")
+        time.sleep(0.1)
+    resources=[{"process":file.stem,"measurements":json.loads(file.read_text())} for file in root.glob("resources-*.json")]
+    if len(resources)!=2:raise RuntimeError("Missing process resource samples")
+    for item in resources:
+        for row in item["measurements"]:
+            ceiling=1073741824 if row["name"]=="process.working_set.bytes" else 536870912 if row["name"]=="gc.managed_heap.bytes" else None
+            if ceiling is not None and row["max"]>ceiling:raise RuntimeError("Private classroom resource guard exceeded: "+row["name"])
+    def redis(*args):return subprocess.run([shutil.which("redis-cli"),"-s",str(root/"classroom.sock"),"--raw",*args],check=True,capture_output=True,text=True,timeout=5).stdout.strip()
+    prefix=classroom_prefix+":classroom:v3:{"+classroom_prefix+":classrooms}"
+    connection_records=int(redis("HLEN",prefix+":connections:records"))-1
+    pending=int(redis("ZCARD",prefix+":connections:pending"));by_host=int(redis("ZCARD",prefix+":connections:by-host"))
+    if connection_records or pending or by_host:raise RuntimeError("Disconnected classroom metadata was retained in admission indexes")
+    memory=dict(line.split(":",1) for line in redis("INFO","memory").splitlines() if ":" in line)
+    retained=int(redis("HGET",prefix+":rooms:counts","@total"))
+    if retained!=4:raise RuntimeError("Classroom retention index no longer matches four selected roots")
+    for host in hosts:wait_ready(host)
+    build=json.loads(subprocess.run(["dotnet",str(runner),"build-info"],cwd=root,env=env,check=True,capture_output=True,text=True).stdout)
+    print(json.dumps({"scope":"bounded actual two-process classroom traffic; synthetic four-school AT/AF profile; no production SLA or supported-user claim",**result,"fixtureLimits":settings["ClassroomDelivery"],"fixtureLoginIpLimit":1000,"resourceSamplePeriodMs":500,"capturedApiLogs":{"maxBytes":1048576,"backupFiles":1,"scope":"verification stdout retention; API logger behavior unchanged"},"resourceGuards":{"workingSetBytesPerApi":1073741824,"managedHeapBytesPerApi":536870912},"runtimeMetrics":metrics,"processResources":resources,"redis":{"usedBytes":int(memory["used_memory"]),"peakBytes":int(memory["used_memory_peak"]),"retainedRooms":retained,"connectionRecordsAfterDisconnect":connection_records,"pendingAfterDisconnect":pending,"byHostAfterDisconnect":by_host},"build":build,"sourceSha256":{str(path.relative_to(api.parent)):hashlib.sha256(path.read_bytes()).hexdigest() for path in [Path(__file__).resolve(),*sorted((Path(__file__).resolve().parents[2]/"tests/DigitalMaktab.Api.LoadHarness").glob("*.cs")),api.parent/"digitalmaktab-core/tests/DigitalMaktab.Core.Tests/ScopeSocket.cs"]}},indent=2))
+
 try:
-    if options.classroom_recovery:
+    if options.classroom_recovery or options.classroom_load:
         executable=shutil.which("redis-server")
         if executable is None or shutil.which("redis-cli") is None:raise RuntimeError("Classroom recovery needs redis-server and redis-cli")
         with (root/"classroom-redis.log").open("w") as log:
@@ -149,6 +206,10 @@ try:
     if options.classroom_recovery:
         for host in hosts:wait_ready(host)
         classroom_recovery(hosts,fixture)
+        sys.exit(0)
+    if options.classroom_load:
+        for host in hosts:wait_ready(host)
+        classroom_load(hosts)
         sys.exit(0)
     evidence=[]
     for host in hosts:
@@ -327,7 +388,7 @@ except SystemExit:
     raise
 except BaseException:
     failure=Path(tempfile.mkdtemp(prefix="digitalmaktab-api-load-failure."))
-    for log in [*root.glob("host-*.log"),*root.glob("classroom-*.log")]:
+    for log in [*root.glob("host-*.log*"),*root.glob("classroom-*.log"),*root.glob("metrics-*.json"),*root.glob("resources-*.json")]:
         (failure/log.name).write_bytes(log.read_bytes()[-262144:])
     print("Private API failure logs: "+str(failure),file=sys.stderr)
     raise

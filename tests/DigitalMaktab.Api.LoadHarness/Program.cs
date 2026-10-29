@@ -36,6 +36,10 @@ if(args is ["classroom-recovery", var firstAddress, var secondAddress]) {
     if(Environment.GetEnvironmentVariable("DM_CLASSROOM_RECOVERY")!="1")throw new InvalidOperationException("Classroom recovery is verification-only.");
     await ClassroomRecovery.Run(root,firstAddress,secondAddress);return;
 }
+if(args is ["classroom-load",var loadFirst,var loadSecond,var duration]&&int.TryParse(duration,out var seconds)&&seconds is >=5 and <=600) {
+    if(Environment.GetEnvironmentVariable("DM_CLASSROOM_LOAD")!="1")throw new InvalidOperationException("Classroom load is verification-only.");
+    await ClassroomLoad.Run(root,loadFirst,loadSecond,seconds);return;
+}
 if(args is ["build-info"]) {
     object Identity(System.Reflection.Assembly assembly)=>new{version=assembly.GetCustomAttributes(typeof(System.Reflection.AssemblyInformationalVersionAttribute),false)
         .Cast<System.Reflection.AssemblyInformationalVersionAttribute>().Single().InformationalVersion,
