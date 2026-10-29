@@ -15,7 +15,7 @@ internal static class ClassroomRecovery
         using var response=await client.PostAsJsonAsync("/api/auth",new{email,password});response.EnsureSuccessStatusCode();
         using var json=JsonDocument.Parse(await response.Content.ReadAsStringAsync());return json.RootElement.GetProperty("token").GetString()!;
     }
-    internal static Task<ScopeSocket> Connect(Uri address,string token,int maximumFrameCharacters=65536) => ScopeSocket.Connect(address,default,bearer:token,path:"/classhub",query:"classroomProtocol=1",maximumFrameCharacters:maximumFrameCharacters);
+    internal static Task<ScopeSocket> Connect(Uri address,string token,int maximumFrameCharacters=65536) => ScopeSocket.Connect(address,default,bearer:token,path:"/classhub",query:"classroomProtocol=2",maximumFrameCharacters:maximumFrameCharacters);
     internal static async Task<JsonElement> Event(ScopeSocket socket,string method) {
         using var stop=new CancellationTokenSource(TimeSpan.FromSeconds(20));
         for(var index=0;index<128;index++) { var value=await socket.Event("ClassroomEvent",timeoutMs:20000).WaitAsync(stop.Token);if(value.GetProperty("arguments")[1].GetString()==method)return value; }
@@ -39,6 +39,7 @@ internal static class ClassroomRecovery
     }
     internal static async Task Call(ScopeSocket socket,string method,params object?[] arguments) {
         var result=await socket.Invoke(method,arguments);Require(!result.TryGetProperty("error",out _),"Recovery call rejected: "+method);
+        Require(!result.TryGetProperty("result",out var value)||value.ValueKind!=JsonValueKind.Object||!value.TryGetProperty("code",out var code)||code.GetString()!="server_busy","Recovery call was busy: "+method);
     }
     internal static async Task Run(string root,string first,string second) {
         var a=Address(first);var b=Address(second);

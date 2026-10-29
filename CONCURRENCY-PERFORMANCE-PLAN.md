@@ -4283,3 +4283,92 @@ before changing behavior. Preserve visible localized failures, outcome uncertain
 diagnostics, compatibility and no automatic mutation replay. Large-payload/media/board
 traffic, longer deployment-specific soak/restore and the wider outstanding audits
 remain required. All seven completion requirements stay open; do not shrink the goal.
+
+### Negotiated classroom overload efficiency (seventy-sixth increment, 2026-10-29)
+
+Discovery traced RequestCapacity's HTTP ProblemDetails/server_busy/localized detail,
+shared throttle failure handling, ClassHubAccessFilter, shared invocation/join output,
+SPA connection callers, runtime policy fingerprint and actual SignalR dispatcher.
+Reuse the existing problem shape and retry setting through RequestCapacity.BusyProblem;
+no persistent field, table, parallel error DTO, retry queue or dependency is needed.
+Shared Core owns capacity semantics; SPA Core validates and presents failures for all
+consumers. Country-specific rules and data are unchanged.
+
+Configured shared clients now negotiate classroom protocol 2, including query, join
+acknowledgement and existing runtime fingerprint. Expected public capacity/admission
+misses return the same localized problem through SignalR completion rather than throw
+routine dispatcher exceptions. Default local clients retain their exception contract.
+Actual .NET 8 dispatcher behavior supports filter results even on Task hub methods;
+see Core docs/CLASSROOM-STATE-AUDIT.md increment 76 for primary source and trace.
+Unexpected/store/JSON/DB/deadline failures retain exception diagnostics; no framework
+or global logging suppression was added. The HTTP contract gains a compatible
+retryAfterSeconds hint alongside its existing header, status and no-store behavior.
+
+SPA validates status/code/detail/retry bounds and rejects an Error carrying them, so
+busy completion cannot appear successful. No automatic mutation replay or cooldown.
+Failed joins retain unknown-outcome handling and require a fresh connection, since
+failure before acknowledgement does not establish that nothing committed. Unsupported
+acknowledgements/malformed problems fail closed. Late successful non-join completions
+also respect the existing account/reconnect generation fence. Shared rollout requires
+matching clients/hosts and draining v1 transports/replicas; active policy disagreement
+fails closed. This is not a silent mixed-version live upgrade.
+
+Core 63c51cf: focused 42 pass (/tmp/dm-classroom-busy-focused.log), full 462 pass,
+zero skipped (/tmp/dm-classroom-busy-full-core.log). Three actual JWT/WebSocket locale
+cases hold the real gate and root lease: visible localized busy result, no notes write
+and no routine dispatcher error. An injected unexpected exception still reaches the
+client as failure and records the dispatcher error. SPA a61a087's connection tests
+pass in English/Dari/Pashto, including malformed/v1 output, no replay, failed join and
+late old-account success. Core and installed shell TypeScript pass. No translation
+strings were duplicated; existing localized Busy resources are authoritative.
+
+Installed actual-process five-second smoke passes (/tmp/dm-classroom-busy-smoke.log).
+Same two-minute synthetic traffic profile as increment 75 passes
+(/tmp/dm-classroom-busy-soak.log): 120.107 seconds, 54558 accepted hub calls,
+8495 successful ordinary list requests and 2655320 structured busy completions with
+zero exception-form busy completions. Delivered 317358 events; all four AT/AF schools
+progress, histories each contain 500 unique messages, tenant/room/epoch checks pass.
+Ordinary list p95 histogram upper bounds are 10.38–12.34 ms. Connection/method/
+publication/frame gates settle to zero after disconnect; Redis connection/pending/
+by-host counts are zero and four historical roots remain. Redis used 2576320 bytes,
+peak 3839280. No mutation retries and no hidden accepted busy operations.
+
+Sampled API A/B working-set peaks are 693649408/696582144 bytes, managed heap peaks
+446807424/424882640 and final heaps 141244520/97349008. Total lifetime allocation is
+234992392952 bytes and CPU 937.03 seconds, including startup/preparation. Compared
+with increment 75's 260303220368 bytes/991.11 CPU seconds over 1335353 completions,
+this run completed 2718373 operations: about 86.4 thousand bytes/completion versus
+194.9 thousand bytes/completion (55.7% lower), and 0.345 versus 0.742 CPU ms/completion
+(53.6% lower). These are aggregate ratios, not isolated rejection allocation costs.
+The unpaced workload changes the accepted/busy mix; prior baseline also predates
+stdout rotation and stronger final cleanup assertions. This is local comparative
+evidence, not controlled A/B attribution, profiling stacks, a throughput guarantee,
+production sizing or long-duration leak proof. Absolute allocation remains high;
+accepted history/output serialization and other paths still need profiling.
+
+Actual installed API SIGKILL recovery passes (/tmp/dm-classroom-busy-recovery.log):
+three connections reclaimed in 6860.82 ms across AT main/breakout and AF main, observed
+held lease, preserved notes/epochs, absent paused write, foreign-school denial and
+restarted routing. Redis remains alive; no durability/failover claim. Afghanistan
+integration: 106 passed, zero skipped (/tmp/dm-classroom-busy-country.log). Standard
+clean/build/pack/install/API build and SPA build/pack/install pass
+(/tmp/dm-classroom-busy-sync-dotnet.log, /tmp/dm-classroom-busy-sync-spa.log).
+Release producer/API installed SHA256 match:
+Core ea44a9b03a6a969f37f5425fc9382e9788a847a2469258b4d72f5ce19cbba4cb,
+Abstractions 99d9d16ed04a16921ed5f6095dedf1c4e20fdbccf0c135bf314032a3fd0958e5,
+country 75d4667271a05dd6af0a6253254f012cb59c8c8ae5298b0501666b3150ae6928.
+API documentation commit ea86bf3; SPA consumer lock-only commits AF 2970fa3,
+AT 87f3035, shell 3874901c. Existing package, locale and component-reuse gates pass.
+Mixed-mode regression follows below. No live database, developer Redis, user server
+restart, production setting change or push.
+
+All seven broader requirements remain open. Next: profile remaining allocation and
+representative large classroom payloads, longer deployment-specific soak/restore,
+and complete the wider editor/write/invariant/query/output/file/job audits. This
+increment closes routine negotiated busy exception churn, not the broader goal.
+
+Mixed-mode installed-package regression passes
+(/tmp/dm-classroom-busy-mixed-regression.log), including persisted registration,
+enrollment/capacity, attendance, tenant and financial assertions plus interrupted-
+payment restart/replay. This one-second phase is compatibility evidence, not a new
+throughput benchmark. All affected repositories receive local commits only.

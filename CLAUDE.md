@@ -2179,3 +2179,28 @@ memory sizing, a user-count promise or long leak/soak/restore proof. Current unp
 baseline shows high cumulative allocation/busy volume despite bounded retained state.
 Keep rejection-path allocation/CPU efficiency open and investigate it; do not mark the
 performance goal complete because resource bounds passed. Retain all broader audits.
+
+## Negotiated classroom capacity problems (2026-10-29)
+
+Classroom protocol 2 supersedes v1 for configured shared admission, join acknowledgement
+and the existing runtime fingerprint. Keep one Core protocol constant; matching SPA/
+verification consumers explicitly advertise v2. Drain old shared transports/replicas;
+never silently let v1 clients interpret structured failures as success. Default local
+wire/exception behavior remains unchanged. No persisted protocol/version field needed.
+
+Reuse RequestCapacity.BusyProblem and existing ProblemDetails/server_busy/localized
+detail/retry settings across HTTP, throttle-failure and negotiated classroom capacity
+paths. Expected public admission/capacity misses return that problem through SignalR
+completion, avoiding routine dispatcher exception/log stacks. Metrics stay intact;
+real store/JSON/DB/deadline and unexpected failures retain their exception handling.
+Do not suppress global/framework logs or turn an unhandled failure into success.
+
+The SPA validates busy fields and rejects with an Error carrying localized detail,
+status/code/retry hint. Never replay automatically. A busy/failed join may have committed
+before acknowledgement failure, so it still closes for a fresh binding. Unsupported
+acknowledgements/malformed problems fail closed. The account/reconnect generation guard
+also rejects successful late non-join completions. Actual socket tests in all three
+locales verify no note write for held gate/lease, no routine dispatcher error logs and
+preserved unexpected-failure logging. Reuse these tests and the same bounded actual-
+process load profile for performance evidence; do not compare different resource caps
+or hide busy results in accepted-operation counts. All broader requirements stay open.

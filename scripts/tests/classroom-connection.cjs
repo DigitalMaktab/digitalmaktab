@@ -30,7 +30,7 @@ const {createClassroomConnection,observeClassroomSession}=require(path.join(root
     const errors=[],events=[];
     const connection=createClassroomConnection('http://fixture/classhub',language,()=>user,message=>errors.push(message),'localized fallback');
     const native=created.at(-1);
-    assert.equal(native.options.accessTokenFactory(),'first');assert.equal(new URL(native.url).searchParams.get('culture'),language);assert.equal(new URL(native.url).searchParams.get('classroomProtocol'),'1');
+    assert.equal(native.options.accessTokenFactory(),'first');assert.equal(new URL(native.url).searchParams.get('culture'),language);assert.equal(new URL(native.url).searchParams.get('classroomProtocol'),'2');
     user={...user,token:'renewed'};assert.equal(native.options.accessTokenFactory(),'renewed');
     connection.on('ChatMessage',message=>events.push(message));native.events.get('chatmessage')('valid');assert.deepEqual(events,['valid']);
     const removed=()=>events.push('removed');connection.on('Removed',removed);connection.off('Removed',removed);assert.equal(native.events.has('removed'),false);
@@ -68,7 +68,7 @@ const {createClassroomConnection,observeClassroomSession}=require(path.join(root
     const c=createClassroomConnection('http://fixture/classhub',language,()=>current,e=>faults.push(e),'fallback',()=>inactive++);
     const n=created.at(-1),epoch='11111111-1111-1111-1111-111111111111',other='22222222-2222-2222-2222-222222222222';
     const scope=(roomId,revision,sessionId=epoch)=>({roomId,revision,sessionId});
-    const ack=(value,joined=true,events=1)=>({classroomProtocol:1,joined,scope:value,events});
+    const ack=(value,joined=true,events=1)=>({classroomProtocol:2,joined,scope:value,events});
     const emit=(value,name,...args)=>n.events.get('classroomevent')(value,name,args);
     observeClassroomSession(c,()=>{reset++;received.push('reset');});
     c.on('ChatMessage',message=>received.push(message));
@@ -102,7 +102,7 @@ const {createClassroomConnection,observeClassroomSession}=require(path.join(root
     const current={role:4,token:'delayed-bootstrap',student:{id:'id',schoolId:'school'}};
     const c=createClassroomConnection('http://fixture/classhub','en-US',()=>current,()=>{},'fallback');const n=created.at(-1);
     const scope={roomId:'A',sessionId:'11111111-1111-1111-1111-111111111111',revision:1};
-    n.result={classroomProtocol:1,joined:true,scope,events:2};let completed=false;
+    n.result={classroomProtocol:2,joined:true,scope,events:2};let completed=false;
     const join=c.invoke('JoinClass','A','Pupil','ATTENDEE').then(()=>completed=true);
     await new Promise(resolve=>setImmediate(resolve));assert.equal(completed,false,'completion can precede Redis delivery');
     n.events.get('classroomevent')(scope,'ClassroomSession',[scope]);
@@ -112,7 +112,7 @@ const {createClassroomConnection,observeClassroomSession}=require(path.join(root
   {
     const current={role:4,token:'missing-bootstrap',student:{id:'id',schoolId:'school'}};
     const faults=[];let inactive=0;const c=createClassroomConnection('http://fixture/classhub','en-US',()=>current,e=>faults.push(e),'fallback',()=>inactive++);const n=created.at(-1);
-    n.result={classroomProtocol:1,joined:true,scope:{roomId:'A',sessionId:'11111111-1111-1111-1111-111111111111',revision:1},events:2};
+    n.result={classroomProtocol:2,joined:true,scope:{roomId:'A',sessionId:'11111111-1111-1111-1111-111111111111',revision:1},events:2};
     await assert.rejects(c.invoke('JoinClass','A','Pupil','ATTENDEE'),/fallback/);assert.equal(n.stops,1);assert.equal(inactive,1);assert.equal(n.calls.length,1);
   }
   {
@@ -122,8 +122,29 @@ const {createClassroomConnection,observeClassroomSession}=require(path.join(root
     const scope={roomId:'A',sessionId:'11111111-1111-1111-1111-111111111111',revision:1};
     for(let i=0;i<16385;i++)n.events.get('classroomevent')(scope,'ChatMessage',['bounded']);
     assert.equal(n.stops,1);assert.equal(inactive,1);assert.deepEqual(errors,['fallback']);
-    finish({classroomProtocol:1,joined:true,scope});await assert.rejects(join,/fallback/);
+    finish({classroomProtocol:2,joined:true,scope});await assert.rejects(join,/fallback/);
   }
   assert.throws(()=>createClassroomConnection('http://fixture/classhub','en-US',()=>null,()=>{},'fallback'),/fallback/);
+  for(const language of ['en-US','fa-AF','ps-AF']){
+    const current={role:4,token:'busy',student:{id:'id',schoolId:'school'}};const reports=[];let inactive=0;
+    const c=createClassroomConnection('http://fixture/classhub',language,()=>current,e=>reports.push(e),'fallback',()=>inactive++);const n=created.at(-1);
+    const detail=`Localized busy ${language}`;n.result={status:503,detail,code:'server_busy',retryAfterSeconds:3};
+    await assert.rejects(c.invoke('SetMic','room',true),error=>error instanceof Error&&error.message===detail&&error.code==='server_busy'&&error.status===503&&error.retryAfterSeconds===3);
+    assert.deepEqual(reports,[detail]);assert.equal(n.calls.length,1,'structured failure is not replayed');assert.equal(n.stops,0);
+    n.result='accepted';assert.equal(await c.invoke('SetMic','room',false),'accepted');assert.equal(n.calls.length,2,'only explicit new action runs');
+    n.result={status:503,detail,code:'server_busy',retryAfterSeconds:3};await assert.rejects(c.invoke('JoinClass','room','Pupil','ATTENDEE'),error=>error.message===detail);
+    assert.equal(n.stops,1);assert.equal(inactive,1,'unknown join outcome still needs a fresh transport');
+  }
+  {
+    let current={role:4,token:'late-success',student:{id:'id',schoolId:'first'}};const reports=[];
+    const c=createClassroomConnection('http://fixture/classhub','en-US',()=>current,e=>reports.push(e),'fallback');const n=created.at(-1);
+    let resolve;n.wait=new Promise(done=>resolve=done);const call=c.invoke('SetMic','room',true);current={...current,student:{id:'id',schoolId:'second'}};
+    resolve('old account success');await assert.rejects(call,/fallback/);assert.deepEqual(reports,[]);assert.equal(n.stops,1);
+  }
+  for(const result of [{classroomProtocol:1,joined:true},{status:503,code:'server_busy',detail:'busy',retryAfterSeconds:'3'}]){
+    const current={role:4,token:'invalid',student:{id:'id',schoolId:'school'}};
+    const c=createClassroomConnection('http://fixture/classhub','en-US',()=>current,()=>{},'fallback');const n=created.at(-1);n.result=result;
+    await assert.rejects(c.invoke('JoinClass','room','Pupil','ATTENDEE'),/fallback/);assert.equal(n.stops,1,'unsupported/malformed protocol cannot be treated as success');
+  }
   console.log('classroom connection: identity, accepted bootstrap, epoch/revision and A-B-A fences, reconnect/late completion, bounded buffering, no mutation retries and disposal passed in all locales');
 })().finally(()=>{Module._load=load;if(extension)Module._extensions['.ts']=extension;else delete Module._extensions['.ts'];}).catch(error=>{console.error(error);process.exitCode=1;});

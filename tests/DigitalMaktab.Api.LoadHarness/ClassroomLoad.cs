@@ -31,7 +31,7 @@ internal static class ClassroomLoad
         var busy=localizers.GetRequiredService<IStringLocalizer<RequestCapacity>>()["Busy"].Value;Require(busy!="Busy","Load verifier could not resolve the actual localized overload contract.");
         using var fixture=JsonDocument.Parse(File.ReadAllText(Path.Combine(root,"fixture.json")));
         var schools=new List<School>();var pupils=new List<Pupil>();var owned=new List<ScopeSocket>();
-        var samples=new ConcurrentDictionary<string,Histogram>(StringComparer.Ordinal);long delivered=0;var drain=1;
+        var samples=new ConcurrentDictionary<string,Histogram>(StringComparer.Ordinal);long delivered=0,structuredBusy=0,exceptionBusy=0;var drain=1;
         void Record(string key,double ms)=>samples.GetOrAdd(key,_=>new()).Add(ms);
         void CheckEvents(School school,IEnumerable<JsonElement> events)
         {
@@ -64,7 +64,11 @@ internal static class ClassroomLoad
                     var operation=seq%3;var method=operation==0?"SendChatTyping":operation==1?"SetMic":"SendChatMessage";
                     object?[] args=operation==0?[pupil.School.Room]:operation==1?[pupil.School.Room,seq%2==0]:[pupil.School.Room,$"load-{pupil.School.Marker}-{seq}",null,null,null];
                     var watch=Stopwatch.StartNew();var result=await pupil.Socket.InvokeWithEvents(method,args);var status="accepted";
-                    if(result.Completion.TryGetProperty("error",out var error)) {Require(error.GetString()!.Contains(busy,StringComparison.Ordinal),"Unexpected classroom load error: "+error.GetString());status="busy";}
+                    if(result.Completion.TryGetProperty("error",out var error)) {Require(error.GetString()!.Contains(busy,StringComparison.Ordinal),"Unexpected classroom load error: "+error.GetString());status="busy";Interlocked.Increment(ref exceptionBusy);}
+                    else if(result.Completion.TryGetProperty("result",out var payload)&&payload.ValueKind==JsonValueKind.Object) {
+                        Require(payload.GetProperty("code").GetString()=="server_busy"&&payload.GetProperty("status").GetInt32()==503&&payload.GetProperty("detail").GetString()==busy
+                            &&payload.GetProperty("retryAfterSeconds").GetInt32() is >=1 and <=60,"Unexpected classroom result contract.");status="busy";Interlocked.Increment(ref structuredBusy);
+                    }
                     Record(pupil.School.Marker+"/"+method+"/"+status,watch.Elapsed.TotalMilliseconds);
                     Require(result.Events.Count<=4096,"Load receiver failed to drain a bounded event batch.");CheckEvents(pupil.School,result.Events);seq++;
                     if(pupil.School.Index!=0)await Task.Delay(5);
@@ -89,7 +93,7 @@ internal static class ClassroomLoad
                 Require(messages.All(row=>row.GetProperty("body").GetString()!.StartsWith("load-"+school.Marker+"-",StringComparison.Ordinal)),"Retained history crossed tenant scope.");history.Add(new{school=school.Marker,messages=messages.Length});
             }
             foreach(var socket in owned)await socket.DisposeAsync();owned.Clear();
-            Console.WriteLine("DM_CLASSROOM_LOAD_RESULT "+JsonSerializer.Serialize(new{schools=4,countries=new[]{"AT","AF"},connections=24,hotSchoolClients=8,otherSchoolClients=4,requestedSeconds=seconds,observedSeconds=Math.Round(duration,3),deliveredEvents=delivered,
+            Console.WriteLine("DM_CLASSROOM_LOAD_RESULT "+JsonSerializer.Serialize(new{schools=4,countries=new[]{"AT","AF"},connections=24,hotSchoolClients=8,otherSchoolClients=4,requestedSeconds=seconds,observedSeconds=Math.Round(duration,3),deliveredEvents=delivered,structuredBusy,exceptionBusy,
                 noMutationRetries=true,ordinaryHttpSucceeded=true,allSchoolsProgressed=true,retainedHistory=history,latencyHistogram="512 fixed logarithmic buckets; percentile upper bounds at 2.5% resolution",operations=samples.OrderBy(row=>row.Key).Select(row=>new{operation=row.Key,latency=row.Value.Value()})}));
         }
         finally {Volatile.Write(ref drain,0);foreach(var socket in owned)await socket.DisposeAsync();}
