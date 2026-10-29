@@ -4742,3 +4742,98 @@ own localized wording rather than copying that error into additional controllers
 Allocation profiling, longer representative deployment load and recovery/restore
 proof remain. No cross-process kill or whole-goal completion is inferred from this
 independent-host scenario. All original requirements remain open.
+
+### Scoped school-event/RSVP read paths (eighty-second increment, 2026-10-29)
+
+Discovery traced event/RSVP entities, repository/DTO/controller/validators, audit and
+notification readers, actual list/upcoming/roster/editor callers, shared paginator,
+AppTable/read lifecycle/export and enum normalization. Existing notification audience
+is active delivery preference resolution, not historical roster names; audit resolver
+uses actor precedence without stored RSVP role. Extend the existing event repository
+with a role-specific scalar roster projection rather than copying either resolver or
+introducing a service/table. No new persistent field or index is required here.
+
+Fix the list's discarded filters and duplicate mount request. School/date/title
+criteria combine before paging; sort title/start/end/location through a whitelist with
+stable ID ties. List/upcoming repository reads use no tracking, cancellation, no-store
+and direct-call bounds (upcoming max 100). UserResolver audit labels prime in bounded
+batches before mapping; RSVP hydration is school-scoped and cancelled with the request.
+The existing UTC-day upcoming cutoff and write behavior remain explicit, unchanged.
+
+Roster endpoint now returns normal paged arrays/Pagination header (10 default/50 max),
+creation-date and participant-name criteria. Project existing SchoolEventRsvp.CreationDate
+into its DTO; RespondedAt remains last response, not entry time. No database column is
+added. Role-specific scalar joins require the selected school, retain inactive local
+history and support teacher/principal/head-master/staff families. Missing/foreign soft
+references retain raw IDs; foreign names/credentials are never exposed. Remove the old
+unbounded roster/dictionary materialization. The actual SQL probe caught whole-entity
+count joins in an early draft; final ID/name-only projections and simpler counts pass
+checks excluding PasswordHash and tracked entities.
+
+Extend PagedList through a new overload accepting an equivalent scoped count callback;
+keep the existing five-argument signature/ABI. No duplicated page clamp/offset logic.
+Unfiltered roster counts the already-filtered RSVP source without display joins; name
+searches retain those joins in the count. Cancellation checks before/after count also
+cover empty results and a supplied count callback. This is a transient query contract,
+not a stored count or second source of truth; count/display criteria must stay equal.
+
+UI list/roster load through actual AppTable paging/filter/cancel/export paths. Empty
+rosters keep filters and may export all matching pages. Preserve RSVP status under a
+view alias instead of overwriting it with Base.status; shared enum normalization handles
+named RSVP status while preserving event booleans. Role/status PDF values are readable
+translated text. Roster modals hide across account scope. Upcoming reuses the shared
+read hook and scopes optimistic rows/pending/error state to its source snapshot, pins
+RSVP credentials and ignores stale/unmounted completions. Pending duplicate callbacks
+are guarded; no automatic mutation replay or new server write semantics.
+
+Inventory's existing receipt error strings incorrectly mentioned payment history.
+Correct its own existing resource values in English/Dari/Pashto to inventory/item
+history without adding another localization key or generic message store.
+
+Focused PostgreSQL/HTTP/resource tests pass (/tmp/dm-event-reads-focused.log). Final
+full Core: 471 passed, zero skipped (/tmp/dm-event-reads-full-core.log), including empty
+count cancellation. Tests cover combined filters/stable pages, actual creation versus
+response dates, historical inactive names, foreign-name exclusion, scalar SQL/no
+credentials/no tracking, bounds/cancellation, real no-store/Pagination responses and
+RSVP aggregates/caller state. Inventory resource tests verify all three locales and no
+payment guidance. This is not representative large-roster plan/capacity evidence.
+
+Client screen/API/read-scope/normalization tests pass (/tmp/dm-event-reads-client.log):
+criteria/signal/no-store forwarding, no duplicate list mount fetch, paged roster adapter,
+translated enum export values, preserved creation date/boolean status and account-hidden
+rosters; upcoming ignores late account completion and unmounted RSVP results. Core's
+existing table/export tests cover their separate layers; controlled transport tests
+are not presented as a single real database-to-PDF benchmark.
+
+Core b29e107, SPA Core a73dd81, API docs 894c56d. Normal package/consumer evidence follows
+below. Backend country source and persistence schema remain unchanged. Event create/
+edit/delete versions/receipts, server RSVP insert/update races, representative roster
+plans, school-local cutoff semantics, remaining app audits and longer deployment load/
+recovery/restore work remain. All seven original broader requirements stay open.
+
+Normal backend clean/build/pack/install/API build passes
+(/tmp/dm-event-reads-sync-dotnet.log), including Abstractions and SDK/country consumers.
+SPA build/pack/install passes (/tmp/dm-event-reads-sync-spa.log). Installed shell
+TypeScript passes (/tmp/dm-event-reads-shell-types.log). Client regressions pass again
+after loading-state wiring: upcoming uses the shared table's isLoading state instead
+of presenting its own empty message during a pending read. React checklist review
+retained shared primitives, stable snapshot/ref fences, functional optimistic updates
+and complete memo dependencies; no new UI library or read cache.
+
+Installed Afghanistan integration: 106 passed, zero skipped
+(/tmp/dm-event-reads-country.log). Producer/API installed SHA256 match:
+Core a52628c156ce7fa168ea23c9c335c248ac53d1738ad39d3768bfa427be1fc96a,
+Abstractions 9c25f320516c23e5ea3d2c0a3f3ceea12c9ddeba0ff8670a19e2b53bea4a99ed,
+country ae43abfdd68108503da7645b1684b2e2960626e1c8860da534de65e49b254830.
+SPA consumer commits AF 3a520c3, AT 488b857, shell fa5ad8ad. Backend country source is
+unchanged. Locale/reuse/enum/worker-health/abstraction-isolation/API route gates pass.
+No live database, developer Redis, user-server restart, new dependency, persistence
+migration or push. Backend restart is still needed to load swapped assemblies; user
+servers were deliberately left under user control.
+
+All original seven requirements remain open. Next major workflow: school-event write
+versions/receipts/authorization after waits and concurrent first-RSVP upserts; editor
+hydration should also join the same cancellable/no-store scope. Further representative
+roster query plans, UTC-versus-school-local day semantics, other app audits, allocation
+profiling and longer deployment load/recovery/restore evidence remain. Read-path proof
+does not establish event mutation concurrency or overall goal completion.

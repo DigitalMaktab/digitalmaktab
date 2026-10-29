@@ -2304,3 +2304,32 @@ ignore old-account/unmounted completions. No automatic replay. Tests reuse Scope
 private persisted key-ring, GradeWriteProbe and an optional table selector on the
 existing InventoryWriteProbe. Ship Core/SPA/shell together; old writes without keys
 must get 428, not an unguarded compatibility path. Keep broader goal requirements open.
+
+## Event/RSVP read composition (2026-10-29)
+
+Reuse SchoolEventRepository/DTOs, GeneralParams/PagedList, UserResolver audit batching,
+AppTable and useReloadableRead. Event pages forward all criteria/cancellation and use
+stable whitelisted global sort; upcoming is untracked/cancellable/capped even when
+called directly. Preserve existing UTC-day cutoff pending a separate school-local
+semantic audit. No new persistence representation is needed.
+
+RSVP rosters are paged (10/50), using the existing entity CreationDate, now projected
+in RsvpEntryDto separately from RespondedAt. Names are role-specific ID/name-only joins
+scoped to the selected school; retain inactive local historical people and raw-ID
+fallbacks for missing/foreign references. Notification audience returns active delivery
+preferences and audit names use role precedence, so neither fits this roster unchanged.
+Never return foreign participant names or load whole credential/owned graphs.
+
+Keep PagedList's existing signature; its new count-callback overload reuses paging/
+size/offset/cancellation bounds for an equivalent already-filtered count without display
+joins. Caller count/display predicates must match. For roster name searches count the
+joined name filter; without search count the shared RSVP source directly. Check cancel
+before/after count even when empty; do not copy pagination into a controller.
+
+The roster's view alias rsvpStatus preserves wire enum status while Base.status remains
+boolean. Shared event enum normalization leaves event booleans intact; role/status
+report values are translated strings. Keep roster filters on empty pages and hide
+modals across accounts. Upcoming snapshot/pending/error state is scoped to shared read
+snapshots; pin RSVP credentials and ignore old-account/unmounted completion without
+adding automatic replay. Event writes and RSVP upsert races remain an open audit.
+Inventory receipt guidance now refers to inventory/item history in all three locales.
