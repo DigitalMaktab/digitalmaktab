@@ -2260,3 +2260,23 @@ rebuilding valid indexes, reject wrong named definitions, preserve rows on contr
 rollback and transaction suppression. Use the coordinated DDL/startup migration budget;
 never repair invalid production indexes by silently dropping them. No live migration
 or user-server restart is authorized merely by these isolated measurements.
+
+## Holiday table paging (2026-10-29)
+
+Reuse GeneralParams, PagedList.ApplyTableFilters/CreateAsync, UserResolver.PrimeAsync,
+existing HolidayDto/mapper and AppTable's page/filter/export/cancellation/reloadKey.
+The holiday list is now default-10/max-50 with Pagination metadata; combine school,
+case-insensitive name and applied creation-date criteria before stable whitelisted
+sorting/paging. No new parameter type, repository, DTO, persisted field or parallel
+page cache is needed. Prime bounded audit labels before mapping; keep no tracking,
+request cancellation and no-store. No count/page or multi-request export snapshot
+promise is implied. Composed-calendar completeness uses its separate window endpoint.
+
+The shell's real list loader delegates to the shared API wrapper/buildParams and
+forwards sort/date/name criteria and AbortSignal. Remove placeholder fetchers and
+separate mount-time full-list loading. Shared AppTable owns all-page export and state;
+confirmed writes/manual refresh use reloadKey. Coordinate Core/SPA/shell rollout because
+old no-argument list callers now receive a page, not the whole school history.
+Holiday create/delete durable intent handling remains the next open write audit;
+no automatic replay may be added and no extra table/field/service is needed if the
+existing MutationReceiptStore and useMutationIntent represent the operation.

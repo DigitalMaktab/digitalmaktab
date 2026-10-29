@@ -40,6 +40,19 @@ const button=(ui,key)=>ui.getAllByRole('button',{name:i18n.t('report.settings.'+
  ui=view({printPreferenceKey:'other-table'});openSettings(ui);assert.equal(ui.getByLabelText(i18n.t('report.settings.pageSize'), { selector: "input,select,textarea" }).value,'a4');assert(ui.getByRole('checkbox',{name:'Due date'}).checked);cleanup();
  assert.deepEqual(settings.loadPdfSettings('workflow-table',[columns[1],columns[0],columns[2]]).selectedColumns,[1]);
  localStorage.setItem(settings.pdfPreferenceStorageKey('broken',settings.getPdfPreferenceUserKey()),'{bad');assert.deepEqual(settings.loadPdfSettings('broken',columns),settings.defaultPdfSettings(columns));
+ // Successful paged export includes every matching page with the applied filters.
+ const fullRows=Array.from({length:101},(_,index)=>({...rows[0],id:'paged-'+index,name:'Paged '+index}));const pagedRequests=[];
+ ui=view({data:[],serverSort:true,columns:[{...columns[0],filter:{type:'text',accessor:'searchTerm'}}],fetchPageData:async(page,size,filters,signal)=>{
+  pagedRequests.push({page,size,filters,signal});return{status:2,data:fullRows.slice((page-1)*size,page*size),headers:{pagination:JSON.stringify({totalPages:Math.ceil(fullRows.length/size),totalItems:fullRows.length})}};
+ }});await waitFor(()=>assert.equal(pagedRequests.length,1));
+ fireEvent.change(ui.getByLabelText(i18n.t('dateRange.from'),{selector:'input,select,textarea'}),{target:{value:'2026-10-13'}});
+ fireEvent.change(ui.getByLabelText(i18n.t('dateRange.to'),{selector:'input,select,textarea'}),{target:{value:'2026-10-13'}});
+ fireEvent.change(ui.getByLabelText('Name',{selector:'input,select,textarea'}),{target:{value:'Paged'}});
+ fireEvent.click(ui.getByRole('button',{name:i18n.t('filters.button.label')}));await waitFor(()=>assert.equal(pagedRequests.length,2));openSettings(ui);fireEvent.click(button(ui,'export'));
+ await waitFor(()=>assert(button(ui,'openPdf')));const exportRequests=pagedRequests.filter(row=>row.size===50);assert.deepEqual(exportRequests.map(row=>row.page),[1,2,3]);
+ for(const request of exportRequests){assert.equal(request.filters.searchTerm,'Paged');assert.equal(request.filters.creationDateFrom,'2026-10-13');assert.equal(request.filters.creationDateTo,'2026-10-13');assert(request.signal);}
+ const allBlob=[...blobs.values()].at(-1);const allPath=path.join(require('node:os').tmpdir(),'pdf-workflow-all-pages.pdf');fs.writeFileSync(allPath,Buffer.from(await allBlob.arrayBuffer()));
+ const allText=require('node:child_process').spawnSync('pdftotext',['-layout',allPath,'-'],{encoding:'utf8'});if(allText.status===0){assert(allText.stdout.includes('Paged 0'));assert(allText.stdout.includes('Paged 100'));}assert.equal(opens,0);cleanup();
  // Cancel between server pages: no subsequent page request and no mutation of the table's page snapshot.
  const queries=[];let stop;const pageWait=new Promise(resolve=>{stop=resolve});
  ui=view({data:rows,totalPages:3,fetchPageData:async(page,size,filters,signal)=>{

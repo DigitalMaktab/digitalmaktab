@@ -4588,3 +4588,72 @@ schema, not every historic schema version.
 Installed-package Afghanistan compatibility: 106 passed, zero skipped
 (/tmp/dm-calendar-access-country.log). All affected producer/consumer worktrees are
 clean before the root evidence commit; only its persistent instructions/plan changed.
+
+### Holiday table paging (eightieth increment, 2026-10-29)
+
+Discovery followed SchoolCalendarController.ListHolidays, Holiday/DTO/mapper audit
+resolvers, GeneralParams/TableQueryFilters/PagedList, actual holiday screen, shared
+API wrapper/buildParams, AppTable loader/filter/export/reloadKey/cancellation and
+existing write-intent/receipt contracts. Country/mobile/SDK searches found no other
+shipped list caller. The calendar window and automation sources query independently.
+Reuse existing components and contracts; no persistent field/table, parameter type,
+repository/service/DTO or second UI read/cache implementation is needed.
+
+Holiday reads now return the standard array plus Pagination header, default 10/max
+50 rows. School + case-insensitive name search + applied creation-date bounds combine
+before stable whitelisted name/fromDate/toDate/description sorting with an ID tie.
+Use AsNoTracking, RequestAborted, shared bounded PagedList and batched UserResolver
+priming before the existing DTO mapper. Extreme pages reuse the safe empty-page path.
+No-store applies server/client; no offline snapshot fallback for this list.
+
+The actual screen's placeholder fetcher/full-list mount effect/local items cache are
+removed. AppTable calls the real shared paged API loader with all criteria and signal,
+serverSort and reloadKey; its existing all-pages export path is authoritative. Name
+filter uses the existing searchTerm accessor. Confirmed writes/manual refresh trigger
+shared table reload without a second data owner or fetch lifecycle. This does not
+change the separate complete bounded calendar window. Ship Core, SPA Core and shell
+together; old no-argument list clients receive only the default page.
+
+Real PostgreSQL focused test passes (/tmp/dm-holiday-pages-focused.log): 60 name/date
+matches split 50/10 in globally stable descending order, no overlapping page IDs or
+foreign school records, max-page clamp, SQL LIMIT, bounded audit query count, no
+tracking, safe extreme page and cancellation. The screen/actual API wrapper test
+passes (/tmp/dm-holiday-pages-client-wiring.log): complete filters/sort/page/signal/
+no-store forwarding and reloadKey without a duplicate full-list effect. Shared table
+filter/cancellation lifecycle passes (/tmp/dm-holiday-pages-table-lifecycle.log), and
+PDF workflow passes (/tmp/dm-holiday-pages-export-lifecycle.log). These verify different
+layers; no single mock test is presented as end-to-end database/export proof.
+Full Core/package/country evidence follows below.
+
+Additional actual AppTable PDF scenario now passes in the same PDF workflow verifier:
+101 matching records loaded over three 50-row requests; every request retains applied
+name/creation-date criteria and AbortSignal. Generated PDF contains the first and last
+records (pdftotext available for extraction); the modal reaches Ready without opening
+a page early. This strengthens all-page export evidence beyond the existing cancelled-
+page scenario. The HTTP response body remains supplied by the test transport; actual
+PostgreSQL filter/paging behavior is independently tested above.
+
+Final Core: 467 passed, zero skipped (/tmp/dm-holiday-pages-full-core.log). Core source/
+docs f0a089c, SPA Core 38a63ab, API compatibility documentation 00906d3. Normal backend
+clean/build/pack/install/API build passes (/tmp/dm-holiday-pages-sync-dotnet.log), and
+SPA package build/pack/install passes (/tmp/dm-holiday-pages-sync-spa.log). Installed
+shell TypeScript passes (/tmp/dm-holiday-pages-shell-types.log); strict locale/reuse,
+enum, worker-health, abstraction and API route gates pass. Earlier shell checks used
+old installed API typings and caught a reload-key type error; final source/package
+checks supersede those failed attempts. No translation keys were added.
+
+Installed Afghanistan compatibility: 106 passed, zero skipped
+(/tmp/dm-holiday-pages-country.log). Producer/API installed SHA256 match:
+Core 493d922fc4b9bf63aef663ffabf7293bdc6bdff567136c749f3edffdf355f437,
+Abstractions f09a43bfe2fbb942192d99b11e2eedee2994d043c57ac83bd979e41fff8dc85c,
+country 52216279c359fac747095bb13de0dffa4c833ab92093f82ac3606276e4e9495c.
+SPA consumer commits: AF 41c334a, AT fceb7c9, shell f6d0d571. Backend country source
+stays unchanged; no migration/index/field was added this increment. No live database,
+developer Redis, user server restart, production setting change or push.
+
+Holiday create/delete durable intent, changed-payload rejection/replay/current-authority
+checks and UI unknown-outcome handling remain the next write audit. This read change
+only removes the unbounded list/placeholder-loader gap. Count/page and all-page export
+requests do not claim a shared point-in-time snapshot. All seven broader requirements
+remain open, including the other editor/write/invariant/query/output/job audits,
+allocation profiling and longer deployment load/recovery/restore verification.

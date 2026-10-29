@@ -75,5 +75,16 @@ const wrapper=({children})=>h(I18nextProvider,{i18n},h(MemoryRouter,null,h(Loade
   await act(async()=>requests[2].task.resolve({status:200,data:{entries:[{id:'event',kind:'EVENT',title:'Current calendar'}]}}));assert(ui.container.textContent.includes('Current calendar'));fireEvent.click(ui.getByRole('button',{name:'Open day'}));assert(ui.container.querySelector('aside'));
   account={token:'calendar-d',role:0};ui.rerender(calendarNode());assert.equal(ui.container.querySelector('aside'),null,'old calendar detail cannot cross account scope');await waitFor(()=>assert.equal(requests.length,4));ui.unmount();assert(requests[3].config.signal.aborted);cleanup();
  }
+ // Holiday screen delegates paging/filter/export loads to the actual Core API.
+ let holidayTable;
+ Object.assign(exportsForScreen,{AppTable:props=>{holidayTable=props;return h('output',null,'Holiday table');},AppForm:()=>null,AppFormInput:()=>null,AppFormLocalDatePicker:()=>null});
+ const Holidays=require(shell+'/src/screens/school/calendar/Holidays.tsx').default;
+ requests=[];mode='defer';ui=render(h(Holidays),{wrapper});assert(holidayTable.serverSort);assert.equal(holidayTable.data.length,0);
+ assert.equal(holidayTable.columns.find(column=>column.accessor==='name').filter.accessor,'searchTerm');
+ const stop=new AbortController();const criteria={searchTerm:'رخصتی',creationDateFrom:'2026-04-01',creationDateTo:'2026-04-30',sortBy:'name',sortOrder:'desc'};
+ const holidayRead=holidayTable.fetchPageData(2,50,criteria,stop.signal);assert.equal(requests.length,1);assert.equal(requests[0].url,'/holidays');
+ assert.deepEqual(requests[0].config.params,{...criteria,pageNumber:2,pageSize:50});assert.equal(requests[0].config.signal,stop.signal);assert.equal(requests[0].config.headers['Cache-Control'],'no-store');
+ await act(async()=>requests[0].task.resolve({status:200,data:[],headers:{pagination:JSON.stringify({totalPages:2,totalItems:60})}}));await holidayRead;
+ const key=holidayTable.reloadKey;act(()=>holidayTable.actions.find(action=>action.label===i18n.t('holiday.refresh')).onClick());assert.equal(holidayTable.reloadKey,String(Number(key)+1));assert.equal(requests.length,1,'screen does not duplicate AppTable page fetching');ui.unmount();cleanup();
  console.log('PASS: real report screens recover from overload in three locales, retain snapshots, send no-store/cancellation and block duplicate reads; Core read scope clears private data across accounts/permissions, ignores late responses and aborts on unmount.');
 })().catch(error=>{console.error(error);process.exitCode=1}).finally(()=>{cleanup();dom.window.close()});
