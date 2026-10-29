@@ -4837,3 +4837,76 @@ hydration should also join the same cancellable/no-store scope. Further represen
 roster query plans, UTC-versus-school-local day semantics, other app audits, allocation
 profiling and longer deployment load/recovery/restore evidence remain. Read-path proof
 does not establish event mutation concurrency or overall goal completion.
+
+## Resume increment 83 — atomic RSVP preferences and explicit retry intents (2026-10-29)
+
+Discovery traced the existing SchoolEvent/SchoolEventRsvp entities, EventId/UserId
+unique key/FK, SetRsvpDto/validator, tracked audit interceptor, staff endpoint capability
+mapping, account stamps/impersonation, encrypted MutationReceiptStore, shared
+useMutationIntent/accountRequestConfig/read-scope hook and actual upcoming-events
+caller. Reuse these in Core/SPA Core; no new persistent field/table/migration,
+production service, UI component or country fork. Holiday tests' existing host setup
+was extracted for RSVP reuse; the existing inventory probe gained only an optional
+lock-clause selector, preserving its defaults.
+
+Self-RSVP requires Idempotency-Key and retains {status}. A receipt transaction locks
+the own-school parent FOR KEY SHARE, then serializes the existing event/user identity
+with a namespaced advisory lock. Distinct deliberate intents are latest-committed-wins;
+the existing unique key remains authoritative. Parent deletion cannot race an insert
+into an FK error. Tracked saves retain audit behavior. Current account/impersonator
+checks run after receipt waits, after domain waits and after saves. Existing staff
+policy remains events.write; other active school roles retain self-service. Empty
+platform scope cannot write. Row/audit/receipt roll back together on failure.
+
+Replay returns the immutable original result without rewriting later responses or
+advancing audit/timestamps. It may acknowledge an event subsequently deleted; it is
+not a claim that the event or original response is still current. Browser intents keep
+IDs across explicit retries of the same event/status/account, reset for deliberate new
+choices or confirmation, pin credentials and block duplicate pending writes across
+token/read refresh. Old-account/unmounted completions are ignored. Successful replies
+invalidate the shared canonical read instead of computing optimistic counts. No
+automatic mutation replay, second source of truth or device wall-clock ordering claim.
+
+Focused actual JWT/HTTP/PostgreSQL scenarios pass (2 tests including holiday regression,
+/tmp/dm-rsvp-focused.log). RSVP coverage: eight concurrent same-intent requests across
+independent hosts; twelve distinct-intent first writes for another participant; one
+row and expected audit count; later response preserved through original replay;
+changed target/status rejection; three locales for missing keys and validation;
+foreign school/target denial; receipt-failure rollback/recovery; authority revocation
+while waiting for the parent and receipt locks; parent deletion winning the race;
+fresh provider/key-ring replay. These hosts run inside one test process; this does
+not replace abrupt process-loss/deployment load evidence. Audits lacking a direct
+entity SchoolId retain their existing scope behavior, a separate broader audit.
+
+Full Core suite: 472 passed, zero skipped (/tmp/dm-rsvp-full-core.log).
+Client actual screen/intent/API/read-hook tests pass (/tmp/dm-rsvp-client.log), including
+stable retry IDs, deliberate new-choice IDs, pinned tokens, no automatic retry, pending
+write fence through token renewal/read refresh, canonical counts after replay and
+old-account/unmounted completion. Existing AppTable stubs in these targeted tests are
+not represented as real browser-to-database export evidence. Core/shell TypeScript
+passes (/tmp/dm-rsvp-spa-core-types.log, /tmp/dm-rsvp-shell-types.log). React review
+retains shared primitives, stable intent/ref ownership, complete callback dependencies,
+logical identity fences and an accessible pending status. No new dependency/library.
+
+Producer commits: Core a031839, SPA Core 6dd3c64; API rollout docs 763e04c.
+Standard backend clean/build/pack/install/API build passes (/tmp/dm-rsvp-sync-dotnet.log).
+SPA package build/pack/install passes (/tmp/dm-rsvp-sync-spa.log). Installed Afghanistan
+integration: 106 passed, zero skipped (/tmp/dm-rsvp-country.log). Producer/API SHA256
+pairs match: Core ea09cc531bf02529f8bc06e54d86e5696bec2f30b2d15b95ec406a779f0e8d82;
+Abstractions 02a21b85266a8377245ae6f15581e5904cc2d03ea29152260428fa0fc09061ba;
+country a57032ec5785084e7d651c1c087f9a81cf3c24bd57a70487691e55747945946a.
+Consumer locks: SPA AF 047d564, AT be81a1b. Backend country source unchanged.
+No live DB/developer Redis mutation, user-server stop/restart, persistence migration
+or push. Core/SPA/shell rollout is coordinated; old keyless writes return 428. Users
+still control when their servers restart to load rebuilt packages.
+
+All seven original broader requirements remain open. Next: admin event create/edit/
+delete versions and receipts, cancellable/no-store editor hydration and read recovery;
+then representative large-roster plans, school-local day semantics, remaining app
+mutation/query audits, classroom allocation profiling and longer mixed-school load/
+deployment recovery/restore evidence. This increment closes the audited self-RSVP
+race/retry path only; it does not establish overall goal completion.
+
+Final shell source/lock commit: dacec11e. Locale coverage, shared-control reuse,
+raw-alert/textarea/select guards, enum parity, abstraction isolation, background worker
+health opt-in and API throttle-route checks pass through normal commit gates.

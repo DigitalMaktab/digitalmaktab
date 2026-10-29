@@ -2333,3 +2333,24 @@ modals across accounts. Upcoming snapshot/pending/error state is scoped to share
 snapshots; pin RSVP credentials and ignore old-account/unmounted completion without
 adding automatic replay. Event writes and RSVP upsert races remain an open audit.
 Inventory receipt guidance now refers to inventory/item history in all three locales.
+
+## Durable RSVP preferences (2026-10-29)
+
+POST event/{id}/rsvp reuses MutationReceiptStore/DurableMutation and requires the
+existing Idempotency-Key protocol. No new field/table/service or revision is needed
+for this latest-committed preference. Preserve the {status} wire result. Receipt scope
+includes actor role; the row's serialization identity follows existing EventId/UserId
+without role. Lock own-school event FOR KEY SHARE before the namespaced pair advisory
+lock, use tracked saves/AuditInterceptor and reauthorize after waits/saves. Keep existing
+STAFF events.write policy and other school-role self-service; reject empty school scope.
+Replay acknowledges its original immutable result, even after a later change/deletion,
+and requires current authority. It must not rewrite the row or be presented as current
+RSVP state. No automatic replay and no promise of wall-clock choice ordering.
+
+Use useMutationIntent/accountRequestConfig and the existing scoped cancellable read.
+Same explicit retry retains the ID; deliberate event/status/account changes and confirmed
+success reset it. Pin credentials, gate pending writes by logical account identity
+across token/read refresh, ignore old-account/unmounted completions and invalidate the
+canonical snapshot on success instead of optimistic count arithmetic. Backend and SPA
+ship together. Tests reuse CalendarMutationHost/ScopeHost and existing failure/lock
+probes; do not copy test hosts. Admin event write versions/receipts remain open.
