@@ -4657,3 +4657,88 @@ only removes the unbounded list/placeholder-loader gap. Count/page and all-page 
 requests do not claim a shared point-in-time snapshot. All seven broader requirements
 remain open, including the other editor/write/invariant/query/output/job audits,
 allocation profiling and longer deployment load/recovery/restore verification.
+
+### Durable holiday create/delete (eighty-first increment, 2026-10-29)
+
+Discovery traced Holiday/DTO/validators/mapper, write callers, shared receipt/encryption/
+fingerprint transactions, BaseController authorization, AuditInterceptor, row-lock
+patterns, existing UI intents/account config/submit button and test hosts/probes.
+Reuse MutationReceiptStore and its existing table, DurableMutation, account-stamp/
+impersonator checks and tracked SaveChanges audit path. No new persistent field/table,
+revision token, repository/service/DTO, migration or country-specific fork is needed.
+Holiday has no edit endpoint; serializing deletes does not require an edit version.
+
+POST/DELETE holidays require Idempotency-Key. Capture normalized immutable create
+fields and delete target before awaiting. Receipt ownership remains tenant/actor/role/
+action/key; changed fingerprints are rejected. Authorize after receipt-lock waits and
+before replay, then again after mutation database waits. Empty platform school scope
+is denied; preserve the existing school impersonation workflow and role restrictions.
+Create returns its original DTO, delete its empty success response, including replay
+when the row has already gone. There is no new business uniqueness rule against
+legitimate separately requested holidays with the same name/date.
+
+Tracked FOR UPDATE deletion preserves existing AuditInterceptor behavior. A direct
+ExecuteDelete draft was discarded before committing because it bypassed auditing.
+Different delete intents serialize: one success, one localized not-found; same-intent
+requests replay success. Holiday/receipt/audit effects share one transaction and roll
+back together on receipt failure or access revocation. No copied manual audit writer.
+Domain/receipt guidance explicitly refers to holidays/calendar in all three locales;
+existing unrelated payment wording was not carried into this controller.
+
+SPA Core reuses accountRequestConfig and captures credentials synchronously at API
+invocation. The screen reuses useMutationIntent, AppFormSubmitButton and shared account
+identity. Same operation keeps ID and form/confirmation state through explicit retries;
+a deliberately new operation gets a new ID. In-flight duplicate callbacks and closing
+an active operation are guarded. No automatic replay or mutation cancellation that
+pretends an unknown outcome is failure. Hide old-account operations immediately and
+ignore late success/error/refresh after scope change/unmount. Only confirmed success
+triggers existing AppTable reloadKey; refresh failure cannot redefine a committed write.
+
+Focused actual JWT/HTTP/PostgreSQL test passes (/tmp/dm-holiday-intents-focused.log):
+eight concurrent duplicate creates and eight duplicate deletes across independent hosts,
+changed create payload/delete target rejection, role/foreign-school denial, three-locale
+missing-key responses, normal validator rejection, competing different delete intents,
+receipt-failure rollback of create/delete and audit records, revocation while waiting
+for a receipt lock and a Holiday row lock, and new-host/private-persisted-key-ring
+replay after deletion. Existing ScopeHost, GradeWriteProbe and InventoryWriteProbe are
+reused; the latter adds only an optional observed table (default InventoryItem).
+The test host explicitly includes AuditInterceptor. Earlier test drafts without that
+interceptor and the direct-delete implementation are superseded by final evidence.
+
+Final full Core: 468 passed, zero skipped (/tmp/dm-holiday-intents-full-core.log).
+Core commit 4f3a53e, SPA Core 9c18a76, API compatibility docs 110dd2c. Client callback/
+intent/API-config tests pass (/tmp/dm-holiday-intents-client.log): pinned token, same-ID
+explicit retry, fresh new-operation ID, pending duplicate/close guards, visible errors,
+delete retry and no old-account reload on late success. Actual screen and real shared
+intents/API config are exercised with controlled transport and simplified form/table
+rendering; backend authority/persistence and the shared form/table/PDF behavior have
+their own tests. This is not a new browser-layout or abrupt-process-loss benchmark.
+Core TypeScript passes; installed consumer/package/country results follow below.
+
+Final backend clean/build/pack/install/API build passes
+(/tmp/dm-holiday-intents-sync-dotnet.log), as does SPA package build/pack/install
+(/tmp/dm-holiday-intents-sync-spa.log). Installed shell TypeScript passes
+(/tmp/dm-holiday-intents-shell-types.log). React skill checklist review retained shared
+Core components/read lifecycle, stable intent refs, primitive account-scope effects,
+functional reload state and existing accessible modal/submit controls; no new UI
+library, caching layer or automatic mutation retry. Locale/enum/reuse/worker-health/
+abstraction-isolation and API route gates pass.
+
+Installed Afghanistan compatibility: 106 passed, zero skipped
+(/tmp/dm-holiday-intents-country.log). Producer/API installed SHA256 match:
+Core 57b351ef7eb6d9394ed42e64bf2deb95068645d2bc229f1ecbe356aa218bcc0a,
+Abstractions 57c0e51419b4cfccb30c685a80f30e54e54fa0cce1d1fb4e41abfcdcb7a006aa,
+country 9c192e29d35568d857885a9ec99fbca939c83cb345ae10f01109b4c56f7f73cd.
+SPA consumer commits: AF 236ffce, AT 32c8856, shell e359c317. Backend-country source
+stays unchanged; country behavior reuses the shared fix. No live database, developer
+Redis, user-server restart, new dependency/persistence schema or push.
+
+This closes holiday create/delete intent/audit handling, not the seven broader
+completion requirements. Other legacy mutation/editor/invariant/read/output/job
+paths still need their audits; SchoolEvent create/update/delete are an identified
+next calendar workflow. Inventory's existing generic receipt guidance also still
+references payments (observed while checking donor resources); inspect/correct its
+own localized wording rather than copying that error into additional controllers.
+Allocation profiling, longer representative deployment load and recovery/restore
+proof remain. No cross-process kill or whole-goal completion is inferred from this
+independent-host scenario. All original requirements remain open.

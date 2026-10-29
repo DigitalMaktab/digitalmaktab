@@ -2280,3 +2280,27 @@ old no-argument list callers now receive a page, not the whole school history.
 Holiday create/delete durable intent handling remains the next open write audit;
 no automatic replay may be added and no extra table/field/service is needed if the
 existing MutationReceiptStore and useMutationIntent represent the operation.
+
+## Durable holiday mutation intents (2026-10-29)
+
+POST/DELETE holidays reuse DurableMutation/MutationReceiptStore, existing Holiday/DTO,
+validator/mapper and account-stamp/impersonator authorization. No new persistent field,
+receipt table, service or revision token is needed because Holiday has no edit path.
+Capture normalized create command and delete ID, require Idempotency-Key, authorize
+after receipt waits/before replay and again after mutation awaits. Empty platform
+scope cannot write holidays. Preserve roles and school impersonation conventions.
+
+Use tenant-scoped FOR UPDATE + tracked Remove/SaveChanges for deletion so the existing
+AuditInterceptor participates. Do not replace this with ExecuteDelete or copied manual
+audit records. Different intents may race safely; same intent replays committed result.
+Receipt failure/revocation rolls back holiday and audit changes. No new business unique
+constraint on holiday names/dates. Domain messages refer to holidays/calendar rather
+than inheriting unrelated payment/inventory wording.
+
+Reuse useMutationIntent, AppFormSubmitButton, accountRequestConfig and shared identity.
+Pin token synchronously, retain ID/form/confirmation through explicit retry, reset only
+for a deliberately new operation/account, block in-flight duplicate callbacks and
+ignore old-account/unmounted completions. No automatic replay. Tests reuse ScopeHost,
+private persisted key-ring, GradeWriteProbe and an optional table selector on the
+existing InventoryWriteProbe. Ship Core/SPA/shell together; old writes without keys
+must get 428, not an unguarded compatibility path. Keep broader goal requirements open.

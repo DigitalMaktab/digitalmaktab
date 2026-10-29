@@ -77,7 +77,7 @@ const wrapper=({children})=>h(I18nextProvider,{i18n},h(MemoryRouter,null,h(Loade
  }
  // Holiday screen delegates paging/filter/export loads to the actual Core API.
  let holidayTable;
- Object.assign(exportsForScreen,{AppTable:props=>{holidayTable=props;return h('output',null,'Holiday table');},AppForm:()=>null,AppFormInput:()=>null,AppFormLocalDatePicker:()=>null});
+ Object.assign(exportsForScreen,{useUser:get('hooks/useUser.ts'),useMutationIntent:get('hooks/useMutationIntent.ts'),getMutationAccountScope:require(core+'/src/helper/auth/accountIdentity.ts').getMutationAccountScope,getUser:require(core+'/src/helper/helper.ts').getUser,AppFormSubmitButton:()=>null,AppTable:props=>{holidayTable=props;return h('output',null,'Holiday table');},AppForm:()=>null,AppFormInput:()=>null,AppFormLocalDatePicker:()=>null});
  const Holidays=require(shell+'/src/screens/school/calendar/Holidays.tsx').default;
  requests=[];mode='defer';ui=render(h(Holidays),{wrapper});assert(holidayTable.serverSort);assert.equal(holidayTable.data.length,0);
  assert.equal(holidayTable.columns.find(column=>column.accessor==='name').filter.accessor,'searchTerm');
@@ -86,5 +86,24 @@ const wrapper=({children})=>h(I18nextProvider,{i18n},h(MemoryRouter,null,h(Loade
  assert.deepEqual(requests[0].config.params,{...criteria,pageNumber:2,pageSize:50});assert.equal(requests[0].config.signal,stop.signal);assert.equal(requests[0].config.headers['Cache-Control'],'no-store');
  await act(async()=>requests[0].task.resolve({status:200,data:[],headers:{pagination:JSON.stringify({totalPages:2,totalItems:60})}}));await holidayRead;
  const key=holidayTable.reloadKey;act(()=>holidayTable.actions.find(action=>action.label===i18n.t('holiday.refresh')).onClick());assert.equal(holidayTable.reloadKey,String(Number(key)+1));assert.equal(requests.length,1,'screen does not duplicate AppTable page fetching');ui.unmount();cleanup();
+ // Holiday mutation callbacks use real intents/API config; transport outcomes are controlled.
+ const writes=[];api.post=(url,body,config)=>{const task=deferred();writes.push({url,body,config,task});return task.promise};api.delete=(url,config)=>{const task=deferred();writes.push({url,config,task});return task.promise};
+ let createSubmit,holidayModal;
+ Object.assign(exportsForScreen,{AppForm:props=>{createSubmit=props.onSubmit;return h('div',null,props.children);},AppModal:props=>{if(props.isVisible)holidayModal=props;return props.isVisible?h('aside',null,props.modalContent):null;}});
+ account={role:0,token:'holiday-a',school:{id:'school-a'}};localStorage.setItem('user',JSON.stringify(account));
+ const holidayNode=()=>h(AuthContext.Provider,{value:{user:account}},h(Holidays));ui=render(holidayNode(),{wrapper});
+ const openCreate=()=>act(()=>holidayTable.actions.find(action=>action.label===i18n.t('holiday.create.label')).onClick());openCreate();
+ const values={name:'Holiday',description:'Notes',fromDate:'2026-07-01',toDate:'2026-07-02'};let mutation;
+ await act(async()=>{mutation=createSubmit(values);await createSubmit(values)});assert.equal(writes.length,1,'duplicate create callback is gated');const firstId=writes[0].config.headers['Idempotency-Key'];assert(firstId);assert.equal(writes[0].config.accountToken,'holiday-a');
+ act(()=>holidayModal.onClose());assert(ui.container.querySelector('aside'),'pending write keeps its operation mounted');
+ await act(async()=>{writes[0].task.reject({response:{status:503,data:{detail:'Check the calendar before a new operation'}}});await mutation;});assert(ui.getByRole('alert'));
+ await act(async()=>{mutation=createSubmit(values)});assert.equal(writes.length,2);assert.equal(writes[1].config.headers['Idempotency-Key'],firstId,'explicit retry keeps request ID');
+ await act(async()=>{writes[1].task.resolve({status:200,data:{id:'saved'}});await mutation});assert.equal(ui.container.querySelector('aside'),null);
+ openCreate();await act(async()=>{mutation=createSubmit(values)});assert.notEqual(writes[2].config.headers['Idempotency-Key'],firstId,'new operation has new ID');const beforeReload=holidayTable.reloadKey;
+ account={role:0,token:'holiday-b',school:{id:'school-b'}};localStorage.setItem('user',JSON.stringify(account));ui.rerender(holidayNode());assert.equal(ui.container.querySelector('aside'),null);
+ await act(async()=>{writes[2].task.resolve({status:200,data:{id:'late-old'}});await mutation});assert.equal(holidayTable.reloadKey,beforeReload,'late old-account success cannot refresh new account');
+ act(()=>holidayTable.rowContextActions[0].onClick({id:'saved',name:'Holiday'}));const remove=()=>ui.getByRole('button',{name:i18n.t('holiday.delete.confirm')});fireEvent.click(remove());await waitFor(()=>assert.equal(writes.length,4));assert(remove().disabled);fireEvent.click(remove());assert.equal(writes.length,4);const deleteId=writes[3].config.headers['Idempotency-Key'];assert.equal(writes[3].config.accountToken,'holiday-b');
+ await act(async()=>writes[3].task.reject({response:{status:503,data:{detail:'Keep this delete intent'}}}));assert(ui.getByText('Keep this delete intent'));fireEvent.click(remove());await waitFor(()=>assert.equal(writes.length,5));assert.equal(writes[4].config.headers['Idempotency-Key'],deleteId);
+ await act(async()=>writes[4].task.resolve({status:200}));assert.equal(ui.container.querySelector('aside'),null);ui.unmount();cleanup();
  console.log('PASS: real report screens recover from overload in three locales, retain snapshots, send no-store/cancellation and block duplicate reads; Core read scope clears private data across accounts/permissions, ignores late responses and aborts on unmount.');
 })().catch(error=>{console.error(error);process.exitCode=1}).finally(()=>{cleanup();dom.window.close()});
