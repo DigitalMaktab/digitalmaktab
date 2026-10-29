@@ -5135,3 +5135,73 @@ module mutation/query coverage, dense calendar payload budgets, school-local sem
 classroom allocation profiling and longer mixed-school deployment load/recovery/restore
 proof still remain. This closes the audited immediate announcement create/inbox path,
 not the overall concurrency/performance objective.
+
+## Resume increment 86 — announcement first-read identity and visibility (2026-10-30)
+
+Previous turn was a status-only answer (no implementation progress); this turn rechecked
+current source and continued the next audited defect. Discovery traced Announcement /
+AnnouncementReceipt, EF model/snapshot/migrations, existing repository/controller/DTO,
+actual banner/API/receipt-list callers, SchoolEvent RSVP locking, account/impersonator
+stamps and staff endpoint grants. Existing receipt.ReadAt and announcement/user identity
+represent first read; no second intent table/field/service or country specialization is
+needed. Shared behavior belongs in Core's existing AnnouncementRepository.
+
+The old model comment claimed a unique announcement/user index, but source actually has
+only the announcement FK index. Do not repeat that claim or silently delete historical
+duplicates. This increment serializes the audited writer with existing PostgreSQL
+transaction/advisory-lock conventions, preserving all stored history. A future database
+uniqueness migration needs an explicit duplicate strategy; that invariant remains open.
+
+MarkRead retains its keyless POST and {readAt} response. It takes own-school announcement
+FOR SHARE, then namespaced announcement/user advisory transaction lock (role excluded,
+matching the existing row identity). Parent SHARE blocks ordinary audience/status/time
+edits and deletion; KEY SHARE would not freeze mutable visibility. After waits, recheck
+current account/impersonator/staff announcement grant and current school/year class scope.
+The repository's active/audience predicate now serves both feed and first-read checks;
+it excludes archived, future, expired, wrong-audience, foreign and platform/unknown scope.
+Existing receipts confer no continuing access to hidden messages. Teacher class rules
+remain existing homeroom membership; course-teacher expansion is separate discovery.
+
+First insert uses tracked SaveChanges, existing audit interception, another authority
+check and a single commit. Failed saves/authority roll back. Distinct hosts/retries return
+the same persisted timestamp, including database precision; no repeat role/time update.
+Historical duplicate rows return earliest ReadAt and feed hydration groups by announcement,
+counts distinct user IDs and takes the caller's minimum timestamp, with explicit school
+scope and cancellation. Existing feed ordering gains stable Id and no tracking. These
+queries do not establish a snapshot of changing enrollment/membership relationships.
+
+Isolated real-JWT/Kestrel/PostgreSQL regression reuses CalendarMutationHost and existing
+failure/lock probes, own test school/year provider and private keyring. Twelve concurrent
+POSTs across two hosts yield one receipt/identical timestamps. Eligibility tests cover
+class enrollment withdrawal, audience/publication/expiry/archive/school denial including
+existing receipts; shared feed exclusion; preserved duplicate history/distinct counts;
+concurrent edit winning parent lock; authority revocation during pair wait; post-save
+receipt/audit rollback; caller cancellation and explicit recovery. These are independent
+hosts within one test process, not abrupt process-loss/load or browser-to-DB evidence.
+Initial focused case passed (/tmp/dm-announcement-read-focused.log). Final full-suite and
+installed-package evidence are recorded below after verification.
+
+All seven broader requirements remain open. Next: bounded/private announcement receipt
+rosters, active/admin read bounds and client account/banner lifecycle; versioned edit/
+delete and shared form conflict review; missing database first-read uniqueness invariant
+and explicit legacy-data strategy; scheduled notification delivery. Other remaining module
+mutation/query coverage, dense payload budgets, allocation profiling and longer mixed-
+school deployment load/recovery/restore proof are unchanged. No live DB/developer Redis,
+user-server restart, push or new runtime dependency is part of this increment.
+
+Final verification: Core 477 passed, zero skipped
+(/tmp/dm-announcement-read-full-core.log). The first attempted full run stopped at a
+new test's incorrect Audit property name (NewValues rather than existing After); fixed
+the assertion to use the actual model, then completed the full run. No production audit
+schema change was needed. Core source commit 290bb36, API rollout docs 5712ba0.
+Standard clean/build/pack/install/API build passes
+(/tmp/dm-announcement-read-sync-dotnet.log); producer source was not changed after packing.
+Installed Afghanistan suite 106 passed, zero skipped
+(/tmp/dm-announcement-read-country.log). Producer/API SHA256 pairs match:
+Core 8d49d3779e5e9dab7e4136b16611de90b9307dfc5a6619e4da23023d8ef45f26;
+Abstractions b308b4afe2ed9d2834eae40f0c8c152bcd05d70bd31d7b550bf303f87e89856f;
+country adc25b265a6b53411b5e7ce16fba0d5deba46ccbb40bde6aaa2eb9a8f3ab2517.
+Shared locale/enum/package/abstraction/worker-health/API-route commit gates pass. No SPA
+source/contracts changed, so no frontend package swap or new UI validation is claimed.
+Only owned isolated test hosts/databases were used; user servers were left untouched.
+All seven original completion requirements remain open.

@@ -2412,3 +2412,26 @@ pin credentials, block pending duplicates, ignore stale account/unmount results 
 navigation timers. No copied UI primitives or country fork. Existing finite/cancellable
 academic-year provider fixtures supply the test school's selection instead of mutating
 other fixtures' global active years. All seven broader goal requirements remain open.
+
+## Announcement first-read serialization (2026-10-30)
+
+Reuse AnnouncementRepository/AnnouncementReceipt and the existing account/impersonator/
+staff authorization callback. First read is a monotonic natural acknowledgement, not a
+new durable intent: serialize existing announcement/user identity with parent FOR SHARE
+then namespaced transaction advisory lock (no role in the pair). SHARE freezes mutable
+visibility fields and deletion, unlike KEY SHARE. Recheck current authority after waits
+and saves, use the same active/audience predicate as the feed, and return scoped 404 for
+ineligible, future, expired, archived or foreign announcements even if a receipt exists.
+Resolve current school/year enrollment/homeroom scope after waiting. This is a membership
+check at query time, not a whole-school snapshot or a lock on every enrollment relation.
+
+Return the persisted timestamp; retries do not update ReadAt or the original role.
+The old model comment claiming a unique announcement/user index was incorrect: the model
+and migrations have only the announcement FK index. Do not delete duplicate history or
+pretend the missing invariant is deployed. Preserve duplicates, acknowledge their earliest
+ReadAt and count distinct readers; shared pair serialization protects the audited writer.
+A database uniqueness migration still needs an explicit legacy-data strategy and older
+writers must be drained at rollout. No table/field, country rule or client request-key
+requirement was added. Bounded/private receipt rosters, active/admin paging, scoped client
+banner lifecycle, versioned announcement edit/delete and scheduled delivery remain open,
+alongside all original broader goal requirements.
