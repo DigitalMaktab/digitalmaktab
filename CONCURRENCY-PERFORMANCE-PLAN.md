@@ -5205,3 +5205,107 @@ Shared locale/enum/package/abstraction/worker-health/API-route commit gates pass
 source/contracts changed, so no frontend package swap or new UI validation is claimed.
 Only owned isolated test hosts/databases were used; user servers were left untouched.
 All seven original completion requirements remain open.
+
+## Resume increment 87 — paged announcement history and shared participant labels (2026-10-30)
+
+Previous turn made verified progress (increment 86, committed/rebuilt with 477 Core and
+106 installed Afghanistan tests). This turn rechecked current source and traced the
+announcement admin/receipt endpoints, raw receipt DTO/entity/model/snapshot, all SPA
+API/hook/banner/list callers, GeneralParams/PagedList, actual AppTable filter/paging/
+export behavior, event RSVP roster, audit UserResolver and notification identity queries.
+Receipt Id and CreationDate already exist; no new persistent representation is needed.
+Existing audit labels use identity precedence/platform scope; active notification targets
+suppress inactive people. Neither represents role-specific historical names unchanged.
+
+Extend existing Core UserResolver's scalar ActorLabel projection with internal participant
+Role and ParticipantNames query, consumed by both existing event and announcement rosters.
+It projects only IDs/roles/names for own-school student/teacher/parent/staff and owner,
+retains inactive local history and normalizes teacher-family joins to TEACHER. Missing,
+foreign/transferred or wrong-role identities fall back to raw IDs; no global user-name
+lookup or copied role-table implementation. An initial object-null test on projected
+labels did not translate in EF; use scalar Name coalescing, preserving server-side joins,
+name filtering and paging. Existing event-roster regression passes against the shared query.
+
+AnnouncementRepository now owns Roster over existing history: parent-school existence,
+creation-date filters, trimmed case-insensitive name search, whitelisted role/name/read
+sort and stable receipt Id paging (10/50), cancellation/no tracking. Counts omit display
+joins when no name filter, otherwise count equivalent joined criteria through the shared
+PagedList overload. Receipt DTO exposes existing Id/nullable CreationDate alongside ReadAt.
+History includes retained legacy duplicate receipts, separately keyed, while feed ReadCount
+remains distinct users. No uniqueness migration or duplicate-history deletion is claimed.
+
+Admin pages now use no tracking, cancellation, stable/whitelisted global sort and the
+existing combined title/creation filters. The old two-argument repository method remains
+as a forwarding overload. Controller primes bounded audit labels before mapping; both
+reads return no-store and Pagination. Empty/extreme pages retain proper metadata.
+
+Core SPA API list/listReceipts accept paging/filter/signal, synchronously pin account
+credentials and disable offline fallback. Shell replaces full-roster fetch/state and
+failure-as-empty arrays with the real AppTable loader in the existing fixed-footer modal.
+Use persisted receipt IDs and actual creation dates, including missing-date handling;
+never substitute ReadAt for creation date. Account changes hide old modal selection.
+All applied name/date/sort criteria reach each page/export call. Roles export translated
+teacher-family/staff labels; announcement read-count export now emits its number instead
+of its UUID. Shared controls/errors/empty-state/filter placement/print preferences remain
+owned by Core; no new component/service/dependency, locale string or country rule.
+
+Core full isolated suite: 478 passed, zero skipped
+(/tmp/dm-announcement-roster-full-core.log), including actual PostgreSQL/JWT/HTTP roster
+metadata, combined filters and second pages, role collision, transferred/foreign identity
+privacy, inactive history, retained duplicates, actual creation/read distinction, stable
+paging, cancellation, no credentials/tracking, and empty/extreme pages. The first focused
+run exposed the EF object-null issue; the next had only a test's wrong header assumption
+(totalCount instead of existing totalItems). Both were corrected using actual contracts,
+then the full suite passed. These small behavior fixtures are not representative-data
+EXPLAIN benchmarks or whole-application capacity evidence.
+
+Real shell/Core hook/API/control tests pass in Asia/Kabul and America/New_York
+(/tmp/dm-announcement-roster-client-kabul.log,
+/tmp/dm-announcement-roster-client-new-york.log). Announcement table callbacks are captured
+at this layer: verify no duplicate mount fetch, paging/filter/signal/token transport,
+metadata/actual dates/IDs, translated exports, errors reaching AppTable and account-modal
+isolation. Manual page-loader calls cover criteria propagation, not a real browser-to-DB
+PDF claim. The unchanged actual AppTable PDF workflow regression also passes
+(/tmp/dm-announcement-roster-pdf-workflow.log), including real all-page export/cancellation/
+ready-viewer behavior. Shared SPA Core TypeScript passes before packaging. React review
+keeps shared controls, correct memo dependencies and no effect-driven full-roster requests.
+
+Core producer 836f757 and SPA Core 0bacc0e were committed before packing. Installed-package
+verification and consumer commits are recorded below after completion. All seven original
+completion requirements remain open. Next: bounded active feed and scoped client banner
+lifecycle, versioned announcement edit/delete/conflict review, missing receipt uniqueness
+invariant/legacy strategy, scheduled notification delivery, broader producer/audience and
+module write/query audits, dense payload limits, allocation profiling and longer mixed-
+school deployment load/recovery/restore evidence. No live DB/developer Redis mutation,
+user-server restart or push is authorized by this isolated validation/package cycle.
+
+Standard backend clean/build/pack/install/API build and SPA build/pack/install both pass
+(/tmp/dm-announcement-roster-sync-dotnet.log,
+/tmp/dm-announcement-roster-sync-spa.log). No producer source changed after packing.
+Installed shell TypeScript passes (/tmp/dm-announcement-roster-shell-types.log).
+Installed Afghanistan suite: 106 passed, zero skipped
+(/tmp/dm-announcement-roster-country.log). Producer/API SHA256 pairs match:
+Core 67722292663510d80110b3b6e7fcb847054f0855be4e2a1ae2d39aee19460a9f;
+Abstractions 09ce9818cb81d32a3d1512433b27d372f250d91776e29205573803d382cf7639;
+country fbba5460ac66eb7d3e4875d84164d0b0db7319e453c71adc1451eb93ff081027.
+API docs 01d2115; AF SPA lock cba3771; AT lock 5ae7794; shell source/lock 6ae55733.
+Commit gates passed, including shared controls, locales/enums/packages/abstractions,
+worker-health and route checks. No country runtime source or mobile contract changed.
+
+The broader existing export regression runner exposed a stale country-consistency test
+that did not supply SchoolCalendar's real useReloadableRead export (introduced in the
+previous calendar increment). Its old assertion also required aborting an already finished
+request. Updated that test to use the actual shared hook and prove cancellation of a
+controlled *pending* request on unmount, then resolve late work without rendering it.
+No production hook/calendar change or test bypass was necessary. Focused country UI check
+passes (/tmp/dm-announcement-roster-country-ui.log); the complete export audit is rerun
+below. This is test coverage repair, not a new country-specific calendar implementation.
+
+Final complete export/filter/form/module regression passes
+(/tmp/dm-announcement-roster-pdf-audit.log): 104 AppTable sites inventoried, shared Unicode
+PDF/settings in en-US/fa-AF/ps-AF, real all-page export workflow, country/module composition
+and UTC-west date-only checks. Artifacts and latest.json:
+/tmp/dm-announcement-roster-pdf-audit. These are source/JSDOM/PDF artifact checks, not a new
+real-browser-to-live-DB/load benchmark. All owned test/build handles completed, no user
+server was stopped/restarted and no live database/developer Redis was altered. All seven
+original broader completion requirements remain open.

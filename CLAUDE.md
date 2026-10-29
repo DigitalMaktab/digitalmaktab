@@ -2435,3 +2435,33 @@ writers must be drained at rollout. No table/field, country rule or client reque
 requirement was added. Bounded/private receipt rosters, active/admin paging, scoped client
 banner lifecycle, versioned announcement edit/delete and scheduled delivery remain open,
 alongside all original broader goal requirements.
+
+## Paged announcement administration and participant history (2026-10-30)
+
+Announcement admin/receipt reads reuse GeneralParams/UserParams, PagedList cancellation/
+page-size/offset bounds, the existing receipt Id/CreationDate and AppTable server loaders.
+Receipt rows preserve history including legacy duplicates; ReadCount remains distinct
+readers. Never fabricate CreationDate from ReadAt or use UserId as a unique history-row
+key. Both endpoints return Pagination, no-store and stable Id ordering, apply creation
+range plus name/title search in SQL, and whitelist global sort keys. Prime bounded audit
+labels before mapping admin pages. Old receipt callers expecting all history must ship
+with the paged loader contract; no-argument admin/list callers get only the default page.
+
+UserResolver extends its existing scalar ActorLabel projection with an internal school-
+participant query shared by announcement and event rosters. Audit identity precedence and
+platform names do not fit role-specific history, and notification membership suppresses
+inactive people. Participant names retain inactive local accounts, join declared role
+(teacher-family normalized to TEACHER), and fall back to raw IDs for missing/foreign/wrong-
+role references. No copied role-table joins, new lookup service or persistent field.
+Never compare the projected label object to null in EF queries: coalesce its scalar Name
+so filtering remains translatable server-side. Search-aware counts include the same name
+join; without search reuse the scoped/date-filtered source count.
+
+The shell receipt modal uses the shared paged/filter/export table with account-scoped
+selection and existing fixed modal footer. Core API wrappers pin credentials, pass signals
+and disable offline cache fallback. Export roles as translated text and read count as its
+number, not the announcement UUID. Shared AppTable owns errors/empty results, applied
+criteria, cancellation and export paging; no mount-time whole-roster fetch or silent
+failure-as-empty array. Active feed bounds/client banner lifecycle, expected-version
+announcement edits/deletes, database receipt uniqueness/legacy strategy, scheduled delivery
+and broader original concurrency/performance requirements remain open.

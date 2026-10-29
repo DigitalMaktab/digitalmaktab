@@ -191,5 +191,32 @@ const wrapper=({children})=>h(I18nextProvider,{i18n},h(MemoryRouter,null,h(Loade
  const annRecord={id:'existing',title:'Stored announcement',body:'Stored body',audience:0,priority:1,publishedAt:'2026-11-05T09:00:33.123Z',expiresAt:'2026-11-06T10:00:44.456Z'};await act(async()=>requests[0].task.resolve({status:200,data:annRecord}));await waitFor(()=>assert.equal(annTitle().value,'Stored announcement'));fireEvent.change(annTitle(),{target:{value:'Unsaved announcement'}});
  account={...account,token:'announcement-b-renewed'};localStorage.setItem('user',JSON.stringify(account));ui.rerender(annNode());await waitFor(()=>assert.equal(requests.length,2));assert.equal(annTitle().value,'Unsaved announcement');await act(async()=>requests[1].task.resolve({status:200,data:{...annRecord,title:'Changed remotely'}}));assert.equal(annTitle().value,'Unsaved announcement');
  fireEvent.click(ui.getByRole('button',{name:i18n.t('announcement.editor.submitUpdate')}));await waitFor(()=>assert.equal(writes.length,5));assert.equal(writes[4].body.publishedAt,annRecord.publishedAt);assert.equal(writes[4].body.expiresAt,annRecord.expiresAt);assert.equal(writes[4].config.accountToken,'announcement-b-renewed');ui.unmount();await act(async()=>writes[4].task.resolve({status:200,data:annRecord}));cleanup();
+ {
+ // Announcement lists and receipt modals delegate every page/export to the scoped API.
+ const announcementTables=new Map();
+ exportsForScreen.AppTable=props=>{announcementTables.set(props.printPreferenceKey??'announcements',props);return h('output',null,'Paged announcement table');};
+ const Announcements=require(shell+'/src/screens/school/announcement/AnnouncementList.tsx').default;
+ const announcementsNode=()=>h(AuthContext.Provider,{value:{user:account}},h(Announcements));
+ requests=[];account={role:0,token:'roster-a',school:{id:'roster-school-a'}};localStorage.setItem('user',JSON.stringify(account));ui=render(announcementsNode(),{wrapper});assert.equal(requests.length,0,'AppTable owns reads without duplicate screen fetch');
+ const announcementFilters={searchTerm:'Reader',creationDateFrom:'2026-04-01',creationDateTo:'2026-04-30',sortBy:'userName',sortOrder:'asc'},announcementStop=new AbortController();
+ let table=announcementTables.get('announcements');assert(table.serverSort);assert.equal(table.columns.find(column=>column.accessor==='title').filter.accessor,'searchTerm');
+ let pending=table.fetchPageData(2,20,{...announcementFilters,sortBy:'title'},announcementStop.signal);
+ assert.deepEqual(requests[0].config.params,{...announcementFilters,sortBy:'title',pageNumber:2,pageSize:20});assert.equal(requests[0].config.accountToken,'roster-a');assert.equal(requests[0].config.signal,announcementStop.signal);assert.equal(requests[0].config.headers['Cache-Control'],'no-store');
+ const announcementRow={id:'announcement-roster',title:'Notice',readCount:101};await act(async()=>requests[0].task.resolve({status:200,data:[announcementRow],headers:{pagination:JSON.stringify({totalPages:3,totalItems:101})}}));await pending;
+ assert.equal(table.columns.find(column=>column.accessor==='id').exportValue(announcementRow.id,announcementRow),101,'receipt count export must not print the announcement UUID');
+ act(()=>table.rowContextActions[0].onClick(announcementRow));let roster=announcementTables.get('announcement-receipts');assert(roster.serverSort);assert(roster.showExport!==false);assert(roster.showPagination!==false);
+ pending=roster.fetchPageData(2,50,announcementFilters,announcementStop.signal);assert.equal(requests[1].url,'/announcement/announcement-roster/receipts');assert.deepEqual(requests[1].config.params,{...announcementFilters,pageNumber:2,pageSize:50});assert.equal(requests[1].config.accountToken,'roster-a');assert.equal(requests[1].config.signal,announcementStop.signal);
+ const receipt={id:'persisted-receipt-id',userId:'reader-id',userRole:3,userName:'Teacher name',creationDate:'2026-04-01T00:00:00Z',readAt:'2026-06-01T00:00:00Z'};
+ await act(async()=>requests[1].task.resolve({status:200,data:[receipt],headers:{pagination:JSON.stringify({totalPages:3,totalItems:101})}}));const rosterResult=await pending;
+ assert.equal(rosterResult.data[0].id,receipt.id);assert.equal(rosterResult.data[0].creationDate.getTime(),new Date(receipt.creationDate).getTime());assert.equal(rosterResult.data[0].updateDate.getTime(),new Date(receipt.readAt).getTime());assert.equal(rosterResult.data[0].status,true);assert(rosterResult.headers.pagination.includes('101'));
+ for(const role of [1,2,3,8])assert(!/^\d+$/.test(roster.columns.find(column=>column.accessor==='userRole').exportValue(role)),'teacher-family/staff exports have translated labels');
+ // Explicit exports reuse the same loader and all applied criteria for every page.
+ for(let page=1;page<=3;page++){
+   pending=roster.fetchPageData(page,50,announcementFilters,announcementStop.signal);const request=requests.at(-1);assert.equal(request.config.params.pageNumber,page);assert.equal(request.config.params.creationDateFrom,announcementFilters.creationDateFrom);assert.equal(request.config.params.searchTerm,'Reader');
+   await act(async()=>request.task.resolve({status:200,data:[{...receipt,id:'history-'+page,creationDate:null}],headers:{pagination:JSON.stringify({totalPages:3,totalItems:101})}}));assert(Number.isNaN((await pending).data[0].creationDate.getTime()),'missing creation date must not be invented from read time');
+ }
+ pending=roster.fetchPageData(1,50,announcementFilters,announcementStop.signal);const rejected=assert.rejects(pending,'errors must reach AppTable instead of looking like an empty roster');await act(async()=>requests.at(-1).task.reject({response:{status:503}}));await rejected;
+ account={role:0,token:'roster-b',school:{id:'roster-school-b'}};localStorage.setItem('user',JSON.stringify(account));ui.rerender(announcementsNode());assert.equal(ui.queryByRole('dialog'),null,'receipt modal is hidden across accounts');ui.unmount();cleanup();
+ }
  console.log('PASS: real report screens recover from overload in three locales, retain snapshots, send no-store/cancellation and block duplicate reads; Core read scope clears private data across accounts/permissions, ignores late responses and aborts on unmount.');
 })().catch(error=>{console.error(error);process.exitCode=1}).finally(()=>{cleanup();dom.window.close()});
