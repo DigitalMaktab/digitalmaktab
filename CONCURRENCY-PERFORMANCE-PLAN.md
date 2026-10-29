@@ -4446,3 +4446,73 @@ Final short-message profile regression passes
 (/tmp/dm-classroom-payload-short-regression.log), including the original workload,
 retained-history/scope assertions, ordinary read progress and zero released gates/
 admission indexes. Both workload choices now have actual installed-API evidence.
+
+### Bounded composed calendar reads (seventy-eighth increment, 2026-10-29)
+
+Discovery traced SchoolCalendarController, Holiday/SchoolEvent/Exam entities, existing
+SchoolCalendarDto, ISchoolCalendarContributor, module applicability, the Afghan period
+repository/contributor, actual SPA monthly caller/API client caching and existing
+useReloadableRead. No persistent field/table/service/DTO/component or migration is
+needed. Shared limits belong on the existing Core contributor contract; Afghanistan
+uses those limits in its existing repository instead of introducing a second query
+service or country-specific copy of shared behavior.
+
+Core interactive windows accept at most 366 inclusive days and 5000 composed entries.
+All three queries project only calendar fields, use deterministic bounded SQL LIMITs
+with a sentinel, no tracking and RequestAborted. Overflow returns localized 413 asking
+the caller to narrow the window, never successful truncation. Preserve existing date/
+overlap/exam-start and active-module semantics. Module contributions stay sequential,
+with cancellation before/after await/enumeration and raw/cumulative row checks. The
+Afghan period range query uses MaximumEntries+1 and stable date/ID order; Core rejects
+its sentinel. Existing contract signatures and calendar response shape stay compatible.
+
+Both server and SPA calendar API are no-store; old offline snapshots are not fallback
+calendar truth. The actual monthly screen reuses useReloadableRead rather than keeping
+another read lifecycle. It displays bounded localized server problem detail and hides
+old account/language/window results. Open day details retain their exact source array
+identity; a different/cleared snapshot immediately hides the modal rather than exposing
+previous account details. Existing Core calendar primitives retain Gregorian/Solar
+Hijri rendering and theme behavior. No new frontend translation keys are needed;
+backend range/overflow guidance ships in English/Dari/Pashto.
+
+Three new real PostgreSQL tests cover scoped holiday/event/exam/module aggregation,
+foreign school/module exclusion, no tracking, 5000 complete rows, Core overflow,
+cumulative module overflow, actual SQL LIMITs, inclusive leap-year window boundary,
+inverted ranges and cancellation before/after contributor calls. Focused three pass
+(/tmp/dm-calendar-bounded-focused.log); final full Core suite 465 passed, zero skipped
+(/tmp/dm-calendar-bounded-full-core.log). Initial focused compilation/fixture failures
+were corrected before the full run; those failed attempts are not passing evidence.
+Core implementation/docs commit 7c9d7cb; SPA Core f5ee8f9; Afghanistan 8f4b4bd;
+API documentation 4f7e82a. Full clean/build/pack/install/API build passes
+(/tmp/dm-calendar-bounded-sync-dotnet.log); SPA package build/pack/install passes
+(/tmp/dm-calendar-bounded-sync-spa.log). No user-owned server was restarted.
+
+Actual calendar screen + existing real Core read-hook tests pass in all three locales
+(/tmp/dm-calendar-bounded-read-lifecycle.log): localized 413 guidance, no-store request,
+account-change cancellation, late old result rejection, current snapshot render and
+immediate hiding of previous account's open day modal. Existing report/snapshot/read
+lifecycle tests also pass in that same verifier. Gregorian/Solar Hijri SPA/mobile time-
+zone regressions pass (/tmp/dm-calendar-bounded-timezones.log). Core/shell TypeScript,
+locale coverage and component reuse gates pass. This is DOM behavior evidence, not a
+new browser geometry/visual inspection; calendar primitives were not changed.
+
+Producer/API installed SHA256 match:
+Core 28a0ffa54bea75e3c05807f37d269042a15b9600823a3ab917f81f7e77a1b620,
+Abstractions 85d30e3d11a5f639b33c550f58726b24b2e5e004aaed8d2f5db7398bd03af290,
+country 841e9591191b806929ee64485a3616bdb279f4a3881d570fc1a8fd3ccec830db.
+Consumer lock commits AF bf73657, AT 601dea3; shell 94bfea35 plus modal-scope follow-up.
+Final installed country integration follows below. No live database, developer Redis,
+production setting, dependency addition or push. Disposable PostgreSQL fixtures only.
+
+Limits bound date span/materialized row counts, not arbitrary legacy text byte size,
+trusted module allocations or fixed elapsed time. No cross-query snapshot guarantee
+is introduced. Representative calendar SQL/index plans, holiday list/CRUD concurrency,
+other record editors/important mutations/invariants/query/output/job audits, allocation
+profiling and longer deployment load/restore checks remain. All seven original broader
+completion requirements remain open; this closes the composed calendar read gap only.
+
+Final installed Afghanistan integration: 106 passed, zero skipped
+(/tmp/dm-calendar-bounded-final-country.log), including actual HTTP no-store checks
+and Core/country/school composition in all three locales. Shell modal-source commit
+19a04a51 passes its TypeScript/locale/reuse gates. Producer and consumer worktrees are
+clean before the root evidence commit. No whole-goal completion is inferred.

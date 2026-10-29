@@ -2223,3 +2223,22 @@ or full-goal completion from a two-minute scenario. All broader completion requi
 remain subject to their own evidence. Next discovered general read gap: inspect the
 school-calendar aggregator's date span, cancellation, materialized row bounds and
 module contributors before implementing a shared fix.
+
+## Bounded composed calendar reads (2026-10-29)
+
+Reuse SchoolCalendarController/SchoolCalendarDto/ISchoolCalendarContributor and the
+existing country period repository. Shared limits on that contract are 366 inclusive
+days/5000 composed rows, with an extra SQL row as an overflow sentinel. Never return
+a successful partial calendar. Project only calendar fields, use stable ordering,
+no tracking, RequestAborted and no-store. Country/school contributors run sequentially,
+honor cancellation and bound their own reads to maximum plus sentinel; Core validates
+raw/cumulative contribution counts. Trusted modules still own internal allocations.
+This does not establish fixed byte/time bounds or a cross-query database snapshot.
+
+The SPA API explicitly bypasses offline fallback. Its screen reuses useReloadableRead
+for account/language/cancellation, displays bounded server problem details and binds
+open day details to the exact current data snapshot, so a previous account's modal
+cannot survive scope changes. Keep Core/module composition and Gregorian/Solar Hijri
+month semantics; do not create parallel event/year/holiday representations. Calendar
+holiday CRUD/list reads and representative calendar SQL/index plans remain separate
+open audit items, alongside the broader goal's original seven requirements.

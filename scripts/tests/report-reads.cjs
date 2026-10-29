@@ -50,5 +50,30 @@ const wrapper=({children})=>h(I18nextProvider,{i18n},h(MemoryRouter,null,h(Loade
   await act(async()=>requests[1].task.resolve({status:200,data:{marker:'current'}}));assert.equal(value.data.marker,'current');
   await act(async()=>{void value.reload();});await waitFor(()=>assert.equal(requests.length,3));const current=requests[2];ui.unmount();assert(current.config.signal.aborted);await act(async()=>current.task.resolve({status:200,data:{marker:'late'}}));cleanup();
  }
+ // Actual calendar screen reuses this lifecycle and displays server guidance.
+ const calendarApi=get('api/schoolCalendar.ts');
+ Object.assign(exportsForScreen,{schoolCalendar:calendarApi,AuthContext,
+  UserRole:require(core+'/src/models/UserRole.ts').UserRole,
+  usePermissions:()=>({can:()=>false,canAccess:()=>false}),
+  useCalendar:()=>require(core+'/src/contexts/CalendarContext.tsx').gregorianCalendar,
+  getCalendarMonth:require(core+'/src/helper/calendarMonth.ts').getCalendarMonth,
+  localDateKey:require(core+'/src/helper/calendarMonth.ts').localDateKey,
+  getCalendarEntryLabel:entry=>entry.kind,getCalendarEntryManagePath:()=>null,
+  AppMonthCalendar:({entries,onSelectDate})=>h('div',null,h('output',null,entries.map(row=>row.title).join(',')),h('button',{onClick:()=>onSelectDate(new Date(),entries)},'Open day')),
+  AppModal:({isVisible,modalContent})=>isVisible?h('aside',null,modalContent):null});
+ const Calendar=require(shell+'/src/screens/school/calendar/SchoolCalendar.tsx').default;
+ for(const lang of Object.keys(resources)){
+  await act(async()=>i18n.changeLanguage(lang));requests=[];mode='defer';account={token:'calendar-a',role:0};
+  const calendarNode=()=>h(AuthContext.Provider,{value:{user:account}},h(Calendar));
+  ui=render(calendarNode(),{wrapper});await waitFor(()=>assert.equal(requests.length,1));
+  assert.equal(requests[0].config.headers['Cache-Control'],'no-store');
+  const detail=i18n.t('schoolCalendar.loadFailed')+' (413)';
+  await act(async()=>requests[0].task.reject({response:{status:413,data:{detail}}}));assert.equal(ui.getByRole('alert').textContent,detail);
+  account={token:'calendar-b',role:0};ui.rerender(calendarNode());await waitFor(()=>assert.equal(requests.length,2));const old=requests[1];
+  account={token:'calendar-c',role:0};ui.rerender(calendarNode());assert(old.config.signal.aborted);await waitFor(()=>assert.equal(requests.length,3));
+  await act(async()=>old.task.resolve({status:200,data:{entries:[{title:'Old private calendar'}]}}));assert(!ui.container.textContent.includes('Old private calendar'));
+  await act(async()=>requests[2].task.resolve({status:200,data:{entries:[{id:'event',kind:'EVENT',title:'Current calendar'}]}}));assert(ui.container.textContent.includes('Current calendar'));fireEvent.click(ui.getByRole('button',{name:'Open day'}));assert(ui.container.querySelector('aside'));
+  account={token:'calendar-d',role:0};ui.rerender(calendarNode());assert.equal(ui.container.querySelector('aside'),null,'old calendar detail cannot cross account scope');await waitFor(()=>assert.equal(requests.length,4));ui.unmount();assert(requests[3].config.signal.aborted);cleanup();
+ }
  console.log('PASS: real report screens recover from overload in three locales, retain snapshots, send no-store/cancellation and block duplicate reads; Core read scope clears private data across accounts/permissions, ignores late responses and aborts on unmount.');
 })().catch(error=>{console.error(error);process.exitCode=1}).finally(()=>{cleanup();dom.window.close()});
