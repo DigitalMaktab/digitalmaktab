@@ -2465,3 +2465,43 @@ criteria, cancellation and export paging; no mount-time whole-roster fetch or si
 failure-as-empty array. Active feed bounds/client banner lifecycle, expected-version
 announcement edits/deletes, database receipt uniqueness/legacy strategy, scheduled delivery
 and broader original concurrency/performance requirements remain open.
+
+## Paged active announcements and dashboard read ownership (2026-10-30)
+
+Active announcements reuse AnnouncementRepository/GeneralParams/PagedList and the same
+visibility predicate as first-read authorization. Class eligibility stays IQueryable
+through student/enrollment, parent/child or homeroom queries: never fetch a whole class-ID
+list before paging/mark-read. Existing audience/status/year/school/publication/expiry rules
+remain authoritative. Shared ordering now serves admin/feed with their existing defaults.
+GET active returns default-10/max-50, Pagination/no-store/cancellation, combined title/
+creation criteria, stable whitelisted sorting and bounded audit/receipt hydration. The old
+unbounded ListActiveForRole and materialized ResolveClassIdsFor contract had no production
+callers after tracing; remove them and update their actual regression callers instead of
+keeping an alternate unbounded path. Core/API/module binaries must ship together.
+
+The existing banner body is factored behind a logical-account/page-size key, reusing
+useReloadableRead, AppPagination, AppButton, AppAlert and AppCalendarDate. Token/language
+renewal refreshes scoped reads without resetting logical account state; another account
+resets page/acknowledgements. Limit means rows per page (default 10/max 50), not silent
+truncation: older visible announcements remain accessible through pages. Validate page
+metadata and row bounds, retain same-scope cards on transient failure, hide authoritative
+permission failures and old-scope cards, and cancel old pages/unmounts. Staff without the
+existing announcements.create grant and platform/anonymous accounts do not request a
+school feed; server checks remain authoritative.
+
+First-read acknowledgements remain natural monotonic operations without new intent rows.
+Run at most one at a time, pin credentials, handle rejected/malformed outcomes, and cancel
+an obsolete queue. Keep a bounded 100-entry recent attempt cache per logical banner; do
+not resend failed tracked acknowledgements on render/read refresh/token renewal. Expose
+explicit retry. Cancellation/transport errors may follow commit; retries recover the
+stored first instant. This cache is not durable history/exactly-once delivery: after
+older entries are evicted, deliberately visiting that page may acknowledge again through
+the same idempotent server writer. Authoritative ack 401/403 hides cards immediately;
+only a successful fresh read revalidates them. No optimistic read-count arithmetic.
+
+No new table/field/service/public widget or country rule. English/Dari/Pashto feed status/
+action strings live in their existing SPA/mobile language owners. Static mobile scaffold
+banners do not call this endpoint and are not claimed as a new mobile feed integration.
+Announcement edit/delete expected versions, database receipt uniqueness/legacy strategy,
+scheduled delivery, representative query plans/dense payload budgets and the broader
+original seven concurrency/performance requirements remain open.

@@ -5309,3 +5309,102 @@ and UTC-west date-only checks. Artifacts and latest.json:
 real-browser-to-live-DB/load benchmark. All owned test/build handles completed, no user
 server was stopped/restarted and no live database/developer Redis was altered. All seven
 original broader completion requirements remain open.
+
+## Resume increment 88 — bounded active feed and scoped dashboard acknowledgements (2026-10-30)
+
+Previous turn was verified progress: increment 87 committed, installed and tested (478
+Core/106 Afghanistan plus 104-table UI/export audit). Rechecked current controller,
+repository/interface/DTO/model, shared page/filter/audit/receipt helpers, actual banner,
+hook/API/all dashboards, mobile scaffolds, account identity and staff endpoint policies.
+Existing Announcement/receipt relationships and Core paging/read/control primitives
+represent the feature; no persistent field/table/index/service or country rule is added.
+
+The old unbounded ListActiveForRole and materialized ResolveClassIdsFor had only the
+controller and known regression callers; none in SDK/country/mobile production paths.
+Replace them with the repository's paged ListActiveForUser requiring actor/year/filters,
+update actual regression callers, and remove the alternate unbounded contract instead of
+retaining a full-history escape. Core/API/country binaries must ship together. Existing
+ClassIdsFor logic remains IQueryable into shared active/audience visibility, including
+MarkRead; no materialized membership list before count/page/first-read checks. Preserve
+existing homeroom (not all course teachers) and school/year/status/enrollment/parent rules.
+The shared ordering helper preserves admin default pinned/published ordering and feed
+default pinned/priority/published, with stable Id ties and whitelisted explicit sort.
+
+GET active now applies combined title/creation filters and uses GeneralParams/PagedList
+10/50 bounds, cancellation/no tracking/Pagination/no-store, bounded audit priming and
+existing distinct-reader/earliest-receipt hydration. Extreme/empty pages retain metadata.
+This is a paged query, not a single database snapshot, fixed-byte payload limit or a
+representative SQL-plan/index performance claim. Counts/joins still depend on school size.
+
+Core API active/markRead pin credentials/no-store/signals. Existing banner body is factored
+behind a logical account/page-size key (no new exported widget), reusing useReloadableRead,
+AppPagination, AppButton/AppAlert and AppCalendarDate. Limit means rows per page, default
+10/max50; older announcements remain reachable through server pages rather than silently
+truncating history. Validate metadata/row bounds, hide old account/token/language snapshots,
+retain same-scope transient-read data, clear authoritative read failures, cancel obsolete
+pages and unmounts, allow explicit single-flight refresh and clamp a shrunken last page.
+Staff without existing announcements.create and platform/anonymous users skip school feed
+requests. Actual server account/grant/audience authorization remains authoritative.
+
+Read acknowledgements retain the existing naturally idempotent first-read writer, without
+new request keys or rows. At most one POST is active. Cancel obsolete queues, capture
+credentials at request start and handle rejected/malformed/unknown outcomes without
+unhandled promises. The existing banner owns at most 100 recent attempt entries; tracked
+failed/unknown attempts do not resend on render/read refresh/token renewal, and visible
+failures have explicit retry. This is bounded recent memory, not durable retry metadata:
+a deliberately revisited page after cache eviction may naturally acknowledge again.
+401/403 acknowledgements hide cards immediately until a successful fresh GET revalidates
+access. No optimistic read-count updates or automatic transport retry.
+
+English/Dari/Pashto action/status messages are added only to existing SPA/mobile locale
+owners. Static mobile message banners do not call active and are not represented as an
+API integration. Locale edits preserve unrelated formatting. No new runtime dependency
+or module-specific calendar/permission implementation. React review keeps shared controls,
+logical component ownership, explicit effect dependencies and bounded effect resources.
+
+Focused existing announcement regressions: four passed; final full isolated Core suite:
+479 passed, zero skipped (/tmp/dm-announcement-feed-full-core.log). New actual PostgreSQL/
+JWT/HTTP scenario covers 80 notices, paged/date/title/sort combinations, metadata, parent/
+student/teacher-family eligibility, old-year/archived classes, foreign/platform scope,
+stable pages, no credentials/tracking, SQL membership with LIMIT, default page, extreme
+bounds and cancellation. Updated prior tests retain the same eligibility assertions
+through the new paged contract. No whole-app load or abrupt process-loss proof is claimed.
+
+Real banner/Core controls/hooks/API with controlled transport pass in Asia/Kabul and
+America/New_York (/tmp/dm-announcement-feed-client-kabul.log,
+/tmp/dm-announcement-feed-client-new-york.log): account-switch stale suppression, pending
+read cancellation/single flight, paging, sequential POSTs, failed intent retained across
+render/refresh/token renewal, explicit retry, old-page queue cancellation, authoritative
+ack/read denial, successful revalidation, transient snapshot retention, unmounts, oversize
+responses, and staff grant gating. These are JSDOM/source tests, not real browser-to-DB
+or exact external delivery evidence. SPA Core/installed shell TypeScript and mobile locale
+coverage pass. Installed Afghanistan suite:106 passed, zero skipped
+(/tmp/dm-announcement-feed-country.log).
+
+Core source 7b7aeef, SPA Core 35fe5c7 and mobile country 6645813 were committed before their
+standard packing. Backend clean/build/pack/API install/build, SPA and mobile package
+build/pack/install pass (/tmp/dm-announcement-feed-sync-{dotnet,spa,mobile}.log). No producer
+source changed after packing. Both mobile apps' six installed language bundles byte-match
+country source. Producer/API assembly SHA256 pairs match:
+Core af2ee9156ca63a88880cf7b69a732f107d2f43d20cef021a2b637a34f2dd8ae8;
+Abstractions 16bb7124da2fb9fc33ef536ccb0ab63d37172a6ed71579ca6486f4726789748d;
+country 36aa422d281633932f9657ce93b43f32c79a00777ca09b48e5566a4b27f43de0.
+Final consumer commits/full UI audit are recorded below. User API/SPA/Metro, live DB and
+developer Redis were not stopped/restarted/mutated; nothing pushed.
+
+All seven original broader requirements remain open. Next prioritize versioned announcement
+edit/delete and shared conflict-preserving forms, database receipt uniqueness/legacy strategy,
+scheduled delivery and wider audience/producer coverage. Representative remaining query/index
+plans, dense payload budgets, other module write/query/invariant audits, classroom allocation
+profiling, telemetry/deployment setup and longer mixed-school load/recovery/restore evidence
+still require their own completion proof. Do not infer completion from this bounded feed.
+
+Final installed/consumer verification: full export/filter/form/module audit passes
+(/tmp/dm-announcement-feed-pdf-audit.log), 104 AppTable sites and shared Unicode/settings
+in all three languages, with current real banner regression included. Artifacts:
+/tmp/dm-announcement-feed-pdf-audit. Consumer commits: API 5746ef2; AF SPA translations/lock
+40314f4; AT lock 3fd81dc; shell lock 9750ea44; mobile parent lock 7c3d253; mobile student
+lock 8dbc242. Source/package/locale/enum/route/shared-control/abstraction/worker-health
+commit gates pass. All owned test/build handles are terminal; no user API/SPA/Metro stop,
+live DB/developer Redis mutation or push. All seven original completion requirements
+remain open, and no supported production user count or deployment-readiness claim is made.
