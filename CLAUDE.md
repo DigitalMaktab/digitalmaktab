@@ -2354,3 +2354,28 @@ across token/read refresh, ignore old-account/unmounted completions and invalida
 canonical snapshot on success instead of optimistic count arithmetic. Backend and SPA
 ship together. Tests reuse CalendarMutationHost/ScopeHost and existing failure/lock
 probes; do not copy test hosts. Admin event write versions/receipts remain open.
+
+## Versioned event administration (2026-10-29)
+
+Event administration extends the existing SchoolEvent with Core IRevisionedRecord,
+DataContext advancement/EF token and EventEditRevision backfill; nullable audit dates
+cannot represent an expected version. No duplicate event/receipt table or country
+version. POST/PUT/DELETE require Idempotency-Key; PUT echoes Revision, DELETE uses
+revision query. Shared receipts fingerprint target/version/payload, authorize after
+waits and saves, and atomically preserve tracked row/audit changes. Lock own-school
+parent FOR UPDATE before version checking; explicit no-op edits advance its token.
+Use shared conflict messages. Replays return the immutable original outcome even after
+a later edit/deletion, without restoring/rewriting anything. Delete keeps 204.
+
+Editor GET is scoped/cancellable/untracked/no-store with bounded audit labels and
+current RSVP state. Event times are instants: require offset and normalize UTC, never
+apply the civil birth-date conversion. SPA uses shared intent/version/API/form/conflict
+components. Hydrate once per logical editor so token/culture refresh retains drafts;
+ignore old account/resource/unmounted writes and avoid delayed navigation timers.
+Local clock controls use existing calendarMonth's localDateTimeKey, not UTC string
+trimming; unchanged input preserves original seconds/offset. Explicit saved-version
+replacement resets intent; unchanged failed-request retry retains it. Starting a new
+operation after uncertain outcome is explicit. Delete uses selected version plus shared
+modal/comparison, never silently reloads and deletes a changed record. Upcoming read
+refresh never replays mutations. Ship migration/packages/shell together and keep the
+broader seven concurrency/performance requirements open.

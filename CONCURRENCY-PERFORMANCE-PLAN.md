@@ -4910,3 +4910,109 @@ race/retry path only; it does not establish overall goal completion.
 Final shell source/lock commit: dacec11e. Locale coverage, shared-control reuse,
 raw-alert/textarea/select guards, enum parity, abstraction isolation, background worker
 health opt-in and API throttle-route checks pass through normal commit gates.
+
+## Resume increment 84 — versioned event administration and retained drafts (2026-10-29)
+
+Previous increment classification: progress (committed/verified durable RSVP path).
+Discovery traced SchoolEvent/Base timestamps, existing IRevisionedRecord/DataContext
+advancement/EF token, RecordVersions, DTO/mapper/validator, repository callers, receipt
+store, access mappings, API hooks and actual editor/delete UI, shared forms/conflict
+comparison/read lifecycle and calendar clock helpers. Nullable audit dates cannot serve
+as expected versions; SchoolEvent had no version. Extend that same Core record with the
+standard Revision, not a parallel event model or country version. EventEditRevision
+backfills existing rows before nonnull enforcement. No new receipt table/service/UI
+component or country persistence specialization. Existing legacy repository methods
+remain for package compatibility; shipped admin HTTP writes now use guarded paths.
+This is not a claim that unknown external/uncoordinated writers follow the protocol.
+
+Admin POST/PUT/DELETE require Idempotency-Key; PUT includes Revision, DELETE uses its
+revision query. All reuse encrypted actor/role/school/operation receipts and current
+account/impersonator authorization. Update/delete acquire the tenant-scoped parent
+FOR UPDATE, reauthorize, check shared versions and save tracked changes/audits. Explicit
+no-op edits advance the version. Distinct stale edits/deletes fail with localized 409;
+missing versions/keys return 428. Same-intent replay acknowledges its immutable original
+outcome even after a later edit/deletion, without restoring or overwriting rows. Delete
+preserves 204. Receipt failure rolls back create/update/delete/audits. RSVP changes do
+not advance the event edit token. No automatic mutation retries or device-time ordering.
+
+GET editor hydration is own-school, untracked, cancellable and no-store, with bounded
+audit name priming and current RSVP state. Event instants require an offset and normalize
+UTC before fingerprinting/persistence; unspecified date-times now return localized
+validation, rather than Npgsql errors. Civil birth-date conversion remains separate.
+No school-local cutoff policy is claimed here.
+
+SPA API/hooks forward required keys/versions and pin credentials. Hydration is accepted
+once per logical editor: token/culture background reads cannot unmount/reset an unsaved
+draft. Shared form controls, submit state and conflict review retain entered values;
+explicitly use the saved revision before retrying a stale edit. Enter cannot bypass an
+unresolved conflict. Unknown outcomes retain intent IDs on unchanged explicit retries;
+starting another operation is an explicit choice after checking possibly committed work.
+No delayed navigation timer can affect another account. Extend calendarMonth's existing
+localDateKey with localDateTimeKey for shared clock controls; UTC string trimming is not
+local display. Untouched time input preserves original seconds/offset (including
+ambiguous local clocks) rather than shifting an instant during a title edit.
+
+Deletion uses the selected row version, Core modal and shared controlled conflict
+comparison. A changed row cannot be silently reloaded/deleted; explicitly replace the
+selection then confirm again under a new intent. Pending deletion cannot close and
+retries retain IDs. Success alone reloads AppTable; old-account/unmounted completions
+are ignored. Upcoming events add manual scoped read refresh. Read recovery never
+replays RSVP mutations and retains the last snapshot on transient read overload.
+
+Full isolated Core suite: 474 passed, zero skipped (/tmp/dm-event-writes-full-core.log).
+Focused events/RSVP/holiday/migration scenarios passed (/tmp/dm-event-writes-focused.log);
+final full suite additionally includes event-create receipt-failure rollback. Real
+JWT/HTTP/PG tests cover duplicate creates/deletes across hosts, same-version competing
+edits, stale/missing versions, foreign-school/non-admin denial, audit counts, three-locale
+timezone validation, atomic create/update/delete rollback/recovery, row-wait authority
+revocation and fresh-provider replay after deletion. Migration Up/Down executes against
+legacy rows plus an RSVP FK table inside an owned rollback schema, preserving rows and
+relationships, enforcing nonnull versions and checking distinct nonempty backfilled
+tokens. No live schema mutation or
+abrupt process-loss claim.
+
+Client regressions pass in Asia/Kabul and America/New_York
+(/tmp/dm-event-writes-client-kabul.log, /tmp/dm-event-writes-client-new-york.log).
+They exercise actual Core forms/conflict comparison, route navigation, hooks and API
+serialization with controlled transport; table/picker widgets remain their separate
+verification layers. Coverage includes retained drafts across token/background hydration,
+old account/unmount isolation, initial read retry/abort, exact untouched instants, stable
+retry IDs, explicit new-intent reset, stale-version review/replacement, delete comparison
+and canonical RSVP/read recovery. This is not a new end-to-end DB-to-browser timezone or
+capacity benchmark. React review kept shared primitives, ref-owned pending guards,
+complete callback dependencies and explicit replacement instead of effect-driven draft
+resets. No new runtime dependency.
+
+Core producer 570a22f; SPA Core d28d425; API rollout docs d376142. Standard SPA
+build/pack/install passes (/tmp/dm-event-writes-sync-spa.log). Initial consumer checks
+caught an unsupported button variant and a country fixture's legacy shared event DDL
+missing the new Core migration; neither was ignored. The button now uses Core's supported
+unstyled variant plus existing danger class. Country test/README commit b8ec9d6 composes
+the actual Core EventEditRevision over legacy fixture DDL, rather than copying its column
+into country migrations. The normal backend clean/build/pack/install/API build was rerun
+after that producer commit (/tmp/dm-event-writes-sync-dotnet-final.log). No Core producer
+source changed after packing. Earlier failing consumer log is superseded by final
+installed-country run: 106 passed, zero skipped (/tmp/dm-event-writes-country-final.log).
+SPA Core and installed shell TypeScript checks pass (and final shell commit gate checks it
+again). SPA AF source/translation+lock commit 9954b53; AT lock commit 2e0bd72.
+
+Final producer/API SHA256 pairs match:
+Core 0f9483d5cc02b9f51330f88a68ab149108e0557d9a06f035e61da36abdf0696a;
+Abstractions bc59f869bc1440972826977d642174610b09b8fff901d97f1afcfb28470aa1f8;
+country c84de5d0ca4479c7d8e537bba78318a6ea75f1adfb0d27a50c43b8641b9c83c2.
+No live DB/developer Redis change, user-server restart/stop, new dependency or push.
+Deployment must apply EventEditRevision and ship Core/SPA/country translations/shell
+together; old keyless/versionless writes fail closed. User controls API/SPA restarts.
+
+All seven original broader requirements remain open. The audited shipped event admin
+and self-RSVP paths are now guarded; this does not establish every editor/write/query
+or overall goal completion. Next inspect announcement writes/notification delivery and
+remaining editor coverage, then continue representative large-roster query plans,
+dense calendar payload budgets, school-local day semantics, other module mutation/query
+audits, classroom allocation profiling and longer mixed-school deployment load/recovery/
+restore evidence. Preserve the original scope and do not convert these workflow tests
+into a supported-user-count claim.
+
+Final shell source/lock commit e5487aed. Its installed-contract tsc and locale coverage
+checks pass, along with shared-control reuse and raw-alert/textarea/select guards.
+All affected producer/consumer changes are local commits; no push.
