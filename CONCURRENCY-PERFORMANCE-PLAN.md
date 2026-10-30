@@ -6691,3 +6691,22 @@ passed with existing unrelated lint warnings. No tests were run. Migration
 application and simultaneous metadata-edit runtime checks remain open, as do
 the broader goal's database invariant, query, distributed-coordination,
 exports, observability and load-test areas.
+
+
+## Resume increment 132 — cap full-table exports
+
+A source trace found `AppTable.exportRows` iterated all server pages without a
+record or page ceiling, despite the existing shared `readAllPages` utility
+already bounding lookup exports to 10,000 rows/200 pages. Core now exposes those
+same limits and a typed limit error; paged-table PDF/CSV export and custom export
+callbacks enforce them. Support-ticket export's bespoke unbounded page loop was
+replaced with the shared helper, so all current full-read table export paths
+share the same bound. PDF reports a localized limit error in English, Dari and
+Pashto; CSV shows the equivalent table-level message. Filter criteria and
+cancellation behavior remain in the existing AppTable export flow.
+
+`sync-spa.sh` and the SPA production build passed, with existing unrelated lint
+warnings. No tests were run. This is a deterministic client memory/work bound,
+not a substitute for server-side streaming or proof of browser heap use. Other
+country exports, large reports/imports, production telemetry and representative
+multi-school load testing remain open.
