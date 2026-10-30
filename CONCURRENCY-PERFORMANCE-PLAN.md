@@ -6901,3 +6901,23 @@ behavior, mixed-version rollout, and fallback behavior under a real Redis outage
 are not runtime-verified. Health is an aggregate across hosts rather than a
 per-instance inventory; OTLP collector ingestion, dashboards/alerts and
 representative load audits remain open.
+
+
+## Resume increment 142 — make fee history reads cancellable and no-tracking
+
+I traced all `IFeeRepository` fee-read callers before changing behavior. These
+paths map data for API responses and do not mutate returned entities. I reused
+the existing scoped `DataContext.RequestCancellationToken`; no contract, DTO,
+table or index was needed. Fee detail, school list, student/child history and
+payment-history reads now use `AsNoTracking` and honor request cancellation.
+Student/child/payment history queries now directly await `ToListAsync` rather
+than scheduling a `ContinueWith` that unwraps `Task.Result`; child IDs are
+materialized once and deduplicated, and an empty set short-circuits. The existing
+`IX_Fee_School_Year_Month_Student` already serves the common school/year/month
+lookups, so I did not add another overlapping index.
+
+Core Release build passed with 68 existing warnings and zero errors. Standard
+`sync-dotnet.sh` rebuilt/packed Core, SDK and Afghanistan, then restored and built
+the API successfully. No tests were run. Query plans and allocations against
+representative fee histories remain unmeasured; the wider invariant/index and
+load audits remain open.
