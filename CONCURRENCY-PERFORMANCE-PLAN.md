@@ -6552,3 +6552,18 @@ introduced. `sync-dotnet.sh` passed, including the API build; `sync-spa.sh`
 passed; and the shell production build passed with existing lint warnings. No
 tests were run. Applying the migration to a real database and exercising
 simultaneous branch editors remain runtime validation items.
+
+
+## Resume increment 124 — version root calendar-year edits
+
+The root CalendarYear editor updates a Core-owned record used throughout the
+school year, but its PUT path had no stale-edit protection. Inspection found no
+CalendarYear revision field; `UpdateDate` cannot safely detect concurrent
+writes. The change reuses Core `IRevisionedRecord`, revision advancement and the
+shared 409/428 response helpers, with a migration that backfills existing
+calendar years. The SPA keeps using its existing Core editor and shared
+conflict review, comparing the year and native-year values. Creation remains
+version-free. `sync-dotnet.sh` passed, including the API build; `sync-spa.sh`
+passed; and the shell production build passed with existing lint warnings. No
+tests were run. Applying the migration and exercising competing root editors
+remain runtime validation items.
