@@ -2603,3 +2603,22 @@ separate unfinished work; creation protection does not imply those are complete.
 Creation must explicitly require a TEACHER actor: staff management capabilities can
 satisfy static role attributes, and colliding staff/teacher UUIDs must never let an
 assistant submit leave as the teacher. Keep the role-collision regression.
+
+### Teacher leave cancellation preconditions and history
+
+Cancel requires Idempotency-Key plus observed ?version=. Keep the existing Version;
+RecordVersions Guid overload and shared confirmation version accessor avoid a second
+Revision field. Receipt, school/physical leave locks, current authority/ownership,
+versioned state/audit and cancellation inbox commit together. Replays preserve their
+original result and never restore later state or republish. Cover JSON and delivered
+TeachingLesson/evidence history must remain unchanged. Cancellation cover notices use
+existing TEACHER_LEAVE_CANCELLED, actual local teacher-family roles and preferences;
+never stream earlier SYSTEM assignments as if they were cancellation notices.
+
+SchoolNotificationAudience.ReadBatches is the shared250-row keyset traversal for
+announcement/request/cancellation producers. Reuse scoped GET teacher-leave/{id} and
+existing DTO hydration for conflict comparison; no full teacher profile expansion.
+The shared confirmation keeps Version/intent on failures, requires explicit saved-
+value replacement and another confirmation after conflicts, and disables cancellation
+of already cancelled/rejected rows. Approval replay/notification recovery remains
+unfinished; cancellation protection does not close that path or the broader goal.

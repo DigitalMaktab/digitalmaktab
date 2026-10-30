@@ -5817,3 +5817,130 @@ All seven original completion requirements remain open. Next carry forward teach
 leave cancellation preconditions/durable replay and approval/notification transaction
 recovery, then resource/index/operational audits rather than equating creation with
 completion of the wider objective.
+
+## Resume increment 93 — versioned atomic leave cancellation and explicit conflict review (2026-10-30)
+
+Increment92 was verified progress on creation, not cancellation/decisions. Discovery
+traced TeacherLeave's existing Version concurrency token/cover JSON, cancel/decide
+school locks and consumers, recorded TeachingLesson evidence/responsibility reads,
+request/decision notification producers, shared receipt/authorization/version checks,
+list DTO hydration and absent detail read, notification audience/batching/streaming,
+actual shell cancellation and API, and shared confirmation/conflict controls. No new
+persistent field/table, alternate version, receipt store, component or service was
+added. Existing Version remains authoritative. RecordVersions.Check now accepts an
+actual Guid as well as IRevisionedRecord; both use the same missing/stale precondition
+protocol. useRecordDeletion gains an opt-in version accessor, retaining revision as
+the default. This extends Core for legacy Version aggregates without fake fields or
+copied confirmation state. Existing event/announcement consumers keep their defaults.
+
+Cancellation requires Idempotency-Key and ?version=. It uses the receipt transaction,
+existing school teaching lock, physical scoped leave FOR UPDATE, current authority
+after waits, ownership and observed-version checks. Missing/empty version428 and stale
+version409 use the shared localized record problem contract. Invalid current states
+remain rejected. Accepted cancellation advances Version and updates current leave
+state/audit once; cover JSON and all delivered lesson/evidence history remain intact.
+Immutable original results replay without restoring later corrections or notifying
+again. Inbox and receipt failures roll back the cancellation/audit/notices together.
+The runtime expensive-operation marker covers its potentially large operator fan-out.
+No live migration or new schema was needed.
+
+Existing cancellation templates stage notifications before commit: teacher withdrawal
+notifies scoped operators with teacherLeave.write; management cancellation notifies
+the current local teacher-family identity. Stand-in withdrawal uses actual current
+teacher-family roles, deduplicated cover IDs and school filtering. Cancelled notices,
+including cover withdrawals, use existing TEACHER_LEAVE_CANCELLED so the related
+postcommit stream cannot accidentally resend earlier SYSTEM cover assignments. This
+also means that category's notification preference governs withdrawal notices; no new
+enum/preference category was created. Staff delivery rechecks teacherLeave.write.
+Publication is best effort after commit and skipped for replay; no external outbox
+or exactly-once transport promise. The existing Native RelatedFanout index fits.
+
+The duplicate keyset recipient loops in request and announcement creation moved into
+SchoolNotificationAudience.ReadBatches; cancellation reuses it, with the same250-row
+bound and per-producer authorization/staging. One existing Core class now owns batch
+traversal. New GET teacher-leave/{id} is the missing scoped comparison read, reusing
+the existing DTO and extracted bounded list hydration rather than a parallel model.
+List/detail hydration share local scalar names and batched audit labels in a
+repeatable-read snapshot; teachers only see their own and foreign schools get404.
+
+The shell's old unguarded inline Cancel handler now consumes shared confirmation
+ownership, durable intent and AppRecordConflictComparison. Selected Version and
+intent survive failures and close/reopen. A409/428 blocks confirmation until explicit
+review/replacement; replacement starts a new intent but never submits automatically.
+The user confirms again, and a saved cancelled/rejected row cannot be cancelled.
+Pending dismissal/double actions and late account/unmounted effects use the existing
+Core guards. API serialization pins account credentials, passes version/key and
+validates matching ID, CANCELLED state and a new nonempty accepted Version before
+reporting success. Calendar-aware UTC civil dates are used in confirmation/comparison.
+Successful cancellation reloads the shared table with applied filters retained; empty
+results keep controls visible. One failure message ships in all three SPA/mobile
+language owners. No duplicate form, raw input/table or new country rule was added.
+
+Focused real HTTP/PostgreSQL suite:4 passed, zero skipped
+(/tmp/dm-leave-cancel-focused.log), including prior request/list/announcement producer
+regressions under the shared batch reader. Ten identical cancellations across two
+hosts commit one status/version/audit/inbox outcome. Missing key/version, localized
+version problems, actor/school isolation, scoped no-store detail, actual principal
+recipient roles, preference/foreign/ungranted exclusion, immutable replay after later
+correction, changed fingerprints and invalid current state are checked. Original
+SYSTEM assignment is not republished. Complete stored TeachingLesson JSON and stored
+cover JSON are unchanged. The initial assertion compared pre-database JSON text to
+PostgreSQL-normalized JSON; it now compares stored-before/stored-after bytes and
+structural DTO covers rather than treating whitespace/key order as changed history.
+Injected second inbox-batch and final receipt failures roll status/version/audit/inbox
+back; same-ID retry succeeds even with failed external delivery. A direct writer
+bypassing the school lock wins before parent lock release and causes409; staff grants
+revoked during an actual physical leave lock wait cause403. Existing approval and
+cancellation compete under the same school lock/Version, with one200 and one409.
+
+The first staff wait timed out because the previous lightweight leave host lacked
+production's StaffRoleAuthorizationHandler. The shared host now registers that real
+handler/filter (without starting unrelated classroom background services). Existing
+request role-collision tests rerun through the real staff handler too; no permission
+or assertion was relaxed to make the wait pass. Teacher builders/probes/hosts are
+extended/reused rather than copied.
+
+Real shell/shared table/API/confirmation/comparison tests extend the existing harness
+(/tmp/dm-leave-cancel-ui.log): same Version/key after503 and close/reopen, pinned token,
+stale save blocked, explicit saved-values comparison, no automatic submit, fresh
+intent only after accepted replacement, pending Escape/double-submit guard, accepted
+result validation and filtered refresh/empty controls. Existing filter/PDF/CSV cases
+remain. Full regression/package/install evidence follows below. All seven original
+requirements stay open; decision durable replay/notifications, cancellation dense
+cover bounds, resource/index and operational audits still need their own proof.
+
+Full Core suite:485 passed, zero skipped, 2m16s
+(/tmp/dm-leave-cancel-full-core.log). Source Core TypeScript passes. Full source shared
+UI/form/export/module audit passes104 table sites/all three locales
+(/tmp/dm-leave-cancel-pdf-audit.log; artifacts /tmp/dm-leave-cancel-pdf-audit). An
+additional focused UI assertion after that full audit rejects an HTTP200 reply with
+a different record ID, keeps the confirmation open and retries with the same intent
+(/tmp/dm-leave-cancel-ui.log); production sources did not change for that added test.
+
+Producer commits before packing: Core2636cdf; SPA Core1b05900; AF locale1cc70d6;
+mobile locale32582e9. No producer source edits after packing. The existing internal
+recipient reader, real version protocol/default confirmation consumers and new
+Version accessor were reviewed for scope ownership, stable callbacks and explicit
+replacement rather than a parallel local implementation. Standard package/consumer
+verification results follow below. No whole-goal completion is inferred.
+
+Standard backend/SPA/mobile build/pack/install all pass
+(/tmp/dm-leave-cancel-sync-{dotnet,spa,mobile}.log). Installed shell TypeScript passes
+(/tmp/dm-leave-cancel-shell-types.log). Installed Afghanistan regression:106 passed,
+zero skipped (/tmp/dm-leave-cancel-country.log). Six installed mobile locale bundles
+byte-match source. Producer/API SHA256 pairs match:
+Core e4255070f18e6b87d52089e63ceb0923460881d483a4f208dc381675a1538665;
+Abstractions 663fd17fc90c6565c585a0a17a77a64ad941bed01b77f2f623c2ad3c6970e666;
+country ec2be7f472a98d502fbd3c3bc55f056c346aef156422e09914c15432c548e567.
+API rollout docs e6a275a; final consumer commits recorded below. All verification and
+build handles are terminal; no producer source edits after packing. No live DB/
+developer Redis mutation, user API/SPA/Metro stop/restart, provider activation,
+external message or push occurred. Full objective remains active with all seven
+original requirements open; next focus is decision replay/notification recovery,
+then the broader resource/query/invariant/operational audit, preserving original scope.
+
+Final consumer commits: shell fd540532; AF SPA lock da29a4c; AT lock7b44f57;
+parent936238a; student9af4b74. All sibling worktrees checked clean before this root
+evidence commit. Shared local commit gates (locale/package/enum/abstraction/worker/
+route/control checks as applicable) pass. Cancellation is one completed increment,
+not completion of the unchanged seven-area goal.
