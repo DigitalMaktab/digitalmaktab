@@ -6756,3 +6756,20 @@ and the API consumer build/runtime verification are still pending. Global
 exports/reports/imports, broader DB invariants and query audit, distributed
 jobs/rate-limit/classroom coordination, observability export and representative
 whole-app load evidence remain open.
+
+
+## Resume increment 135 — scope Afghan class-report reads
+
+The official Afghan class-results report reused the school-wide student report
+query, including every active student's nested addresses, enrollments and
+country details, then filtered to one class in memory. I traced the report
+consumer and repository contract: the class workbook only needs the selected
+class roster, its enrollment records, grades and ministry rows. The existing
+report query now accepts an optional class scope and applies it in SQL before
+loading student entities/details; school-wide ministry exports keep the
+existing behavior. No table or duplicate query implementation was added.
+
+The Afghanistan backend project built with zero warnings/errors. No tests were
+run. Production-size class-report SQL/memory timing is not measured yet; the
+broader report/exports, imports, invariants, query/index, distributed runtime,
+observability and whole-app load items remain open.
