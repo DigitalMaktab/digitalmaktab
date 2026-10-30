@@ -6078,3 +6078,33 @@ errors; API pre-commit build and the explicit rate-limit-route consistency check
 passed. The change is API commit `74361aa`. No server was restarted and no tests
 were added or run. The remaining multi-instance, invariant, broad query/output,
 telemetry and representative mixed-load requirements remain open.
+
+
+## Resume increment 97 — coordinate school daily digests across API instances (2026-10-30)
+
+Discovery found SchoolDailyDigestBackgroundService used a query-then-NotifyMany
+check for existing same-day rows. Two API hosts could both observe no row and
+persist duplicate digests. The whole-school ID list was also materialized before
+the sweep, and recipients/messages were materialized without the reusable batch
+path. Core already owns `RecurringSchoolNotifications`, its PostgreSQL
+transaction-scoped advisory lock, the existing `SchoolAutomationReceipt` table,
+account/preference filtering, keyset recipient pages and post-commit publication.
+The digest now uses that existing shared path and source-pages active schools.
+
+The recurring plan contract now permits an absent action URL and an explicit
+notification-related-entity choice; existing rules default to their former
+source-linked behavior. The digest explicitly preserves its old null action URL
+and related entity. Its occurrence key is the database UTC date; the per-recipient
+receipt prevents a second send across instances/restarts. During rollout, matching
+legacy null-related digest rows are adopted into receipts before deciding whether
+to notify, avoiding a duplicate on the first run. Message rendering now uses each
+recipient's existing preferred language with the school's country default as
+fallback. No table, field, migration, parallel lock or digest-specific receipt
+store was introduced.
+
+Core Release build and all Core pre-commit gates passed. Standard `sync-dotnet.sh`
+passed, rebuilding/packing Core and Afghanistan and restoring/building the API.
+No tests were run or added in this increment, and no user server was restarted.
+The change is Core commit `19f23c7`. The rest of the multi-instance job audit,
+record invariants, wide query/output review, telemetry collection and representative
+mixed-load evidence remain open.
