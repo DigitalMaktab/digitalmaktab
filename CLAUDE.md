@@ -55,6 +55,10 @@ Working tree is a set of sibling directories under
 - `digitalmaktab-docs/` — cross-repo markdown docs
   (globalization.md, MULTI-REPO.md, HOWTO-ADD-COUNTRY*.md, etc.).
   No build.
+- `digitalmaktab-marketing/` — Remotion project that renders the
+  advertisement videos (`PrincipalAd-{en-US,fa-AF,ps-AF}`). Standalone:
+  own copy, brand colours and mock UI; no dependency on the API or SPA.
+  Renders with the installed Google Chrome; see its README.
 - `digitalmaktab-mobile-core/` — shared mobile HTTP/session/query runtime
   (`@digitalmaktab/mobile-core`), consumed as a local npm tarball. No country
   rules or native screen implementations.
