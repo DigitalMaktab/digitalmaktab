@@ -6174,3 +6174,16 @@ Afghanistan Release build and standard `sync-dotnet.sh` passed, including the
 API consumer build. No tests were run. This is per-process admission control; it does not coordinate
 expensive work across API replicas or provide end-to-end streaming for workbook
 generation.
+
+
+## Resume increment 101 — protect the fee dashboard aggregate
+
+The fee dashboard report computes totals and monthly aggregates across a
+school-year's fees and groups fee balances by retained class allocation. It was
+not marked for the existing Core expensive-operation admission budget. The
+route now uses that shared endpoint metadata, matching the existing bulk fee
+generation and rollover operations. No new throttle or per-module policy was
+introduced. Core Release build passed with 69 existing warnings and zero
+errors; standard `sync-dotnet.sh` and API build passed. No tests were run. Query plan and
+representative-volume measurements for the report remain part of the broader
+query audit.
