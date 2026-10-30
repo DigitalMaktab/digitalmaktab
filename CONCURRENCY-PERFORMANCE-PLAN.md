@@ -6309,3 +6309,18 @@ per-leave association, calendar-formatted date and three-day cadence. No new
 table, field or duplicate job ledger was added. Core Release and the standard
 `sync-dotnet.sh` Core, Afghanistan package and API builds passed; no tests were
 run. Live multi-host delivery and production-volume timing remain unverified.
+
+
+## Resume increment 110 — page and deduplicate password-hygiene reminders
+
+Password hygiene previously materialized all eligible teachers, parents and
+students, then checked recent notifications in process memory before sending.
+Two API hosts could pass that check concurrently, and memory use grew with the
+full eligible population. The initial-password and 180-day-expiry paths now
+reuse Core's recurring notification receipts, per-account advisory locks,
+bounded source paging and post-commit publication. The existing notification
+type, links, localization keys, Monday 08:00 UTC schedule and seven-day
+reminder cadence remain. Account eligibility reuses existing password-change
+fields; no schema, receipt table or new persistence was added. Core Release and
+standard `sync-dotnet.sh` (Core, Afghanistan package, API build) passed; no tests
+were run. Live multi-host behavior and workload measurements remain open.
