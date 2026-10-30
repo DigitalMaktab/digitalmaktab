@@ -2554,3 +2554,16 @@ Coordinate migration/packages/clients and drain old unversioned writers; package
 alone does not restart user servers. Database receipt uniqueness/legacy strategy, scheduled
 notification delivery, wider mutation/query/invariant/producer audits and representative
 load/deployment/recovery/restore evidence remain open under the original broader goal.
+
+### Announcement receipt native identity and legacy history
+
+Core's AnnouncementReceiptIdentity migration reuses Status: earliest ReadAt/Id per
+AnnouncementId/UserId is current; surplus legacy rows remain inactive history with
+all IDs/roles/times/audit metadata retained. Partial unique current identity plus
+NOT VALID CHECK(Status) prevent future duplicate/inactive inserts. Do not validate
+this check against intentionally retained historical duplicates or bulk-update their
+flags. MarkRead/feed use current rows; paged historical rosters include every row.
+This migration is transactional, locks receipt writes and may acquire stronger DDL
+locks; coordinate updated writers/startup before readiness rather than claiming an
+online concurrent-index rollout. Down removes guards without reactivating history.
+No country-specific receipt implementation or extra identity table is needed.

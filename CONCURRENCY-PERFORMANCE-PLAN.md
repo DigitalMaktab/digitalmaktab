@@ -5524,3 +5524,89 @@ verification/build handles are terminal and source worktrees are checked clean a
 commits. Apply the prepared revision migration only through the normal coordinated API
 rollout; the developer database and running servers remain untouched. All seven broader
 requirements remain open.
+
+## Resume increment 90 — native announcement receipt identity with retained history (2026-10-30)
+
+The preceding user status turn was no implementation progress; this continuation
+revalidated the dirty carryover and completed its missing migration/behavior tests.
+Discovery traced AnnouncementReceipt's existing Id, AnnouncementId, UserId, UserRole,
+ReadAt, Status and audit fields, EF configuration/snapshot, MarkRead transaction and
+its callers, feed hydration, paged historical roster, and API/country writers. No
+country/API receipt writer exists outside the Core path. The claimed unique identity
+was previously enforced only by that writer's advisory lock. Reuse Status to mark
+one current first-read row per existing announcement/user pair; no field, table,
+service, DTO or alternate receipt store was added. Shared Core owns the invariant.
+The existing test fixture now owns the lock observer previously copied between
+retention suites; the existing calendar HTTP host is reused without another host.
+
+AnnouncementReceiptIdentity is one ordinary transactional migration: acquire a receipt
+table SHARE ROW EXCLUSIVE lock, rank by ReadAt then Id, set the earliest row current
+and surplus rows inactive, add a NOT VALID CHECK(Status), and create native partial
+unique UX_AnnouncementReceipt_Current(AnnouncementId,UserId) WHERE Status. Every
+original identity/role/read/creation/audit value survives. Status previously did not
+control acknowledgement, so an earliest formerly inactive receipt becomes current.
+The NOT VALID check deliberately retains historical inactive rows while rejecting
+future inactive inserts/updates; do not later validate it against retained duplicates.
+This is not an online concurrent-index rollout: receipt writers wait during
+normalization; subsequent DDL may require stronger locks. Drain/update old writers
+and coordinate startup/migration before readiness. Down removes the guard/index,
+retains history and does not invent the old arbitrary Status flags. Ordinary fresh
+EnsureCreated schemas enforce the same check and partial unique key.
+
+MarkRead now reads the single current row, and feed hydration counts current rows
+and reads the caller's current timestamp. Historical rosters intentionally retain
+all rows, IDs, role-specific scoped names and CreationDate. Existing current-schema
+fixtures no longer inject future invalid duplicates; actual legacy migration fixture
+now covers that history, including colliding teacher/student UUIDs.
+
+Focused isolated PostgreSQL evidence: three tests pass, zero skipped
+(/tmp/dm-receipt-identity-focused.log). The new test clones authoritative column
+shapes into an owned schema, loads 50,003 receipts/25,001 pairs, runs actual migration
+operations in explicit transactions and compares hashes of every original field
+except the intentionally normalized Status. An injected index-name collision rolls
+back the whole migration including normalization and check creation. Successful Up
+preserves all rows, picks the deterministic earliest tie, and keeps the historical
+check unvalidated. New inactive inserts, current deactivation and archived duplicate
+reactivation fail. Independent raw writers establish snapshots before inserting at
+ReadCommitted/RepeatableRead/Serializable, observe real PostgreSQL lock waits and
+commit exactly one row per pair. Serializable may reject with 40001 instead of a
+23505 uniqueness violation; both abort the loser, with no application retry. The
+initial test incorrectly demanded 23505 at Serializable and was corrected to the
+valid database semantics, without weakening the one-committed-row invariant.
+
+Real HTTP acknowledgements after Up return the original first instant without adding
+a row; active feed counts current identities; historical roster resolves each row's
+own declared role even when identities collide. Down preserves all resulting fields
+and flags. No public/live schema constraints were disabled to inject test history.
+The private fixture's old first-read plan scans/sorts 50,003 rows (2.056 ms, 776 buffer
+hits); upgraded lookup uses the native partial index (0.019 ms, four hits). These warm
+single-query measurements are synthetic, not representative full-app latency or a
+supported-user-count claim. PostgreSQL semantics references: https://www.postgresql.org/docs/current/indexes-partial.html
+and https://www.postgresql.org/docs/current/sql-altertable.html .
+
+Full regression/package results are recorded below after their completion. All seven
+original completion requirements remain open. Scheduled announcement delivery,
+wider producer/audience semantics, remaining versioned/durable record/module writers,
+invariant/query/output/file/job audits, classroom allocation profiling, telemetry
+configuration and longer representative mixed-school recovery/restore/deployment
+verification still require independent evidence. No goal scope was reduced.
+
+Full Core regression: 482 passed, zero skipped, 2m11s
+(/tmp/dm-receipt-identity-full-core.log), including native receipt migration,
+first-read races, historical roster and the shared retention lock-observer users.
+Abstractions isolation (159 files), hosted-service tracking (23 services), rate-limit
+route matching (403 routes) and enum alignment pass. No SPA/mobile contract or locale
+changed in this increment, so no unrelated frontend package rebuild is required.
+
+Final packaging: Core producer commit30c9a84, API rollout docs dc1ef18. Standard
+sync-dotnet clean/build/pack/country rebuild/API restore/build passes
+(/tmp/dm-receipt-identity-sync-dotnet.log). No producer source edits after packing.
+Installed Afghanistan regression:106 passed, zero skipped
+(/tmp/dm-receipt-identity-country.log). Producer/API SHA256 pairs match:
+Core df20fc4649ffb1d366ea7b999c51efeb62310044ba9a5c2f6017ce5daa37e805;
+Abstractions 87f3e875678ca67b7044f337f8e9fc95e5358473c30e6ce7c4ad8ea052e39ede;
+country 59b81fcc7336519e143f151d1638f9210672244298c4155959897718658e2f79.
+All verification/build handles are terminal. All sibling worktrees are clean before
+this root evidence commit. No user API/SPA/Metro restart, live DB/developer Redis
+mutation, provider activation, external message or push occurred. The broader goal
+stays active with the original seven requirements unchecked.
