@@ -7021,3 +7021,20 @@ database plans remain unmeasured; the endpoint's total result size is still
 unbounded and needs a deliberate paged accordion contract if representative
 school data shows it is large. Other query, invariant, distributed runtime,
 telemetry and load work remains open.
+
+
+## Resume increment 148 — batch class-capacity policy validation
+
+`EnrollmentCapacity.ValidatePolicy` loaded every eligible class, then queried
+active distinct-student occupancy separately for each class when validating a
+lower annual default class capacity. I traced its academic-year settings caller,
+the shared class-capacity rules, and existing Enrollment FK indexes. Core now
+loads the class IDs once and checks all eligible room occupancies with one
+grouped SQL query; it retains the same active-roster/school/year semantics and
+failure condition. No new schema, index or parallel capacity model was added.
+
+Core Release build passed with 68 existing warnings and zero errors. Standard
+`sync-dotnet.sh` rebuilt/packed Core, SDK and Afghanistan, then restored and
+built the API successfully. No tests were run. Query plan/latency for schools
+with many classes is not measured; broader enrollment invariants, other query
+audits, distributed runtime, telemetry and whole-app load evidence remain open.
