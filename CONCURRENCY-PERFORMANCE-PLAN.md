@@ -22,9 +22,9 @@ Student and Teacher reuse their existing tables with an opaque `Revision` concur
 
 ### Request admission and runtime probes
 
-Shared `RequestCapacity` limits active work per process (defaults: 64 API requests, 16 per school, 2 expensive globally and 1 expensive per school). Admission happens before authentication so DB-backed token validation is bounded. A second gate uses validated tenant claims after authorization. There is no waiting queue and no automatic mutation retry. Overload returns localized `503`, `code=server_busy`, `Retry-After: 2` and `Cache-Control: no-store`.
+`RequestCapacity` limits active work per process (defaults: 64 API requests and 16 per school). Admission happens before authentication so DB-backed token validation is bounded. A second gate uses validated tenant claims after authorization. Expensive operations also take PostgreSQL session advisory-lock slots (defaults: 2 across the deployment and 1 per school), so those budgets are shared by API replicas. Only an admitted expensive request holds its scoped DB connection for the request lifetime; ordinary requests retain the local fast path. There is no waiting queue and no automatic mutation retry. Overload returns localized `503`, `code=server_busy`, `Retry-After: 2` and `Cache-Control: no-store`. The shared slots use the existing PostgreSQL lock facility and add no lease table or duplicated quota store.
 
-Core explicitly marks student/teacher/parent/attendance/grade imports, fee generation, newsletter generation, backup export and server PDF generation with `ExpensiveOperation`. Additional expensive country endpoints and client-driven multi-page exports remain in the audit. These are concurrency budgets **per process**, not distributed rate limits or a claim about supported production traffic. Configure `RequestCapacity__*` per deployment, keeping room in the PostgreSQL connection budget for background jobs and probes across all replicas.
+Core explicitly marks student/teacher/parent/attendance/grade imports, fee generation, newsletter generation, backup export and server PDF generation with `ExpensiveOperation`. Additional expensive country endpoints and client-driven multi-page exports remain in the audit. Ordinary request budgets remain per-process; expensive-operation budgets are shared by replicas. This is not a claim about supported production traffic. Configure `RequestCapacity__*` consistently per deployment, keeping room in the PostgreSQL connection budget for background jobs, ordinary requests and probes across all replicas.
 
 The host uses request-scoped localization and no longer changes process-wide culture defaults on each request. `/health/live` checks the running HTTP process independently of the DB. `/health/ready` does a real SELECT 1 with a three-second cancellation bound and returns only framework health status, without connection/exception details. Restrict probe access at the reverse proxy. Database schema compatibility is still established by migrations/startup, not this connectivity probe.
 
@@ -6809,6 +6809,29 @@ The Core backend build passed with the repository's existing warnings; package
 sync and API-consumer build are pending. No tests were run. SQL translation,
 production query plans, thread-history paging, and multi-host/runtime checks
 remain unverified, as do the other goal areas.
+
+
+## Resume increment 139 — share expensive-request concurrency across API replicas
+
+The Core `RequestCapacity` middleware already bounded ordinary and marked
+expensive requests per process. The API already has a shared PostgreSQL rate
+limit store, but request-rate limits do not cap simultaneous long-running work.
+I extended the existing Core admission middleware to use PostgreSQL session
+advisory locks for the expensive global and per-school slots. This reuses the
+database lock primitive already used by Core and the existing `ExpensiveOperation`
+metadata; it adds no table, counter service or second configuration model.
+Ordinary requests keep the in-process fast path. An expensive request holds its
+scoped connection while executing so the session lock remains valid. Failure
+cleanup releases session locks on that admission-only connection, including the
+cancellation race where PostgreSQL may acquire a lock before the client receives
+its result.
+
+Core build passed with 68 existing warnings and zero errors. Standard
+`sync-dotnet.sh` rebuilt/packed Core, SDK and Afghanistan, then restored and built
+the API successfully. No tests were run. Cross-replica contention,
+connection-pool pressure and failure recovery have not been runtime-verified;
+additional expensive endpoints and the full distributed job/classroom,
+query/index, invariants, observability and load audits remain open.
 
 
 ## Resume increment 138 — page conversation history
