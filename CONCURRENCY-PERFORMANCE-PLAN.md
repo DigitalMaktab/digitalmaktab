@@ -6733,3 +6733,26 @@ replace the current student's form. The Core/Afghanistan/API build and SPA sync
 passed; SPA production build passed with existing unrelated lint warnings. No
 tests were run. Migration application and a two-admin first-save/stale-edit
 runtime check remain open.
+
+
+## Resume increment 134 — bound GDPR student exports
+
+The GDPR export's six existing JSON entries and manifest were retained; I
+checked the Core school-backup implementation before adding another export
+path. It already owns the incremental `SchoolBackupWriter`, archive byte/row
+limits, timeout, per-school export gate, private delete-on-close temp files and
+`BackupArchive` response lifetime. GDPR now reuses those Core facilities and
+streams EF query results into ZIP entries, instead of materializing all student
+history and the complete ZIP in memory. It uses the configured shared limits
+and cancellation. Fulfillment is persisted only after the bounded archive has
+been finalized; a request-scoped PostgreSQL advisory lock serializes admin
+decisions across API instances, and export failures roll back so the request
+remains pending. No parallel export service, schema, or data representation was
+added.
+
+Core backend build passed with existing warnings. No tests were run. The prior
+multi-instance runtime suite does not yet cover this GDPR path; package sync
+and the API consumer build/runtime verification are still pending. Global
+exports/reports/imports, broader DB invariants and query audit, distributed
+jobs/rate-limit/classroom coordination, observability export and representative
+whole-app load evidence remain open.
