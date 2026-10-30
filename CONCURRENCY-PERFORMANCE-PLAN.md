@@ -6108,3 +6108,34 @@ No tests were run or added in this increment, and no user server was restarted.
 The change is Core commit `19f23c7`. The rest of the multi-instance job audit,
 record invariants, wide query/output review, telemetry collection and representative
 mixed-load evidence remain open.
+
+
+## Resume increment 98 — bound message contact lookup and debounce search (2026-10-30)
+
+The message-contact endpoint previously materialized every active teacher,
+parent, student and eligible staff member, then applied substring matching and
+sorting in application memory for each search keystroke. It now uses no-tracking
+SQL projections and filters/sorts before materialization, with at most 100
+contacts per role (401 maximum including the school-admin entry). The UI keeps
+the existing Core `AppStandaloneInput`, debounces search by 250 ms, and uses a
+request generation guard so a late response cannot replace results for newer
+input or a closed dialog. The hint is translated in Core English and Afghanistan
+Dari/Pashto; it explains the per-role bound and that search covers omitted names.
+Staff recipient lookup additionally requires the role assignment and custom role
+to belong to this school, closing a missing tenant predicate on this query.
+
+Discovery confirmed the existing `MessageContactDto`, `AppStandaloneInput`, and
+school-scoped identity tables already own the representation; no duplicate DTO,
+contact table or search component was introduced. Core Release build and its
+pre-commit gates passed. SPA shell, spa-core and Afghanistan package builds and
+their commit gates passed. Standard `sync-all.sh` rebuilt/installed Core, the
+Afghanistan backend module, API, spa-core, both country SPA modules and the shell
+packages. Package-lock integrity updates were committed in each affected SPA
+consumer. No tests were run, no migration was added and no user server was
+restarted. Commits: Core `cc954fb`; shell `232db134`; spa-core `5618dd2`;
+Afghanistan `9fa4cdd`; consumer locks `8d00a07a` and `2c75821`.
+
+The query limits application materialization and network output; the broader
+search/index audit still needs representative database plans. Other list/report
+bounds, invariants, cross-instance jobs/state, telemetry and multi-school load
+evidence remain open.
