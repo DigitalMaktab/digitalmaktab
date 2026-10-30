@@ -24,6 +24,12 @@ Student and Teacher reuse their existing tables with an opaque `Revision` concur
 
 `RequestCapacity` limits active work per process (defaults: 64 API requests and 16 per school). Admission happens before authentication so DB-backed token validation is bounded. A second gate uses validated tenant claims after authorization. Expensive operations also take PostgreSQL session advisory-lock slots (defaults: 2 across the deployment and 1 per school), so those budgets are shared by API replicas. Only an admitted expensive request holds its scoped DB connection for the request lifetime; ordinary requests retain the local fast path. There is no waiting queue and no automatic mutation retry. Overload returns localized `503`, `code=server_busy`, `Retry-After: 2` and `Cache-Control: no-store`. The shared slots use the existing PostgreSQL lock facility and add no lease table or duplicated quota store.
 
+`PostgresAdvisoryLockSession` is the Core owner for locks that must live across
+multiple database commands. It requires an initially closed, exclusively used
+EF connection and releases session locks before returning that connection to
+the pool, including cancellation races. Request admission and recurring jobs
+reuse this same primitive.
+
 Core explicitly marks student/teacher/parent/attendance/grade imports, fee generation, newsletter generation, backup export and server PDF generation with `ExpensiveOperation`. Additional expensive country endpoints and client-driven multi-page exports remain in the audit. Ordinary request budgets remain per-process; expensive-operation budgets are shared by replicas. This is not a claim about supported production traffic. Configure `RequestCapacity__*` consistently per deployment, keeping room in the PostgreSQL connection budget for background jobs, ordinary requests and probes across all replicas.
 
 The host uses request-scoped localization and no longer changes process-wide culture defaults on each request. `/health/live` checks the running HTTP process independently of the DB. `/health/ready` does a real SELECT 1 with a three-second cancellation bound and returns only framework health status, without connection/exception details. Restrict probe access at the reverse proxy. Database schema compatibility is still established by migrations/startup, not this connectivity probe.
@@ -6811,6 +6817,24 @@ production query plans, thread-history paging, and multi-host/runtime checks
 remain unverified, as do the other goal areas.
 
 
+## Resume increment 138 — page conversation history
+
+Opening a message thread previously returned the complete conversation and
+hydrated reactions for every historical message. Core now reads only the latest
+100 records (plus one lookahead row), no-tracking and cancellably. A scoped
+message ID cursor loads earlier pages in stable `(SentAt, Id)` order; an exposed
+`X-Has-More` header preserves the existing JSON array contract. The SPA loads
+older messages on demand, merges live updates by ID and preserves the scroll
+anchor. The initial page still marks the conversation read; fetching history
+does not repeat that side effect. No table, field, DTO or alternate history
+store was added. Standard `sync-dotnet.sh` and `sync-spa.sh` completed, including
+the API and country-package builds; shell `npx tsc --noEmit`, targeted ESLint,
+and `CI=false npm run build` passed. The production build reports pre-existing
+repository-wide lint/dependency warnings. No tests were run. The query needs
+real PostgreSQL execution/query-plan verification; every goal area not covered
+above remains open.
+
+
 ## Resume increment 139 — share expensive-request concurrency across API replicas
 
 The Core `RequestCapacity` middleware already bounded ordinary and marked
@@ -6834,19 +6858,23 @@ additional expensive endpoints and the full distributed job/classroom,
 query/index, invariants, observability and load audits remain open.
 
 
-## Resume increment 138 — page conversation history
+## Resume increment 140 — coordinate recurring notification sweeps
 
-Opening a message thread previously returned the complete conversation and
-hydrated reactions for every historical message. Core now reads only the latest
-100 records (plus one lookahead row), no-tracking and cancellably. A scoped
-message ID cursor loads earlier pages in stable `(SentAt, Id)` order; an exposed
-`X-Has-More` header preserves the existing JSON array contract. The SPA loads
-older messages on demand, merges live updates by ID and preserves the scroll
-anchor. The initial page still marks the conversation read; fetching history
-does not repeat that side effect. No table, field, DTO or alternate history
-store was added. Standard `sync-dotnet.sh` and `sync-spa.sh` completed, including
-the API and country-package builds; shell `npx tsc --noEmit`, targeted ESLint,
-and `CI=false npm run build` passed. The production build reports pre-existing
-repository-wide lint/dependency warnings. No tests were run. The query needs
-real PostgreSQL execution/query-plan verification; every goal area not covered
-above remains open.
+I traced recurring notification execution before changing its scheduling:
+`SchoolAutomationReceipt` plus a per-school/rule/source transaction advisory
+lock already make individual recipient delivery durable and duplicate-safe.
+The missing coordination was above that unit: every API replica independently
+scanned all eligible sources and rechecked them, even though only one replica
+could create each notification. Core now has `PostgresAdvisoryLockSession`, a
+shared primitive also used by expensive request admission, and takes a lock per
+recurring rule around the source scan. A replica that sees an active sweep skips
+that scan; different rules can still execute concurrently. The existing
+receipt and transaction-lock behavior remains authoritative for notification
+deduplication. No new scheduler table, cursor store or duplicated receipt was
+introduced.
+
+Core Release build passed with 68 existing warnings and zero errors. Standard
+`sync-dotnet.sh` rebuilt/packed Core, SDK and Afghanistan, then restored and built
+the API successfully. No tests were run. Multi-replica skip/recovery behavior and
+additional background jobs are not runtime-verified; broader classroom/state,
+query/index, invariants, telemetry and representative load audits remain open.
