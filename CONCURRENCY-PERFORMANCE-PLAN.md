@@ -6921,3 +6921,20 @@ Core Release build passed with 68 existing warnings and zero errors. Standard
 the API successfully. No tests were run. Query plans and allocations against
 representative fee histories remain unmeasured; the wider invariant/index and
 load audits remain open.
+
+
+## Resume increment 143 — avoid loading payment history for fee authorization
+
+`FeeRepository.Get` loaded all active payment rows for every caller, including
+checkout authorization and the admin payment-list endpoint, which then queried
+those payments a second time. I traced its four Core callers and preserved the
+existing payment collection for receipt and invoice responses by making the
+include explicit. Checkout and payment-list authorization now load only the fee,
+student and year graph they consume; payment-list reads remain a single separate
+query. This extends the existing repository method, with no duplicate query
+service or DTO changes.
+
+Core Release build passed with 68 existing warnings and zero errors. Standard
+`sync-dotnet.sh` rebuilt/packed Core, SDK and Afghanistan, then restored and built
+the API successfully. No tests were run. Query allocation and production data
+timings remain unmeasured; the wider query/index and load audits remain open.
