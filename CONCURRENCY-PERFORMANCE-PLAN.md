@@ -6670,3 +6670,24 @@ the SPA production build passed with the existing unrelated lint warnings. No
 tests were run. Migration application and a real simultaneous teacher edit
 remain runtime checks. The wider query, invariant, distributed coordination,
 export/load and observability work remains open.
+
+
+## Resume increment 131 — protect learning-material metadata edits
+
+The Core LearningMaterial table and teacher-owned metadata PUT were checked
+along with DTO mapping and the CourseMaterial editor. File paths, thumbnails and
+section ownership already live on the existing row; only metadata edits lacked
+a compare token. LearningMaterial now reuses `IRevisionedRecord` and EF's
+concurrency token, existing rows receive a backfilled revision through an
+additive migration, and updates validate the expected revision after the
+existing school/teacher ownership checks. A write racing after that check maps
+to the shared localized edit conflict. The SPA sends the token and retains its
+metadata draft while Core's shared saved-vs-draft comparison fetches the latest
+section data; replacing the draft is explicit. No parallel materials record or
+version store was added.
+
+`sync-dotnet.sh` passed, `sync-spa.sh` passed, and the SPA production build
+passed with existing unrelated lint warnings. No tests were run. Migration
+application and simultaneous metadata-edit runtime checks remain open, as do
+the broader goal's database invariant, query, distributed-coordination,
+exports, observability and load-test areas.
