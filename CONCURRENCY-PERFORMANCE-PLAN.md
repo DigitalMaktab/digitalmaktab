@@ -6791,3 +6791,21 @@ Core and Afghanistan builds plus consumer sync are pending. No tests were run.
 Workbook cell memory and output bytes are still not measured; these limits
 bound rows, not precise heap usage. Other report/import paths and the broad
 concurrency/performance areas remain open.
+
+
+## Resume increment 137 — aggregate inbox conversations in SQL
+
+The shared message inbox read loaded every message for a user, grouped the
+entire history in API memory, then queried the partner name once per thread.
+Core now projects the existing conversation grouping and latest-message/unread
+summary into a database aggregate, retaining only one result per conversation.
+The controller resolves partner names with school-scoped role-batched queries
+instead of N+1 reads. DTO shape and authorization scope are unchanged; no
+message table, summary cache or copied service was added. I inspected the
+existing school/read-retention indexes and did not add a write-amplifying
+conversation index without a representative query plan.
+
+The Core backend build passed with the repository's existing warnings; package
+sync and API-consumer build are pending. No tests were run. SQL translation,
+production query plans, thread-history paging, and multi-host/runtime checks
+remain unverified, as do the other goal areas.
