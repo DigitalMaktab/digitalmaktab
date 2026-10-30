@@ -6294,3 +6294,18 @@ parallel receipt was needed. Core Release build passed with 67 existing
 warnings and zero errors. Standard `sync-dotnet.sh` completed, including the
 Afghanistan package and API builds; no tests were run. Concurrent-host behavior
 and production-volume timing still need runtime evidence.
+
+
+## Resume increment 109 — coordinate teacher-leave notifications across hosts
+
+The 07:00 UTC teacher-leave worker used inbox existence checks before sending
+the daily school digest and three-day no-substitute reminders. Concurrent API
+hosts could both pass those checks. Both paths now use Core's recurring
+notification receipts, per-source PostgreSQL transaction locks, bounded source
+pages and commit-before-publication behavior. The digest keeps one notification
+per school/day and caps its displayed teacher lines at 30 while reporting the
+full leave count. Upcoming reminders retain the existing notification type,
+per-leave association, calendar-formatted date and three-day cadence. No new
+table, field or duplicate job ledger was added. Core Release and the standard
+`sync-dotnet.sh` Core, Afghanistan package and API builds passed; no tests were
+run. Live multi-host delivery and production-volume timing remain unverified.
