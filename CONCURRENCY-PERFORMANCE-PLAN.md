@@ -6567,3 +6567,18 @@ version-free. `sync-dotnet.sh` passed, including the API build; `sync-spa.sh`
 passed; and the shell production build passed with existing lint warnings. No
 tests were run. Applying the migration and exercising competing root editors
 remain runtime validation items.
+
+
+## Resume increment 125 — protect root subject updates from stale forms
+
+Subject edits are another root-owned Core PUT path. The existing Subject table
+and shared revision contract fit the need; it had no concurrency token, and
+`UpdateDate` is not a safe substitute. Core now checks the DTO's expected
+revision and catches the database concurrency token race, while its existing
+mapper ignores client revision values. A migration backfills current subjects.
+SPA Core makes the existing subject read cancellable, and the root editor uses
+the shared AppBaseEditor conflict comparison for subject and book.
+`sync-dotnet.sh` passed, including the API build; `sync-spa.sh` passed; and the
+shell production build passed with existing lint warnings. No tests were run.
+Migration application and competing subject-editor runtime validation remain
+open.
