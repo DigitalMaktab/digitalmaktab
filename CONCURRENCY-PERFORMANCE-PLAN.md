@@ -5408,3 +5408,119 @@ lock 8dbc242. Source/package/locale/enum/route/shared-control/abstraction/worker
 commit gates pass. All owned test/build handles are terminal; no user API/SPA/Metro stop,
 live DB/developer Redis mutation or push. All seven original completion requirements
 remain open, and no supported production user count or deployment-readiness claim is made.
+
+## Resume increment 89 — versioned announcement corrections and retained-history archival (2026-10-30)
+
+Previous turn made verified progress: increment88 committed/installed, 479 Core/106 AF
+plus full UI/export audit. Current discovery traced Announcement/Base/audit/status and
+receipt FK/model/migrations, DTO/mapper/repository/all callers, existing event versions/
+receipts/migration tests, shared Core form/read/editor/checkbox/deletion primitives,
+country profile consumers and both mobile scaffolds. No equivalent expected-version
+field exists on Announcement; nullable UpdateDate cannot represent Core's opaque token.
+Extend that existing Core entity through IRevisionedRecord rather than a parallel table,
+country version or adding fields to every Base entity.
+
+Announcement.Revision uses the existing DataContext advancement/EF concurrency mechanism,
+DTO output/expected input, ignored client-to-entity mapper property and narrow
+20261030100000_AnnouncementEditRevision migration: nullable add, nonzero random backfill,
+non-null requirement. Snapshot change is limited to this property. Both event/announcement
+migration tests reuse one owned-schema verifier, preserving 30 old rows and child references
+through Up/Down and proving inserts cannot omit the token. No live migration was run.
+
+PUT/DELETE reuse DurableMutation/MutationReceiptStore, current stamp/impersonator/staff
+authorization, own-school active-parent FOR UPDATE, RecordVersions.Check, tracked audit
+saves and atomic receipt commit. Require Idempotency-Key; PUT echoes Revision, DELETE
+uses revision query and retains204. Expected versions participate in command fingerprint;
+replays after later edits/archival return immutable original responses, never restoring
+old state or swapping in current versions. No-op corrections advance the token. Preserve
+author/school and omitted publish instants; normalize provided instants UTC. New class
+bindings reuse Create's active own-school/request-year FOR SHARE check; unchanged historical
+bindings stay editable without forced reassignment. No update notification fan-out.
+
+The initial focused mutation test exposed the actual global RESTRICT receipt FK: physical
+announcement deletion was already failing with receipt history. Preserve that invariant
+and history by archiving existing Status=false, not FK weakening/cascade or copied archive
+state. Version/status/audit/receipt commit together. Admin/get/roster/active normal readers
+exclude archived announcements; receipts remain attached, and tracked UPDATE audit describes
+the actual archive. Failure rolls status/token/audit/receipt changes back. Remove unused
+unguarded repository Create/Get/Update/Delete methods after all callers moved, rather than
+leave an alternate non-versioned writer. Coordinate Core/API/country binaries and old-writer
+drain; no safe mixed unversioned update deployment is claimed.
+
+Editor uses existing useVersionedRecordEditor with shared Formik/option/class/date fields,
+local validation, request intent and explicit AppRecordConflictReview. Extend that hook's
+existing lifecycle with loading/saving/error-clear presentation instead of another editor
+state machine. Retain drafts/versions/IDs across failures/token/locale renewal; abort/fence
+old account/resource work; explicit saved replacement resets baseline/instant metadata and
+intent; preserve unchanged seconds/offsets. Read/edit acceptance requires nonzero versions.
+Only create accepts a valid returned ID without a new revision, because older encrypted
+create replies predate this schema: navigate to canonical list, do not invent/merge a current
+version. Client test covers the legacy-shaped create reply and malformed unversioned edit
+reply; this is not a new end-to-end old-keyring encrypted migration experiment.
+
+AppFormInput has no controlled boolean checked binding, while AppFormCheckboxGroup models
+arrays. New Core AppFormCheckbox adapts existing AppCheckbox (blur/error/ARIA), not native
+markup. New Core useRecordDeletion extracts the event page's existing confirmation state
+and both event/announcement lists consume it: selected versions, stable uncertain intent
+through same-version close/reopen, explicit stale comparison/replacement, pending guards,
+account generations including A-B-A and unmounted result isolation. Missing versions fail
+closed before transport; both API delete wrappers require actual204 before acknowledgement.
+No copied domain-local confirmation reducer, new country primitive or runtime dependency.
+
+All new validation/confirmation strings ship in English/Dari/Pashto in existing SPA/mobile
+locale owners and controller-local backend resources. An old literal class-required message
+is now localized; access-denied wording covers management, not just creation. Mobile receives
+messages only; no scaffold-to-API feed integration is claimed.
+
+Final full isolated Core suite:481 passed, zero skipped
+(/tmp/dm-announcement-edit-full-core.log). Focused shared migration/write checks pass after
+the FK discovery. Actual JWT/independent hosts/PostgreSQL verify same-version edit race,
+missing keys/versions/foreign/teacher denial, class bindings/history, no-op token and stale
+EF-writer protection, atomic failed receipt rollback, authority revoked during row wait,
+eight same-intent archive requests with one audit, retained receipts, immutable replay after
+archive/restart and hidden normal reads. These are multiple hosts in one test process,
+not abrupt process-loss/load or deployment recovery evidence.
+
+Real shell/Core forms/hooks/control tests pass in Asia/Kabul and America/New_York
+(/tmp/dm-announcement-edit-client-{kabul,new-york}.log): validation, actual boolean state,
+retained drafts/IDs, exact untouched instants, explicit conflict review/new baseline, malformed
+update response rejection, uncertain creation recovery, versioned delete comparison/retry,
+same-version close/reopen, A-B-A old-result isolation, missing-version and unexpected200
+fail-closed handling, cancellation and no late navigation. Calendar/class lookup widgets
+remain their separate controlled/tested layer. React review preserves shared primitives,
+primitive ownership dependencies and no effect-driven duplicate hydration/writes.
+
+Source Core types and preflight shell types pass; the temporary declaration check initially
+could not resolve external dependencies and then mixed two Yup installations. Fixing only
+the owned temporary resolution context resolved those harness errors; the installed shell
+check below is authoritative. Full source UI/export/form/module audit passes with 104 table
+sites and all three languages (/tmp/dm-announcement-edit-pdf-audit.log), including existing
+country profile forms using the extended shared editor. Artifacts:
+/tmp/dm-announcement-edit-pdf-audit. No real-browser-to-live-DB or supported-user-count claim.
+
+Core producer 1cdfdaf; SPA Core 3f8f576; mobile country 75130ca. Standard backend clean/build/
+pack/API install/build, SPA and mobile build/pack/install pass
+(/tmp/dm-announcement-edit-sync-{dotnet,spa,mobile}.log). Producer source unchanged after
+packing. Installed shell TypeScript passes (/tmp/dm-announcement-edit-shell-types.log).
+Installed AF suite:106 passed, zero skipped (/tmp/dm-announcement-edit-country.log).
+Six installed mobile language bundles byte-match source. Producer/API SHA256 pairs match:
+Core b29decfc87049bd8bed60f66e079415c0d0fa3bd30ba803caf23c354b791b217;
+Abstractions 2612a1038fb3e5a45cb7f0a0c7a8a6ca9dfb9e9d54fb73a20387fcd687506697;
+country 873725ce40d606657ef6eb9d8118f6142b61defa87cc04453ae076fabd8b2554.
+Final consumer commits recorded below. No live DB/developer Redis mutation, API/SPA/Metro
+stop/restart, provider activation, external message or push was performed.
+
+All seven original completion requirements remain open. Announcement receipt database
+uniqueness/legacy duplicate strategy, scheduled notification delivery and wider audience/
+producer semantics remain. Other record/module writes, query/index/invariant coverage,
+dense payload bounds, classroom allocation profiling, telemetry/deployment configuration
+and longer representative mixed-school load/recovery/restore proof remain separate work.
+Do not infer completion of the broader objective from these announcement protections.
+
+Final consumer commits: API fd89eb2; AF SPA translations/lock 95140fb; AT lock db88b6e;
+shell source/lock a0e969b3; mobile parent lock 0b655cc; mobile student lock 6975831.
+Shared control/locale/enum/package/abstraction/worker-health/route gates pass. All owned
+verification/build handles are terminal and source worktrees are checked clean after
+commits. Apply the prepared revision migration only through the normal coordinated API
+rollout; the developer database and running servers remain untouched. All seven broader
+requirements remain open.

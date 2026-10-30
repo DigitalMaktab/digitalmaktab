@@ -2505,3 +2505,52 @@ banners do not call this endpoint and are not claimed as a new mobile feed integ
 Announcement edit/delete expected versions, database receipt uniqueness/legacy strategy,
 scheduled delivery, representative query plans/dense payload budgets and the broader
 original seven concurrency/performance requirements remain open.
+
+## Versioned announcement correction and archival (2026-10-30)
+
+Reuse Announcement's existing identity/Status and Core IRevisionedRecord, RecordVersions,
+MutationReceiptStore/DurableMutation, DataContext advancement and tracked AuditInterceptor.
+Nullable audit dates cannot represent an expected version. The sole new persistent field
+is Announcement.Revision in Core (not Base/all tables or a country table), with the narrow
+AnnouncementEditRevision nullable/backfill/non-null migration and matching EF token/snapshot.
+Ignore incoming Revision in the Add DTO mapper. Existing migration tests now share one
+relation-preservation verifier; do not copy a second test host/migration scenario.
+
+PUT/DELETE require Idempotency-Key; PUT echoes Revision, DELETE uses revision query.
+Lock own-school active parent FOR UPDATE, reauthorize after waits/saves and check version.
+Force a token advance for no-op corrections. New/rebound class links reuse Create's active
+own-school/current-year FOR SHARE validation; unchanged historical links remain editable
+without reassigning archived/old-year classes. PublishedAt omission preserves its stored
+instant; provided instants normalize UTC. Updates never refire notifications. Read editor
+state includes bounded receipt hydration. Remove unused unguarded repository CRUD methods
+rather than retain a parallel writer. Ship Core/API/country binaries together.
+
+AnnouncementReceipt FK uses global RESTRICT, not cascade: physical deletion with receipts
+was failing. DELETE now archives through existing Status=false, advances Revision and commits
+tracked UPDATE audit plus retry receipt atomically, retaining announcement/receipt history.
+Admin/get/roster/active reads hide archived records. Preserve FK behavior/history; no archive
+flag/table or manual fake DELETE audit. Replays return their original immutable result/204,
+even after archival; never restore a row or substitute the current revision into an old reply.
+
+The editor reuses existing useVersionedRecordEditor, shared Formik fields/validation/conflict
+review and localDateTimeKey/untouched-instant metadata, rather than another lifecycle fork.
+The shared hook adds loading/saving/error-clear presentation. Accepted updates still need
+versions. Only create acknowledges a valid returned ID without an accepted version, because
+older encrypted create receipts predate the new field; navigate to the canonical list, with
+no invented version or merged stale fields. All edit reads/updates remain version-validated.
+Explicit new operation resets intent; retries retain it; account/resource changes cancel
+old work and token/locale renewal retains drafts. No automatic retry or silent rebase.
+
+AppFormInput lacks controlled boolean checked semantics and AppFormCheckboxGroup is arrays.
+Core's new AppFormCheckbox adapts existing AppCheckbox, including shared blur/error/ARIA,
+without raw controls. Core useRecordDeletion extracts existing event confirmation ownership
+and is reused by events/announcements: keep selected versions/IDs through errors and same-
+version close/reopen, explicit comparison/replacement before stale deletion, guarded pending
+close/double submits and logical account generations (including A-B-A). Missing row versions
+fail closed before transport; unexpected non-204 delete replies retain the retry intent.
+No copied confirmation state machine, country primitive or new runtime dependency.
+
+Coordinate migration/packages/clients and drain old unversioned writers; package installation
+alone does not restart user servers. Database receipt uniqueness/legacy strategy, scheduled
+notification delivery, wider mutation/query/invariant/producer audits and representative
+load/deployment/recovery/restore evidence remain open under the original broader goal.
