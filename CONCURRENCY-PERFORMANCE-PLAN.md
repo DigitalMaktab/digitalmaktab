@@ -6478,3 +6478,24 @@ justify a write-amplifying teacher index or claim meaningful timing. Leave the
 schema unchanged until representative teacher counts and query plans are
 available. Stable paging and bounded expansion were confirmed by source trace;
 production query plans and realistic search timing remain open.
+
+
+## Resume increment 120 — make course creation atomic and replayable
+
+The course-create audit found a read-before-insert duplicate check without a
+transaction, school lock or idempotency receipt. Two API instances could both
+create the same class/subject course, and a lost successful response left a
+retry as a conflict. The Core endpoint now uses the existing durable mutation
+receipt transaction and `EnrollmentCapacity` school lock, revalidates the
+class/year, teacher and subject inside that transaction, and explicitly creates
+the course as active with audit timestamps. The shared CourseEditor now sends
+the existing account-scoped `useMutationIntent` ID through the existing
+`Idempotency-Key` protocol. Timetable course updates also reject a class/subject
+pair already owned by another course. No new receipt table, course field or
+parallel lock was introduced. A read-only local check found 0 duplicate
+class/subject pairs among 24 existing pairs. Standard `sync-dotnet.sh` passed;
+SPA core/country sync and the shell production build passed with the repository's
+existing lint warnings when `CI=false`. The `CI=true` build fails on existing
+lint warnings across unrelated screens; the changed CourseEditor passes ESLint
+in isolation. No tests were run. The cross-host behavior still needs its
+PostgreSQL concurrency/replay regression run.
