@@ -6187,3 +6187,16 @@ introduced. Core Release build passed with 69 existing warnings and zero
 errors; standard `sync-dotnet.sh` and API build passed. No tests were run. Query plan and
 representative-volume measurements for the report remain part of the broader
 query audit.
+
+
+## Resume increment 102 — cancel fee generation with the HTTP request
+
+The bulk fee-generation route already uses the shared expensive-operation
+limit, and `FeeRepository.GenerateForMonth` already accepts a cancellation
+token. Discovery found the controller omitted it for both the initial
+school-student materialization and the repository call, and also omitted it
+from the follow-up notification fan-out. The endpoint now forwards the request
+cancellation token through all three stages. Core Release build passed with 69
+existing warnings and zero errors. Standard `sync-dotnet.sh` and API build
+passed; no tests were run. This only cancels pre-commit work; it does not
+introduce retries or change fee idempotency.
