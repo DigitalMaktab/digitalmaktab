@@ -6809,3 +6809,21 @@ The Core backend build passed with the repository's existing warnings; package
 sync and API-consumer build are pending. No tests were run. SQL translation,
 production query plans, thread-history paging, and multi-host/runtime checks
 remain unverified, as do the other goal areas.
+
+
+## Resume increment 138 — page conversation history
+
+Opening a message thread previously returned the complete conversation and
+hydrated reactions for every historical message. Core now reads only the latest
+100 records (plus one lookahead row), no-tracking and cancellably. A scoped
+message ID cursor loads earlier pages in stable `(SentAt, Id)` order; an exposed
+`X-Has-More` header preserves the existing JSON array contract. The SPA loads
+older messages on demand, merges live updates by ID and preserves the scroll
+anchor. The initial page still marks the conversation read; fetching history
+does not repeat that side effect. No table, field, DTO or alternate history
+store was added. Standard `sync-dotnet.sh` and `sync-spa.sh` completed, including
+the API and country-package builds; shell `npx tsc --noEmit`, targeted ESLint,
+and `CI=false npm run build` passed. The production build reports pre-existing
+repository-wide lint/dependency warnings. No tests were run. The query needs
+real PostgreSQL execution/query-plan verification; every goal area not covered
+above remains open.
