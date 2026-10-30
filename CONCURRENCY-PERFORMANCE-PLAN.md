@@ -6339,3 +6339,18 @@ preferences are excluded. Digest content and Monday 09:00 UTC schedule remain.
 No table or field was added. Core Release and standard `sync-dotnet.sh` (Core,
 Afghanistan package and API builds) passed; no tests were run. Actual multi-host
 execution and global-recipient query plans still require runtime evidence.
+
+
+## Resume increment 112 — coordinate transfer warnings and batch stale cancellation
+
+The stale-transfer worker materialized every final-week warning candidate,
+checked recent inbox rows in memory, then notified both schools. Concurrent API
+hosts could duplicate those warnings. Origin and destination reminders now use
+two school-scoped Core recurring rules, each with durable per-recipient
+receipts, advisory transaction locks and bounded source pages. Separate source
+streams avoid losing one school when keyset pages meet two records with the
+same transfer ID. Stale status transitions remain conditional and idempotent,
+but now fetch and update at most 250 transfer IDs per batch. Existing transfer
+rows and notification type are reused. Core Release and `sync-dotnet.sh` (Core,
+Afghanistan package and API builds) passed; no tests were run. Real multi-host
+behavior and representative candidate/update counts remain unverified.
