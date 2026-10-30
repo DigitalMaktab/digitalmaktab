@@ -6710,3 +6710,26 @@ warnings. No tests were run. This is a deterministic client memory/work bound,
 not a substitute for server-side streaming or proof of browser heap use. Other
 country exports, large reports/imports, production telemetry and representative
 multi-school load testing remain open.
+
+
+## Resume increment 133 — version health-record upserts
+
+The health workflow already owns one Core `HealthRecord` row per student and a
+`StudentId` lookup index; the edit DTO had no expected version, and two first
+saves could both observe no row. No second record/table or custom version
+service was needed. Core now reuses `IRevisionedRecord` and automatic revision
+advancement, with a backfilling additive migration. The empty-shell GET uses an
+empty UUID as the initial state token. Upserts require a token, serialize the
+school/student key with a PostgreSQL transaction advisory lock, reread under the
+lock, and reject stale writes; EF also guards the race after the explicit
+comparison. Reads are no-store, no-tracking and cancellable. I did not add a
+unique constraint without auditing existing duplicate medical rows; legacy
+rows are preserved, and current application upserts serialize on the same key.
+
+The SPA now includes blood group in the shared Formik state, submits the token,
+retains all fields on a conflict and uses Core's shared saved-vs-draft review.
+Changing the selected student cancels the prior read so an older response cannot
+replace the current student's form. The Core/Afghanistan/API build and SPA sync
+passed; SPA production build passed with existing unrelated lint warnings. No
+tests were run. Migration application and a two-admin first-save/stale-edit
+runtime check remain open.
