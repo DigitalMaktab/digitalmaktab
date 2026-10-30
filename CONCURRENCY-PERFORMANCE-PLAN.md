@@ -6535,3 +6535,20 @@ including the API build; `sync-spa.sh` passed; the shell production build
 passed with the repository's existing lint warnings. No tests were run. Applying
 the migration to a real database and exercising simultaneous editors remain
 runtime validation items.
+
+
+## Resume increment 123 — reject stale branch edits
+
+The editable Branch record was another Core-owned table whose GET/PUT flow had
+no expected version. The implementation reuses `IRevisionedRecord`, the shared
+DataContext token advancement, `BaseController.CheckRecordRevision`, and the
+existing localized 409/428 problem responses. Branch DTOs carry the revision;
+the update ignores client mapping into the entity and EF's concurrency token
+catches writes racing after the explicit comparison. Existing rows are
+backfilled by a single additive migration. The existing shared conflict-review
+component is rendered inside the Branch Formik form and reloads the current
+server value only when selected. No duplicate branch/version storage was
+introduced. `sync-dotnet.sh` passed, including the API build; `sync-spa.sh`
+passed; and the shell production build passed with existing lint warnings. No
+tests were run. Applying the migration to a real database and exercising
+simultaneous branch editors remain runtime validation items.
