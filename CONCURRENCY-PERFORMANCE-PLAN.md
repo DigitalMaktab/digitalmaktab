@@ -5610,3 +5610,87 @@ All verification/build handles are terminal. All sibling worktrees are clean bef
 this root evidence commit. No user API/SPA/Metro restart, live DB/developer Redis
 mutation, provider activation, external message or push occurred. The broader goal
 stays active with the original seven requirements unchecked.
+
+## Resume increment 91 — bounded teacher leave pages and scalar person references (2026-10-30)
+
+The previous turn made verified progress: increment90 committed/tested native receipt
+identity. This continuation audited remaining write/read paths and found TeacherLeave
+List loaded all school history with full Teacher/SubstituteTeacher entity profiles;
+its shell list applied filters only to that unbounded in-memory result. Trace covered
+TeacherLeave/version/covers JSON, TeachingOperationsRepository decisions/cover review,
+controller request/decision/cancel and digest/automation consumers, mapper/DTO, shared
+API/model, actual shell route/list, country/module/mobile callers and existing Core
+GeneralParams/PagedList/AppTable/person-lookup contracts. The only SPA list caller is
+the shared teacher/admin shell screen; no country/mobile consumer requires the old
+unbounded endpoint or nested profile. No new persistent field/table, component or
+service was added. Core's existing PersonLookupDto is the authoritative lightweight
+identity representation, reused for teacher/substitute labels instead of inventing
+another summary or transporting personal profile graphs. TeacherLeaveMapper maps
+that existing reference for mutation replies too; the shared TS model narrows to the
+same id/firstName/lastName shape. Source IDs, Version and lesson-cover data remain.
+
+Core List now scopes active leave roots to nonempty school and teacher ownership,
+combines creation dates/status/search, uses whitelisted native date/status sorting
+with stable ID ties, and pages through the existing bounded PagedList (10 default,
+50 maximum, safe extreme page handling). Existing ?status remains an alias for the
+AppTable's ?leaveStatus; conflicting aliases return400 rather than broaden scope.
+Search matches reason/decision note or local teacher name. A repeatable-read
+transaction makes count/root page, bounded person-name lookup and batched audit
+labels agree under concurrent changes. Teacher/substitute names are selected only
+within the school, including inactive historical local teachers; foreign references
+are not labelled. The response is no-store and all DB reads honor cancellation.
+
+The shell consumes AppTable.fetchPageData/serverSort/reloadKey rather than keeping
+an unbounded local list and its separate initial refresh. Core's serializer forwards
+all applied status/search/creation-date/sort/pagination criteria, request signal and
+account token. Filters remain in AppTable, including when no rows match. Refresh
+preserves criteria; CSV/PDF share complete filtered page loaders. Teacher export
+values explicitly render names, avoiding object serialization. Civil leave ranges
+use the active calendar with UTC date-only formatting in cells and exports.
+
+Focused real HTTP/PostgreSQL test passes (/tmp/dm-leave-read-focused.log): 60 tied
+rows plus statuses/dates/foreign references, two stable pages, combined filters,
+legacy alias/conflicting aliases, extreme-page empty result, teacher ownership,
+foreign-school separation, unauthorized student rejection, cancellation, inactive
+local substitute names, hidden foreign substitute, scalar nested response fields,
+no credential/contact columns in leave SQL, real mapper mutation-reference shape,
+and a concurrent update between count and page proving repeatable-read consistency.
+The actual screen/shared AppTable/API serializer checks extend the existing test
+harness (/tmp/dm-leave-read-ui.log), proving one request per Apply, signal forwarding,
+combined zero status/search/dates, page/refresh retention, full50-row export page
+criteria, CSV without object serialization, PDF loader rows and Reset. Existing
+fees/audit/assignment/shared filter tests remain in that same harness.
+
+Full regression/build/install results follow after completion. This closes the
+unbounded teacher leave list and profile expansion, not the remaining mutation
+work: request/cancel still need durable intent/precondition/authority review, decision
+retry/notification behavior needs its own audit, and large lesson-cover JSON/cover-plan
+bounds and representative leave index/query plans remain. All seven original
+completion requirements stay unchecked; no production capacity claim or scope cut.
+
+Source Core TypeScript and installed shell TypeScript pass after standard SPA sync.
+Full source UI/export/form/module audit passes:104 AppTable sites, all three locales,
+including the extended actual teacher leave screen/filter/export checks
+(/tmp/dm-leave-read-pdf-audit.log; artifacts /tmp/dm-leave-read-pdf-audit). SPA Core
+producer6ce64bb was committed before build/pack/install; producer source unchanged
+after packing (/tmp/dm-leave-read-sync-spa.log). No locale/mobile contract changes.
+
+Full Core regression:483 passed, zero skipped, 2m18s
+(/tmp/dm-leave-read-full-core.log), including actual repeatable-read concurrent
+leave edits and actual TeacherLeaveMapper output. Core producer fdbaa74 committed
+before standard backend clean/build/pack/API restore/build; sync passes
+(/tmp/dm-leave-read-sync-dotnet.log). Installed Core and source artifacts match:
+Core SHA256 82c76726c9bb5cf1a5a58f173678a2feb273f044223710ee0054c2c33f2be695;
+Abstractions bcb0a39084b38dac67f4c015ec9f8b01b7c75cc687546aeade52393fbe02ed70;
+country 5a7c0239021b5604545a168bbba8a1b6e8d92dd5ac0d3f67169d072323f22b58.
+API rollout docs a21eaa4; shell source/lock95879cfd; AF lock14819a3; AT locke841241.
+No producer source changed after packing. No mobile package change was needed.
+
+Installed Afghanistan regression:106 passed, zero skipped
+(/tmp/dm-leave-read-country.log). All test/build/install handles are terminal.
+All sibling worktrees checked clean before root evidence commit. No live database/
+developer Redis mutation, user API/SPA/Metro stop/restart, provider activation,
+external message or push occurred. Apply the coordinated API/SPA package update
+through the usual user-controlled restart. The original seven-area goal stays active;
+next carry forward teacher leave mutation recovery/authority/notification work rather
+than claiming the list audit completed the write paths or entire goal.

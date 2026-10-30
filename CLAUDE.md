@@ -2567,3 +2567,16 @@ This migration is transactional, locks receipt writes and may acquire stronger D
 locks; coordinate updated writers/startup before readiness rather than claiming an
 online concurrent-index rollout. Down removes guards without reactivating history.
 No country-specific receipt implementation or extra identity table is needed.
+
+### Bounded teacher leave lists
+
+TeacherLeave List uses Core GeneralParams/PagedList with school/teacher scope,
+combined status/search/creation dates, stable ordering, cancellation and no-store.
+Use the shared AppTable paged loader and its filters/export pipeline; never restore
+a separate initial unbounded list fetch. status remains a legacy alias of leaveStatus;
+conflicting aliases are rejected. Nested teacher/substitute references reuse existing
+PersonLookupDto (id/firstName/lastName), not private TeacherDto profiles. Keep bounded
+name/audit hydration in the same repeatable-read snapshot and preserve historical
+inactive local names without resolving foreign-school references. Civil range display
+and export use the active calendar with UTC date-only formatting. Request/cancel
+idempotency/version review and dense cover-plan/query-index audit remain separate.

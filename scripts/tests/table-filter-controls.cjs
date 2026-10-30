@@ -86,6 +86,31 @@ const select = (label, values, change, key = 'status') => h(Enum, { labelKey: la
   await waitFor(() => assert(ui.getByText('Homework'))); assert.equal(calls.length, 1); assert.equal(calls[0].courseId, 'class-1');
   assert.deepEqual(calls[0].filters, { searchTerm: 'Home', creationDateFrom: '2026-10-13', creationDateTo: '' });
   fireEvent.click(ui.getAllByRole('button', { name: i18n.t('filters.button.reset') })[0]); await waitFor(() => assert(!ui.queryByText('Homework'))); assert.equal(calls.length, 1); assert(ui.getByLabelText('Class', { selector: "input,select,textarea" })); cleanup();
+  {
+  // Teacher leave uses the real shared table and API serializer: one paged read,
+  // combined applied criteria, refresh retention and complete CSV/PDF page loaders.
+  const leaveApi=require(core+'/src/api/teacherLeave.ts').default;
+  const leaveClient=require(core+'/src/api/client.ts').default;
+  const leaveRequests=[];
+  leaveClient.get=async(url,config)=>{assert.equal(url,'/teacher-leave');leaveRequests.push(config);return {status:200,data:[{id:'leave-'+config.params.pageNumber,teacher:{id:'teacher',firstName:'Owner',lastName:'Teacher'},fromDate:'2026-05-01',toDate:'2026-05-02',reason:'Health',leaveStatus:0,leaveStatusValue:'Requested',creationDate:'2026-04-01',status:true}],headers:{pagination:JSON.stringify({totalPages:2,totalItems:12,pageSize:10,currentPage:config.params.pageNumber})}};};
+  mocks={...mocks,AuthContext,usePermissions:()=>({canWrite:true}),LeaveStatus:require(core+'/src/models/LeaveStatus.ts').LeaveStatus,UserRole:require(core+'/src/models/UserRole.ts').UserRole,teacherLeave:leaveApi,useFormattedDate:require(core+'/src/hooks/useFormattedDate.ts').default};
+  const LeaveList=require(shell+'/src/screens/school/teacherLeave/TeacherLeaveList.tsx').default;
+  ui=view(h(LeaveList));await waitFor(()=>assert(ui.getByText('Owner Teacher')));assert.equal(leaveRequests.length,1);assert(leaveRequests[0].signal instanceof AbortSignal);
+  fireEvent.change(ui.getByLabelText(i18n.t('teacherLeave.column.reason'),{selector:'input,select,textarea'}),{target:{value:'Health'}});
+  fireEvent.change(ui.getByLabelText(i18n.t('teacherLeave.column.status'),{selector:'input,select,textarea'}),{target:{value:'0'}});
+  fireEvent.change(ui.getByLabelText(i18n.t('dateRange.from'),{selector:'input,select,textarea'}),{target:{value:'2026-04-01'}});
+  fireEvent.change(ui.getByLabelText(i18n.t('dateRange.to'),{selector:'input,select,textarea'}),{target:{value:'2026-04-01'}});
+  assert.equal(leaveRequests.length,1);apply(ui);await waitFor(()=>assert.equal(leaveRequests.length,2));
+  const criteria={sortOrder:'asc',searchTerm:'Health',leaveStatus:'0',creationDateFrom:'2026-04-01',creationDateTo:'2026-04-01',pageNumber:1,pageSize:10};assert.deepEqual(leaveRequests.at(-1).params,criteria);
+  fireEvent.click(ui.getByRole('button',{name:'Go to page 2'}));await waitFor(()=>assert.equal(leaveRequests.at(-1).params.pageNumber,2));assert.deepEqual(leaveRequests.at(-1).params,{...criteria,pageNumber:2});
+  fireEvent.click(ui.getByRole('button',{name:i18n.t('teacherLeave.refresh')}));await waitFor(()=>assert.equal(leaveRequests.length,4));assert.equal(leaveRequests.at(-1).params.leaveStatus,'0');
+  csvBlob=null;pdfRows=null;
+  fireEvent.click(ui.getByRole('button',{name:i18n.t('report.csv.tooltip')}));await waitFor(()=>assert(csvBlob));
+  await waitFor(()=>assert.equal(leaveRequests.length,6));assert.deepEqual(leaveRequests.slice(-2).map(r=>r.params),[1,2].map(pageNumber=>({...criteria,pageSize:50,pageNumber})));assert(!(await csvBlob.text()).includes('[object'));
+  fireEvent.click(ui.getByRole('button',{name:i18n.t('report.print.tooltip')}));
+  fireEvent.click(ui.getByRole('button',{name:i18n.t('report.settings.export')}));await waitFor(()=>assert.equal(leaveRequests.length,8));assert.deepEqual(leaveRequests.slice(-2).map(r=>r.params),[1,2].map(pageNumber=>({...criteria,pageSize:50,pageNumber})));assert.equal(pdfRows.length,2);
+  fireEvent.click(ui.getAllByRole('button',{name:i18n.t('filters.button.reset')})[0]);await waitFor(()=>assert.equal(leaveRequests.length,9));assert.deepEqual(leaveRequests.at(-1).params,{sortOrder:'asc',pageNumber:1,pageSize:10});cleanup();
+  }
   // Aggregated grade/attendance views keep empty-table scopes visible and apply dates to source records.
   const GradeBook = require(core + '/src/components/grade/AppGradeBook.tsx').default;
   ui = view(h(GradeBook, { grades: [{ id: 'g1', courseId: 'course', examType: 0, score: 10, creationDate: '2026-10-12' }, { id: 'g2', courseId: 'course', examType: 1, score: 20, creationDate: '2026-10-13' }], filterControls: { render: (values, change) => select('teacherLeave.column.status', values, change) } }));
