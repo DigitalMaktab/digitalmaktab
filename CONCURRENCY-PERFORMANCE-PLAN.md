@@ -6878,3 +6878,26 @@ Core Release build passed with 68 existing warnings and zero errors. Standard
 the API successfully. No tests were run. Multi-replica skip/recovery behavior and
 additional background jobs are not runtime-verified; broader classroom/state,
 query/index, invariants, telemetry and representative load audits remain open.
+
+
+## Resume increment 141 — share hosted-service health across API instances
+
+The Root service-health endpoint reads the existing `IHostedServiceHealthTracker`
+contract. I checked its DTO, all background worker callers and the Root UI: these
+expect the same per-service aggregate fields, so no second health model or client
+contract was needed. With the existing NotificationBackplane enabled, Core now
+stores those aggregates in Redis using an atomic Lua update and the existing
+connection/multiplexer. The Redis key namespace follows the configured
+application/environment prefix. The `Snapshot` operation pipelines reads for the
+bounded set of worker names rather than issuing them one at a time. Without the
+backplane the in-memory implementation remains; during a Redis outage the Redis
+implementation keeps local updates, emits a throttled warning, and serves that
+instance's local snapshot. No table or extra connection pool was added.
+
+Core Release build passed with 68 existing warnings and zero errors. Standard
+`sync-dotnet.sh` rebuilt/packed Core, SDK and Afghanistan, then restored and built
+the API successfully. No tests were run. Redis Lua/runtime
+behavior, mixed-version rollout, and fallback behavior under a real Redis outage
+are not runtime-verified. Health is an aggregate across hosts rather than a
+per-instance inventory; the wider observability/export and load audits remain
+open.
