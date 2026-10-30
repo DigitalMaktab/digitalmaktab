@@ -6264,3 +6264,17 @@ weighted grand-total DTO remains unchanged. Core Release build passed with 69
 existing warnings and zero errors. Standard `sync-dotnet.sh` and API build
 passed; no tests were run. Real cross-school data volume and query plans remain
 to be measured.
+
+
+## Resume increment 107 — make birthday notifications safe across API instances
+
+Birthday notices previously used a read-before-send check against the inbox.
+Two API hosts could both pass that check and notify the same recipients. The
+job now uses Core's existing recurring school-notification pipeline, which
+commits per-recipient receipts with inbox rows under a PostgreSQL advisory
+transaction lock. It retains the existing notification data, type, audience,
+localization, and 06:00 UTC schedule; no new table or field was introduced.
+Existing inbox rows inside the recurrence window are adopted into receipts.
+Core Release build and standard `sync-dotnet.sh` (including API build) passed;
+no tests were run. Real multi-host execution and workload timings remain to be
+measured.
