@@ -6632,3 +6632,21 @@ explicitly reload the latest quiz. `sync-dotnet.sh` passed with the API build,
 `sync-spa.sh` passed, and the SPA production build compiled with existing lint
 warnings. No tests were run. Applying the quiz migration and concurrent teacher
 edit verification remain runtime validation items.
+
+
+## Resume increment 129 — serialize first report-card settings saves
+
+The existing `ReportCardSettings` row and unique-per-school index already own
+this configuration, but two admins could both observe no row and race the
+upsert; later saves were also last-writer-wins. Core now uses the existing
+revision-token pattern plus a school-scoped PostgreSQL transaction advisory
+lock, re-reads after locking, and distinguishes the empty-revision default
+shape from stale existing settings. A migration backfills revisions without
+adding a parallel settings table. The SPA form reuses Formik-backed Core
+checkboxes and the shared conflict review, preserving all five draft values
+until the admin explicitly reloads. `sync-dotnet.sh` passed with the API build,
+`sync-spa.sh` passed, and the SPA production build compiled with existing lint
+warnings. The first shell build identified a TypeScript optional-revision
+mismatch in the comparison loader; the loader now normalizes the returned
+revision, and the subsequent build passed. No tests were run. Migration
+application and simultaneous first-save/stale-edit runtime checks remain open.
