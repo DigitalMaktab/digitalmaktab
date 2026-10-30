@@ -6324,3 +6324,18 @@ reminder cadence remain. Account eligibility reuses existing password-change
 fields; no schema, receipt table or new persistence was added. Core Release and
 standard `sync-dotnet.sh` (Core, Afghanistan package, API build) passed; no tests
 were run. Live multi-host behavior and workload measurements remain open.
+
+
+## Resume increment 111 — coordinate the global operations digest
+
+The weekly operations digest scanned all root-user IDs and used an
+application-level read-before-send check, allowing duplicates across API hosts.
+The school-owned automation receipt table cannot represent this platform-wide
+job because its notifications use `SchoolId = Guid.Empty`. Core now reuses the
+existing notification inbox as its durable checkpoint, a week-scoped
+PostgreSQL advisory transaction lock, and 250-recipient keyset pages. Each
+page's inbox rows commit before realtime publication; disabled global
+preferences are excluded. Digest content and Monday 09:00 UTC schedule remain.
+No table or field was added. Core Release and standard `sync-dotnet.sh` (Core,
+Afghanistan package and API builds) passed; no tests were run. Actual multi-host
+execution and global-recipient query plans still require runtime evidence.
