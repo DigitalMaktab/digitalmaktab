@@ -6237,6 +6237,21 @@ No tests were run. Query plans and response equivalence need representative
 data.
 
 
+## Resume increment 106 — page withdrawal history and fetch certificates directly
+
+The withdrawal admin table loaded the entire school history, and the certificate
+screen loaded that same full list just to locate one record. Core now pages the
+existing withdrawal DTO through `UserParams`, including AppTable creation-date
+and student filters, and returns the standard pagination header. The API adds a
+school-scoped single-record GET using that same DTO, and the certificate now
+requests only its target row. The table uses AppTable's paging/export lifecycle;
+record and refresh actions reload its current query. Existing per-student
+history remains available. No new data model or table was added. Core Release
+and spa-core TypeScript builds passed. Standard `sync-all.sh` completed and
+shell `npx tsc --noEmit` passed; no tests were run. Real workload timings
+remain unmeasured.
+
+
 ## Resume increment 104 — bound root benchmark query work
 
 The cross-school benchmark endpoint groups activity across every tenant. Its
