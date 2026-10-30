@@ -6216,3 +6216,17 @@ no-tracking; every DB operation in this request receives the cancellation
 token. Core Release build passed with 69 existing warnings and zero errors.
 Standard `sync-dotnet.sh` and API build passed. No tests were run; representative
 query-plan and output comparisons are still needed.
+
+
+## Resume increment 104 — bound root benchmark query work
+
+The cross-school benchmark endpoint groups activity across every tenant. Its
+queries were not no-tracking, had no request-cancellation tokens, and the
+aggregate projections contained eager-load directives that do not contribute
+to grouped scalar results. The endpoint now uses the shared expensive-operation
+admission budget, no-tracking aggregation, and request cancellation for every
+query; unused aggregate includes were removed. The returned per-school and
+weighted grand-total DTO remains unchanged. Core Release build passed with 69
+existing warnings and zero errors. Standard `sync-dotnet.sh` and API build
+passed; no tests were run. Real cross-school data volume and query plans remain
+to be measured.
