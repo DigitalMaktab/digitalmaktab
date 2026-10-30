@@ -6386,3 +6386,20 @@ returned none, touched 11 shared buffers, and completed in 0.314 ms. The local
 database is too small and had no eligible reminder rows, so this does not
 justify a new index or represent production behavior. Representative query
 plans/timings remain open.
+
+
+## Resume increment 115 — enforce fee balance bounds in the database
+
+The payment audit confirmed that Core already uses the existing `Fee.PaidAmount`
+as its denormalized balance, updates it in the same transaction as `Payment`,
+and serializes payment, void and waiver writes with the fee row lock and durable
+mutation receipt. No parallel ledger or idempotency representation was needed.
+Core now declares a `Fee` check constraint requiring nonnegative invoice and
+paid amounts, with paid amount no greater than invoice amount. The additive
+migration installs it as `NOT VALID`, enforcing the invariant for subsequent
+inserts/updates while preserving any historical anomaly for later review. A
+read-only query against the configured local database found 0 invalid rows of
+51; this sample is too small for production claims. The Core project builds
+successfully; existing package vulnerability and compiler warnings remain. No
+tests were run. Payment concurrency/replay behavior still needs its dedicated
+PostgreSQL regression suite and cross-instance runtime evidence.
