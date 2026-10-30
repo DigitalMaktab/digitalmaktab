@@ -6158,3 +6158,19 @@ occupancy rules and section ordering. No schema, field, service, or API contract
 was added. Core Release build passed with 69 existing warnings and zero errors.
 No tests were added or run. The broader multi-school query-plan review,
 multi-instance auditing, telemetry and representative load evidence remain open.
+
+
+## Resume increment 100 — admit ministry and teaching-register report workloads (2026-10-30)
+
+The export audit found Afghanistan ministry workbook endpoints and the Taraqi
+and monthly attendance register endpoints were not marked as expensive. The
+shared Core request-admission middleware already uses endpoint metadata to
+limit simultaneous expensive work per process and per school, and Afghanistan
+already consumes that Core extension. Those report routes now use the shared
+marker; static workbook templates and ordinary file downloads remain on normal
+request capacity. No new module-local throttle or duplicate policy was added.
+
+Afghanistan Release build and standard `sync-dotnet.sh` passed, including the
+API consumer build. No tests were run. This is per-process admission control; it does not coordinate
+expensive work across API replicas or provide end-to-end streaming for workbook
+generation.
