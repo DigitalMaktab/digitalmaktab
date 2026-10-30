@@ -6218,6 +6218,25 @@ Standard `sync-dotnet.sh` and API build passed. No tests were run; representativ
 query-plan and output comparisons are still needed.
 
 
+## Resume increment 105 — page and scope the alumni directory
+
+Discovery traced the alumni API to its sole consumer, `AlumniDirectory`, which
+already uses `AppTable` but fetched every row separately and supplied a dummy
+page loader. Core now binds the existing `UserParams`, applies AppTable's
+creation-date filter and name search, returns the standard pagination header,
+and receives request cancellation. The screen now fetches pages through the
+existing AppTable request/export lifecycle, so applied filters carry into its
+exports. Final-class history is projected to only the required fields for the
+current page and explicitly scoped to the current school; this also prevents a
+transferred alumnus's later class at another school from leaking into this
+directory. The existing DTO and table component were reused; no new DTO,
+component, field or table was introduced. Core Release build and spa-core
+TypeScript build passed. Standard `sync-all.sh` completed its Core, country,
+API, spa-core and country/shell package swaps; shell `npx tsc --noEmit` passed.
+No tests were run. Query plans and response equivalence need representative
+data.
+
+
 ## Resume increment 104 — bound root benchmark query work
 
 The cross-school benchmark endpoint groups activity across every tenant. Its
