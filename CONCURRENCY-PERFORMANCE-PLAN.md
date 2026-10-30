@@ -6978,3 +6978,25 @@ country packages and shell dependencies; `CI=false npm run build` passed with
 pre-existing lint and CRA maintenance warnings. No tests were run. The inventory
 item catalog and other unbounded reads remain in the query audit, along with
 broader invariant, distributed runtime, telemetry and load verification.
+
+
+## Resume increment 146 — page the inventory catalog
+
+The inventory catalog also fetched every active item before passing the rows to
+`AppTable`; its page loader was a placeholder. I traced the only catalog caller,
+the low-stock filter, AppTable's remote paging/export paths, and Core's existing
+`PagedList`/pagination header. Core now returns stable 50-row maximum pages,
+filtered by school and low-stock status in SQL. The screen uses AppTable remote
+paging. CSV/PDF full-result retrieval reuses spa-core's bounded `readAllPages`
+helper and keeps the low-stock filter, so an export does not silently contain
+only the visible page. Mutations and refresh now advance the table reload key.
+No duplicate pager, model, table, or count field was added.
+
+Core Release build passed with 68 existing warnings and zero errors. Standard
+`sync-dotnet.sh` built Core, SDK and Afghanistan and successfully built the API.
+Standard `sync-spa.sh` built and installed the SDK, spa-core, country packages
+and shell dependencies; `CI=false npm run build` passed with repository-wide
+lint and CRA maintenance warnings. No tests were run. Runtime pagination and
+large-export behavior still need representative data verification. Other
+unbounded reads, invariants, distributed runtime, telemetry and load evidence
+remain open.
