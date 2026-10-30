@@ -6958,3 +6958,23 @@ built the API successfully. No tests were run. The admin gradebook should be
 checked in a running app to confirm its empty initial state prompts class/student
 scoping clearly; the broader grade/attendance query, invariant, distributed
 runtime, telemetry and load audits remain open.
+
+
+## Resume increment 145 — page inventory transaction history
+
+The inventory modal loaded every stock movement for an item for each open,
+despite rendering the records with `AppTable`. I checked the existing shared
+table's remote paging support, Core `PagedList` and pagination-header contract,
+the inventory SDK call and all screen callers. Core now returns a stable,
+no-tracking page of the existing transaction rows, still verifies the owning
+school before the read, and honors cancellation. The controller uses the normal
+pagination header, and the modal's existing `AppTable` now fetches pages on
+demand. No history table, cursor field, DTO or custom paging component was added.
+
+Core Release build passed with 68 existing warnings and zero errors; standard
+`sync-dotnet.sh` rebuilt/packed Core, SDK and Afghanistan and successfully built
+the API. Standard `sync-spa.sh` built and installed the SDK, spa-core, both
+country packages and shell dependencies; `CI=false npm run build` passed with
+pre-existing lint and CRA maintenance warnings. No tests were run. The inventory
+item catalog and other unbounded reads remain in the query audit, along with
+broader invariant, distributed runtime, telemetry and load verification.
