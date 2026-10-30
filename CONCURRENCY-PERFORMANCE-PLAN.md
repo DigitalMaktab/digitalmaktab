@@ -6371,3 +6371,18 @@ were run. Cross-host behavior assumes replicas share the configured working
 directory for the archive-exists check; separate local filesystems still need a
 shared backup destination. Real multi-host failure/recovery and archive-size
 timings remain unverified.
+
+
+## Resume increment 114 — record cleanup coordination and local fee query plan
+
+The remaining cleanup workers were traced to Core's existing
+`DatabaseReaper.DeleteAsync` implementation: it takes a per-table PostgreSQL
+transaction advisory lock, selects at most 250 IDs, commits each delete batch,
+and for side effects rechecks row metadata under row locks before publication.
+No duplicate cleanup coordinator was added. A read-only
+`EXPLAIN (ANALYZE, BUFFERS)` of the fee-reminder candidate page against the
+configured local PostgreSQL database examined approximately 153 Fee rows,
+returned none, touched 11 shared buffers, and completed in 0.314 ms. The local
+database is too small and had no eligible reminder rows, so this does not
+justify a new index or represent production behavior. Representative query
+plans/timings remain open.
