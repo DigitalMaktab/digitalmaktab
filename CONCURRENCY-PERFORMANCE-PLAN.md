@@ -7000,3 +7000,24 @@ lint and CRA maintenance warnings. No tests were run. Runtime pagination and
 large-export behavior still need representative data verification. Other
 unbounded reads, invariants, distributed runtime, telemetry and load evidence
 remain open.
+
+
+## Resume increment 147 — reduce course-material graph read overhead
+
+I traced the Core section reads through the student endpoint and shared parent
+delegate, plus the teacher endpoint and their SPA consumers. The current feed
+contract needs its full current-year or selected-course collection for the
+accordion, so result truncation/paging would hide material without a UX change.
+These endpoints only map the loaded graph to responses. Core now uses
+no-tracking split queries and request cancellation for student/parent reads, and
+no-tracking split queries, stable section ordering and request cancellation for
+teacher reads. Existing enrollment, school and teacher scope is unchanged; no
+new collection, paging contract or cache was added.
+
+Core Release build passed with 68 existing warnings and zero errors. Standard
+`sync-dotnet.sh` rebuilt/packed Core, SDK and Afghanistan, then restored and built
+the API successfully. No tests were run. Nested learning-material volume and
+database plans remain unmeasured; the endpoint's total result size is still
+unbounded and needs a deliberate paged accordion contract if representative
+school data shows it is large. Other query, invariant, distributed runtime,
+telemetry and load work remains open.
