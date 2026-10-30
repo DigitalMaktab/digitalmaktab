@@ -6278,3 +6278,19 @@ Existing inbox rows inside the recurrence window are adopted into receipts.
 Core Release build and standard `sync-dotnet.sh` (including API build) passed;
 no tests were run. Real multi-host execution and workload timings remain to be
 measured.
+
+
+## Resume increment 108 — serialize and bound fee reminder delivery
+
+The hosted fee reminder and the manual “send now” endpoint shared an
+eligibility timestamp, but both could read a fee as due, stage duplicate
+notifications, and only then update `LastReminderSentAt`. Core now keyset-pages
+due fees in batches of 100 and locks/rechecks each existing Fee row inside a
+transaction using PostgreSQL `FOR UPDATE`. It stages the existing inbox
+notifications and advances the existing cadence field in that same commit;
+post-commit realtime delivery remains best effort. Parent lookups are batched
+per page and constrained to the matching school. No new field, table, or
+parallel receipt was needed. Core Release build passed with 67 existing
+warnings and zero errors. Standard `sync-dotnet.sh` completed, including the
+Afghanistan package and API builds; no tests were run. Concurrent-host behavior
+and production-volume timing still need runtime evidence.
