@@ -2580,3 +2580,26 @@ name/audit hydration in the same repeatable-read snapshot and preserve historica
 inactive local names without resolving foreign-school references. Civil range display
 and export use the active calendar with UTC date-only formatting. Request/cancel
 idempotency/version review and dense cover-plan/query-index audit remain separate.
+
+### Atomic teacher leave request creation
+
+POST teacher-leave uses Idempotency-Key and shared MutationReceiptStore. Leave,
+proposed cover JSON, audit, preference-aware operator inbox batches and immutable
+response commit together under the existing teaching school lock. Recheck current
+account after receipt/school waits and before completing the mutation. Replays after
+later cancellation return the original result and never restore state or republish.
+Use the existing Version, never add a second Revision field or request receipt table.
+NotificationRepository.StreamRelated is the single bounded postcommit stream for
+announcement and leave producers. Live delivery remains best effort after commit.
+Granted staff recipients require teacherLeave.write again at delivery time.
+
+Core AppLeaveRequest owns the shared form; do not restore the shell's duplicate form
+or generate a new request ID on every retry. Shared editor creation mode accepts
+ordinary objects without fake revision fields; real versioned reads/edits keep the
+normal precondition. Keep drafts/intent on failure, credentials/signal pinned, pending
+modal dismissal blocked, and late account/unmounted results ignored. Date validation
+matches the366-day inclusive backend bound. Cancellation/decision recovery remains
+separate unfinished work; creation protection does not imply those are complete.
+Creation must explicitly require a TEACHER actor: staff management capabilities can
+satisfy static role attributes, and colliding staff/teacher UUIDs must never let an
+assistant submit leave as the teacher. Keep the role-collision regression.

@@ -5694,3 +5694,126 @@ external message or push occurred. Apply the coordinated API/SPA package update
 through the usual user-controlled restart. The original seven-area goal stays active;
 next carry forward teacher leave mutation recovery/authority/notification work rather
 than claiming the list audit completed the write paths or entire goal.
+
+## Resume increment 92 — atomic teacher leave creation and recoverable request intents (2026-10-30)
+
+Increment91 was verified progress (paged leave reads), not completion of mutations.
+Discovery followed TeacherLeave's existing Version/cover JSON, RequestLeaveDto and
+validators, shared TeachingOperationsRepository school lock/cover planning, Decide's
+version check, Cancel's current transaction, every controller notification helper,
+MutationReceiptStore/MutationAuthorization, notification audience/preferences/staging/
+publication, existing announcement stream, actual shell request form/API and shared
+editor/deletion/intent/form primitives. Request previously committed leave/covers
+before saving notifications and had no replay receipt; lost responses became overlap
+errors. Decisions/cancellation need further work and were not silently declared done.
+
+No persistent field/table, receipt service or second leave model was added. Request
+reuses Core MutationReceiptStore and the existing TeacherLeave/Version. Core's
+AppLeaveRequest consolidates the existing shell request form (old markup/handlers
+removed), consuming Core AppForm/fields/modal/footer and existing editor/intent state.
+The shared editor's generic creation mode now accepts ordinary object forms without
+requiring a fake Revision on the existing Version model; versioned reads and accepted
+edits still require a real revision by default. The existing creation-only opt-out is
+explicit and the new consumer validates a nonempty returned ID. No unversioned edit
+path was introduced. Core owns this cross-country leave workflow and form.
+
+POST teacher-leave requires Idempotency-Key and has the existing runtime expensive
+operation marker/request-size bound. The receipt transaction owns the existing school
+teaching lock, current account checks after receipt/school waits, overlap guard,
+scalar requester identity, leave/cover/audit saves, preference-aware operator inbox
+batches and immutable encrypted result. Overlapping distinct intents serialize on
+the same school lock; same intent/payload replays without replanning or publishing.
+Replay after later cancellation returns its original requested status/version and
+never restores the row. Mutation failure rolls back every row/audit/notification and
+receipt; explicit retry keeps the intent. Teacher profile credentials are not loaded
+just to build request identity. Current authorization is rechecked after planning,
+every inbox batch and final mapping. New infrastructure errors are controller-local
+English/Dari/Pashto resources, reusing the established shared error contract.
+
+Recipients reuse SchoolNotificationAudience.Operators(teacherLeave.write), covering
+active owner/principals/head masters/granted staff, with existing preference checks.
+Each keyset batch is at most250, and saved inbox rows detach before the next batch.
+NotificationAccountAccess rechecks that capability for leave-request staff delivery.
+Inbox is authoritative. Only new committed requests attempt best-effort live delivery;
+failed external publication cannot turn success into500. The existing announcement
+related-inbox stream moved into NotificationRepository.StreamRelated and both
+producers consume it; no copied stream or extra public service/interface was added.
+No durable external push/outbox or exactly-once external delivery claim is made.
+
+The shared request form retains draft and ID through failed/unknown outcomes, pins
+credentials/signal, prevents duplicate submits/pending dismissal, and ignores
+abandoned/account-generation completions through the existing editor lifecycle.
+Token renewal retains the intent; a newly opened operation gets a new ID. No automatic
+retry or persisted draft was added. Existing date-range validation now accurately
+states the366-day inclusive bound in all three SPA locales and mobile mirrors.
+
+Focused isolated PostgreSQL/HTTP tests:3 passed, zero skipped
+(/tmp/dm-leave-request-focused.log), including existing announcement producer and leave
+read regressions. Twelve same-intent requests across two real hosts commit one leave/
+receipt, two bounded inbox batches and260 preference-filtered notices. Tracked inbox
+entries stay at most250. Live failure still returns200 after an independent context
+sees committed receipt/source. Changed fingerprints have localized details in all
+three languages; missing key428, validation400 and nonteacher403. An overlapping
+intent fails; replay after later cancellation preserves the original result. Injected
+second inbox-batch and receipt failures roll back leave/inbox/receipt, then explicit
+same-ID retry succeeds. Actual receipt-lock and school-lock waits recheck deactivated
+accounts before exposing replay/new rows. Canceled lock waits leave no receipt and
+permit explicit retry. Competing distinct overlapping intents commit exactly one.
+Existing probes/hosts are extended/reused rather than copied: one optional predicate
+on the advisory-lock observer, a shared leave host composition and a transactional
+notification probe now used by both producers.
+
+Real form tests extend the existing multilingual teaching harness
+(/tmp/dm-leave-request-ui.log): required/range validation, preserved fields/error,
+trimmed payload, stable UUID through503/token renewal, pinned renewed token/signal,
+real fixed-footer button submission, pending Escape refusal, one accepted callback,
+new-operation ID and aborted/unmounted late-result suppression. React review follows
+the previously applied react-best-practices skill with project Core primitives:
+Formik owns values, shared lifecycle owns async state, stable scope keys reset account
+forms, no duplicate effect-driven request, and native labels/forms/footer remain.
+
+Full regression/package/consumer results follow below. Cancellation expected-version/
+durable intent/authority and decision replay/notification transactions remain next,
+along with cover-plan resource bounds and representative leave query/index evidence.
+All seven original overall requirements remain open; no goal scope was reduced.
+
+Final access audit found that StaffRoleAuthorizationHandler can satisfy static role
+attributes for management capabilities. Creation now additionally requires an actual
+TEACHER identity and nonempty school before receipt execution. The regression assigns
+a granted staff account the same UUID as a real teacher and verifies request403;
+teacher leave management permission cannot impersonate that teacher. This was added
+before backend packing and the entire Core suite rerun. Final full regression:484
+passed, zero skipped, 2m11s (/tmp/dm-leave-request-full-core.log). The earlier full run
+also passed484 before this additional role-collision case; only the final log supports
+the final backend source. No assertion or permission boundary was relaxed.
+
+Source Core types and installed shell types pass. Full source shared UI/form/export/
+module audit passes104 table sites in all three locales
+(/tmp/dm-leave-request-pdf-audit.log; artifacts /tmp/dm-leave-request-pdf-audit).
+SPA producer13e8faf; country locale producer d01c42b; mobile locale producer84466d8
+committed before standard sync-spa/sync-mobile build/pack/install. No producer bytes
+changed afterward. Logs: /tmp/dm-leave-request-sync-{spa,mobile}.log. Six installed
+mobile language files byte-match source. Consumer commits: shell9c452535; AF SPA
+lock0201361; AT lock825e929; parent383bf4a; student800234c. API rollout docs d7e1614.
+
+Final Core producer d1b1d30 (role-collision guard included) was committed before
+standard backend clean/build/pack/country/API restore/build. Sync passes
+(/tmp/dm-leave-request-sync-dotnet.log); no source edits after packing. Installed
+producer/API SHA256 pairs match:
+Core d62b7b3facd71488c0aefdae21b967a743aa285d37292aac87b02fd560d88069;
+Abstractions f6799c0542eeb33d11d52b9aea369f13e0e3db20590bb8b05b87f96cf5d672da;
+country 04b7b80230ee7dff1c5e40493c71a7bbe51a91d5cbd4c4aa683c8bfea41ce794.
+The related-inbox stream reuses the existing RelatedFanout index (school/type/related/
+Id, predicate related IS NOT NULL); no duplicate lookup index/migration was added.
+
+Installed Afghanistan regression:106 passed, zero skipped
+(/tmp/dm-leave-request-country.log). All build/test/install handles are terminal;
+all sibling worktrees checked clean before root evidence commit. Shared locale/
+package/enum/abstraction/worker/route gates pass through local commits. No live DB
+migration/developer Redis mutation, user API/SPA/Metro stop/restart, provider
+activation, external message or push occurred. API/SPA rollout remains coordinated
+and user-controlled; packing does not load a running process's stale assemblies.
+All seven original completion requirements remain open. Next carry forward teacher
+leave cancellation preconditions/durable replay and approval/notification transaction
+recovery, then resource/index/operational audits rather than equating creation with
+completion of the wider objective.
