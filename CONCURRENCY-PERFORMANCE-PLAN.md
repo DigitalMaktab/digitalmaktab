@@ -6582,3 +6582,22 @@ the shared AppBaseEditor conflict comparison for subject and book.
 shell production build passed with existing lint warnings. No tests were run.
 Migration application and competing subject-editor runtime validation remain
 open.
+
+
+## Resume increment 126 — version school and global book edits
+
+Book is one shared Core table used by both global library administration and
+school-owned library editing. It had neither a revision field nor concurrency
+token, so parallel root/school writes could silently replace title, metadata or
+uploaded paths. Core now gives Book the existing `IRevisionedRecord` token,
+includes it in `BookDto`, checks expected versions in both PUT flows, catches
+the EF race, and backfills existing rows in one migration. Both multipart DTOs
+carry the token; upload validation and ownership rules remain in place. The
+school Library editor forwards the version and reuses AppBaseEditor's explicit
+conflict review. Uploads can still become temporary orphans if a post-upload
+race loses the save; existing upload cleanup owns that cleanup. Build
+verification passed: `sync-dotnet.sh` rebuilt Core/Afghanistan/API,
+`sync-spa.sh` rebuilt and installed SPA Core/countries, and the SPA production
+build compiled with existing lint warnings. No tests were run. Applying the
+migration and checking real concurrent uploads/saves remain runtime validation
+items.
