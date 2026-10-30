@@ -6422,3 +6422,23 @@ that bypass Core coordination, but should only be added after checking and
 resolving legacy duplicates and choosing a safe rollout for the actual table
 size. No new schema was added in this audit. Concurrency/load regression and
 representative production-data validation remain open.
+
+
+## Resume increment 117 — export existing runtime metrics over OTLP
+
+Core already exposes instruments for request admission, shared throttling,
+notification delivery and classroom load, but the API host had no metrics
+reader/exporter. The API now conditionally registers OpenTelemetry HTTP and
+.NET runtime instrumentation and subscribes to those existing Core meters when
+`Telemetry__Otlp__MetricsEndpoint` or `OTEL_EXPORTER_OTLP_METRICS_ENDPOINT` is
+configured. It uses OTLP HTTP protobuf and rejects malformed/non-HTTP(S)
+endpoints at startup. With no explicit endpoint, export remains disabled. No
+Core meter, duplicate metrics source, endpoint or tenant/account metric labels
+were added. The API build passed; no tests or live collector probe were run.
+Deployment must configure and monitor a reachable collector to receive metrics.
+
+The API host owns telemetry export configuration; Core continues to own the
+shared meters. Package versions were checked against the current stable NuGet
+packages, and the configuration follows the [official .NET OTLP exporter
+guidance](https://opentelemetry.io/docs/languages/dotnet/exporters/) and
+[ASP.NET Core metrics setup](https://opentelemetry.io/docs/languages/dotnet/metrics/getting-started-aspnetcore/).
