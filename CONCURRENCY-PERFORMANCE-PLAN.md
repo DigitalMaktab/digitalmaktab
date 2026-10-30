@@ -6519,3 +6519,19 @@ existing lint warnings. A first build exposed an overly broad change to shared
 `Base`; revision typing was narrowed to Course and the build then succeeded. No
 tests were run. Database migration application and the multi-client stale-edit
 flow still need runtime validation.
+
+
+## Resume increment 122 — protect class and schedule editor writes
+
+The same audit found that Core class and schedule updates serialize against
+timetable operations with the existing per-school lock, but did not detect that
+the form was based on an older read. Both records now implement the existing
+Core `IRevisionedRecord`; their DTOs expose revisions, edit DTOs require the
+expected version on updates, and the existing DataContext advances/checks those
+tokens. Existing class and schedule rows receive UUIDs through a backfilling
+migration. Their editors reuse `AppBaseEditor` conflict review and cancellable
+Core API reads. Create requests remain version-free. `sync-dotnet.sh` passed,
+including the API build; `sync-spa.sh` passed; the shell production build
+passed with the repository's existing lint warnings. No tests were run. Applying
+the migration to a real database and exercising simultaneous editors remain
+runtime validation items.
