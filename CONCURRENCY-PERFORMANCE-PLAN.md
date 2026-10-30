@@ -6200,3 +6200,19 @@ cancellation token through all three stages. Core Release build passed with 69
 existing warnings and zero errors. Standard `sync-dotnet.sh` and API build
 passed; no tests were run. This only cancels pre-commit work; it does not
 introduce retries or change fee idempotency.
+
+
+## Resume increment 103 — aggregate class-performance dashboard queries
+
+Inspection of the Core class-performance dashboard found one grades query per
+course, all attendance rows since the trend start (including unused future
+dates), and full enrollment/assignment ID lists materialized only for counts.
+Core now groups grade buckets by course in SQL, groups attendance by day with
+both range bounds in SQL, counts enrollments and assignments in the database,
+and counts submissions through their assignment relation. The existing
+`ClassPerformanceDto` and field semantics are retained, including historical
+enrollment and attendance-row counts. The class and course reads are now
+no-tracking; every DB operation in this request receives the cancellation
+token. Core Release build passed with 69 existing warnings and zero errors.
+Standard `sync-dotnet.sh` and API build passed. No tests were run; representative
+query-plan and output comparisons are still needed.
