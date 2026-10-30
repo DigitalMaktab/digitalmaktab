@@ -67,6 +67,11 @@ const columns=[{header:'route',accessor:'name',render:v=>h('strong',null,v)}, {h
  assert.equal(opened,beforeOpen);
  await act(async()=>{finishLogo({ok:false});await exporting});assert.equal(opened,beforeOpen+1);
  global.fetch=async()=>({ok:false});
+ // Actual hook defaults, not only an injected test locale, localize booleans.
+ for(const lng of ['en-US','fa-AF','ps-AF']){
+  await i18n.changeLanguage(lng);await act(async()=>hook.result.current([{header:'status',accessor:'flag'}],[{flag:true},{flag:false}],'Boolean labels',''));
+  assert.equal(options.body[0][0],i18n.t('recordConflict.yes'));assert.equal(options.body[1][0],i18n.t('recordConflict.no'));assert(!options.body.flat().join(' ').includes('announcements.pinned'));
+ }
  const legacy=renderHook(()=>require(root+'/src/hooks/useExportToPdf.ts').default());assert.equal(typeof legacy.result.current,'function');
  const {reportText}=require(root+'/src/pdf/tableValues.ts');
  const locale={language:'fa-AF',formatNumber:v=>new Intl.NumberFormat('fa-AF').format(v),formatBoolean:v=>v?'بلی':'نخیر'};

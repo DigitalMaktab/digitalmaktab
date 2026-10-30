@@ -2622,3 +2622,18 @@ The shared confirmation keeps Version/intent on failures, requires explicit save
 value replacement and another confirmation after conflicts, and disables cancellation
 of already cancelled/rejected rows. Approval replay/notification recovery remains
 unfinished; cancellation protection does not close that path or the broader goal.
+
+
+### Concurrency continuation — increment 94
+
+Teacher-leave decisions reuse DecideLeaveDto.ClientRequestId as the durable intent
+(no second required header), existing Version and shared receipt transaction.
+Decision/inbox/receipt are atomic; only this decision's staged IDs publish after
+commit and replay never republishes. Cover review returns authoritative status,
+note and saved assignments/gaps with fresh authorization after its snapshot.
+spa-core's existing versioned editor accepts an optional Version getter; preserve
+its default Revision consumers. AppTable CSV now reuses tableReport, including
+current exportValue/display formatting; PDF booleans reuse recordConflict yes/no.
+No new table/field/country rule. See increment94 in CONCURRENCY-PERFORMANCE-PLAN.md
+for evidence and limits. All seven original goal areas remain open; finish package
+verification before further changes, then audit dense cover/query resource bounds.

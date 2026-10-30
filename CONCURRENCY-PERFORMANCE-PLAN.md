@@ -5944,3 +5944,96 @@ parent936238a; student9af4b74. All sibling worktrees checked clean before this r
 evidence commit. Shared local commit gates (locale/package/enum/abstraction/worker/
 route/control checks as applicable) pass. Cancellation is one completed increment,
 not completion of the unchanged seven-area goal.
+
+
+## Resume increment 94 — durable leave decisions and authoritative cover review (2026-10-30)
+
+Discovery traced DecideLeaveDto.ClientRequestId/Version, TeachingOperationsRepository
+and its trusted callers, TeacherLeaveController request/cancel/decision flows,
+MutationReceiptStore, notification staging/reader, actual staff authorization,
+AppLeaveCoverDecision, useVersionedRecordEditor, AppTable and tableReport. The body
+already contains the authoritative intent ID: reuse it rather than adding another
+header/field. No persistent field/table, country rule, new locale or mobile change
+is needed. Shared behavior remains in backend Core and spa-core.
+
+BaseController extends the existing DurableMutation protocol with a body-ID overload.
+Decision execution reuses the existing business engine inside the receipt-owned
+transaction, school advisory lock and physical parent lock. Current authorization
+is rechecked after waits and before commit; Version is required and stale changes
+return the standard explicit-review conflict. Prior actual approved cover identities
+are captured under the lock. Requested proposals are not prior assignments and do
+not produce withdrawal notices on rejection. The trusted repository wrapper keeps
+its old LessonStale exception contract without duplicating decision rules.
+
+Decision, receipt and inbox rows commit together. Owner/substitute/withdrawal notices
+use actual teacher-family roles, existing preference handling and DECIDED type.
+The existing bounded reader optionally selects the IDs staged by this operation;
+replanning cannot republish earlier decisions. These IDs are transient: no duplicate
+event column, new table or repurposed RelatedEntityId. Replay never republishes;
+postcommit transport failure cannot turn a saved decision into an API failure.
+This is atomic inbox persistence, not a new durable external transport outbox.
+Cancellation reuses staging without accumulating unused publication IDs.
+
+Cover-plan reads use a repeatable-read snapshot and fresh authorization after commit,
+with no-store and the existing expensive-read guard. Existing response metadata is
+extended with authoritative status/note. Approved plans preserve stored choices and
+explicit gaps; delivered lessons retain their actual teacher. Duplicate stored
+lesson choices fail review. Existing legacy single-substitute fallback is retained.
+The same leave Version remains the sole concurrency token, not a fake Revision.
+
+The shared versioned editor accepts a minimal optional Version getter, preserving
+all default Revision consumers. Cover editing reuses account epochs, captured tokens,
+cancellation, intent ownership and Core explicit comparison. Compact Formik values
+exclude candidate graphs. Retries retain note/choices/intent, accepted replies are
+validated, and saved-values replacement is explicit and never submits automatically.
+Approved/rejected/cancelled controls follow the authoritative read. Exported teacher
+names reflect current choices instead of the initial proposal.
+
+CSV now reuses existing tableReport/display/exportValue formatting, with translated
+headers, native dates, booleans and human references, logical column order and proper
+quoting. PDF's default boolean formatter uses existing translated yes/no keys.
+Formula-like CSV text receives an Excel-facing tab prefix inside quotes, following
+https://community.owasp.org/attacks/CSV_Injection ; this human report is not a
+machine-lossless CSV contract or a guarantee across all spreadsheet programs.
+Broader export ownership/resource bounds remain open.
+
+Evidence: focused backend8 passed (/tmp/dm-leave-decision-focused.log), full Core486
+passed/zero skipped in2m11s (/tmp/dm-leave-decision-full-core.log). Real PostgreSQL,
+two JWT/Kestrel hosts, production staff handler: ten identical intents, canonical
+replay, stale versions, immutable replay after replan, exact new notification IDs,
+proposed-only rejection, inbox/receipt rollback, live publication failure, actual
+recorded lesson/daily attendance preservation, locked-slot conflicts, grant revocation
+while physically blocked, and fresh authorization after snapshot reads.
+
+Real shared UI tests in all three locales cover503 retry, token renewal, body-only
+intent, explicit conflict comparison, changed saved note/assignments, invalid200,
+pending/unmount guards, validation, live teacher export and safe localized CSV
+(/tmp/dm-leave-decision-ui.log). Source Core TypeScript passes. Full shared UI/form/
+export/module audit passes104 table sites (/tmp/dm-leave-decision-pdf-audit.log;
+artifacts /tmp/dm-leave-decision-pdf-audit). Added real PDF hook boolean assertions
+also pass (/tmp/dm-leave-decision-boolean-pdf.log). React skill review checks shared
+primitives, stable scope/callback ownership, candidate graph size and keyed summary
+lookups. Final DTO edit only clarifies existing fields' comments.
+
+All seven original requirements remain open. This increment closes decision replay/
+notification recovery, not the broader goal. Dense cover/candidate/timetable query
+bounds, remaining editor/invariant/query audits, background and runtime coordination,
+representative mixed load, operational recovery and restore evidence still require
+work against the original checklist. Package/install evidence follows below.
+
+
+Increment94 final installation: backend Core2d6b42c, SPA Core43237e8 were committed
+before standard backend/SPA packing; no producer source edits after packing. API
+rollout docs3ec8c96; installed shellc7a04ede, AF SPA lock1987de0, AT locka636fd2.
+Standard syncs pass (/tmp/dm-leave-decision-sync-{dotnet,spa}.log). Installed shell
+TypeScript passes (/tmp/dm-leave-decision-shell-types.log); installed Afghanistan
+regression106 passed/zero skipped (/tmp/dm-leave-decision-country.log). No mobile
+package/source change. Producer/API SHA256 pairs match
+(/tmp/dm-leave-decision-dll-hashes.log):
+Core1fe72c5f0cdf15653417d85fb61ad60500ffc79f04b7e018e20ee4f2c287fb9d;
+Abstractions490d82c977b884012cf5b45ed9ef5489631ad4565ab3eed85b62b8878a312e44;
+country922b1c33a67161b58dbc5f6fdd06dc3cce5b1c02eec36bbd731f69bf0af9f85f.
+All build/test/commit handles are terminal. All sibling worktrees checked clean
+before this root evidence commit. Local commit gates pass. No live DB/developer
+Redis mutation, user server stop/restart, external message, provider activation
+or push. All seven original requirements remain open with scope unchanged.
