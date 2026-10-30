@@ -6938,3 +6938,23 @@ Core Release build passed with 68 existing warnings and zero errors. Standard
 `sync-dotnet.sh` rebuilt/packed Core, SDK and Afghanistan, then restored and built
 the API successfully. No tests were run. Query allocation and production data
 timings remain unmeasured; the wider query/index and load audits remain open.
+
+
+## Resume increment 144 — bound the admin gradebook's school-wide read
+
+The admin gradebook called `GET /api/grade/school` without a student or class
+scope on initial load; that endpoint materialized every current-year grade and
+its enrollment, student, class/branch and subject graph. I traced the SPA caller,
+Core repository contract and teacher grade query. The latter already returns an
+empty result when no usable scope is supplied. Core's admin repository now uses
+the same safe behavior and returns before issuing SQL if both scope filters are
+absent. Existing student/class requests are explicitly no-tracking and honor the
+request cancellation token. No new paging contract, table, field, index or
+service was introduced.
+
+Core Release build passed with 68 existing warnings and zero errors. Standard
+`sync-dotnet.sh` rebuilt and packed Core, SDK and Afghanistan, then restored and
+built the API successfully. No tests were run. The admin gradebook should be
+checked in a running app to confirm its empty initial state prompts class/student
+scoping clearly; the broader grade/attendance query, invariant, distributed
+runtime, telemetry and load audits remain open.
