@@ -6463,3 +6463,18 @@ Version constraints and APIs were checked against [EF Core metrics
 documentation](https://learn.microsoft.com/en-us/ef/core/logging-events-diagnostics/metrics)
 and [Npgsql OpenTelemetry tracing
 documentation](https://www.npgsql.org/doc/diagnostics/tracing.html).
+
+
+## Resume increment 119 — review person-list query bounds and search indexes
+
+Current Core list behavior is bounded and stable: `ReadPage` caps and orders
+root identities before graph expansion; students load only the joining-class
+reference; teachers use split queries and reject relation expansion above the
+existing 500-row cap. Both order by school/name/ID. Student contains-search
+already has a PostgreSQL trigram index from `StudentSearchIndexes`; teacher
+name/email contains-search has no corresponding GIN index. Local PostgreSQL
+statistics show about 517 students and 0 teachers, far too little evidence to
+justify a write-amplifying teacher index or claim meaningful timing. Leave the
+schema unchanged until representative teacher counts and query plans are
+available. Stable paging and bounded expansion were confirmed by source trace;
+production query plans and realistic search timing remain open.
