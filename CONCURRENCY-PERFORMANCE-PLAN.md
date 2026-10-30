@@ -6037,3 +6037,26 @@ All build/test/commit handles are terminal. All sibling worktrees checked clean
 before this root evidence commit. Local commit gates pass. No live DB/developer
 Redis mutation, user server stop/restart, external message, provider activation
 or push. All seven original requirements remain open with scope unchanged.
+
+
+## Resume increment 95 — stream school book downloads (2026-10-30)
+
+Discovery found the existing Core book upload limit is 20 MiB, but the download
+endpoint read each complete PDF into a new byte array before returning it. At
+concurrency, memory therefore scales with active download count times file size.
+No new storage model or download service is needed: Core's existing endpoint and
+`ExpensiveOperation` request-admission marker own this shared behavior. The route
+now streams the file asynchronously and sequentially with range support and is
+admitted through the existing expensive-operation limit. Its school/global-book
+authorization, HTTPS redirect, content type and download filename remain intact.
+
+Core Release build passed with 68 existing warnings and zero errors; Core
+pre-commit gates passed (localization, mirrored enums, hosted-service health and
+abstraction isolation). The standard `sync-dotnet.sh` pack/install/API build
+completed successfully, including Afghanistan; it did not restart the user's
+API process. The change is Core commit `90b25ca`. No new test was added or run.
+
+All seven original completion requirements remain open. This reduces per-request
+download memory and caps simultaneous large downloads per API process/school; it
+does not provide distributed admission across API instances or settle the wider
+exports, invariants, job coordination, telemetry and mixed-load evidence.
