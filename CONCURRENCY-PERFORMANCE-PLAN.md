@@ -6354,3 +6354,20 @@ but now fetch and update at most 250 transfer IDs per batch. Existing transfer
 rows and notification type are reused. Core Release and `sync-dotnet.sh` (Core,
 Afghanistan package and API builds) passed; no tests were run. Real multi-host
 behavior and representative candidate/update counts remain unverified.
+
+
+## Resume increment 113 — serialize nightly backups across API hosts
+
+The nightly backup already reused Core's bounded backup exporter, timeout,
+process-local admission gate and atomic same-directory publication, but every
+API host still generated each school's archive independently. The worker now
+holds a per-school/day PostgreSQL session advisory lock through generation and
+publication, waits up to 12 minutes for another replica, and skips a dated
+archive already present after acquiring the lock. A lost lock session cancels
+the export before publication. Existing archive files and retention are reused;
+no distributed lock table or storage contract was added. Core Release and
+`sync-dotnet.sh` (Core, Afghanistan package and API builds) passed; no tests
+were run. Cross-host behavior assumes replicas share the configured working
+directory for the archive-exists check; separate local filesystems still need a
+shared backup destination. Real multi-host failure/recovery and archive-size
+timings remain unverified.
