@@ -6650,3 +6650,23 @@ warnings. The first shell build identified a TypeScript optional-revision
 mismatch in the comparison loader; the loader now normalizes the returned
 revision, and the subsequent build passed. No tests were run. Migration
 application and simultaneous first-save/stale-edit runtime checks remain open.
+
+
+## Resume increment 130 — protect teacher course-section edits
+
+Inspection of the Core `CourseSection` entity, teacher PUT route, DTO mapping,
+SPA Core model/API/hook and the owning edit modal found no revision field on the
+existing section row. The row now reuses Core's `IRevisionedRecord`, automatic
+revision advancement and EF concurrency-token configuration; existing rows are
+backfilled in an additive migration. The update DTO requires the last read
+revision, and the route checks it after verifying teacher and school ownership,
+then maps an in-flight EF conflict to Core's shared localized 409 response. The
+SPA sends the revision, retains its edited title and description on conflict,
+and uses Core's existing saved-vs-draft comparison with an explicit replace
+choice. No second version store or section table was introduced.
+
+`sync-dotnet.sh` passed (Core, Afghanistan and API builds); `sync-spa.sh` passed;
+the SPA production build passed with the existing unrelated lint warnings. No
+tests were run. Migration application and a real simultaneous teacher edit
+remain runtime checks. The wider query, invariant, distributed coordination,
+export/load and observability work remains open.
