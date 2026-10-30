@@ -6403,3 +6403,22 @@ read-only query against the configured local database found 0 invalid rows of
 successfully; existing package vulnerability and compiler warnings remain. No
 tests were run. Payment concurrency/replay behavior still needs its dedicated
 PostgreSQL regression suite and cross-instance runtime evidence.
+
+
+## Resume increment 116 — audit enrollment capacity serialization
+
+The enrollment write-path audit traced the Core call sites rather than relying
+on the helper name. Student registration and imports take the school advisory
+transaction lock before `EnrollmentCapacity.Resolve`; manual enrollment,
+promotion and transfer placement also resolve capacity under that lock. Class
+capacity edits, timetable class edits and academic-year policy saves use the
+same PostgreSQL lock key, preventing concurrent changes to a limit from racing
+with seat allocation. A source search found no other production Core/country
+`Enrollment` insertion path beyond those and seeding. A read-only local query
+found no student/year with active placements in multiple classes, but this is
+not representative deployment evidence. There is no database unique index for
+one active student/year placement; a partial unique index could protect writes
+that bypass Core coordination, but should only be added after checking and
+resolving legacy duplicates and choosing a safe rollout for the actual table
+size. No new schema was added in this audit. Concurrency/load regression and
+representative production-data validation remain open.
