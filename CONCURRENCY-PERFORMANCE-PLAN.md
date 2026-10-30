@@ -6601,3 +6601,19 @@ verification passed: `sync-dotnet.sh` rebuilt Core/Afghanistan/API,
 build compiled with existing lint warnings. No tests were run. Applying the
 migration and checking real concurrent uploads/saves remain runtime validation
 items.
+
+
+## Resume increment 127 — reject stale assignment updates
+
+Assignment edits had a Core PUT endpoint and a tracked repository update but no
+expected version. The Assignment table had no revision field, so Core now reuses
+the shared `IRevisionedRecord` advancement/concurrency mechanism and conflict
+response helpers. DTO mapping does not accept client-controlled revisions;
+existing assignment rows are backfilled by an additive migration. The typed SPA
+update contract now requires the version returned by existing assignment reads.
+The teacher UI currently exposes create/list/delete rather than an assignment
+edit form, so no parallel editor was added. Build verification passed:
+`sync-dotnet.sh` rebuilt Core/Afghanistan/API, `sync-spa.sh` passed, and
+the SPA production build compiled with existing lint warnings. No tests were
+run. Applying the assignment migration and exercising two simultaneous teacher
+updates remain runtime validation items.
