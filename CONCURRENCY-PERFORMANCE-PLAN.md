@@ -6617,3 +6617,18 @@ edit form, so no parallel editor was added. Build verification passed:
 the SPA production build compiled with existing lint warnings. No tests were
 run. Applying the assignment migration and exercising two simultaneous teacher
 updates remain runtime validation items.
+
+
+## Resume increment 128 — protect quiz edits and retain drafts on conflict
+
+The live CourseQuizzes modal exposed create, edit and delete, but quiz edits had
+no expected version or conflict comparison. Quiz now reuses Core's
+`IRevisionedRecord`, DataContext advancement and EF concurrency token; the DTO
+exposes the revision and the update endpoint checks it after verifying teacher
+ownership. Existing quizzes are backfilled through an additive migration. The
+SPA update contract carries the token, and the modal uses the shared Core
+conflict comparison to show saved versus draft values and lets the teacher
+explicitly reload the latest quiz. `sync-dotnet.sh` passed with the API build,
+`sync-spa.sh` passed, and the SPA production build compiled with existing lint
+warnings. No tests were run. Applying the quiz migration and concurrent teacher
+edit verification remain runtime validation items.
