@@ -34,7 +34,7 @@ Core explicitly marks student/teacher/parent/attendance/grade imports, fee gener
 
 The host uses request-scoped localization and no longer changes process-wide culture defaults on each request. `/health/live` checks the running HTTP process independently of the DB. `/health/ready` does a real SELECT 1 with a three-second cancellation bound and returns only framework health status, without connection/exception details. Restrict probe access at the reverse proxy. Database schema compatibility is still established by migrations/startup, not this connectivity probe.
 
-Core emits `DigitalMaktab.Runtime` Meter instruments: active requests, rejected admissions (bounded reason tag), and duration in seconds (route template/method/status tags). No student identifiers, school IDs, raw URLs or queries enter metric labels. Collection/export and dashboards remain part of the monitoring work.
+Core emits `DigitalMaktab.Runtime` Meter instruments: active requests, rejected admissions (bounded reason tag), and duration in seconds (route template/method/status tags). No student identifiers, school IDs, raw URLs or queries enter metric labels. The API already conditionally exports HTTP, runtime, Core, classroom, notification, throttle and database command metrics to a configured OTLP/HTTP collector; export is disabled when no endpoint is configured. Collector ingestion, dashboards/alerts and production telemetry verification remain open.
 
 ### First query improvements and evidence
 
@@ -6855,7 +6855,7 @@ Core build passed with 68 existing warnings and zero errors. Standard
 the API successfully. No tests were run. Cross-replica contention,
 connection-pool pressure and failure recovery have not been runtime-verified;
 additional expensive endpoints and the full distributed job/classroom,
-query/index, invariants, observability and load audits remain open.
+query/index, invariants, production telemetry and load audits remain open.
 
 
 ## Resume increment 140 — coordinate recurring notification sweeps
@@ -6877,7 +6877,7 @@ Core Release build passed with 68 existing warnings and zero errors. Standard
 `sync-dotnet.sh` rebuilt/packed Core, SDK and Afghanistan, then restored and built
 the API successfully. No tests were run. Multi-replica skip/recovery behavior and
 additional background jobs are not runtime-verified; broader classroom/state,
-query/index, invariants, telemetry and representative load audits remain open.
+query/index, invariants, production telemetry and representative load audits remain open.
 
 
 ## Resume increment 141 — share hosted-service health across API instances
@@ -6899,5 +6899,5 @@ Core Release build passed with 68 existing warnings and zero errors. Standard
 the API successfully. No tests were run. Redis Lua/runtime
 behavior, mixed-version rollout, and fallback behavior under a real Redis outage
 are not runtime-verified. Health is an aggregate across hosts rather than a
-per-instance inventory; the wider observability/export and load audits remain
-open.
+per-instance inventory; OTLP collector ingestion, dashboards/alerts and
+representative load audits remain open.
