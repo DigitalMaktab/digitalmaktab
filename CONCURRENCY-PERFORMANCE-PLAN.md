@@ -6442,3 +6442,24 @@ shared meters. Package versions were checked against the current stable NuGet
 packages, and the configuration follows the [official .NET OTLP exporter
 guidance](https://opentelemetry.io/docs/languages/dotnet/exporters/) and
 [ASP.NET Core metrics setup](https://opentelemetry.io/docs/languages/dotnet/metrics/getting-started-aspnetcore/).
+
+
+## Resume increment 118 — measure database command pressure and latency
+
+The host still had no database command measurements. EF Core 8 does not ship
+the command metrics documented for EF Core 9, and the API pins Npgsql 8; Npgsql
+documents its native OpenTelemetry integration as a version-9 feature. Rather
+than upgrade the ORM/provider stack, Core now provides a `DbCommandInterceptor`
+that records operation counts, failures, in-flight command calls and command
+execution duration. It emits only a bounded SQL-verb tag and never SQL text,
+tenant IDs or account IDs. The API attaches it only when OTLP metrics export is
+enabled, so an unconfigured/local host has no command-interceptor measurement
+overhead. For reader commands, duration ends when the provider returns its
+reader; HTTP request duration remains the end-to-end signal including
+materialization. Standard `sync-dotnet.sh` rebuilt Core/Afghanistan/API
+successfully. No tests or live collector probe were run.
+
+Version constraints and APIs were checked against [EF Core metrics
+documentation](https://learn.microsoft.com/en-us/ef/core/logging-events-diagnostics/metrics)
+and [Npgsql OpenTelemetry tracing
+documentation](https://www.npgsql.org/doc/diagnostics/tracing.html).
