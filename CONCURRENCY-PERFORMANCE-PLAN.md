@@ -6773,3 +6773,21 @@ The Afghanistan backend project built with zero warnings/errors. No tests were
 run. Production-size class-report SQL/memory timing is not measured yet; the
 broader report/exports, imports, invariants, query/index, distributed runtime,
 observability and whole-app load items remain open.
+
+
+## Resume increment 136 — cap in-memory ministry workbooks
+
+Student and teacher file-info exports retain their complete roster and country
+details in memory while ClosedXML creates the workbook. I reused Core's existing
+`BackupExportLimits` configuration instead of adding a country-specific limit
+service or a parallel export setting: it now also carries a separately bounded
+`MaxWorkbookRows` budget (10,000 by default, validated to at most 50,000).
+Afghanistan applies the budget in the database query with deterministic order
+and reads at most one extra row to detect overflow; it returns a localized 413
+instead of a truncated workbook. The streamed JSON backup's larger row limit is
+unchanged. No schema or duplicate data was introduced.
+
+Core and Afghanistan builds plus consumer sync are pending. No tests were run.
+Workbook cell memory and output bytes are still not measured; these limits
+bound rows, not precise heap usage. Other report/import paths and the broad
+concurrency/performance areas remain open.
