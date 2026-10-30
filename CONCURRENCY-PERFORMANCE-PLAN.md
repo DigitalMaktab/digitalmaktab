@@ -6139,3 +6139,22 @@ The query limits application materialization and network output; the broader
 search/index audit still needs representative database plans. Other list/report
 bounds, invariants, cross-instance jobs/state, telemetry and multi-school load
 evidence remain open.
+
+
+## Resume increment 99 — batch sibling-class occupancy during allocation (2026-10-30)
+
+The enrollment audit traced registration, manual enrollment, student import,
+promotion, transfers, class-capacity edits and academic-year policy updates.
+They reuse Core `EnrollmentCapacity` and the same school-scoped PostgreSQL
+advisory lock; no alternate enrollment store or independent capacity policy was
+needed. Automatic assignment did have a query-growth issue: when the selected
+class was full, it queried occupancy once per sibling section. For a full set
+of N sections that added N database round trips while holding the school lock.
+
+Core now loads active sibling sections once and obtains distinct active-student
+occupancy for the set in one grouped query, then picks the first section under
+its own configured capacity. It preserves the existing school/year/status
+occupancy rules and section ordering. No schema, field, service, or API contract
+was added. Core Release build passed with 69 existing warnings and zero errors.
+No tests were added or run. The broader multi-school query-plan review,
+multi-instance auditing, telemetry and representative load evidence remain open.
