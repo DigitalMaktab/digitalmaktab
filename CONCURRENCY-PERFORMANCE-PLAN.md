@@ -6060,3 +6060,21 @@ All seven original completion requirements remain open. This reduces per-request
 download memory and caps simultaneous large downloads per API process/school; it
 does not provide distributed admission across API instances or settle the wider
 exports, invariants, job coordination, telemetry and mixed-load evidence.
+
+
+## Resume increment 96 — remove global request-body buffering (2026-10-30)
+
+Inspection of the API, Core controllers and Afghanistan module found no consumer
+that reads and rewinds arbitrary request bodies. The only request-body rewind is
+payment webhook signature verification; its existing Core resource filter already
+buffers only that endpoint, with a 64 KiB buffer limit and a matching request-size
+limit. API startup had separately enabled unbounded buffering for every request.
+That global middleware is removed, so large form/JSON requests no longer incur
+memory or temporary-file buffering merely by entering the API. Webhook verification
+keeps its endpoint-specific bounded behavior unchanged.
+
+API Debug build passed with four existing package-vulnerability warnings and zero
+errors; API pre-commit build and the explicit rate-limit-route consistency check
+passed. The change is API commit `74361aa`. No server was restarted and no tests
+were added or run. The remaining multi-instance, invariant, broad query/output,
+telemetry and representative mixed-load requirements remain open.
