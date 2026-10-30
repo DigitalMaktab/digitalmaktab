@@ -6499,3 +6499,23 @@ existing lint warnings when `CI=false`. The `CI=true` build fails on existing
 lint warnings across unrelated screens; the changed CourseEditor passes ESLint
 in isolation. No tests were run. The cross-host behavior still needs its
 PostgreSQL concurrency/replay regression run.
+
+
+## Resume increment 121 — reject stale timetable course edits
+
+Course already had a stable Core table and the editor already used Core's
+`AppBaseEditor`, so no parallel course representation or custom conflict UI was
+needed. Discovery confirmed that Course had no revision token; `UpdateDate` is
+not a safe compare-and-swap value. Core now reuses its existing
+`IRevisionedRecord` / `DataContext.AdvanceRecordRevisions` mechanism, exposes
+the token in `CourseDto`, requires it on edits, and maps stale or missing
+versions through the shared localized 409/428 responses. The migration
+backfills a UUID for existing courses before making the token required. The
+SPA Core Course model and cancellable `getCourse` read carry the version; the
+existing shared conflict review presents the changed class, subject and teacher
+and requires the user to reload explicitly. `sync-dotnet.sh` passed, including
+the API build; `sync-spa.sh` passed; the shell production build passed with
+existing lint warnings. A first build exposed an overly broad change to shared
+`Base`; revision typing was narrowed to Course and the build then succeeded. No
+tests were run. Database migration application and the multi-client stale-edit
+flow still need runtime validation.
