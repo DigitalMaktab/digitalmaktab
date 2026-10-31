@@ -7499,3 +7499,25 @@ including academic-year/exam HTTP workflows, fee reminders and transfer tests.
 `sync-dotnet.sh` passed Core, Afghanistan, SDK and API builds. This closes the
 previous suite failures only; all seven broader concurrency/performance
 completion requirements remain open.
+
+## Resume increment 169 — page school book-library reads
+
+The Core book-library endpoint used a tracking query and materialized every
+school-visible and global book. I traced the two school library screens, the
+shared AppTable paging/export contract, Core `UserParams`/`PagedList` date
+filtering, and the existing RootRepository book query. The latter serves a
+separate root/curriculum use case and has different scope semantics, so the
+library endpoint reuses Core's pagination and filtering primitives directly
+while preserving its current school/global visibility and subject filter.
+The endpoint now uses no-tracking reads, bounded pages, stable ordering and
+pagination metadata; sortable fields use a server-side whitelist. Both library
+screens use AppTable's abortable remote paging, creation-date filter, and
+bounded PDF/CSV all-page reader. No new field, table, service or query contract
+was added.
+
+Validation: `sync-dotnet.sh` passed Core, Afghanistan, SDK and API builds;
+`sync-spa.sh` passed package build/install; SPA production build passed with
+existing repository lint and bundle-size warnings and no warnings in the
+changed screens. No library database integration test or representative query
+plan was run, so index/timing evidence for this endpoint remains open, as do
+the wider query/index and all other completion requirements.
