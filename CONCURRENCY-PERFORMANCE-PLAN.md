@@ -7430,7 +7430,9 @@ editor advances only its version token after an accepted write so changes typed
 while a request was pending remain intact. Conflicts reuse Core's explicit
 record comparison/reload UI. The shell obtains a current School DTO when an
 older cached login object lacks a version. School reads use `no-store` to avoid
-stale edit tokens.
+stale edit tokens. The school admin password mutation also maps a version race
+to the shared localized conflict response rather than leaking a concurrency
+exception as a server error.
 
 The additive migration backfills one UUID per existing school before making
 the column required. EF scaffolding exposed unrelated snapshot/model drift and
