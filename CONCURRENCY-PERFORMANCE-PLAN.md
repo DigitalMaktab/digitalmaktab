@@ -7327,3 +7327,28 @@ selected it. The database is too small to establish natural planner selection
 or latency improvement; no tests or `EXPLAIN ANALYZE` were run. The wider
 invariant, query-plan, distributed-runtime, observability and load audits remain
 open.
+
+## Resume increment 162 — durable, bounded message sending
+
+I traced both message write paths and every shell caller, then checked the
+existing Core `MutationReceiptStore`, `NotificationService.StageMany`, message
+repository, upload helper, and SPA Core `useMutationIntent`. Direct sends and
+class broadcasts now persist messages, inbox notifications, and encrypted
+request receipts in the same transaction. The receipt scope and payload hash
+reuse the shared durable mutation protocol; multipart sends fingerprint the
+attachment bytes. The SPA retains each request ID across uncertain failures and
+starts a fresh intent for a different message. Broadcasts project distinct
+parent IDs, cap materialization and delivery at 1,000, and use one bounded
+message batch; the UI explains that limit. Upload and database operations carry
+cancellation, and message attachments now use the existing 20 MiB Core book
+upload ceiling rather than a 100 MiB request allowance. No message receipt
+field, notification table, or alternate upload service was added.
+
+Validation: `sync-dotnet.sh` completed Core, Afghanistan, SDK and API builds;
+`sync-spa.sh` completed SDK/Core/Afghanistan/Austria package builds and install;
+the SPA production build passed with existing repository warnings, strict
+localization parity passed, and `git diff --check` passed for the edited code
+repos. No tests or live message requests were run. Notification transport is
+best effort after the atomic DB commit; failed transport is logged while the
+inbox record remains durable. Broader concurrency, invariant, query-plan,
+multi-instance, telemetry and representative load verification remain open.
