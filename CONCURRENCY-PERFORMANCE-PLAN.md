@@ -7309,3 +7309,21 @@ endpoint query capture were run, so EF's generated grouped SQL and end-to-end
 latency have not been measured. The broader transaction/invariant,
 query-plan, distributed-runtime, observability and whole-application load
 audits remain open.
+
+## Resume increment 161 — index unread message counts
+
+I traced `GetUnreadCountFor` and `MarkThreadRead` to their tenant and recipient
+predicates, then reviewed the existing forward/reverse thread indexes. The
+existing recipient index also includes all read history, while the unread-count
+query filters `ReadAt IS NULL`. Core now declares a partial btree index on
+`(SchoolId, ToUserId, ToUserRole)` for unread rows and creates it concurrently
+with the existing validated Core index helper. No new unread counter or cached
+state was introduced.
+
+`sync-dotnet.sh` passed Core, Afghanistan, SDK and API builds. The local
+`digitalmaktab` migration applied successfully; PostgreSQL reports the index
+valid/ready with the intended partial predicate, and an index-eligibility plan
+selected it. The database is too small to establish natural planner selection
+or latency improvement; no tests or `EXPLAIN ANALYZE` were run. The wider
+invariant, query-plan, distributed-runtime, observability and load audits remain
+open.
