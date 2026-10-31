@@ -7145,3 +7145,19 @@ translation parity and `git diff --check` passed. Tests and live concurrent
 admission requests were not run. Broader mutation receipts, versioned editors,
 invariants, query/output audits, distributed runtime and whole-application load
 evidence remain open.
+
+## Resume increment 153 — bound alumni enrollment-history reads
+
+I traced `AlumniController.List`, its `PagedList` limit (50), the single SPA
+consumer, `Enrollment`'s existing class/student/year relationships, and the
+existing `Enrollment.StudentId` index. The response was already paginated, but
+the controller loaded every enrollment row for the page's students and picked
+the latest class in application memory. The query now groups by student and
+selects only the latest enrollment in SQL using the existing deterministic
+`CreationDate`, then `Id`, ordering. The school boundary, final-class meaning,
+page output and missing-enrollment behavior are unchanged. No new field,
+relationship, DTO, index or cache was needed.
+
+`sync-dotnet.sh` passed Core, Afghanistan, SDK and API builds. No tests,
+representative query plan or live data-volume measurement was run; the wider
+query/index and whole-application load audits remain open.
