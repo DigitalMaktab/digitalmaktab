@@ -7766,3 +7766,21 @@ Validation: `scripts/sync-dotnet.sh` passed Core Release, Afghanistan, SDK and
 API builds. No tests were run. Cross-instance runtime contention was not
 measured, and other write invariants remain open; all seven original completion
 requirements remain open.
+
+## Resume increment 182 — page the school question bank
+
+The shared school quiz-question bank loaded every matching question and the
+screen’s `AppTable` loader was a placeholder. I traced its only UI caller,
+existing subject relationship, difficulty enum and shared table filter/paging
+contract. Core now returns a deterministic 50-row page with pagination headers,
+request cancellation, subject/difficulty filters and the existing creation-date
+filter. The screen sends its applied filters to the server, pages remotely, and
+refreshes the current table after create/delete. Existing question/subject
+entities and DTOs remain the single representation; no schema or duplicate
+filter/paging component was introduced.
+
+Validation: `scripts/sync-dotnet.sh` and `scripts/sync-spa.sh` passed; the SPA
+production build passed. Existing unrelated SPA lint warnings remain; no warning
+references the changed screen. Repository TypeScript/reuse/locale hooks passed
+for the prior GDPR UI increment. No tests were run. Query plans and timings were
+not measured; all seven original completion requirements remain open.
