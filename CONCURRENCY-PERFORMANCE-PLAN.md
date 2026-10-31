@@ -7481,3 +7481,21 @@ locale parity passed. A broader Afghan suite run also had unrelated
 AcademicYearTests and FeeReminderTests failures; the focused transfer suite
 passed independently. Query plan and timing evidence for a representative
 large dossier dataset remain part of the broader audit.
+
+## Resume increment 168 — align Afghanistan integration fixtures with Core revisions
+
+The isolated Afghanistan academic-year/exam workflow fixture manually creates
+Core tables, so I compared its schema and inserts with the Core migrations and
+the current repository model. It predated Core's existing revision migrations
+for CalendarYear, Course, Class, Branch and Subject, and its notification fake
+still threw from `StageMany`, which the production reminder service now calls.
+The fixture now composes those existing Core migration operations, includes the
+required revision values in seeded records and implements staged notification
+capture in the fake. No production schema or parallel test-only data model was
+introduced.
+
+Validation: the isolated multi-database Afghanistan suite passed 106/106,
+including academic-year/exam HTTP workflows, fee reminders and transfer tests.
+`sync-dotnet.sh` passed Core, Afghanistan, SDK and API builds. This closes the
+previous suite failures only; all seven broader concurrency/performance
+completion requirements remain open.
