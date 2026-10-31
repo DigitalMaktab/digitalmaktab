@@ -7607,3 +7607,26 @@ repository hooks; SPA Core `d47405f`, Afghanistan locales `fc7e784`, and SPA
 `9c4a38ab` passed TypeScript, locale and UI consistency hooks. No teacher HTTP
 integration test or production-scale query plan was run. The seven original
 completion requirements remain open.
+
+## Resume increment 174 — bound teacher course-section reads
+
+The teacher course-material editor requested page sizes of up to 1,000, but
+`TeacherRepository.GetCourseSections` ignored them and loaded every section and
+its materials. I traced the editor refresh/conflict callers and reused Core's
+existing `ReadPage`/`PagedList` path, the existing `CourseSection` and
+`LearningMaterial` tables, and the current teacher/school ownership chain. The
+endpoint now returns a stable, no-tracking page with the shared pagination
+header, and the editor uses shared `AppPagination` with a 50-row maximum. Its
+conflict review now loads the specific section or material through a scoped
+single-record read rather than downloading the whole course to find one row.
+No new database representation or country-specific rule was introduced.
+
+Validation: `sync-dotnet.sh` and `sync-spa.sh` passed; the SPA production build
+passed with existing unrelated lint/bundle warnings and no warning for the
+changed editor. Core commit `52d1219` passed Release build and repository
+hooks; SPA Core `450778d` passed TypeScript and locale hooks; SPA `8ec1587e`
+and Afghanistan package-lock `f8c6c6a` passed TypeScript, locale and component
+consistency hooks. This only bounds the teacher editor's section roots;
+learning materials nested under those roots and student/parent course-material
+collections are still unbounded and remain in scope. No DB integration test or
+large-course query plan was run; all seven original requirements remain open.
