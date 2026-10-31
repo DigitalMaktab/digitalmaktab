@@ -7161,3 +7161,25 @@ relationship, DTO, index or cache was needed.
 `sync-dotnet.sh` passed Core, Afghanistan, SDK and API builds. No tests,
 representative query plan or live data-volume measurement was run; the wider
 query/index and whole-application load audits remain open.
+
+
+## Resume increment 154 — page message inbox threads
+
+I traced `MessageRepository.ListThreadsFor`, the authenticated thread route,
+the inbox hook/screen and the header message bell. Thread histories were already
+aggregated in PostgreSQL, but every conversation summary was returned and
+hydrated in one response; the bell then discarded all but five. Core now applies
+its existing `GeneralParams`/`PagedList` bounds (maximum 50), stable summary
+ordering, and standard pagination header. The inbox uses Core's `AppPagination`
+to navigate server pages, and the bell requests only its five visible rows.
+Inbox page requests pass an `AbortSignal`, so page changes and unmounts cancel
+obsolete reads. No parallel page contract, storage or UI control was added.
+
+`sync-dotnet.sh` and `sync-spa.sh` passed Core/API and SPA SDK/Core/country
+package builds. The shell production build passed with existing repository
+lint/CRA/bundle-size warnings and no new inbox warning. No tests or database
+query plans were run. PostgreSQL still aggregates each caller's full message
+history to compute each conversation's last message and unread count; participant
+indexes and that aggregate's cost need representative data/plan review. Other
+unbounded reads, invariant audits, distributed runtime, telemetry and whole-app
+load evidence remain open.
