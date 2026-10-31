@@ -7093,3 +7093,24 @@ discarded; no migration was applied. The new reviewed index migration follows
 the existing concurrent-index pattern, but production migration execution,
 query timings, remaining unbounded reads, write invariants, distributed runtime,
 telemetry and whole-app load evidence remain open.
+
+
+## Resume increment 151 — page role-scoped exam schedules
+
+`ExamController.List` materialized every school exam and first loaded student,
+parent-child and teacher-course IDs into application memory. I traced all list
+callers (one shared SPA table), `AppTable` remote sorting/date filtering/export,
+Core's existing `GeneralParams`/`PagedList`/pagination header, and the existing
+`Enrollment`, `Parent.Children`, `Course` and `Class` relationships. Core now
+keeps each role's scope as SQL subqueries, uses no-tracking reads, cancellation,
+stable 50-row maximum pages and whitelisted sorting. The SPA table loads those
+pages remotely; its creation-date filter and bounded export path carry the same
+applied criteria. The existing exam start-time index already matches the default
+tenant-scoped sort, so no duplicate index or new DTO was introduced.
+
+`sync-dotnet.sh` passed Core/Afghanistan/SDK/API builds. `sync-spa.sh` passed the
+shared and country package builds; the shell production build passed with
+existing repository lint/CRA and bundle-size warnings. No tests or live role
+query plans were run. Representative volumes, other unbounded reads, invariant
+audits, multi-instance runtime, telemetry and whole-app load evidence remain
+open.
