@@ -7802,3 +7802,20 @@ Validation: `scripts/sync-dotnet.sh` and `scripts/sync-spa.sh` passed; the SPA
 production build passed with existing unrelated lint warnings. No tests were
 run. Quiz-list query plans/timings and runtime pagination behavior have not been
 measured; all seven original completion requirements remain open.
+
+## Resume increment 184 — serialize student quiz attempt replacement
+
+Student quiz submission deleted the prior per-question attempt rows and inserted
+the replacement set without serializing concurrent submissions. Two requests
+could both read the same old set and persist duplicate rows because the existing
+attempt table has no `(student, quiz, question)` uniqueness constraint. The
+submit path now uses Core’s existing PostgreSQL transaction-lock helper, scoped
+to school, academic year, student and quiz, then rechecks enrollment after lock
+acquisition. Deletion, answer grading, replacement inserts and save are in one
+cancellable read-committed transaction, preserving the existing latest-submit
+semantics and schema. No parallel lock service or persistent field was added.
+
+Validation: `scripts/sync-dotnet.sh` passed Core Release, Afghanistan, SDK and
+API builds. No tests were run. Concurrent runtime behavior and attempt-table
+query plans were not measured; all seven original completion requirements
+remain open.
