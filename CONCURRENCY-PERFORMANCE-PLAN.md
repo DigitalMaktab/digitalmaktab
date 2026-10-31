@@ -7063,3 +7063,33 @@ repository lint/CRA and bundle-size warnings. No tests were run. Concurrent
 room/students behavior still needs runtime verification against PostgreSQL; the
 broader invariant, remaining query, multi-instance, telemetry and representative
 load audits remain open.
+
+
+## Resume increment 150 — page and date-filter admissions
+
+The school admissions screen previously fetched every submission for the school
+and rendered a local `AppTable`. I traced the only SPA list caller, the shared
+table's remote paging, applied-filter and bounded full-export paths, and Core's
+existing `GeneralParams`, `PagedList`, `CreationDate` filter and pagination
+header contracts. The endpoint now performs tenant/status/creation-date filtering
+in SQL, uses a 50-row maximum page, accepts cancellation, and applies whitelisted
+stable sorting. The existing `AppTable` now fetches remote pages; PDF/CSV use its
+existing bounded page reader and carry the applied status/date filters through.
+The existing Admission entity and status enum remain authoritative. Inspection
+found no tenant/list or creation-date indexes on Admission, so Core now declares
+two focused read indexes for the school/date window and default school/submitted
+ordering; a shared migration helper creates them concurrently and validates
+their definitions. No duplicate query or pagination implementation was added.
+
+`sync-dotnet.sh` passed Core, Afghanistan, SDK and API builds. `sync-spa.sh` passed
+the shared and country package builds and installed them. The final shell
+production build passed with existing repository lint/CRA and bundle-size
+warnings; the AdmissionList callback dependency warning introduced by the first
+build was corrected. No tests or representative database plans were run. An EF
+CLI model-drift probe generated only under `/tmp` proposed destructive removals
+for country TPT and existing migration-owned schema because its design-time
+context does not compose the runtime modules. That generated probe was
+discarded; no migration was applied. The new reviewed index migration follows
+the existing concurrent-index pattern, but production migration execution,
+query timings, remaining unbounded reads, write invariants, distributed runtime,
+telemetry and whole-app load evidence remain open.
