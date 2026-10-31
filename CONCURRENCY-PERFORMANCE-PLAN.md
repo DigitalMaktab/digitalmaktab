@@ -7714,3 +7714,20 @@ Validation: Core Release build and `sync-dotnet.sh` (Core, Afghanistan, SDK,
 API) passed. No tests or live query-plan/timing measurements were run. The
 scalar query's expected round-trip reduction is source-derived, not a measured
 latency result; all seven original completion requirements remain open.
+
+## Resume increment 179 — scope parent-child reads to the operation
+
+I traced every Core controller caller of `IParentRepository.GetChildren` and
+confirmed that only `ParentController.Children` needs full student records for
+its response. Membership checks now use the existing Core `IsChild` relation
+query, and grade/fee/incident/vaccine collection readers project only child IDs
+through a new `GetChildIds` repository method. These queries honor request
+cancellation and retain the same parent-child authorization source. No schema,
+relationship, parallel representation, or DTO was added.
+
+Validation: `scripts/sync-dotnet.sh` passed Core Release, Afghanistan, SDK and
+API builds; `git diff --check` passed. No tests were run. The returned child-ID
+sets are still materialized for collection filtering, and other unbounded
+collection/query paths remain to audit. No query-plan or runtime timing
+measurement was performed; all seven original completion requirements remain
+open.
