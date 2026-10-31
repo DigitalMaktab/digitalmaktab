@@ -7412,3 +7412,40 @@ network-level failure detection still depends on Npgsql/OS signaling the
 connection as broken; this does not prove multi-host recovery behavior.
 Representative failure and multi-instance tests, other distributed state,
 database invariants, query audits, telemetry and load evidence remain open.
+
+## Resume increment 166 — protect School profile and logo edits
+
+I checked the shared School entity, its security stamp, existing record-version
+contract, aggregate revision advancement, DTO mapper, profile API callers and
+Core editor/conflict-review components. `SecurityStamp` only invalidates
+authentication and cannot detect edits to the school record, so School now
+reuses Core's `IRevisionedRecord` contract and a single `Revision` column on
+the existing School table. Core owns this because the school profile and logo
+are shared account data. The Core DTOs expose/accept the version, while mapper
+updates ignore client-supplied revisions; EF generates the next token.
+
+Profile edits and logo upload/removal require the expected version and return
+localized 409/428 conflicts. Logo writes return the new version, and the profile
+editor advances only its version token after an accepted write so changes typed
+while a request was pending remain intact. Conflicts reuse Core's explicit
+record comparison/reload UI. The shell obtains a current School DTO when an
+older cached login object lacks a version. School reads use `no-store` to avoid
+stale edit tokens.
+
+The additive migration backfills one UUID per existing school before making
+the column required. EF scaffolding exposed unrelated snapshot/model drift and
+proposed dropping existing Student columns and indexes; those operations were
+discarded. The migration and snapshot change only School.Revision, avoiding
+destructive or duplicate schema changes.
+
+Validation: `sync-dotnet.sh` passed Core, Afghanistan, SDK and API builds;
+`sync-spa.sh` passed SDK/Core/country package builds and installs; the SPA
+production build passed with existing repository lint/bundle warnings; strict
+locale parity passed. No tests or live concurrent School updates were run, and
+the migration has not been applied to a database. Cross-host behavior still
+depends on applying it before deploying the version-required API contract.
+Remaining completion requirements are broad: durable replay coverage for
+other writes, invariant/transaction review, query plans and representative
+performance data, bounded heavy workloads, distributed SignalR/classroom and
+rate-limit behavior, production telemetry/readiness validation, and isolated
+multi-school load/failure tests.
