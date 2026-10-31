@@ -7183,3 +7183,22 @@ history to compute each conversation's last message and unread count; participan
 indexes and that aggregate's cost need representative data/plan review. Other
 unbounded reads, invariant audits, distributed runtime, telemetry and whole-app
 load evidence remain open.
+
+
+## Resume increment 155 — index message participant lookups
+
+I checked the existing `Message` entity and writers, inbox aggregate predicate,
+two-direction thread query, mark-read and unread-count queries, `DataContext`
+index configuration, migration history and model snapshot. The table had only
+its school FK index and retention indexes; none started with the school and
+participant identity used by these endpoints. Core now declares two directional
+composite indexes covering school, sender/recipient identity and role, the
+opposite participant, and message order. The migration uses the existing
+validated concurrent-index helper, so index creation does not take the normal
+blocking table lock. No duplicate message store or new domain field was added.
+
+`sync-dotnet.sh` passed Core, Afghanistan, SDK and API builds. The additive
+migration has not been applied, and no database plan, write-overhead benchmark
+or live workload was run. Index selection and the inbox aggregate's full-history
+cost still require representative database evidence; the broader query,
+invariant, distributed-runtime, telemetry and whole-app load audits remain open.
