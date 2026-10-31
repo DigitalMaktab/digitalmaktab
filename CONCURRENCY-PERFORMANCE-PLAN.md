@@ -7585,3 +7585,25 @@ commit `c56d09c` passed TypeScript and locale hooks; SPA package-lock commit
 hooks. No endpoint integration test or SQL plan was added/run, so tenant
 scoping runtime evidence and broader performance measurements remain open.
 All seven original completion requirements remain unchecked.
+
+## Resume increment 173 — page the all-years live-class course list
+
+After narrowing selected-course resolution, the live-class landing screen still
+loaded every teacher course across every school year in one response. I traced
+the caller and reused Core's existing `SchoolRepository.GetCourses`, which
+already provides tenant-scoped no-tracking stable paging and bounded page size.
+The teacher endpoint clears any requested year filter to preserve its intended
+all-years behavior, forces the authenticated teacher ID, and returns the
+existing pagination header. The shell renders one page at a time with shared
+`AppPagination`, cancellation of superseded page requests, and localized
+loading/retry feedback. English remains in SPA Core; Dari and Pashto use the
+Afghanistan locale package. No duplicate query, paging contract or persistent
+data was introduced.
+
+Validation: `sync-dotnet.sh` and `sync-spa.sh` passed; the SPA production build
+passed with existing unrelated lint/bundle warnings and no warning for the
+changed live-class screen. Core commit `c910653` passed Release build and
+repository hooks; SPA Core `d47405f`, Afghanistan locales `fc7e784`, and SPA
+`9c4a38ab` passed TypeScript, locale and UI consistency hooks. No teacher HTTP
+integration test or production-scale query plan was run. The seven original
+completion requirements remain open.
