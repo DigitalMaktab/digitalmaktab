@@ -7652,3 +7652,26 @@ warnings. No tests were run. Materials are still nested without a per-section
 bound, and the existing child collection consumers elsewhere remain unaudited.
 No integration test, large-data query plan or timing measurement was run; all
 seven original completion requirements remain open.
+
+## Resume increment 176 — bound materials per student/parent section
+
+The new student/parent section paging still included every material attached
+to each returned section. I traced the existing LearningMaterial entity/DTO,
+enrollment relation, parent-child gate, AppAccordion and AppTable. Core now
+returns section roots without expanding materials and exposes student/parent
+material reads scoped to the enrolled section, using the same `UserParams`,
+`ReadPage`/`PagedList`, and pagination headers. The shared accordion fetches a
+section's first 50 materials only when expanded, supports per-section paging,
+aborts collapsed/superseded requests and offers localized retry feedback.
+Existing tables, relationships and DTOs are reused; no new schema or paging
+contract was added.
+
+Validation: `sync-dotnet.sh` passed Core, Afghanistan, SDK and API builds;
+`sync-spa.sh` passed shared/country package builds and install; the SPA
+production build passed with existing unrelated lint and bundle warnings.
+Repository commit hooks passed Core Release build, SPA Core/Shell/Country
+TypeScript, locale parity/coverage and component consistency checks. No tests
+were run. The teacher course-material editor still expands nested materials
+with its section query, and other nested collections remain to be audited. No
+integration test, representative query plan or timing measurement was run; all
+seven original completion requirements remain open.
