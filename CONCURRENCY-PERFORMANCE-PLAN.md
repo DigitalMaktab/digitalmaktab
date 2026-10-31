@@ -7264,3 +7264,22 @@ not applied to a live database, so duplicate preflight and concurrent request
 behavior still need database verification; no tests were run. The wider
 transaction/invariant, query-plan, distributed-runtime, observability and
 whole-application load audits remain open.
+
+## Resume increment 159 — index message contact substring search
+
+I traced the message contact source queries, their display-name projections and
+the search predicate against the existing Student `pg_trgm` migration and
+`pg_trgm` extension. The search was applied after combining role queries with
+`UNION ALL`, which could prevent role-table indexes from being useful. Core
+now applies the unchanged lower-case substring predicate to each source before
+the union. An additive Core migration creates concurrent, active-row GIN
+trigram indexes for the existing teacher, parent, student and staff display
+name expressions. It reuses the shared extension and does not add denormalized
+search fields or duplicate contact data.
+
+`sync-dotnet.sh` passed Core, Afghanistan, SDK and API builds. The indexes have
+not been applied and no representative `EXPLAIN (ANALYZE, BUFFERS)` was run, so
+the planner's use, storage/write cost and response-time effect remain
+unverified. No tests were run. The broader transaction/invariant,
+query-plan, distributed-runtime, observability and whole-application load
+audits remain open.
