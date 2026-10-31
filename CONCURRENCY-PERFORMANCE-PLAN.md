@@ -7202,3 +7202,23 @@ migration has not been applied, and no database plan, write-overhead benchmark
 or live workload was run. Index selection and the inbox aggregate's full-history
 cost still require representative database evidence; the broader query,
 invariant, distributed-runtime, telemetry and whole-app load audits remain open.
+
+
+## Resume increment 156 — serialize support-ticket action retries
+
+I traced the existing `SupportRequest`/`SupportRequestActivity` entities,
+`ClientRequestId` unique indexes, repository transactions, action route, and SPA
+retry payload. Support tickets already have durable idempotency state and
+optimistic `Version`, so no second receipt or request-ID field was needed. The
+activity uniqueness scope is `(ActorId, ClientRequestId)`, while `Act` previously
+locked only the ticket. Reusing an intent concurrently against two tickets
+could therefore pass both replay lookups before one lost to the unique index.
+`Act` now keeps its existing ticket lock and then acquires Core's shared
+transaction advisory lock for the actor/request-ID pair before checking the
+existing activity. Concurrent retries now serialize at the same scope enforced
+by the existing unique index.
+
+`sync-dotnet.sh` passed Core, Afghanistan, SDK and API builds. No live concurrent
+requests or database race test was run; other mutation paths, broader invariant
+audits, distributed coordination, telemetry and whole-app load evidence remain
+open.
