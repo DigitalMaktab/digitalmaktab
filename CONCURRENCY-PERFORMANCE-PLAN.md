@@ -7784,3 +7784,21 @@ production build passed. Existing unrelated SPA lint warnings remain; no warning
 references the changed screen. Repository TypeScript/reuse/locale hooks passed
 for the prior GDPR UI increment. No tests were run. Query plans and timings were
 not measured; all seven original completion requirements remain open.
+
+## Resume increment 183 — page course quiz lists and scope conflict reloads
+
+The course quiz list returned every quiz and the editor fetched the entire list
+again to locate one record during conflict review. I traced the sole SPA caller,
+quiz CRUD hook, table sort keys, course ownership chain and existing Core paging
+contract. Core now verifies the course is in the caller’s school, returns a
+stable bounded page with request cancellation, and applies whitelisted server
+sorting for the table’s existing sortable columns. The screen uses remote
+`AppTable` paging and the shared API client/hook accepts page parameters. A
+single-quiz read scopes by the same school chain and replaces the list scan in
+conflict review. Existing Quiz/Course entities and QuizDto remain authoritative;
+no schema or duplicate representation was added.
+
+Validation: `scripts/sync-dotnet.sh` and `scripts/sync-spa.sh` passed; the SPA
+production build passed with existing unrelated lint warnings. No tests were
+run. Quiz-list query plans/timings and runtime pagination behavior have not been
+measured; all seven original completion requirements remain open.
