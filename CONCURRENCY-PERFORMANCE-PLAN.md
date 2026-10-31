@@ -7630,3 +7630,25 @@ consistency hooks. This only bounds the teacher editor's section roots;
 learning materials nested under those roots and student/parent course-material
 collections are still unbounded and remain in scope. No DB integration test or
 large-course query plan was run; all seven original requirements remain open.
+
+## Resume increment 175 — page student and parent course-material sections
+
+The student and parent course-material endpoints returned every enrolled
+course section and all nested materials in a single response; the student live
+class picker also depended on that unbounded collection. I traced enrollment
+and parent-child ownership and reused the existing `UserParams`, Core
+`ReadPage`/`PagedList`, pagination headers, and the existing enrollment join.
+Student and parent now receive one stable 50-section page; enrollment remains
+part of the SQL query, and parent authorization uses a narrow existence query
+on the same child relationship instead of materializing every child with
+joining-class/year graphs. Shared SPA API/hook and accordion pagination serve
+both screens, and the student live-class picker uses the same bounded reader.
+No new table, field, or paging contract was added.
+
+Validation: `sync-dotnet.sh` built Core, Afghanistan, SDK and API successfully;
+`sync-spa.sh` built/packed the shared and country packages and installed them;
+the SPA production build passed with existing unrelated lint and bundle-size
+warnings. No tests were run. Materials are still nested without a per-section
+bound, and the existing child collection consumers elsewhere remain unaudited.
+No integration test, large-data query plan or timing measurement was run; all
+seven original completion requirements remain open.
