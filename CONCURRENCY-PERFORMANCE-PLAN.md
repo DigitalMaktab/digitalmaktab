@@ -7373,3 +7373,23 @@ passed with the same existing unrelated warnings; `git diff --check` passed.
 No tests or live concurrent relationship requests were run. The wider
 multi-instance, database-invariant, query-plan, observability and representative
 load requirements remain open.
+
+## Resume increment 164 — deduplicate database-only cleanup sweeps
+
+I inventoried the Core cleanup jobs and reused `PostgresAdvisoryLockSession`,
+which already owns safe PostgreSQL session-lock lifetime on a dedicated
+connection. Core now has one `DistributedScheduledWork.TryRunOnceAsync` wrapper
+and the audit-log, expired-token, notification, stale-device-token, and
+withdrawn-enrollment database reapers use distinct deployment-wide keys. This
+prevents each API replica from rescanning/deleting the same retention rows at
+the scheduled fire time. The lock context is isolated from each job's scoped
+work context, cancellation releases the lock, and failures still flow to the
+existing hosted-service health/error handling. Filesystem sweepers and message
+attachment cleanup are excluded because per-instance storage can differ.
+No lease table, job state table, or new coordination database was added.
+
+Validation: `sync-dotnet.sh` passed Core, Afghanistan, SDK and API builds;
+`git diff --check` passed. No tests or multi-host runtime run were performed.
+This coordinates only the five database-only retention jobs; remaining
+background services, shared-filesystem deployment behavior, distributed rate
+limiting/realtime state, telemetry and load evidence remain open.
