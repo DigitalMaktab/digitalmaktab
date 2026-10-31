@@ -7277,9 +7277,17 @@ trigram indexes for the existing teacher, parent, student and staff display
 name expressions. It reuses the shared extension and does not add denormalized
 search fields or duplicate contact data.
 
-`sync-dotnet.sh` passed Core, Afghanistan, SDK and API builds. The indexes have
-not been applied and no representative `EXPLAIN (ANALYZE, BUFFERS)` was run, so
-the planner's use, storage/write cost and response-time effect remain
-unverified. No tests were run. The broader transaction/invariant,
+`sync-dotnet.sh` passed Core, Afghanistan, SDK and API builds. The local
+`digitalmaktab` database had no duplicate reaction keys; its migration history
+was four additive index migrations behind, so I applied the two existing
+admission/message participant index migrations followed by the reaction and
+contact-search migrations through `dotnet ef database update`. PostgreSQL now
+reports each index valid and ready, and the reaction index unique. `EXPLAIN`
+with sequential scans disabled selected each of the four GIN contact indexes
+for its exact search expression. This verifies index eligibility, not natural
+planner choice or real-world impact: the local database has only 517 students,
+5 teachers, 3 parents and 2 staff users. No tests or representative
+`EXPLAIN (ANALYZE, BUFFERS)` were run. Storage/write overhead and production
+query timings remain unverified. The broader transaction/invariant,
 query-plan, distributed-runtime, observability and whole-application load
 audits remain open.
