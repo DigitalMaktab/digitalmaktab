@@ -7563,3 +7563,25 @@ isolation hooks. `sync-dotnet.sh` rebuilt Core/country packages and built the
 API successfully. This removes one per-student read pattern only; no graduation
 HTTP integration test or representative query plan/timing was run, and all
 seven broader completion requirements remain open.
+
+## Resume increment 172 — resolve teacher course selector values narrowly
+
+`AppCourseSelect` resolved a known teacher course ID by calling `all-courses`,
+downloading every historical course and scanning the response in the browser.
+I traced its form callers, `TeacherPolicy`, the school-scoped course model and
+the live-class picker, which still legitimately needs the full teacher course
+list. The shared Core API now has a teacher-owned, school-scoped single-course
+read for selector resolution; the selector uses that endpoint while the live
+class list retains its existing collection contract. The collection query now
+also uses no-tracking reads, deterministic ID tie-breaking and request
+cancellation. No new field, table, paging contract or country-specific rule
+was needed.
+
+Validation: Core Release/API builds and the complete `sync-spa.sh` package
+build/install passed; the SPA production build passed with existing unrelated
+warnings. Core commit `0c788cb` passed its build and repository hooks; SPA Core
+commit `c56d09c` passed TypeScript and locale hooks; SPA package-lock commit
+`f5e3dfae` passed TypeScript, locale, UI-component consistency and raw-control
+hooks. No endpoint integration test or SQL plan was added/run, so tenant
+scoping runtime evidence and broader performance measurements remain open.
+All seven original completion requirements remain unchecked.
