@@ -7291,3 +7291,21 @@ planner choice or real-world impact: the local database has only 517 students,
 query timings remain unverified. The broader transaction/invariant,
 query-plan, distributed-runtime, observability and whole-application load
 audits remain open.
+
+## Resume increment 160 — aggregate reaction summaries once
+
+I traced all `MessageController` reaction summary callers. Add/remove first
+queried every reaction row and grouped in application memory; the realtime
+broadcast repeated the same query, then the HTTP response queried it again.
+Thread hydration likewise transferred every reaction row for the bounded
+message page before grouping. Core now performs `GROUP BY`/count/`Any` in the
+existing reaction table, passes request cancellation to the read and remove
+write, and reuses the single add/remove summary for both response and realtime
+publication. The existing reaction schema and new unique identity index remain
+the only source of truth.
+
+`sync-dotnet.sh` passed Core, Afghanistan, SDK and API builds. No tests or live
+endpoint query capture were run, so EF's generated grouped SQL and end-to-end
+latency have not been measured. The broader transaction/invariant,
+query-plan, distributed-runtime, observability and whole-application load
+audits remain open.
