@@ -7697,3 +7697,20 @@ the commit hook; Core Release and shared SPA TypeScript hooks passed. No tests
 were run. Query plans/timing, teacher editor runtime behavior, and other
 unbounded nested reads remain open; all seven original completion
 requirements remain open.
+
+## Resume increment 178 — consolidate root dashboard aggregate reads
+
+The root dashboard made five sequential round trips for school, teacher,
+student and parent totals plus school-type counts. I traced all callers and
+confirmed the count methods were used only by that endpoint; the existing
+`RootDashboardDto` remains the response source of truth. Core now computes the
+four scalar totals together in one SQL projection and keeps the bounded type
+grouping as a second query inside a repeatable-read snapshot. Both reads honor
+request cancellation, and the endpoint returns `Cache-Control: no-store`.
+The endpoint-only count methods were removed from their repositories instead
+of retaining duplicate aggregation paths; no schema or new DTO was added.
+
+Validation: Core Release build and `sync-dotnet.sh` (Core, Afghanistan, SDK,
+API) passed. No tests or live query-plan/timing measurements were run. The
+scalar query's expected round-trip reduction is source-derived, not a measured
+latency result; all seven original completion requirements remain open.
