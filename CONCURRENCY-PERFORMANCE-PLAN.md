@@ -7184,7 +7184,6 @@ indexes and that aggregate's cost need representative data/plan review. Other
 unbounded reads, invariant audits, distributed runtime, telemetry and whole-app
 load evidence remain open.
 
-
 ## Resume increment 155 — index message participant lookups
 
 I checked the existing `Message` entity and writers, inbox aggregate predicate,
@@ -7393,3 +7392,23 @@ Validation: `sync-dotnet.sh` passed Core, Afghanistan, SDK and API builds;
 This coordinates only the five database-only retention jobs; remaining
 background services, shared-filesystem deployment behavior, distributed rate
 limiting/realtime state, telemetry and load evidence remain open.
+
+## Resume increment 165 — stop work after losing a PostgreSQL lock session
+
+Reviewing the shared lock primitive showed that lock ownership lives on a
+dedicated PostgreSQL session, while protected work often uses another context.
+If that lock connection closed or broke, the protected work had no cancellation
+signal and could continue after another API instance acquired the same slot.
+Core's existing `PostgresAdvisoryLockSession` now exposes a `LeaseLost` token,
+checks the connection before/after lock acquisition, and avoids issuing unlock
+SQL on a dead connection. Expensive request admission aborts the request on
+lease loss; recurring notification scans and the shared cleanup runner link
+the lease token to their existing cancellation paths. No second lease store or
+coordination protocol was introduced.
+
+Validation: `sync-dotnet.sh` passed Core, Afghanistan, SDK and API builds, and
+`git diff --check` passed. No test simulated a database connection drop, and
+network-level failure detection still depends on Npgsql/OS signaling the
+connection as broken; this does not prove multi-host recovery behavior.
+Representative failure and multi-instance tests, other distributed state,
+database invariants, query audits, telemetry and load evidence remain open.
