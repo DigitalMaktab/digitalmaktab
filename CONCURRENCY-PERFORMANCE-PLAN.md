@@ -7244,3 +7244,23 @@ warnings and no new message-picker warning. No tests or database query plans
 were run. Exact page counts and case-insensitive substring search still need
 representative volume/plan review; wider query, invariant, distributed-runtime,
 telemetry and whole-app load evidence remain open.
+
+## Resume increment 158 — enforce message reaction uniqueness
+
+I checked the existing Core `MessageReaction` entity, model configuration,
+snapshot and migration history, API writer and all other repository writers.
+The entity comment promised one row per message/account/emoji, but the model
+had only a `MessageId` index and the API used a check-then-insert sequence.
+Concurrent POSTs could therefore create duplicate reactions and inflate the
+summary. Core now declares the unique `(MessageId, UserId, UserRole, Emoji)`
+index and its additive migration builds it concurrently. The migration first
+reports any legacy duplicates and stops without deleting or rewriting rows.
+The endpoint uses PostgreSQL `ON CONFLICT DO NOTHING`, so simultaneous retries
+are idempotent at the database boundary. No second reaction store or field was
+introduced.
+
+`sync-dotnet.sh` passed Core, Afghanistan, SDK and API builds. The migration was
+not applied to a live database, so duplicate preflight and concurrent request
+behavior still need database verification; no tests were run. The wider
+transaction/invariant, query-plan, distributed-runtime, observability and
+whole-application load audits remain open.
