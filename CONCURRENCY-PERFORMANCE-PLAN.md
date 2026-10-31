@@ -7451,3 +7451,33 @@ other writes, invariant/transaction review, query plans and representative
 performance data, bounded heavy workloads, distributed SignalR/classroom and
 rate-limit behavior, production telemetry/readiness validation, and isolated
 multi-school load/failure tests.
+
+## Resume increment 167 — page Afghanistan transfer dossier lists
+
+The transfer dossier endpoint selected every matching transfer and the SPA
+hook loaded the complete response before rendering `AppTable`. I verified that
+Core already owns the bounded `UserParams`/`PagedList` contract, creation-date
+filtering, pagination headers, cancellation, remote `AppTable` page loading and
+bounded all-page export. Those shared capabilities were reused. Since the
+student/ASAS/school/status criteria are specific to Afghanistan's transfer
+dossier table, only their query parameters and filtering remain in the
+Afghanistan module; no Core filter fields or database representation were
+added.
+
+The repository now filters transfer creation dates before its joins/projection,
+applies the dossier's column filters in SQL, uses deterministic
+creation-date-plus-ID ordering, and returns Core pagination metadata. The SPA
+list no longer fetches all dossiers on mount: `AppTable` drives paged reads,
+cancels superseded requests, sends its built-in date/column filters, and uses
+its existing bounded page loop for PDF/CSV exports. Detail-document reads keep
+their existing separate behavior.
+
+Validation: isolated Afghanistan transfer HTTP/PostgreSQL tests passed 14/14,
+including paging headers, empty date-range results and combined student,
+ASAS, school and status filters. `sync-spa.sh` passed SDK/Core/Afghanistan/
+Austria package builds and installs; the SPA production build passed with
+existing repository warnings; Core/Afghanistan/SDK/API sync passed; strict
+locale parity passed. A broader Afghan suite run also had unrelated
+AcademicYearTests and FeeReminderTests failures; the focused transfer suite
+passed independently. Query plan and timing evidence for a representative
+large dossier dataset remain part of the broader audit.
