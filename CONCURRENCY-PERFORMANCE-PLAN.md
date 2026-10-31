@@ -7541,3 +7541,25 @@ Validation: `sync-dotnet.sh` passed Core, Afghanistan, SDK and API builds;
 production build passed with existing unrelated lint and bundle-size warnings.
 No counseling database integration test or representative query plan was run;
 the index/timing audit and all wider goal requirements remain open.
+
+## Resume increment 171 — batch graduation duplicate-enrollment checks
+
+`GraduationController.PromoteClass` queried the destination-year enrollment
+existence once per source student. I checked the existing `Enrollment` model,
+`EnrollmentCapacity` transaction/advisory-lock behavior and capacity tests; the
+same school/year/student/status fields already represent the concept, so no
+schema or parallel service was needed. Under the existing school capacity lock,
+the action now preloads matching destination-year student IDs in one
+no-tracking query, checks the set while processing the stable-ordered source
+roster, and updates it after each successful save. Per-student saves remain in
+place because the existing capacity resolver must observe each enrollment
+before assigning the next student. Cancellation now applies to the roster,
+prefetch, capacity resolution, saves and commit.
+
+Validation: Core Release build passed; the filtered isolated PostgreSQL
+`EnrollmentCapacityTests` suite passed 3/3; Core commit `6f543ef` passed its
+build, strict locale parity, enum sync, hosted-service health and abstraction
+isolation hooks. `sync-dotnet.sh` rebuilt Core/country packages and built the
+API successfully. This removes one per-student read pattern only; no graduation
+HTTP integration test or representative query plan/timing was run, and all
+seven broader completion requirements remain open.
