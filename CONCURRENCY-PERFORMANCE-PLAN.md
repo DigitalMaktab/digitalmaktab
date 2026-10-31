@@ -7749,3 +7749,20 @@ the SPA production build passed. `CI=true npm run build` stopped on existing
 lint violations in unrelated files; the changed GDPR screens were not listed.
 No tests were run. No database query plan or runtime timing measurement was
 performed; all seven original completion requirements remain open.
+
+## Resume increment 181 — serialize concurrent GDPR submissions
+
+The existing “one open request per student and kind” check was a read followed
+by an insert without a transaction lock, so simultaneous requests could both
+pass it. Submission now opens a read-committed transaction and acquires Core’s
+existing ordered PostgreSQL transaction-advisory-lock helper for the school,
+student, and request kind before checking for a pending row. The insert commits
+under that lock; competing API instances observe the committed pending request
+and follow the existing AlreadyPending response. Existing ownership checks,
+request rows, and status semantics are reused; no schema, field, or duplicate
+idempotency store was introduced.
+
+Validation: `scripts/sync-dotnet.sh` passed Core Release, Afghanistan, SDK and
+API builds. No tests were run. Cross-instance runtime contention was not
+measured, and other write invariants remain open; all seven original completion
+requirements remain open.
