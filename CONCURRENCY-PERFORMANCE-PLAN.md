@@ -7222,3 +7222,25 @@ by the existing unique index.
 requests or database race test was run; other mutation paths, broader invariant
 audits, distributed coordination, telemetry and whole-app load evidence remain
 open.
+
+## Resume increment 157 — page message contact search
+
+I traced `MessageController.Contacts`, the role-specific teacher/parent/student/
+staff/school queries, self-exclusion and staff messaging capability rules, plus
+all callers in the shared message hook, contact picker and header bell. The
+endpoint previously loaded up to 100 contacts from each source into one list,
+so later alphabetic results were unreachable and the picker received hundreds
+of rows at once. Core now composes the existing role-scoped projections into
+one globally ordered query, applies the current name search and role filter in
+SQL, and pages with existing `GeneralParams`/`PagedList`/pagination headers.
+The picker uses the shared `AppPagination`; search, role changes and page
+requests cancel stale network reads. The DTO, source entities, staff capability
+policy and message permission boundaries are reused; no duplicate contact
+store or paging contract was added.
+
+`sync-dotnet.sh` and `sync-spa.sh` passed Core/API and SPA package builds. The
+shell production build passed with existing repository lint/CRA/bundle-size
+warnings and no new message-picker warning. No tests or database query plans
+were run. Exact page counts and case-insensitive substring search still need
+representative volume/plan review; wider query, invariant, distributed-runtime,
+telemetry and whole-app load evidence remain open.
