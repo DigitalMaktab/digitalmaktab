@@ -7038,3 +7038,28 @@ Core Release build passed with 68 existing warnings and zero errors. Standard
 built the API successfully. No tests were run. Query plan/latency for schools
 with many classes is not measured; broader enrollment invariants, other query
 audits, distributed runtime, telemetry and whole-app load evidence remain open.
+
+
+## Resume increment 149 — serialize hostel occupancy changes
+
+I checked the existing `RoomAssignment` table/entity, its room/student
+relationships, migrations/indexes, controller routes and all backend writers.
+The existing row already represents assignment history; only
+`HostelController.Assign` and `Checkout` write it. There is no active-assignment
+unique constraint, and legacy rows may contain duplicates, so this change
+reuses the existing table and detects multiple active assignments as a conflict
+instead of adding a constraint that could break existing data. The capacity
+check and student-move/check-out operations now share ordered PostgreSQL
+transaction advisory locks. Core owns the new reusable lock helper; the existing
+attendance and grade multi-key locking paths now use that same helper. Both
+hostel writes also use Core's existing durable mutation receipt protocol, with
+the SPA retaining an ID for retries of an unchanged command and rotating it
+when the command changes. Localized errors were added to the existing controller
+resources. No table, field, index or parallel idempotency store was added.
+
+`sync-dotnet.sh` passed, including Core Release build, package rebuilds and API
+build. `sync-spa.sh` passed, and `CI=false npm run build` passed with existing
+repository lint/CRA and bundle-size warnings. No tests were run. Concurrent
+room/students behavior still needs runtime verification against PostgreSQL; the
+broader invariant, remaining query, multi-instance, telemetry and representative
+load audits remain open.
