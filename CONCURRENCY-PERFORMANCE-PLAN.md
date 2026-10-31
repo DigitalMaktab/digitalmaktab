@@ -7114,3 +7114,34 @@ existing repository lint/CRA and bundle-size warnings. No tests or live role
 query plans were run. Representative volumes, other unbounded reads, invariant
 audits, multi-instance runtime, telemetry and whole-app load evidence remain
 open.
+
+
+## Resume increment 152 — serialize admission review transitions
+
+I checked the existing `Admission` status and audit fields, its table and
+tenant relationship, all three review/convert routes, the shared
+`MutationReceiptStore` transaction protocol, and the SPA's existing
+`useMutationIntent`. Those existing pieces represent admission state and
+retry identity, so no revision field, receipt table or separate status model
+was added. Core now executes start-review, decision and conversion inside the
+durable receipt transaction and obtains a school-scoped `FOR UPDATE` lock on
+the existing admission row before checking/changing status. Replays return the
+original result; concurrent decisions serialize and a second distinct decision
+gets a conflict. Conversion also verifies that the referenced student belongs
+to the same school.
+
+The SPA sends `Idempotency-Key` for each transition, retains it for retries of
+the same action and payload, and rotates it when the decision note or selected
+student changes. It displays failures from the start-review action as well as
+the existing decision/conversion forms. The admission controller's existing
+English, Dari and Pashto resources now cover receipt errors and missing or
+cross-school records.
+
+`sync-dotnet.sh` passed Core, Afghanistan, SDK and API builds;
+`sync-spa.sh` passed the shared and country package builds. The shell production
+build passed with repository-wide existing lint and CRA/bundle-size warnings;
+the admission screen's new hook dependency warning was corrected. Strict
+translation parity and `git diff --check` passed. Tests and live concurrent
+admission requests were not run. Broader mutation receipts, versioned editors,
+invariants, query/output audits, distributed runtime and whole-application load
+evidence remain open.
