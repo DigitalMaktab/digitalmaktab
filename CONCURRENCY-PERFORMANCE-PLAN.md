@@ -7731,3 +7731,21 @@ sets are still materialized for collection filtering, and other unbounded
 collection/query paths remain to audit. No query-plan or runtime timing
 measurement was performed; all seven original completion requirements remain
 open.
+
+## Resume increment 180 — page GDPR request queues
+
+The school GDPR review queue and each requester’s history both loaded every
+matching request with a Student include. I traced the Core endpoint and both
+SPA callers, then reused Core `GeneralParams`/`PagedList` and the existing
+`AppTable` remote paging contract. Both reads are now deterministically sorted,
+bounded to the shared 50-row page limit, cancellable, and return the standard
+pagination metadata; the admin and parent tables load pages and refresh through
+the table’s existing reload key. Existing request/Student tables and DTOs remain
+authoritative; no schema or duplicate paging contract was added.
+
+Validation: `scripts/sync-dotnet.sh` passed Core Release, Afghanistan, SDK and
+API builds. `scripts/sync-spa.sh` rebuilt and swapped shared/country packages;
+the SPA production build passed. `CI=true npm run build` stopped on existing
+lint violations in unrelated files; the changed GDPR screens were not listed.
+No tests were run. No database query plan or runtime timing measurement was
+performed; all seven original completion requirements remain open.
