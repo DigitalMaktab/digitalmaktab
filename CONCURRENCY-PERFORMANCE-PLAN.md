@@ -7819,3 +7819,23 @@ Validation: `scripts/sync-dotnet.sh` passed Core Release, Afghanistan, SDK and
 API builds. No tests were run. Concurrent runtime behavior and attempt-table
 query plans were not measured; all seven original completion requirements
 remain open.
+
+## Resume increment 185 — page and filter student quiz lists
+
+The student quiz endpoint materialized every quiz across all enrolled classes
+and first loaded the full enrolled-class ID set. I traced its screen, quiz API
+client, course-list implementation, `AppTable` remote paging contract, and
+Core's existing `UserParams`/`PagedList`/`ApplyTableFilters` helpers. It now
+filters school and current-year enrollment in SQL, applies shared creation-date
+filters before count/page, returns a bounded deterministic page, honors request
+cancellation, and supports the same whitelisted server sorting as the course
+quiz table. The SPA uses its existing remote `AppTable`; the shared quiz client
+reuses its pagination/filter and abort-signal contract. Existing Quiz,
+Enrollment, and DTO representations remain authoritative; no schema, field, or
+new paging component was introduced.
+
+Validation: `scripts/sync-dotnet.sh` passed Core Release, Afghanistan, SDK and
+API builds; `scripts/sync-spa.sh` rebuilt and swapped the shared and country
+packages; `env -u CI npm run build` passed with existing unrelated lint warnings.
+No tests were run. Quiz query plans/timings and live paging behavior remain
+unmeasured, and all seven original completion requirements remain open.
