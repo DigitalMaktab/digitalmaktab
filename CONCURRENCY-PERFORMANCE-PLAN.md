@@ -7521,3 +7521,23 @@ existing repository lint and bundle-size warnings and no warnings in the
 changed screens. No library database integration test or representative query
 plan was run, so index/timing evidence for this endpoint remains open, as do
 the wider query/index and all other completion requirements.
+
+## Resume increment 170 — page counseling appointment reads
+
+`CounselingController.Mine` loaded every matching appointment and both related
+person records, then the screen placed the full result into AppTable for
+client-side paging. I traced its role-specific school scoping, DTO projection,
+the SPA's only `mine` caller, and Core's existing `UserParams`, `PagedList`,
+creation-date filters and pagination header. Those shared contracts are now
+used directly. The endpoint retains each caller's prior scope and private-note
+redaction, adds deterministic preferred-time ordering, reads no-tracking and
+materializes only the requested page. The SPA passes AppTable's applied date
+filter/sort/page, abort signal and reload key; request/decision/cancel/complete/
+note actions continue to refresh through that same table loader. No new data
+field, table, service or duplicate paging implementation was added.
+
+Validation: `sync-dotnet.sh` passed Core, Afghanistan, SDK and API builds;
+`sync-spa.sh` passed SPA SDK/Core/country package builds and installs; the SPA
+production build passed with existing unrelated lint and bundle-size warnings.
+No counseling database integration test or representative query plan was run;
+the index/timing audit and all wider goal requirements remain open.
