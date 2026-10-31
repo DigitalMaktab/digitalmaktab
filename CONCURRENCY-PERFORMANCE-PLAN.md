@@ -7352,3 +7352,24 @@ repos. No tests or live message requests were run. Notification transport is
 best effort after the atomic DB commit; failed transport is logged while the
 inbox record remains durable. Broader concurrency, invariant, query-plan,
 multi-instance, telemetry and representative load verification remain open.
+
+## Resume increment 163 — serialize parent-child relationship edits
+
+I verified that Parent already has Core's `Revision` field, configured EF
+concurrency token, and tracked aggregate revision advancement; `ParentStudent`
+already has a composite primary key and parent lookup index. No field or join
+table was needed. The admin link/unlink routes now reuse Core's ordered
+transaction advisory-lock helper on the parent scope, check school ownership
+after acquiring the lock, and query only the requested relationship instead of
+loading the parent's full child collection. The existing Parent revision
+continues to detect overlapping profile edits, and those EF races return the
+shared localized 409. The SPA retains its profile draft and activates the
+existing explicit conflict review when a relationship action receives that
+conflict. Foreign-school student IDs are now rejected on unlink as well as
+link.
+
+Validation: Core/Afghanistan/SDK/API sync build passed; the SPA production build
+passed with the same existing unrelated warnings; `git diff --check` passed.
+No tests or live concurrent relationship requests were run. The wider
+multi-instance, database-invariant, query-plan, observability and representative
+load requirements remain open.
