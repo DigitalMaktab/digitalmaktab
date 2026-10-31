@@ -7675,3 +7675,25 @@ were run. The teacher course-material editor still expands nested materials
 with its section query, and other nested collections remain to be audited. No
 integration test, representative query plan or timing measurement was run; all
 seven original completion requirements remain open.
+
+## Resume increment 177 — page teacher course-section materials
+
+The teacher section list and section conflict reload still expanded every
+LearningMaterial row, even after section roots were paged. I traced the editor's
+add/edit/delete refresh behavior, its single section-detail conflict caller,
+the existing teacher/course/school ownership chain, and the same shared
+`UserParams`/`ReadPage`/pagination header path. Core now returns section roots
+without material expansion and provides a stable per-section material page
+scoped to the authenticated teacher and school. The editor loads the first
+bounded page on expansion, aborts closed/superseded requests, supports paging
+and retries, and refreshes after material mutations. Existing models, DTOs and
+tables remain authoritative; no duplicate contract or schema was added.
+
+Validation: `sync-dotnet.sh` passed Core, Afghanistan, SDK and API builds;
+`sync-spa.sh` passed shared/country package builds and installation; the SPA
+production build passed with existing unrelated lint and bundle warnings. The
+final shell update also passed its TypeScript, locale and component checks in
+the commit hook; Core Release and shared SPA TypeScript hooks passed. No tests
+were run. Query plans/timing, teacher editor runtime behavior, and other
+unbounded nested reads remain open; all seven original completion
+requirements remain open.
