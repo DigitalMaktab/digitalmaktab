@@ -7878,3 +7878,22 @@ API builds; `scripts/sync-spa.sh` rebuilt and swapped the shared and country
 packages; `env -u CI npm run build` passed with existing unrelated lint warnings.
 No tests were run. Route query plans and export latency remain unmeasured, and
 all seven original completion requirements remain open.
+
+## Resume increment 188 — page transport stop lists
+
+The route-stops modal loaded every stop into client state, and its modal table
+explicitly disabled pagination. I traced both callers: the stop table and the
+assignment stop selector. Core now scopes stop reads through the route's school,
+returns deterministic pages with shared creation-date filtering and request
+cancellation, and emits standard pagination metadata. The table uses remote
+`AppTable` paging and refreshes after stop changes. Since assignment still needs
+all stop choices, that consumer reuses the existing capped `readAllPages`
+helper over the same paged endpoint and cancels superseded/closed requests. The
+existing BusStop data/DTO and paging contract are reused; no new schema or
+unbounded list endpoint was retained.
+
+Validation: `scripts/sync-dotnet.sh` passed Core Release, Afghanistan, SDK and
+API builds; `scripts/sync-spa.sh` rebuilt and swapped the shared and country
+packages; `env -u CI npm run build` passed with existing unrelated lint warnings.
+No tests were run. Stop query plans and assignment-selector latency remain
+unmeasured, and all seven original completion requirements remain open.
