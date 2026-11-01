@@ -7858,3 +7858,23 @@ API builds; `scripts/sync-spa.sh` rebuilt and swapped the shared and country
 packages; `env -u CI npm run build` passed with existing unrelated lint warnings.
 No tests were run. Roster query plans and runtime page latency remain
 unmeasured, and all seven original completion requirements remain open.
+
+## Resume increment 187 — page transport route directory
+
+The transport route directory fetched every school route, then issued grouped
+stop and rider counts over the entire route set. I traced its `AppTable`, all
+route mutations that refresh it, and the existing transport API and paging
+contracts. Core now returns a deterministic bounded page, scopes and counts
+within the school, applies shared record-date filters before count/page, and
+aggregates stop/rider totals only for the returned route IDs. Sorting remains
+whitelisted and covers the displayed route and count columns. The SPA retains
+the existing full-result PDF/CSV behavior using Core `readAllPages`, with the
+table's applied filters and request cancellation. Existing BusRoute/BusStop/
+StudentTransport rows and DTOs remain authoritative; no schema or duplicate
+paging helper was added.
+
+Validation: `scripts/sync-dotnet.sh` passed Core Release, Afghanistan, SDK and
+API builds; `scripts/sync-spa.sh` rebuilt and swapped the shared and country
+packages; `env -u CI npm run build` passed with existing unrelated lint warnings.
+No tests were run. Route query plans and export latency remain unmeasured, and
+all seven original completion requirements remain open.
