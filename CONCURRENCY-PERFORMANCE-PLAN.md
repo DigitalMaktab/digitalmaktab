@@ -7839,3 +7839,22 @@ API builds; `scripts/sync-spa.sh` rebuilt and swapped the shared and country
 packages; `env -u CI npm run build` passed with existing unrelated lint warnings.
 No tests were run. Quiz query plans/timings and live paging behavior remain
 unmeasured, and all seven original completion requirements remain open.
+
+## Resume increment 186 — page transport rosters
+
+Opening a transport route's roster returned every assignment with included
+student and stop records, while its modal `AppTable` disabled paging. I traced
+the only UI caller, roster row actions, and the existing transport DTO plus
+shared `UserParams`/`PagedList`/pagination-header contract. Core now verifies
+route ownership in the caller's school, reads the roster without tracking,
+returns a stable bounded page, applies the table's record-creation date range
+before count/page, and honors request cancellation. The modal uses remote
+`AppTable` loading and invalidates its current page after assignment changes.
+Existing StudentTransport/Student/BusStop data and DTOs are reused; no new
+schema or alternate paging abstraction was added.
+
+Validation: `scripts/sync-dotnet.sh` passed Core Release, Afghanistan, SDK and
+API builds; `scripts/sync-spa.sh` rebuilt and swapped the shared and country
+packages; `env -u CI npm run build` passed with existing unrelated lint warnings.
+No tests were run. Roster query plans and runtime page latency remain
+unmeasured, and all seven original completion requirements remain open.
