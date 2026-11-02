@@ -52,6 +52,11 @@ Working tree is a set of sibling directories under
 - `digitalmaktab-desktop/` — Electron report generator (standalone
   app, no coupling to the API — reads exported data). Its own
   package.json + tsc.
+- `digitalmaktab-textbooks/` — standalone offline extractor that turns the
+  Afghan ministry textbook PDFs (resolved from the Afghanistan module's
+  `ministry-book-index.json` to Internet Archive / GitHub mirror copies) into
+  per-book plain text. Python stdlib + poppler + tesseract; no coupling to the
+  API, SPA or database. Run by hand only; see its README.
 - `digitalmaktab-docs/` — cross-repo markdown docs
   (globalization.md, MULTI-REPO.md, HOWTO-ADD-COUNTRY*.md, etc.).
   No build.

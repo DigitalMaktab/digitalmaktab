@@ -198,6 +198,10 @@ case "$REPO_NAME" in
     run_tsc
     run_mobile_i18n_check
     ;;
+  digitalmaktab-textbooks)
+    echo "pre-commit: unittest in $REPO_NAME"
+    (cd "$REPO_ROOT" && python3 -m unittest discover -s tests -t . >/dev/null)
+    ;;
   digitalmaktab)
     # Monorepo stub holds docs + scripts — parity runs here too so
     # a tweak to the script surfaces any resulting drift immediately.
