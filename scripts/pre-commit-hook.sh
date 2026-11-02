@@ -201,6 +201,10 @@ case "$REPO_NAME" in
   digitalmaktab-textbooks)
     echo "pre-commit: unittest in $REPO_NAME"
     (cd "$REPO_ROOT" && python3 -m unittest discover -s tests -t . >/dev/null)
+    if [ -d "$REPO_ROOT/web/node_modules" ]; then
+      echo "pre-commit: tsc --noEmit in $REPO_NAME/web"
+      (cd "$REPO_ROOT/web" && npx tsc --noEmit)
+    fi
     ;;
   digitalmaktab)
     # Monorepo stub holds docs + scripts — parity runs here too so
