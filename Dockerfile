@@ -17,16 +17,21 @@ RUN --mount=type=secret,id=deploy_keys,dst=/etc/secrets/deploy_keys \
 RUN bash deploy/render/build.sh /ws /out
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
-# wkhtmltopdf supplies libwkhtmltox for the server-side PDF reports (DinkToPdf).
+# The official wkhtmltox package supplies libwkhtmltox for the server-side PDF
+# reports (DinkToPdf); Debian's own wkhtmltopdf package ships only the binary.
+ARG WKHTMLTOX_VERSION=0.12.6.1-3
 RUN apt-get update \
- && apt-get install -y --no-install-recommends wkhtmltopdf fontconfig fonts-dejavu-core \
- && rm -rf /var/lib/apt/lists/*
+ && apt-get install -y --no-install-recommends ca-certificates curl fontconfig fonts-dejavu-core \
+ && arch="$(dpkg --print-architecture)" \
+ && curl -fsSL -o /tmp/wkhtmltox.deb "https://github.com/wkhtmltopdf/packaging/releases/download/${WKHTMLTOX_VERSION}/wkhtmltox_${WKHTMLTOX_VERSION}.bookworm_${arch}.deb" \
+ && apt-get install -y --no-install-recommends /tmp/wkhtmltox.deb \
+ && rm -rf /tmp/wkhtmltox.deb /var/lib/apt/lists/*
 WORKDIR /app
 COPY --from=build /out/api/ /app/
 COPY --from=build /out/bootstrap/ /opt/digitalmaktab-bootstrap/
 COPY deploy/render/start.sh /usr/local/bin/digitalmaktab-start
 RUN chmod +x /usr/local/bin/digitalmaktab-start \
- && lib="$(find /usr/lib -name 'libwkhtmltox.so*' | head -1)" \
+ && lib="$(find /usr/local/lib /usr/lib -name 'libwkhtmltox.so*' | head -1)" \
  && [ -n "$lib" ] && ln -sf "$lib" /app/libwkhtmltox.so
 ENV ASPNETCORE_ENVIRONMENT=Production
 EXPOSE 5000
