@@ -37,9 +37,6 @@ done
 # Private package cache so a stale same-version DigitalMaktab.* never leaks in.
 export NUGET_PACKAGES="$W/.nuget-packages"
 export DOTNET_CLI_TELEMETRY_OPTOUT=1 DOTNET_NOLOGO=1
-# Render's build machine has little memory: don't leave MSBuild/Roslyn server
-# processes resident while the SPA build runs (they caused OOM kills).
-export MSBUILDDISABLENODEREUSE=1 DOTNET_CLI_USE_MSBUILD_SERVER=0 UseSharedCompilation=false
 
 echo "==> Packing Core.Abstractions, Core, SDK"
 for proj in DigitalMaktab.Core.Abstractions DigitalMaktab.Core DigitalMaktab.SDK; do
@@ -64,6 +61,8 @@ cp "$NUGET_CONFIG" "$(dirname "$0")/bootstrap/NuGet.config"
 dotnet publish "$(dirname "$0")/bootstrap/DigitalMaktab.Deploy.Bootstrap.csproj" -c Release -o "$OUT/bootstrap"
 rm -f "$(dirname "$0")/bootstrap/NuGet.config"
 
+# Render's build machine has little memory: stop the MSBuild/Roslyn servers the
+# .NET steps left running before webpack starts (together they were OOM-killed).
 dotnet build-server shutdown >/dev/null 2>&1 || true
 
 # --- SPA -------------------------------------------------------------------
