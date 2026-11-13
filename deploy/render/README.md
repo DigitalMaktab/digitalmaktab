@@ -88,8 +88,15 @@ zero-downtime deploys. Each deploy restarts the app briefly.
 
 ## Custom domain
 
-`digitalmaktab.com` lapsed and is now registered to someone else, so the app
-runs on `https://digitalmaktab.onrender.com`. To attach another domain:
+`digitalmaktab.com` lapsed and is now registered to someone else. The app runs
+on `https://digitalmaktab.org` (DNS at IONOS: A `@` → `216.24.57.1`, CNAME
+`www` → `digitalmaktab.onrender.com`) and still on
+`https://digitalmaktab.onrender.com`.
+
+`api.digitalmaktab.org` (CNAME → `digitalmaktab.onrender.com`) is the same
+service, listed in `ApiOnlyHosts__0`. On that hostname the API serves only
+`/api`, the SignalR hubs, `/health` and stored resources; the SPA returns 404.
+No extra Render service is needed. To attach another domain:
 
 1. Add it under the service's **Settings → Custom Domains**.
 2. Create the DNS records Render shows.
