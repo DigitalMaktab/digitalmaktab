@@ -13,6 +13,9 @@ if [ -d "$DATA" ]; then
     rm -rf /app/Resources
   fi
   ln -sfn "$DATA/resources" /app/Resources
+  # UploadService writes to the lowercase folder name; keep it on the disk too.
+  [ -e /app/resources ] && [ ! -L /app/resources ] && { cp -Rn /app/resources/. "$DATA/resources/" 2>/dev/null || true; rm -rf /app/resources; }
+  ln -sfn "$DATA/resources" /app/resources
 fi
 
 # Data Protection key ring: the app refuses to start without the identity

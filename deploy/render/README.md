@@ -83,6 +83,14 @@ additionally sets:
   The service is reachable only through that proxy.
 - `PORT=5000`: matches the Kestrel endpoint in `appsettings.json`.
 
+- Uploaded files (logos, photos, attachments, books) are also stored in the
+  Cloudflare R2 bucket `digitalmaktab-uploads` when these are all set:
+  `UploadStorage__R2AccountId`, `UploadStorage__R2Bucket`,
+  `UploadStorage__R2AccessKeyId`, `UploadStorage__R2SecretAccessKey`
+  (the last two from an R2 API token with Object Read & Write on that bucket).
+  The local copy on the disk is a cache; `/resources/...` serves the cache first,
+  then the bucket. Backups stay on the disk only and are never served.
+
 A service with a disk cannot run several instances and does not get
 zero-downtime deploys. Each deploy restarts the app briefly.
 
