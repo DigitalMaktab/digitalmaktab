@@ -23,7 +23,7 @@ const resources={'en-US':{translation:JSON.parse(fs.readFileSync(core+'/src/loca
 for(const locale of Object.keys(resources)){Object.assign(resources[locale].translation,at.translations[locale]);if(locale==='en-US')Object.assign(resources[locale].translation,JSON.parse(fs.readFileSync(projects+'/digitalmaktab-spa-country-afghanistan/src/locales/en-US/translation.json')));}
 await i18n.init({lng:'en-US',resources,interpolation:{escapeValue:false}});
 assert.equal(selectModules([afModule,at],{countryCode:'AT'}).length,1);
-assert(!safeInformationHref('javascript:alert(1)'));assert(!safeInformationHref('//other.example'));assert(!safeInformationHref('/\\other'));assert(safeInformationHref('https://dsb.gv.at/rechte'));
+assert(!safeInformationHref('javascript:alert(1)'));assert(!safeInformationHref('//other.example'));assert(!safeInformationHref('/\\other'));assert(safeInformationHref('https://dsb.gv.at/rechte'));assert(safeInformationHref('mailto:info@digitalmaktab.org'));assert(!safeInformationHref('mailto:a@b.org?bcc=x@y.org'));assert(!safeInformationHref('mailto:a@b.org,c@d.org '));
 const base=[{id:'one',titleKey:'base',bodyKeys:['base']}],country={id:'country',scope:{countryCode:'AF'},information:{labelKey:'country',sections:{privacy:[{id:'one',titleKey:'country',bodyKeys:[]}]}}},school={id:'school',scope:{schoolId:'one'},information:{labelKey:'school',sections:{privacy:[{id:'one',titleKey:'school',bodyKeys:[]}]},removeMenuIds:['terms']}};
 assert.equal(composeInformationSections('privacy',base,[country,school],'ADMIN')[0].titleKey,'school');assert(!composeInformationMenu([school],'ADMIN').some(item=>item.id==='terms'));
 for(const [modules,name] of [[[afModule],'Afghanistan'],[[at],'Austria'],[[],'Core']]){
