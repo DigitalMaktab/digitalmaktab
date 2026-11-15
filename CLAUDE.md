@@ -2646,3 +2646,27 @@ current exportValue/display formatting; PDF booleans reuse recordConflict yes/no
 No new table/field/country rule. See increment94 in CONCURRENCY-PERFORMANCE-PLAN.md
 for evidence and limits. All seven original goal areas remain open; finish package
 verification before further changes, then audit dense cover/query resource bounds.
+
+
+## Class generation and section labels (2026-11-16)
+
+Core `/class-generator` (`ClassGeneration`, `api/class-generation`) creates a school
+year's classes from a grade × shift grid of section counts. It reuses Class,
+SectionNumber and the shared EnrollmentCapacity school lock/plan/grade-level rules;
+sections are numbered per (branch, grade, class type, shift) like hand-made and
+overflow classes. Existing sections are kept, so re-running only fills gaps; preview
+rolls back. With no active branch the school's first one is created (localized
+"main branch"); with exactly one it is used; with several the caller must choose.
+Limits: 26 sections per cell, 500 new classes per run, 5,000 existing rows read.
+
+Class.TeacherId (homeroom) is optional since migration ClassOptionalHomeroom; null
+means "not assigned". Homeroom comparisons stay ID-based; EF projections must guard a
+null Teacher. Overflow sections copy only an active homeroom teacher. Down refuses
+while classes without a teacher exist.
+
+`SchoolAcademicYearPlan.SectionLabelStyle` (NUMBER | LETTER, display only) is saved
+through `school-registration-capacity` (optional field) and returned in the active
+year banner. SPA Core `useSectionLabels` / `getClassLabel(value, formatSection)` own
+formatting; letter sequences come from each locale's `class.sectionLetters`
+(Dari/Pashto abjad, English A–Z). Receipts, report cards and other class labels do
+not show sections yet. Branch delete is refused while any class uses the branch.
