@@ -2686,3 +2686,18 @@ Timetable generation treats a course without a teacher as open to any qualified
 teacher and saves the chosen one. `/course-teachers` (PUT school/courses/teachers)
 assigns teachers in bulk with per-course versions, moving the primary teacher's
 scheduled lessons like a single course edit; a scheduled course cannot be emptied.
+
+School setup (2026-11-17): Core `/school-setup` (SchoolSetupController/SchoolSetupService,
+SPA AppSchoolSetup) is a step-by-step checklist: year basics (level, curriculum edition,
+teaching days) → bell times → classes/courses (AppClassGenerator) → teachers (manual:
+list/Excel import) → course teachers (CourseTeacherSuggestionService applied in bulk) →
+homerooms (most periods in the class, one class per teacher where possible) → country
+steps → default monthly fee per grade. Every write reuses the feature's own versioned
+year-settings save or locked bulk writer and only fills what is missing. Bells are
+configurable per shift (start, length, count, gap, optional break) and pre-filled from
+saved bells or CountryEducationPolicy.DefaultBellSchedules (Afghanistan: six 40-minute
+periods back to back, no break). SchoolAcademicYearPlan.GradeMonthlyFees pre-fills
+Student.MonthlyFee in registration (AppGradeFeeSuggest) and can fill students without a
+fee. Country/school modules add steps through ApplicationModule.setupSteps
+(Afghanistan: timetable planner link, default mid-term/final exam periods). Course
+teacher suggestions treat weekly maximums and shift capacity as preferences only.
