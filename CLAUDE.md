@@ -2670,3 +2670,19 @@ year banner. SPA Core `useSectionLabels` / `getClassLabel(value, formatSection)`
 formatting; letter sequences come from each locale's `class.sectionLetters`
 (Dari/Pashto abjad, English A–Z). Receipts, report cards and other class labels do
 not show sections yet. Branch delete is refused while any class uses the branch.
+
+Generated courses (2026-11-16): Course.TeacherId is optional (migration
+CourseOptionalTeacher; Down refuses while unassigned courses exist). The class generator
+optionally adds each grade's subjects to every class of the run as (class, subject)
+courses without teachers, filling only missing pairs. Subjects come from the school
+year's CurriculumEdition plus CurriculumOverrides; grades no edition covers use the
+country's Subject.GradeLevels as "suggested – needs review", with
+CountryEducationPolicy.AlternativeSubjectIds (Afghanistan: Balochi, Pashayi, Uzbek)
+left unticked. The school confirms the list; choosing an edition saves it through
+SchoolAcademicYearRepository.SaveAsync with the settings version. Edition names are
+translated by country modules under `curriculumEditions.<code>`. The Afghan grade
+1–9 tables are the HISTORICAL 2003 framework; there is no verified 10–12 table.
+Timetable generation treats a course without a teacher as open to any qualified
+teacher and saves the chosen one. `/course-teachers` (PUT school/courses/teachers)
+assigns teachers in bulk with per-course versions, moving the primary teacher's
+scheduled lessons like a single course edit; a scheduled course cannot be emptied.
