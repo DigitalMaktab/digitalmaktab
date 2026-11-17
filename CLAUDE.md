@@ -2701,3 +2701,15 @@ Student.MonthlyFee in registration (AppGradeFeeSuggest) and can fill students wi
 fee. Country/school modules add steps through ApplicationModule.setupSteps
 (Afghanistan: timetable planner link, default mid-term/final exam periods). Course
 teacher suggestions treat weekly maximums and shift capacity as preferences only.
+
+Student roll (asas) numbers (2026-11-17): one number per student, Core Student.AsasNumber
+(numeric; indexed by IX_Student_SchoolRollNumber on SchoolId+AsasNumber). Core never numbers by
+itself: country/school modules implement IStudentNumberPolicy (issue, validate a typed number,
+transferred) and optionally IStudentNumberBook (setup step: next number, number existing). Core
+StudentNumbers dispatches from registration, Excel import, edit and transfer release, under the
+school enrollment lock; without a rule numbers stay manual. Student.WithoutRollNumber marks pupils
+deliberately recorded without one. Afghanistan owns AfghanAsasBook (per-school last number): +1
+per new/transferred student, never at or below the highest in use, unique per school,
+renumbered from the receiving school's book on transfer. The former AfghanStudentDetails.AsasNumber
+copy was migrated into Core and dropped; never reintroduce a second copy. Lookups by asas number
+are exact and school-scoped; LocalDigits accepts Persian/Arabic digits in searches and imports.
