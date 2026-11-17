@@ -114,6 +114,8 @@ AFGHAN_EXEMPT_PREFIXES = (
 # signal stays signal.
 COUNTRY_ONLY_PREFIXES = (
     "afghanAutomations.",
+    "afghanSetup.",
+    "curriculumEditions.",
     "afghanDatePicker.",
     "afghanStudentDetails.",
     "afghanTeacherDetails.",
