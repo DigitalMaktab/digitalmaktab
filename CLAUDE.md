@@ -2728,6 +2728,14 @@ Core owns these; country modules never keep a parallel copy:
 - Ministry student status (Afghan AfghanStudentStatus): PRESENT is derived from an active
   Core student, SAMI from Core Student.WithoutRollNumber; only PERMANENT_ABSENT and
   TEMPORARY are stored. The enum is Afghan-only and not in Core.
+- A school year's dates live on Core SchoolAcademicYear; AfghanAcademicYear.FromDate/ToDate
+  are read-only views of its loaded Settings. Afghan IsActive stays: it is Afghanistan's answer
+  to Core ISchoolAcademicYearProvider (Core has no per-school active flag).
+- Instructional days are calculated by Core; the Afghan official count is a reference value
+  that only warns on a discrepancy. Never let it override saved register days.
+- Tazkira scans and transfer papers are stored in Core private school storage
+  (ISchoolDriveStorage, key per row + content hash); Afghan rows hold metadata. They appear in
+  the drive's app-files view through Core ISchoolAppFileSource with authenticated ContentUrl.
 Core DTOs carry no country name copies; SPA/mobile/desktop read firstName/lastName
 (getPersonName) and country variants from countryDetails. Afghan migrations
 202611180001–4 moved existing data into Core without dropping it.
