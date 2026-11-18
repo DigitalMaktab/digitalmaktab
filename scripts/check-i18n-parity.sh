@@ -115,6 +115,7 @@ AFGHAN_EXEMPT_PREFIXES = (
 COUNTRY_ONLY_PREFIXES = (
     "afghanAutomations.",
     "afghanSetup.",
+    "schoolDrive.appFiles.categories.afghan",
     "curriculumEditions.",
     "afghanDatePicker.",
     "afghanStudentDetails.",
