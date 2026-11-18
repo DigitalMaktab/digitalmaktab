@@ -31,8 +31,8 @@ cat > "$NUGET_CONFIG" <<EOF
   </packageSources>
 </configuration>
 EOF
-for repo in digitalmaktab-core digitalmaktab-country-afghanistan digitalmaktab-api; do
-  cp "$NUGET_CONFIG" "$W/$repo/NuGet.config"
+for dir in "$W"/digitalmaktab-core "$W"/digitalmaktab-country-* "$W"/digitalmaktab-api; do
+  [ -d "$dir" ] && cp "$NUGET_CONFIG" "$dir/NuGet.config"
 done
 # Private package cache so a stale same-version DigitalMaktab.* never leaks in.
 export NUGET_PACKAGES="$W/.nuget-packages"

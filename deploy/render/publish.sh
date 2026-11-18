@@ -19,6 +19,7 @@ SERVICE_NAME=digitalmaktab
 REPOS=(
   digitalmaktab-core
   digitalmaktab-country-afghanistan
+  digitalmaktab-country-austria
   digitalmaktab-api
   digitalmaktab-spa-sdk
   digitalmaktab-spa-core

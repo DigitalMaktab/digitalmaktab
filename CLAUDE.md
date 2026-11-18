@@ -40,6 +40,12 @@ Working tree is a set of sibling directories under
   module (`DigitalMaktab.Country.Afghanistan`). TPT extensions on
   Core.Student / Core.Teacher + Ministry report generation. Packed
   as a NuGet package.
+- `digitalmaktab-country-austria/` — Austria backend country module
+  (`DigitalMaktab.Country.Austria`). Gregorian calendar from Core; owns Austria's
+  education policy (school types Volksschule…BHS, grade count 13, standard 50-minute
+  school day, German subject language), applied once over placeholders at startup.
+  German UI text lives in `digitalmaktab-spa-country-austria`; Core server messages
+  ship `.de-AT.resx`. Packed as a NuGet package.
 - `digitalmaktab-spa-core/` — shared React/TypeScript component library
   (`@digitalmaktab/spa-core`). Packed as an npm tarball.
 - `digitalmaktab-spa-country-afghanistan/` — Afghanistan country module
