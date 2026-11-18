@@ -77,6 +77,9 @@ def load_bundle(path):
 core_en = load_bundle(projects / "digitalmaktab-spa-core/src/locales/en-US/translation.json")
 country_fa = load_bundle(projects / "digitalmaktab-spa-country-afghanistan/src/locales/fa-AF/translation.json")
 country_ps = load_bundle(projects / "digitalmaktab-spa-country-afghanistan/src/locales/ps-AF/translation.json")
+# Austria ships German (de-AT): every shared Core string plus Austria's own keys.
+austria_en = load_bundle(projects / "digitalmaktab-spa-country-austria/src/locales/en-US/translation.json")
+austria_de = load_bundle(projects / "digitalmaktab-spa-country-austria/src/locales/de-AT/translation.json")
 
 # Mobile tree ships all three locales in the SAME package (no
 # core/country split like the SPA has). Different package, same
@@ -149,6 +152,11 @@ if country_fa is not None and country_ps is not None:
         if is_exempt(missing): continue
         frontend_issues.append(("country keys (fa-AF ↔ ps-AF)", "fa-AF", missing))
 
+if core_en and austria_en is not None:
+    german = austria_de or set()
+    for missing in sorted((core_en | austria_en) - german):
+        frontend_issues.append(("shell + Austria strings", "de-AT", missing))
+
 # Mobile tree: strict three-way parity within each country package.
 # Unlike the SPA — where en-US lives in spa-core and the Afghan
 # country package ships only fa/ps + a thin en-US override — the
@@ -185,11 +193,13 @@ backend_sources = [
     projects / "digitalmaktab-country-afghanistan/Resources/Localization/Controllers",
 ]
 
+GERMAN_SOURCES = {projects / "digitalmaktab-core/src/DigitalMaktab.Core/Resources/Localization/Controllers"}
+
 name_pat = re.compile(r'<data\s+name="([^"]+)"')
 
 def extract_keys(path):
     try:
-        return set(name_pat.findall(path.read_text()))
+        return set(name_pat.findall(path.read_text())) if path.exists() else set()
     except Exception:
         return set()
 
@@ -225,7 +235,12 @@ for src in backend_sources:
             "fa-AF": src / f"{name}.fa-AF.resx",
             "ps-AF": src / f"{name}.ps-AF.resx",
         }
-        per_locale = {loc: extract_keys(p) for loc, p in locales.items() if p.exists()}
+        # Core messages are shared by every country, so German is required too
+        # (a missing .de-AT.resx counts as every key missing). Afghan-only
+        # controllers never serve Austrian schools.
+        if src in GERMAN_SOURCES:
+            locales["de-AT"] = src / f"{name}.de-AT.resx"
+        per_locale = {loc: extract_keys(p) for loc, p in locales.items() if p.exists() or loc == "de-AT"}
         if len(per_locale) < 2:
             continue
         all_keys = set().union(*per_locale.values())

@@ -116,6 +116,10 @@ create GitHub remotes on their own.
      like the SPA has). `check-mobile-i18n.sh` enforces coverage.
    - Backend → `Resources/Localization/Controllers/*.resx` +
      `.fa-AF.resx` + `.ps-AF.resx` per controller.
+   - Austrian German (de-AT, since 2026-11-18): every spa-core en-US key and every
+     Austria key → `digitalmaktab-spa-country-austria/src/locales/de-AT/translation.json`;
+     every Core controller `.resx` → a `.de-AT.resx` sibling. Afghan-only keys and
+     Afghan controllers need no German (Austrian schools never see them).
    Never leave a screen rendering a raw key like `foo.bar.label`.
    `check-i18n-parity.sh --strict` runs in pre-commit on every
    repo and refuses the commit on any gap.
