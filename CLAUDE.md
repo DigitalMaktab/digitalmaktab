@@ -2713,3 +2713,21 @@ per new/transferred student, never at or below the highest in use, unique per sc
 renumbered from the receiving school's book on transfer. The former AfghanStudentDetails.AsasNumber
 copy was migrated into Core and dropped; never reintroduce a second copy. Lookups by asas number
 are exact and school-scoped; LocalDigits accepts Persian/Arabic digits in searches and imports.
+
+## One copy of shared person and curriculum fields (2026-11-18)
+
+Core owns these; country modules never keep a parallel copy:
+- Names: Core FirstName/LastName are typed in the school's own language (Dari/Pashto
+  in Afghanistan). Afghan details keep only Afghan-specific variants: English spellings
+  and father/grandfather names. Ministry forms print the Core name.
+- Blood group and disability live on Core Student only.
+- A grade's subjects and weekly periods live in Core SchoolAcademicYearPlan
+  CurriculumOverrides (plus the curriculum edition). Afghan GradeSubjects keep ministry
+  metadata only (code, catalogue entry, textbooks, source); catalogue adoption writes
+  periods through SchoolAcademicYearRepository.SaveAsync.
+- Ministry student status (Afghan AfghanStudentStatus): PRESENT is derived from an active
+  Core student, SAMI from Core Student.WithoutRollNumber; only PERMANENT_ABSENT and
+  TEMPORARY are stored. The enum is Afghan-only and not in Core.
+Core DTOs carry no country name copies; SPA/mobile/desktop read firstName/lastName
+(getPersonName) and country variants from countryDetails. Afghan migrations
+202611180001–4 moved existing data into Core without dropping it.
