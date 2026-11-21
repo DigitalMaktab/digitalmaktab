@@ -263,6 +263,9 @@ const week=(prefix='Week',days=['Saturday','Sunday','Monday','Tuesday','Wednesda
  // The student's timetable is a calendar in the country's own calendar, with weekly lessons and school entries on the dates.
  {
   const folder=projects+'/digitalmaktab-mobile-student',actualRuntime=require(folder+'/src/core/api/client.ts').mobileApiRuntime;
+  // The screen falls back to the device's day until the school's day arrives. Pin the clock to the
+  // fixture's day so this test does not depend on the date it happens to run on.
+  const RealDate=Date;global.Date=class extends RealDate{constructor(...args){if(args.length)super(...args);else super('2026-11-21T08:00:00Z');}static now(){return new RealDate('2026-11-21T08:00:00Z').getTime();}};
   const Component=require(folder+'/src/presentation/screens/student/TimetableScreen.tsx').TimetableScreen;
   const calls=[];let weeklyMode='ok',entriesMode='ok';
   appTransport=async config=>{calls.push(config);
@@ -315,5 +318,6 @@ const week=(prefix='Week',days=['Saturday','Sunday','Monday','Tuesday','Wednesda
  }
  Module._load=screenLoad;
  dom.window.close();
+ if(typeof RealDate!=='undefined')global.Date=RealDate;
  console.log('PASS: shared mobile runtime pins credentials, rejects stale responses/401s, bounds work and normalization, coordinates auth/storage races, validates persisted identity pairs, replaces private query caches, drives both actual app adapters, renders bounded native attendance summaries, reads complete locale/country-scoped weekly grids with all ten periods, and lays the student week onto a Solar Hijri calendar with holidays, module entries, week mode and subject highlighting in all three locales.');
 })().catch(error=>{console.error(error);process.exitCode=1});
