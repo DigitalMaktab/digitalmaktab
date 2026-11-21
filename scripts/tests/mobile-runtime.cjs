@@ -9,6 +9,10 @@ Module._load=function(request,parent,isMain){
  if(['react','react/jsx-runtime','react-dom/client','react-dom','@tanstack/react-query','zustand','zustand/vanilla','axios'].includes(request))return original.call(this,app+'/'+request,parent,isMain);
  const repo=parent?.filename.includes('digitalmaktab-mobile-parent')?'parent':'student';
  if(request==='expo-secure-store')return storageFor(repo);
+ if(parent?.filename.endsWith('/src/core/host.ts')){
+  if(request==='react-native')return{NativeModules:{},Platform:{OS:'ios'}};
+  if(request==='./activeCountry')return{activeCountry:{code:'AF',api:{dev:{apiUrl:'https://school.invalid/api',signalRUrl:'https://school.invalid'},prod:{apiUrl:'https://school.invalid/api',signalRUrl:'https://school.invalid'}}}};
+ }
  if(request==='../constants'&&parent?.filename.includes('/core/'))return{Settings:{apiUrl:'https://school.invalid/api'},UserRoleTarget:repo==='parent'?'PARENT':'STUDENT'};
  return original.apply(this,arguments);
 };
@@ -79,6 +83,17 @@ const week=(prefix='Week',days=['Saturday','Sunday','Monday','Tuesday','Wednesda
   assert.equal(resolveMobileDevApi(cfg,'http://localhost:8081/index.bundle','ios').apiUrl,'http://localhost:5000/api');
   assert.equal(resolveMobileDevApi(cfg,'http://localhost:8081/index.bundle','android'),cfg);assert.equal(resolveMobileDevApi(cfg,'file:///x/index.bundle','android'),cfg);assert.equal(resolveMobileDevApi(cfg,undefined,'ios'),cfg);
   const bare={apiUrl:'http://h:1/api',signalRUrl:'http://h:1'};assert.equal('assetUrl' in resolveMobileDevApi(bare,'http://10.0.2.2:8081/x','android'),false);}
+ {const {readMobileLogin,readMobileUserRole,readMobileBundleUrl,createMobileHost,MobileWrongRoleError}=exportsCore;
+  assert.equal(readMobileUserRole(4),'STUDENT');assert.equal(readMobileUserRole('parent'),'PARENT');assert.equal(readMobileUserRole(1),'ADMIN');assert.equal(readMobileUserRole(9),null);
+  const signedIn=readMobileLogin({token:'t',role:4,student:{id:'s1',firstName:' احمد ',lastNameEnglish:'Ahmadi',email:'a@x'}},'STUDENT');assert.deepEqual([signedIn.user.id,signedIn.user.firstName,signedIn.user.lastName,signedIn.user.role],['s1','احمد','Ahmadi','STUDENT']);
+  assert.throws(()=>readMobileLogin({token:'t',role:6,parent:{}},'STUDENT'),MobileWrongRoleError);assert.throws(()=>readMobileLogin({role:6,parent:{}},'PARENT'),/missing token/);
+  assert.equal(readMobileBundleUrl({SourceCode:{getConstants:()=>({scriptURL:'http://10.0.2.2:8081/x'})}}),'http://10.0.2.2:8081/x');assert.equal(readMobileBundleUrl({SourceCode:{scriptURL:'file:///x'}}),'file:///x');assert.equal(readMobileBundleUrl(null),null);
+  const urls={dev:{apiUrl:'http://192.168.8.1:5000/api',signalRUrl:'http://192.168.8.1:5000'},prod:{apiUrl:'https://api.invalid/api',signalRUrl:'https://api.invalid',assetUrl:'https://files.invalid/'}},store={getItemAsync:async()=>null,setItemAsync:async()=>{},deleteItemAsync:async()=>{}};
+  const devHost=createMobileHost({country:{code:'AF',api:urls},role:'PARENT',secureStore:store,development:true,nativeModules:{SourceCode:{scriptURL:'http://10.0.2.2:8081/x'}},platform:'android'});
+  assert.equal(devHost.settings.apiUrl,'http://10.0.2.2:5000/api');assert.equal(devHost.settings.url,'http://10.0.2.2:5000');assert.equal(devHost.passwordPath,'/Parent/updatePassword');
+  assert.equal(createMobileHost({country:{code:'AF',api:urls},role:'STUDENT',secureStore:store,nativeModules:{SourceCode:{scriptURL:'http://10.0.2.2:8081/x'}}}).settings.apiUrl,'http://192.168.8.1:5000/api');
+  const prodHost=createMobileHost({country:{code:'AF',api:urls},role:'STUDENT',environment:'prod',secureStore:store,development:true});assert.equal(prodHost.settings.url,'https://files.invalid/');assert.equal(prodHost.passwordPath,'/Student/updatePassword');
+  assert.throws(()=>createMobileHost({country:{code:'XX'},role:'STUDENT',secureStore:store}),/missing API defaults/);}
  const book=createMobileIntentBook(),firstIntent=book.idFor('rsvp');assert.match(firstIntent,/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/);assert.equal(book.idFor('rsvp'),firstIntent);assert.notEqual(book.idFor('other'),firstIntent);book.settle('rsvp');assert.notEqual(book.idFor('rsvp'),firstIntent);assert.notEqual(createMobileIntentId(),createMobileIntentId());
  const eventCalls=[],eventApi={apiClient:{get:async(url,config)=>{eventCalls.push([url,config]);return{data:[{id:'e'}]}},post:async(url,data,config)=>{eventCalls.push([url,data,config]);return{data:{}}}}};
  assert.deepEqual(await readMobileUpcomingEvents(eventApi,500),[{id:'e'}]);assert.equal(eventCalls[0][0],'/event/upcoming');assert.equal(eventCalls[0][1].params.take,100);
