@@ -2802,3 +2802,13 @@ data hooks, and one-line re-export barrels.
 Changing Core package metadata (peers) needs one `npm install` of the Core tarball in each
 consumer before `sync-mobile.sh` accepts it. Development builds reach the API on the
 machine that served their bundle (`resolveMobileDevApi`), not a fixed LAN address.
+
+
+## Student app: quizzes and live rooms (2026-11-21)
+
+The student app sits quizzes itself (`/Quiz/{id}/take`, `submit`, `my-attempt`; a new submission
+replaces the old one) and joins a course's live room over `/classhub` without video: people,
+chat, the current poll and a raised hand (`useClassroom`). The room ID is the course ID, read
+from `/Student/schedules`. Hub methods bind by argument count: `SendChatMessage` needs all five
+arguments (text-only sends the last three as null). Video and sound need a native WebRTC
+module and a new app build; until then the screen says they are in the web app.
