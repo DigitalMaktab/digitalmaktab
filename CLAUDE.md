@@ -2749,3 +2749,28 @@ Core owns these; country modules never keep a parallel copy:
 Core DTOs carry no country name copies; SPA/mobile/desktop read firstName/lastName
 (getPersonName) and country variants from countryDetails. Afghan migrations
 202611180001–4 moved existing data into Core without dropping it.
+
+
+## Student timetable calendar (2026-11-21)
+
+The student app's Timetable screen is a calendar in the country's own calendar. Mobile
+Core owns the logic: `buildMobileTimetableWeek` (the `/Schedule/mine` grid as weekdays,
+slots, free periods and subjects), `buildMobileCalendarMonth` (a month grid for any
+calendar that can read a day's parts; Gregorian without one), `readMobileSchoolToday`
+(`/Main/activeCalendarYear`: the school-local today and year bounds),
+`readMobileSchoolCalendar` (`/school-calendar` holidays, exams, events and module kinds)
+and `planMobileCalendarDay` (what one date holds). Reuse these; do not add a second
+month builder, a client copy of Solar Hijri month lengths or another timetable reader.
+
+All dates are civil days at UTC midnight. Call `CalendarAdapter.toCalendarParts(date, "UTC")`;
+never let the device timezone move a day. "Today" is the school's day from the server; the
+device's day is only a stand-in when that read fails. Server grid rows follow Core's
+DayOfWeek enum (Saturday first); the first weekday shown and the weekly day off come from the
+country's `CalendarAdapter.firstDayOfWeek` / `weekendDays` (mobile SDK). A holiday or a day
+outside the school year shows no lessons. Subject colours come from the country's
+`BrandingConfig.categorical`, falling back to Core's `mobileCategoricalTones`.
+
+Bell times are not shown: no student-readable endpoint returns them. Showing clock times or
+"current lesson" needs a backend read first; do not invent times from period numbers. The
+parent app still uses the day-card list. Strings live under `mobileTimetable` in the three
+mobile bundles. `scripts/tests/mobile-runtime.cjs` covers the models and the mounted screen.
