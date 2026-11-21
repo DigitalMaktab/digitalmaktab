@@ -2790,8 +2790,13 @@ stays free of React Native so the Node test can load it.
 Before adding a component, hook or screen to an app, check `mobile-core/src/native` and
 extend it there. App folders such as `src/core/theme` or `src/presentation/components`
 only re-export from Core or bind the baked-in country; do not put implementations back.
-Still duplicated and to be moved next: the shared screens (sign-in, change password,
-settings, events, inbox, library, messages), auth/notification services and stores.
+The main entry also owns `createMobileHost` (API address, sign-in for the app's one role,
+stored session, inbox/events/password hooks) and `MobileHostProvider`; the native entry owns
+the screens every role shares (sign-in, change password, settings, events, inbox, library,
+messages), which read the host from context. An app's `src/core/host.ts` is the one place
+that binds country + role. Still duplicated and to be moved next: the notification stream
+and local notifications, the dark-mode store, the app shell (`App.tsx`, `AppNavigator`),
+`activeCountry.ts`, and the remaining shared DTOs.
 Changing Core package metadata (peers) needs one `npm install` of the Core tarball in each
 consumer before `sync-mobile.sh` accepts it. Development builds reach the API on the
 machine that served their bundle (`resolveMobileDevApi`), not a fixed LAN address.
