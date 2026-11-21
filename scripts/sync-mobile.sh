@@ -40,7 +40,7 @@ NODE
     node "$ROOT/scripts/update-local-tarball-lock.cjs" "$consumer" "$name" "$archive"
   done
 }
-pack_and_swap "$PROJECTS/digitalmaktab-mobile-sdk" "${MODULES[@]}" "${CONSUMERS[@]}"
+pack_and_swap "$PROJECTS/digitalmaktab-mobile-sdk" "$PROJECTS/digitalmaktab-mobile-core" "${MODULES[@]}" "${CONSUMERS[@]}"
 pack_and_swap "$PROJECTS/digitalmaktab-mobile-core" "${MODULES[@]}" "${CONSUMERS[@]}"
 for dir in "${MODULES[@]}"; do pack_and_swap "$dir" "${CONSUMERS[@]}"; done
 echo "==> Mobile packages installed. Restart Metro to load the new artifacts."

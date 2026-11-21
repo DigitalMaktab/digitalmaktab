@@ -2774,3 +2774,24 @@ Bell times are not shown: no student-readable endpoint returns them. Showing clo
 "current lesson" needs a backend read first; do not invent times from period numbers. The
 parent app still uses the day-card list. Strings live under `mobileTimetable` in the three
 mobile bundles. `scripts/tests/mobile-runtime.cjs` covers the models and the mounted screen.
+
+
+## Shared mobile code lives in Core (2026-11-21)
+
+The human requires that no code is duplicated between the mobile apps. Anything two apps
+need belongs in `digitalmaktab-mobile-core`; anything only one country needs belongs in
+that country module (for example the Solar Hijri adapter); an app keeps only its own
+screens, navigation and build identity. This supersedes the earlier "no native code in
+mobile Core" wording: React Native code lives in the separate entry
+`@digitalmaktab/mobile-core/native` (country/theme providers, colours, paper theme,
+language start-up, RTL provider, `useFormat`, the `App*` components), while the main entry
+stays free of React Native so the Node test can load it.
+
+Before adding a component, hook or screen to an app, check `mobile-core/src/native` and
+extend it there. App folders such as `src/core/theme` or `src/presentation/components`
+only re-export from Core or bind the baked-in country; do not put implementations back.
+Still duplicated and to be moved next: the shared screens (sign-in, change password,
+settings, events, inbox, library, messages), auth/notification services and stores.
+Changing Core package metadata (peers) needs one `npm install` of the Core tarball in each
+consumer before `sync-mobile.sh` accepts it. Development builds reach the API on the
+machine that served their bundle (`resolveMobileDevApi`), not a fixed LAN address.

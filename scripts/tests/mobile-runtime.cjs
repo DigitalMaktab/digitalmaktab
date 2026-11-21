@@ -188,14 +188,14 @@ const week=(prefix='Week',days=['Saturday','Sunday','Monday','Tuesday','Wednesda
  const NativeText=({children,style,...props})=>{const merged=Object.assign({},...[style].flat(Infinity).filter(Boolean));const direction=merged.writingDirection;delete merged.writingDirection;return React.createElement('span',{style:{...merged,direction},'data-native-text':true},children);};
  const screenLoad=Module._load;
  Module._load=function(request,parent,isMain){
-  const primitive=parent?.filename.includes('/presentation/components/common/')&&(parent.filename.endsWith('/AppText.tsx')||parent.filename.endsWith('/AppCard.tsx'));
+  const primitive=parent?.filename.includes('/digitalmaktab-mobile-core/src/native/components/')&&(parent.filename.endsWith('/AppText.tsx')||parent.filename.endsWith('/AppCard.tsx'));
   if(primitive){
    if(request==='react-native')return{View:Box,Text:NativeText,StyleSheet:{create:x=>x},Pressable:Box};
-   if(request==='../../../core/theme')return{useColors:()=>palette};
-   if(request==='../../../core/rtl')return{useRTL:()=>({textAlign:language==='en-US'?'left':'right',writingDirection:language==='en-US'?'ltr':'rtl',fontStyle:()=>({})})};
+   if(request==='../theme')return{useColors:()=>palette};
+   if(request==='../rtl')return{useRTL:()=>({textAlign:language==='en-US'?'left':'right',writingDirection:language==='en-US'?'ltr':'rtl',fontStyle:()=>({})})};
   }
   const screen=parent?.filename.endsWith('/AttendanceScreen.tsx')||parent?.filename.endsWith('/ChildrenAttendanceScreen.tsx')||parent?.filename.endsWith('/TimetableScreen.tsx')||parent?.filename.endsWith('/ChildrenTimetableScreen.tsx')||parent?.filename.includes('/presentation/components/timetable/');
-  if(parent?.filename.includes('/presentation/components/timetable/')&&request==='../common/AppButton')return{AppButton:({label,onPress})=>React.createElement('button',{onClick:onPress},label)};
+  if(parent?.filename.includes('/presentation/components/timetable/')&&request==='@digitalmaktab/mobile-core/native')return{AppText:require(core+'/src/native/components/AppText.tsx').AppText,AppButton:({label,onPress})=>React.createElement('button',{onClick:onPress},label)};
   if(screen){
    if(request==='react-native')return{View:Box,StyleSheet:{create:x=>x},ActivityIndicator:()=>React.createElement('i',null,'loading'),FlatList:Flat,SectionList:Sections,ScrollView:Box,RefreshControl:()=>null,Pressable:Press};
    if(request==='react-i18next')return{useTranslation:()=>({t,i18n:{language,exists:key=>t(key)!==key}})};
@@ -204,7 +204,7 @@ const week=(prefix='Week',days=['Saturday','Sunday','Monday','Tuesday','Wednesda
    if(request==='../../../core/country')return{useCountry:()=>({code:'AF',calendar:afghanistanCalendar,branding:{categorical:['#101010','#202020']}})};
    if(request==='../../../core/rtl')return{useRTL:()=>({rowDirection:language==='en-US'?'row':'row-reverse',isRTL:language!=='en-US'})};
    if(request==='../../hooks'){const repo=parent.filename.includes('mobile-parent')?'parent':'student';return require(projects+'/digitalmaktab-mobile-'+repo+'/src/presentation/hooks/'+(repo==='parent'?'useParentData.ts':'useStudentData.ts'));}
-   if(request==='../../components'){const native=projects+'/digitalmaktab-mobile-'+(parent.filename.includes('mobile-parent')?'parent':'student')+'/src/presentation/components/common/';return{AppScreen:Box,AppCard:require(native+'AppCard.tsx').AppCard,AppText:require(native+'AppText.tsx').AppText,AppEmptyView:({message})=>React.createElement('span',null,message),AppErrorView:()=>React.createElement('span',null,'test-read-error'),AppStat:({value,label})=>React.createElement('span',null,value,' ',label),AppProgress:()=>null,AppButton:({label,onPress,disabled})=>React.createElement('button',{onClick:onPress,disabled},label)};}
+   if(request==='../../components'){const native=core+'/src/native/components/';return{AppScreen:Box,AppCard:require(native+'AppCard.tsx').AppCard,AppText:require(native+'AppText.tsx').AppText,AppEmptyView:({message})=>React.createElement('span',null,message),AppErrorView:()=>React.createElement('span',null,'test-read-error'),AppStat:({value,label})=>React.createElement('span',null,value,' ',label),AppProgress:()=>null,AppButton:({label,onPress,disabled})=>React.createElement('button',{onClick:onPress,disabled},label)};}
   }
   return screenLoad.apply(this,arguments);
  };
