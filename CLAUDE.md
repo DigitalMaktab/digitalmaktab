@@ -2810,5 +2810,14 @@ The student app sits quizzes itself (`/Quiz/{id}/take`, `submit`, `my-attempt`; 
 replaces the old one) and joins a course's live room over `/classhub` without video: people,
 chat, the current poll and a raised hand (`useClassroom`). The room ID is the course ID, read
 from `/Student/schedules`. Hub methods bind by argument count: `SendChatMessage` needs all five
-arguments (text-only sends the last three as null). Video and sound need a native WebRTC
-module and a new app build; until then the screen says they are in the web app.
+arguments (text-only sends the last three as null).
+
+Video and sound use `react-native-webrtc` (`src/core/services/classroomMedia.ts`), speaking
+the web classroom's protocol: whoever joins later offers to everyone present, and one complete
+offer and one complete answer (no trickled candidates) travel through `SendOffer`/`SendAnswer`
+as JSON. The web side only shows a person whose lines name a stream, so the phone tags its
+own lines with one carrier stream and rewrites the `a=msid:-` placeholder in answers it sends;
+camera and microphone are then switched with `replaceTrack`, without renegotiating. The
+library needs a native build: the config plugin is in `app.config.ts`, and a build without it
+falls back to chat only. The generated `android/` folder is not in git; after adding a native
+module rebuild with `./gradlew :app:assembleDebug -PreactNativeArchitectures=<abi>`.
