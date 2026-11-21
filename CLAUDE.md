@@ -2794,9 +2794,11 @@ The main entry also owns `createMobileHost` (API address, sign-in for the app's 
 stored session, inbox/events/password hooks) and `MobileHostProvider`; the native entry owns
 the screens every role shares (sign-in, change password, settings, events, inbox, library,
 messages), which read the host from context. An app's `src/core/host.ts` is the one place
-that binds country + role. Still duplicated and to be moved next: the notification stream
-and local notifications, the dark-mode store, the app shell (`App.tsx`, `AppNavigator`),
-`activeCountry.ts`, and the remaining shared DTOs.
+that binds country + role. The native entry's `MobileApp` is the whole shell (fonts and
+splash, providers, live notification stream, sign-in gate); an app's `App.tsx` only passes
+its host, its own navigator and its fonts. What legitimately stays per app: `host.ts`
+(role), `activeCountry.ts` (build-time country choice), its navigator, its own screens and
+data hooks, and one-line re-export barrels.
 Changing Core package metadata (peers) needs one `npm install` of the Core tarball in each
 consumer before `sync-mobile.sh` accepts it. Development builds reach the API on the
 machine that served their bundle (`resolveMobileDevApi`), not a fixed LAN address.
