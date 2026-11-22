@@ -2770,8 +2770,12 @@ country's `CalendarAdapter.firstDayOfWeek` / `weekendDays` (mobile SDK). A holid
 outside the school year shows no lessons. Subject colours come from the country's
 `BrandingConfig.categorical`, falling back to Core's `mobileCategoricalTones`.
 
-Bell times are not shown: no student-readable endpoint returns them. Showing clock times or
-"current lesson" needs a backend read first; do not invent times from period numbers. The
+Bell times come from `GET /Schedule/mine/bells` (Core `TimetableRules.BellsFor`: the saved bell
+schedule of the student's own class, per school day) through `readMobileBellTimes`; a day
+without saved times shows period numbers only. Never invent times from period numbers. There
+is no "current lesson" marker and no parent bell read yet. The shared side menu
+(`MobileDrawer`) groups items by `groupKey`, hides `hidden` screens that another screen links
+to, puts a back arrow beside the menu button and goes back through history. The
 parent app still uses the day-card list. Strings live under `mobileTimetable` in the three
 mobile bundles. `scripts/tests/mobile-runtime.cjs` covers the models and the mounted screen.
 
