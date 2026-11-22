@@ -140,6 +140,7 @@ const week=(prefix='Week',days=['Saturday','Sunday','Monday','Tuesday','Wednesda
  // School day and calendar readers validate what the server sends.
  let schoolBody={academicSummary:{displayName:' 1405 ',fromDate:'2026-03-21',toDate:'2027-03-20',today:'2026-11-21'}},schoolPath,schoolConfig;const schoolApi={apiClient:{get:async(url,config)=>{schoolPath=url;schoolConfig=config;return{data:schoolBody}}}};
  assert.deepEqual(await readMobileSchoolToday(schoolApi),{date:'2026-11-21',weekday:6,yearName:'1405',yearFrom:'2026-03-21',yearTo:'2027-03-20'});assert.equal(schoolPath,'/Main/activeCalendarYear');
+ const {mobileCurrencySymbol}=exportsCore;assert.equal(mobileCurrencySymbol('AFN','fa-AF'),'؋');assert.equal(mobileCurrencySymbol('EUR','en-US'),'€');assert.equal(mobileCurrencySymbol('not a code'),'not a code');
  // Bell times: server periods are zero-based; malformed rows and periods are dropped, never shown.
  schoolBody=[{day:0,periods:[{period:0,startMinute:480,endMinute:520},{period:1,startMinute:520,endMinute:565},{period:2,startMinute:700,endMinute:600},{period:12,startMinute:1,endMinute:2}]},{day:9,periods:[{period:0,startMinute:1,endMinute:2}]},{day:2,periods:'x'},null];
  const bellTimes=await readMobileBellTimes(schoolApi);assert.equal(schoolPath,'/Schedule/mine/bells');assert.deepEqual(bellTimes,{0:[{period:1,startMinute:480,endMinute:520},{period:2,startMinute:520,endMinute:565}]});
