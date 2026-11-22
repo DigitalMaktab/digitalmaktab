@@ -281,7 +281,7 @@ const week=(prefix='Week',days=['Saturday','Sunday','Monday','Tuesday','Wednesda
   appTransport=async config=>{calls.push(config);
    if(config.url==='/Main/activeCalendarYear')return response(config,{academicSummary:{displayName:'Year 1405',fromDate:'2026-03-21',toDate:'2027-03-20',today:'2026-11-21'}});
    if(config.url==='/school-calendar'){if(entriesMode==='error')throw new axios.AxiosError('Busy','ERR_BAD_RESPONSE',config,{}, {...response(config),status:503});return response(config,{entries:[{kind:'HOLIDAY',id:'holiday',title:'Mawlid break',description:'School closed',fromDate:'2026-11-14',toDate:'2026-11-15'},{kind:'afghanistan.exam-period',kindLabelKey:'afghanExamPeriods.title',id:'period',title:'Mid-term window',fromDate:'2026-11-21',toDate:'2026-11-21'},{kind:'school.unknown',id:'other',title:'Science fair',fromDate:'2026-11-21',toDate:'2026-11-21'}]});}
-   if(config.url==='/Schedule/mine/bells')return response(config,[]);
+   if(config.url===kindPath+'/bells')return response(config,[{day:0,periods:Array.from({length:10},(_,period)=>({period,startMinute:480+period*45,endMinute:520+period*45}))}]);
    if(weeklyMode==='error')throw new axios.AxiosError('Busy','ERR_BAD_RESPONSE',config,{}, {...response(config),status:503});const lang=config.headers.get('Accept-Language');
    return response(config,week('Native '+lang,nativeDays[lang]).map(row=>weeklyMode==='empty'?Object.fromEntries(Object.keys(row).map(key=>[key,key==='day'?row.day:''])):row))};
   const draw=root=>act(async()=>root.render(React.createElement(MobileSessionQueryProvider,{api:actualRuntime},React.createElement(Component))));
@@ -298,7 +298,7 @@ const week=(prefix='Week',days=['Saturday','Sunday','Monday','Tuesday','Wednesda
    const short=new Intl.DateTimeFormat(locale,{weekday:'short',timeZone:'UTC'});assert(cells[0].getAttribute('aria-label').startsWith(short.format(new Date('2026-10-17T00:00:00Z'))+' '+n(25)),'grid starts on the Saturday before 1 Aqrab');
    const chosen=cells.filter(cell=>cell.getAttribute('aria-pressed')==='true');assert.equal(chosen.length,1);assert(chosen[0].getAttribute('aria-label').includes(' '+n(30)+','));assert(chosen[0].getAttribute('aria-label').endsWith(t('mobileTimetable.dayLessons',{n:n(11)})));
    assert(body.includes(afghanistanCalendar.formatDate(new Date('2026-11-21T00:00:00Z'),locale,{dateStyle:'medium',timeZone:'UTC'})));assert(body.includes(nativeDays[locale][0]));
-   assert(body.includes(t('schedule.period.label',{n:n(10)})));assert(body.includes('Concurrent class'));assert(body.includes(t('mobileTimetable.dayLessons',{n:n(11)})));assert(!body.includes(t('mobileTimetable.freePeriod')));
+   assert(body.includes(t('schedule.period.label',{n:n(10)})));assert(body.includes('Concurrent class'));await waitFor(()=>document.body.textContent.includes(n(8)+':'+n(0)+n(0)+' – '+n(8)+':'+n(40)));assert(body.includes(t('mobileTimetable.dayLessons',{n:n(11)})));assert(!body.includes(t('mobileTimetable.freePeriod')));
    // Module-owned and unknown kinds are named; the holiday belongs to another day.
    assert(body.includes(t('afghanExamPeriods.title')));assert(body.includes(t('mobileTimetable.kind.other')));assert(body.includes('Science fair'));assert(!body.includes('Mawlid break'));
    assert(body.includes(t('mobileTimetable.subjectsThisWeek')));assert(body.includes(n(77)),'70 lessons plus seven concurrent ones');assert(body.includes(t('mobileTimetable.perWeek',{n:n(7)})));
