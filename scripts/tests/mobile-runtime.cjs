@@ -141,6 +141,7 @@ const week=(prefix='Week',days=['Saturday','Sunday','Monday','Tuesday','Wednesda
  let schoolBody={academicSummary:{displayName:' 1405 ',fromDate:'2026-03-21',toDate:'2027-03-20',today:'2026-11-21'}},schoolPath,schoolConfig;const schoolApi={apiClient:{get:async(url,config)=>{schoolPath=url;schoolConfig=config;return{data:schoolBody}}}};
  assert.deepEqual(await readMobileSchoolToday(schoolApi),{date:'2026-11-21',weekday:6,yearName:'1405',yearFrom:'2026-03-21',yearTo:'2027-03-20'});assert.equal(schoolPath,'/Main/activeCalendarYear');
  const {mobileCurrencySymbol}=exportsCore;assert.equal(mobileCurrencySymbol('AFN','fa-AF'),'؋');assert.equal(mobileCurrencySymbol('EUR','en-US'),'€');assert.equal(mobileCurrencySymbol('not a code'),'not a code');
+ const {mobileSchoolYearLabel}=exportsCore;assert.equal(mobileSchoolYearLabel({yearFrom:'2026-03-21',yearTo:'2027-03-20',yearName:'1405 — demo'},()=>({year:1405,month:0,day:1}),n=>'<'+n+'>'),'<1405>');assert.equal(mobileSchoolYearLabel({yearFrom:'2026-09-07',yearTo:'2027-07-02',yearName:'x'}),'2026–2027');assert.equal(mobileSchoolYearLabel({yearFrom:null,yearTo:null,yearName:'Typed'}),'Typed');assert.equal(mobileSchoolYearLabel(null),'');
  // Bell times: server periods are zero-based; malformed rows and periods are dropped, never shown.
  schoolBody=[{day:0,periods:[{period:0,startMinute:480,endMinute:520},{period:1,startMinute:520,endMinute:565},{period:2,startMinute:700,endMinute:600},{period:12,startMinute:1,endMinute:2}]},{day:9,periods:[{period:0,startMinute:1,endMinute:2}]},{day:2,periods:'x'},null];
  const bellTimes=await readMobileBellTimes(schoolApi);assert.equal(schoolPath,'/Schedule/mine/bells');assert.deepEqual(bellTimes,{0:[{period:1,startMinute:480,endMinute:520},{period:2,startMinute:520,endMinute:565}]});
@@ -293,7 +294,7 @@ const week=(prefix='Week',days=['Saturday','Sunday','Monday','Tuesday','Wednesda
    await draw(mounted);await waitFor(()=>document.body.textContent.includes('Native '+locale+' 0/10')&&document.body.textContent.includes('Mid-term window'));
    let body=document.body.textContent;
    // Solar Hijri month title, Saturday-first grid and the school's own today (30 Aqrab 1405).
-   assert(body.includes(t('calendar.month.aqrab')+' '+n(1405)),'month title uses the country calendar');assert(body.includes('Year 1405'));
+   assert(body.includes(t('calendar.month.aqrab')+' '+n(1405)),'month title uses the country calendar');assert(body.includes(t('mobileTimetable.schoolYear',{year:n(1405)})),'the school year is written in the reader\'s language, not as the school typed it');assert(!body.includes('Year 1405'));
    const cells=[...document.querySelectorAll('button[aria-label*="'+t('mobileTimetable.dayLessons',{n:''}).trim()+'"]')];assert.equal(cells.length,42);
    const short=new Intl.DateTimeFormat(locale,{weekday:'short',timeZone:'UTC'});assert(cells[0].getAttribute('aria-label').startsWith(short.format(new Date('2026-10-17T00:00:00Z'))+' '+n(25)),'grid starts on the Saturday before 1 Aqrab');
    const chosen=cells.filter(cell=>cell.getAttribute('aria-pressed')==='true');assert.equal(chosen.length,1);assert(chosen[0].getAttribute('aria-label').includes(' '+n(30)+','));assert(chosen[0].getAttribute('aria-label').endsWith(t('mobileTimetable.dayLessons',{n:n(11)})));
