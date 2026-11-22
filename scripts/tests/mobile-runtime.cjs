@@ -209,7 +209,7 @@ const week=(prefix='Week',days=['Saturday','Sunday','Monday','Tuesday','Wednesda
  const Text=({children,color})=>React.createElement('span',{style:{color}},children);
  const Flat=props=>React.createElement('div',null,renderSlot(props.ListHeaderComponent),props.data.length?props.data.map((item,index)=>React.createElement(React.Fragment,{key:index},props.renderItem({item,index}))):renderSlot(props.ListEmptyComponent),renderSlot(props.ListFooterComponent));
  const Sections=props=>React.createElement('div',null,renderSlot(props.ListHeaderComponent),props.sections.length?props.sections.map((section,index)=>React.createElement('section',{key:index},props.renderSectionHeader({section}),section.data.map((item,index)=>React.createElement(React.Fragment,{key:index},props.renderItem({item,index,section}))))):renderSlot(props.ListEmptyComponent),renderSlot(props.ListFooterComponent));
- let language='en-US';const localeBundles=Object.fromEntries(['en-US','fa-AF','ps-AF'].map(locale=>[locale,JSON.parse(fs.readFileSync(projects+'/digitalmaktab-mobile-country-afghanistan/src/locales/'+locale+'/translation.json'))]));
+ let language='en-US',timetableHostApi=null;const localeBundles=Object.fromEntries(['en-US','fa-AF','ps-AF'].map(locale=>[locale,JSON.parse(fs.readFileSync(projects+'/digitalmaktab-mobile-country-afghanistan/src/locales/'+locale+'/translation.json'))]));
  const t=(key,values={})=>String(key.split('.').reduce((value,part)=>value?.[part],localeBundles[language])??key).replace(/\{\{(\w+)\}\}/g,(_,name)=>values[name]??'');
  const palette={background:'#121417',warning:'#ffc107',info:'#0dcaf0',secondary:'#c280d2',surface:'#1c1f24',border:'#444444',text:'#f1f3f5',textSecondary:'#dddddd',textMuted:'#adb5bd',primary:'#43b9b2',success:'#198754',danger:'#dc3545',white:'#ffffff'};
  const Press=({children,onPress,style,accessibilityLabel,accessibilityState})=>React.createElement('button',{onClick:onPress,'aria-label':accessibilityLabel,'aria-pressed':accessibilityState?.selected?'true':undefined,style:Object.assign({},...[typeof style==='function'?style({pressed:false}):style].flat(Infinity).filter(Boolean))},children);
@@ -222,8 +222,22 @@ const week=(prefix='Week',days=['Saturday','Sunday','Monday','Tuesday','Wednesda
    if(request==='../theme')return{useColors:()=>palette};
    if(request==='../rtl')return{useRTL:()=>({textAlign:language==='en-US'?'left':'right',writingDirection:language==='en-US'?'ltr':'rtl',fontStyle:()=>({})})};
   }
+  // The calendar timetable is one Core screen; each app only binds its kind.
+  if(request==='@digitalmaktab/mobile-core/native'&&(parent?.filename.endsWith('/student/TimetableScreen.tsx')||parent?.filename.endsWith('/ChildrenTimetableScreen.tsx')))return{TimetableScreen:require(core+'/src/native/screens/TimetableScreen.tsx').TimetableScreen};
+  if(parent?.filename.includes('/digitalmaktab-mobile-core/src/native/timetable/')||parent?.filename.endsWith('/digitalmaktab-mobile-core/src/native/screens/TimetableScreen.tsx')){
+   if(request==='react-native')return{View:Box,StyleSheet:{create:x=>x},ActivityIndicator:()=>React.createElement('i',null,'loading'),ScrollView:Box,RefreshControl:()=>null,Pressable:Press};
+   if(request==='react-i18next')return{useTranslation:()=>({t,i18n:{language,exists:key=>t(key)!==key}})};
+   if(request==='@expo/vector-icons/MaterialCommunityIcons')return({name})=>React.createElement('i',{'data-icon':name});
+   if(request==='../theme')return{useColors:()=>palette};
+   if(request==='../country')return{useCountry:()=>({code:'AF',calendar:afghanistanCalendar,branding:{categorical:['#101010','#202020']}})};
+   if(request==='../rtl')return{useRTL:()=>({rowDirection:language==='en-US'?'row':'row-reverse',isRTL:language!=='en-US'})};
+   if(request==='../../hostContext')return{useMobileHost:()=>({api:timetableHostApi})};
+   if(request==='../../index')return exportsCore;
+   if(request==='../components/AppScreen')return{AppScreen:Box};
+   if(request==='../components/AppErrorView')return{AppErrorView:()=>React.createElement('span',null,'test-read-error')};
+   if(request==='../components/AppButton')return{AppButton:({label,onPress})=>React.createElement('button',{onClick:onPress},label)};
+  }
   const screen=parent?.filename.endsWith('/AttendanceScreen.tsx')||parent?.filename.endsWith('/ChildrenAttendanceScreen.tsx')||parent?.filename.endsWith('/TimetableScreen.tsx')||parent?.filename.endsWith('/ChildrenTimetableScreen.tsx')||parent?.filename.includes('/presentation/components/timetable/');
-  if(parent?.filename.includes('/presentation/components/timetable/')&&request==='@digitalmaktab/mobile-core/native')return{AppText:require(core+'/src/native/components/AppText.tsx').AppText,AppButton:({label,onPress})=>React.createElement('button',{onClick:onPress},label)};
   if(screen){
    if(request==='react-native')return{View:Box,StyleSheet:{create:x=>x},ActivityIndicator:()=>React.createElement('i',null,'loading'),FlatList:Flat,SectionList:Sections,ScrollView:Box,RefreshControl:()=>null,Pressable:Press};
    if(request==='react-i18next')return{useTranslation:()=>({t,i18n:{language,exists:key=>t(key)!==key}})};
@@ -254,36 +268,20 @@ const week=(prefix='Week',days=['Saturday','Sunday','Monday','Tuesday','Wednesda
   assert(calls.every(config=>config.url.endsWith('/summary')&&config.params.recentDays===30));
   await act(async()=>mounted.unmount());
  }
- // The parent's native timetable screen renders the shared Core day fragment.
  const nativeDays={'en-US':['Saturday','Sunday','Monday','Tuesday','Wednesday','Thursday','Friday'],'fa-AF':['شنبه','یکشنبه','دوشنبه','سه‌شنبه','چهارشنبه','پنجشنبه','جمعه'],'ps-AF':['شنبه','یکشنبه','دوشنبه','سه‌شنبه','چهارشنبه','پنجشنبه','جمعه']};
- for(const repo of ['parent']){
+ // Both apps show the timetable as a calendar in the country's own calendar, with weekly lessons and school entries on the dates.
+ for(const repo of ['student','parent']){
+  const kindPath='/Schedule/'+(repo==='student'?'mine':'children');
   const folder=projects+'/digitalmaktab-mobile-'+repo,actualRuntime=require(folder+'/src/core/api/client.ts').mobileApiRuntime;
-  const Component=require(folder+'/src/presentation/screens/'+repo+'/'+(repo==='student'?'TimetableScreen.tsx':'ChildrenTimetableScreen.tsx'))[repo==='student'?'TimetableScreen':'ChildrenTimetableScreen'];
-  const calls=[];let weeklyMode='ok';appTransport=async config=>{calls.push(config);if(weeklyMode==='error')throw new axios.AxiosError('Busy','ERR_BAD_RESPONSE',config,{}, {...response(config),status:503});const lang=config.headers.get('Accept-Language');return response(config,week('Native '+lang,nativeDays[lang]).map(row=>weeklyMode==='empty'?Object.fromEntries(Object.keys(row).map(key=>[key,key==='day'?row.day:''])):row))};
-  const mounted=createRoot(document.getElementById('root'));
-  for(const locale of ['en-US','fa-AF','ps-AF']){
-   language=locale;await act(async()=>mounted.render(React.createElement(MobileSessionQueryProvider,{api:actualRuntime},React.createElement(Component))));await waitFor(()=>document.body.textContent.includes('Native '+locale+' 0/10'));
-   const body=document.body.textContent;assert(body.includes(t('schedule.period.label',{n:new Intl.NumberFormat(locale).format(10)})));assert(body.includes('Concurrent class'));assert.equal(document.querySelectorAll('span[style*="font-size: 20px"]').length,7);assert.equal(document.querySelector('span[style*="font-size: 20px"]').textContent,nativeDays[locale][0]);assert.equal(document.querySelector('span[style*="font-size: 20px"]').style.color,'rgb(241, 243, 245)');assert(document.querySelector('[data-native="view"][style*="background-color: rgb(28, 31, 36)"]'));assert(!body.includes('[object'));assert(!body.includes('Unknown'));
-   assert(document.querySelector('[style*="flex-direction: '+(locale==='en-US'?'row':'row-reverse')+'"]'));assert(document.querySelector('span[style*="color: rgb(241, 243, 245)"]'));assert.equal(calls.at(-1).url,'/Schedule/'+(repo==='student'?'mine':'children'));assert.equal(calls.at(-1).headers.get('Cache-Control'),'no-store');assert.equal(calls.at(-1).params,undefined);
-  }
-  assert.equal(calls.length,3,'locale changes perform exactly one complete read');
-  palette.text='#1c1f24';palette.surface='#ffffff';palette.border='#dddddd';await act(async()=>mounted.render(React.createElement(MobileSessionQueryProvider,{api:actualRuntime},React.createElement(Component))));assert.equal(document.querySelector('span[style*="font-size: 20px"]').style.color,'rgb(28, 31, 36)');assert(document.querySelector('[data-native="view"][style*="background-color: rgb(255, 255, 255)"]'));assert.equal(calls.length,3,'theme changes do not refetch timetable data');
-  palette.text='#f1f3f5';palette.surface='#1c1f24';palette.border='#444444';await act(async()=>mounted.unmount());
-  // A fresh private scope renders an actually empty week as the shared empty state.
-  actualRuntime.setAuthToken('empty-'+repo);weeklyMode='empty';const emptyRoot=createRoot(document.getElementById('root'));await act(async()=>emptyRoot.render(React.createElement(MobileSessionQueryProvider,{api:actualRuntime},React.createElement(Component))));await waitFor(()=>document.body.textContent.includes(t('common.empty')));assert.equal(document.querySelectorAll('span[style*="font-size: 20px"]').length,0);await act(async()=>emptyRoot.unmount());
-  actualRuntime.setAuthToken('error-'+repo);weeklyMode='error';const errorRoot=createRoot(document.getElementById('root'));await act(async()=>errorRoot.render(React.createElement(MobileSessionQueryProvider,{api:actualRuntime},React.createElement(Component))));await waitFor(()=>document.body.textContent.includes('test-read-error'));const failures=calls.length;await act(async()=>{await new Promise(resolve=>setTimeout(resolve,30));});assert.equal(calls.length,failures);await act(async()=>errorRoot.unmount());
- }
- // The student's timetable is a calendar in the country's own calendar, with weekly lessons and school entries on the dates.
- {
-  const folder=projects+'/digitalmaktab-mobile-student',actualRuntime=require(folder+'/src/core/api/client.ts').mobileApiRuntime;
   // The screen falls back to the device's day until the school's day arrives. Pin the clock to the
   // fixture's day so this test does not depend on the date it happens to run on.
   const RealDate=Date;global.Date=class extends RealDate{constructor(...args){if(args.length)super(...args);else super('2026-11-21T08:00:00Z');}static now(){return new RealDate('2026-11-21T08:00:00Z').getTime();}};
-  const Component=require(folder+'/src/presentation/screens/student/TimetableScreen.tsx').TimetableScreen;
+  const Component=repo==='student'?require(folder+'/src/presentation/screens/student/TimetableScreen.tsx').TimetableScreen:require(folder+'/src/presentation/screens/parent/ChildrenTimetableScreen.tsx').ChildrenTimetableScreen;timetableHostApi=actualRuntime;
   const calls=[];let weeklyMode='ok',entriesMode='ok';
   appTransport=async config=>{calls.push(config);
    if(config.url==='/Main/activeCalendarYear')return response(config,{academicSummary:{displayName:'Year 1405',fromDate:'2026-03-21',toDate:'2027-03-20',today:'2026-11-21'}});
    if(config.url==='/school-calendar'){if(entriesMode==='error')throw new axios.AxiosError('Busy','ERR_BAD_RESPONSE',config,{}, {...response(config),status:503});return response(config,{entries:[{kind:'HOLIDAY',id:'holiday',title:'Mawlid break',description:'School closed',fromDate:'2026-11-14',toDate:'2026-11-15'},{kind:'afghanistan.exam-period',kindLabelKey:'afghanExamPeriods.title',id:'period',title:'Mid-term window',fromDate:'2026-11-21',toDate:'2026-11-21'},{kind:'school.unknown',id:'other',title:'Science fair',fromDate:'2026-11-21',toDate:'2026-11-21'}]});}
+   if(config.url==='/Schedule/mine/bells')return response(config,[]);
    if(weeklyMode==='error')throw new axios.AxiosError('Busy','ERR_BAD_RESPONSE',config,{}, {...response(config),status:503});const lang=config.headers.get('Accept-Language');
    return response(config,week('Native '+lang,nativeDays[lang]).map(row=>weeklyMode==='empty'?Object.fromEntries(Object.keys(row).map(key=>[key,key==='day'?row.day:''])):row))};
   const draw=root=>act(async()=>root.render(React.createElement(MobileSessionQueryProvider,{api:actualRuntime},React.createElement(Component))));
@@ -321,13 +319,15 @@ const week=(prefix='Week',days=['Saturday','Sunday','Monday','Tuesday','Wednesda
    assert(document.body.textContent.includes(t('calendar.month.qaus')+' '+n(1405)));assert.deepEqual(calls.filter(config=>config.url==='/school-calendar').at(-1).params,{from:'2026-11-21',to:'2026-12-25'});
    await act(async()=>button(t('mobileTimetable.today')).click());assert(document.body.textContent.includes(t('calendar.month.aqrab')+' '+n(1405)));
   }
-  assert.equal(calls.filter(config=>config.url==='/Schedule/mine').length,3,'locale changes perform exactly one complete timetable read');assert.equal(calls.filter(config=>config.url==='/Main/activeCalendarYear').length,1);
-  assert(calls.every(config=>config.headers.get('Cache-Control')==='no-store'));assert(calls.filter(config=>config.url==='/Schedule/mine').every(config=>config.params===undefined));
+  assert.equal(calls.filter(config=>config.url===kindPath).length,3,'locale changes perform exactly one complete timetable read');assert.equal(calls.filter(config=>config.url==='/Main/activeCalendarYear').length,1);
+  assert(calls.every(config=>config.headers.get('Cache-Control')==='no-store'));assert(calls.filter(config=>config.url===kindPath).every(config=>config.params===undefined));
   await act(async()=>mounted.unmount());
   // An empty week still shows the calendar; failed entries leave the lessons in place; a failed timetable is an error.
-  actualRuntime.setAuthToken('empty-student');weeklyMode='empty';const emptyRoot=createRoot(document.getElementById('root'));await draw(emptyRoot);await waitFor(()=>document.body.textContent.includes(t('mobileTimetable.noLessons')));assert(!document.body.textContent.includes(t('mobileTimetable.subjectsThisWeek')));assert(document.body.textContent.includes('Science fair'));await act(async()=>emptyRoot.unmount());
-  actualRuntime.setAuthToken('entries-student');weeklyMode='ok';entriesMode='error';const partRoot=createRoot(document.getElementById('root'));await draw(partRoot);await waitFor(()=>document.body.textContent.includes(t('mobileTimetable.entriesFailed')));assert(document.body.textContent.includes('Native '+language+' 0/10'));await act(async()=>partRoot.unmount());
-  actualRuntime.setAuthToken('error-student');weeklyMode='error';const errorRoot=createRoot(document.getElementById('root'));await draw(errorRoot);await waitFor(()=>document.body.textContent.includes('test-read-error'));const failures=calls.filter(config=>config.url==='/Schedule/mine').length;await act(async()=>{await new Promise(resolve=>setTimeout(resolve,30));});assert.equal(calls.filter(config=>config.url==='/Schedule/mine').length,failures,'timetable failures never retry automatically');await act(async()=>errorRoot.unmount());
+  actualRuntime.setAuthToken('empty-calendar-'+repo);weeklyMode='empty';const emptyRoot=createRoot(document.getElementById('root'));await draw(emptyRoot);await waitFor(()=>document.body.textContent.includes(t('mobileTimetable.noLessons')));assert(!document.body.textContent.includes(t('mobileTimetable.subjectsThisWeek')));assert(document.body.textContent.includes('Science fair'));await act(async()=>emptyRoot.unmount());
+  actualRuntime.setAuthToken('entries-calendar-'+repo);weeklyMode='ok';entriesMode='error';const partRoot=createRoot(document.getElementById('root'));await draw(partRoot);await waitFor(()=>document.body.textContent.includes(t('mobileTimetable.entriesFailed')));assert(document.body.textContent.includes('Native '+language+' 0/10'));await act(async()=>partRoot.unmount());
+  actualRuntime.setAuthToken('error-calendar-'+repo);weeklyMode='error';const errorRoot=createRoot(document.getElementById('root'));await draw(errorRoot);await waitFor(()=>document.body.textContent.includes('test-read-error'));const failures=calls.filter(config=>config.url===kindPath).length;await act(async()=>{await new Promise(resolve=>setTimeout(resolve,30));});assert.equal(calls.filter(config=>config.url===kindPath).length,failures,'timetable failures never retry automatically');await act(async()=>errorRoot.unmount());
+ 
+  global.Date=RealDate;
  }
  Module._load=screenLoad;
  dom.window.close();
