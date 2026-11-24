@@ -2870,3 +2870,17 @@ lock and never touches the sales fields (SalesStatus, ContactPerson, Notes, Last
 edits through PUT `{id}/sales` with Revision + Idempotency-Key (MutationReceiptStore). The upload is a
 natural-key upsert, so it needs no row receipts. Third-party directory data (scraped or unlicensed) is
 never committed to any repository; it lives only in the database through uploads.
+
+Bulk email to prospective schools (2026-11-25): root composes one Dari or Pashto email
+(`AppProspectCampaignComposer`) for the schools the table's applied filters select (with an address,
+not unsubscribed); the confirmed recipient count must still match when queuing (409 otherwise). Core
+`ProspectEmailCampaigns` writes one `ProspectEmailDelivery` outbox row per school inside the receipt
+transaction; `ProspectEmailSender` claims rows with a lease (SKIP LOCKED), rechecks campaign/school/address,
+sends without an open transaction and finishes with a token fence; retries back off and fail after
+MaxAttempts. It reuses the welcome queue's pattern but not its table (that queue is welcome-specific:
+encrypted credentials and account checks). Each email carries a Data Protection unsubscribe token
+(link + List-Unsubscribe/One-Click headers) to the anonymous `ProspectUnsubscribeController` (GET asks,
+POST unsubscribes). Sending is OFF unless `ProspectEmail:SendingEnabled=true` with an https
+`ProspectEmail:PublicApiUrl`; development databases hold real school addresses, so never enable it there.
+All app mail now goes through `IMailService.Send`, which picks SendGrid or SMTP by `MailSettings:Provider`
+(`MAIL_PROVIDER`); SENDGRID_API_KEY is required only for the SendGrid provider.
