@@ -50,7 +50,7 @@ Working tree is a set of sibling directories under
   (`@digitalmaktab/spa-core`). Packed as an npm tarball.
 - `digitalmaktab-spa-country-afghanistan/` — Afghanistan country module
   (`@digitalmaktab/spa-country-afghanistan`) with the fa-AF + ps-AF
-  translation bundles and country-specific grading. Also packed as a
+  translation bundles and Afghan grade-related screens. Also packed as a
   tarball. Additional country packages
   (`digitalmaktab-spa-country-<name>/`) follow the same shape.
 - `digitalmaktab-spa-sdk/` — thin SPA SDK layer.
@@ -78,7 +78,7 @@ Working tree is a set of sibling directories under
   the spa-sdk shape but for RN.
 - `digitalmaktab-mobile-country-afghanistan/` — Afghan country
   module for the RN apps (`@digitalmaktab/mobile-country-afghanistan`):
-  Solar Hijri calendar, Afghan grading, en-US + fa-AF + ps-AF
+  Solar Hijri calendar, en-US + fa-AF + ps-AF
   translations, teal brand palette.
 - `digitalmaktab-mobile-parent/` — React Native (Expo) parent app
   consuming `-mobile-sdk` + `-mobile-country-afghanistan`.
@@ -165,7 +165,8 @@ create GitHub remotes on their own.
   `digitalmaktab-spa/src/plugins/modules.ts`.
 - Core's `ApplicationModuleProvider` activates modules by school country and
   school ID, then composes routes, sidebar items, editor tabs, person/table
-  columns, row transformations, translations, languages, calendar and grading.
+  columns, row transformations, translations, languages, calendar and module
+  grade fields (`grades.fields`). The grading scale itself comes from the server.
   School contributions take precedence over country contributions.
 - `AppTable` supports `moduleTableKey` and module-defined table behavior. Keep
   all custom UI on Core primitives; module DTOs/domains stay in their package.
@@ -2750,6 +2751,36 @@ Core DTOs carry no country name copies; SPA/mobile/desktop read firstName/lastNa
 (getPersonName) and country variants from countryDetails. Afghan migrations
 202611180001–4 moved existing data into Core without dropping it.
 
+## Country-owned grading (2026-11-20)
+
+Core owns the generic grade model; each country (or school) module owns its rule.
+- One mark row stays Core `Grade` (enrollment, course, `ExamType` slot, decimal `Score`).
+  Never add a parallel mark table or a country copy of the score.
+- Rules: a module registers `IGradingSchemeProvider` (Core `Services/Assessment/Grading.cs`):
+  components per `ExamType` slot with range/step, SUM (Afghanistan: 40 + 60, pass at half,
+  school may change the pass share) or LAST (Austria: Jahreszeugnis mark is the year result),
+  optional named marks (Austria 1–5, lower is better, fixed pass rule) and result bands.
+  School rule > country rule > Core `GradingSchemes.Default` (the historical 40/60).
+- Every writer (form, workbook import, appeal) validates through `GradeWriteService` with the
+  school's scheme; reports (class performance bands, transcript result/pass, child-vs-class
+  percentile, cross-school 0–100 average) use the same scheme. No hard-coded 40/60/100 anywhere.
+- `GET /api/grading/scheme` serves the effective scheme (with the school's own pass share where
+  allowed). SPA/mobile read it (`useGradingScheme`); SDK/country packages keep no copy.
+- Country-specific data about a grade lives in the module's own table, one row per grade
+  (unique `GradeId`, `IRevisionedExtension` → advances the Core grade's Revision), written through
+  Core `IGradeExtensionHook` inside the grade transaction and carried as
+  `GradeAddDto/GradeDto.CountryDetails` plus workbook columns. Example: Austria
+  `AustrianGradeDetails` (Mittelschule level for school years 6–8, Volksschule written assessment
+  for 1–4), created by Austria's own migration history (`__AustriaMigrationsHistory`). SPA
+  modules describe these fields in `ApplicationModule.grades.fields`.
+- A grade may have no mark (`Grade.Score` null, Core migration GradeOptionalScore) only where the
+  scheme's component sets `UnmarkedThroughSchoolYear` for the class's school year and the module
+  fields carry the assessment. Austria: written assessment instead of a mark (SchUG §18a) for the
+  Schulnachricht in school years 1–2 and the Jahreszeugnis in year 1; the Austria hook requires
+  the written text. Reports skip unmarked grades. Down refuses while unmarked grades exist.
+- Not yet: retakes (Wiederholungsprüfung / supplementary exam), behaviour mark, tests and
+  Schularbeiten during the year, Austrian Zeugnis print layouts, promotion rules from marks.
+
 
 ## Student timetable calendar (2026-11-21)
 
@@ -2825,3 +2856,17 @@ camera and microphone are then switched with `replaceTrack`, without renegotiati
 library needs a native build: the config plugin is in `app.config.ts`, and a build without it
 falls back to chat only. The generated `android/` folder is not in git; after adding a native
 module rebuild with `./gradlew :app:assembleDebug -PreactNativeArchitectures=<abi>`.
+
+
+## Root prospective-school list (2026-11-24)
+
+Core `/prospect-schools` (`ProspectSchoolController`, `api/prospect-schools`, SPA `AppProspectSchools`,
+sidebar "people" group, ROOT_USER only) is the platform team's sales list of schools that are not yet
+customers. `ProspectSchool` is platform data (no SchoolId, skipped by the audit interceptor) created by
+migration ProspectSchools. Directory fields come only from root's Excel upload
+(`ProspectSchoolImportService`, columns = the template's machine keys, ≤5,000 rows per file) and are
+identified by (Source, SourceId): re-uploading updates in place inside one transaction under an advisory
+lock and never touches the sales fields (SalesStatus, ContactPerson, Notes, LastContactedAt), which root
+edits through PUT `{id}/sales` with Revision + Idempotency-Key (MutationReceiptStore). The upload is a
+natural-key upsert, so it needs no row receipts. Third-party directory data (scraped or unlicensed) is
+never committed to any repository; it lives only in the database through uploads.

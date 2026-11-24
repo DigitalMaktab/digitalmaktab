@@ -4,7 +4,7 @@ cleanup_isolated_postgres() {
   local test_result=$?
   trap - EXIT
   case "$(basename "$database_dir")" in
-    digitalmaktab-core-support.*|digitalmaktab-af-academic.*) ;;
+    digitalmaktab-core-support.*|digitalmaktab-af-academic.*|digitalmaktab-at.*) ;;
     *) echo "Refusing cleanup outside a private test-cluster directory" >&2; exit "$test_result" ;;
   esac
   if [[ -L "$database_dir" ]]; then echo "Refusing symlinked test-cluster cleanup" >&2; exit "$test_result"; fi
