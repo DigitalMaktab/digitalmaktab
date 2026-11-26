@@ -88,6 +88,13 @@ createdb -h "$database_dir" -p 55439 -U support_test registration_tests
 export CORE_REGISTRATION_TEST_DATABASE="Host=$database_dir;Port=55439;Username=support_test;Database=registration_tests;Pooling=false"
 createdb -h "$database_dir" -p 55439 -U support_test registration_migration_tests
 export CORE_REGISTRATION_MIGRATION_TEST_DATABASE="Host=$database_dir;Port=55439;Username=support_test;Database=registration_migration_tests;Pooling=false"
+# Migration tests that were skipped because no database was provided.
+createdb -h "$database_dir" -p 55439 -U support_test qualification_tests
+export CORE_QUALIFICATION_TEST_DATABASE="Host=$database_dir;Port=55439;Username=support_test;Database=qualification_tests;Pooling=false"
+createdb -h "$database_dir" -p 55439 -U support_test curriculum_migration_tests
+export CORE_CURRICULUM_MIGRATION_TEST_DATABASE="Host=$database_dir;Port=55439;Username=support_test;Database=curriculum_migration_tests;Pooling=false"
+createdb -h "$database_dir" -p 55439 -U support_test subject_migration_tests
+export CORE_SUBJECT_MIGRATION_TEST_DATABASE="Host=$database_dir;Port=55439;Username=support_test;Database=subject_migration_tests;Pooling=false"
 createdb -h "$database_dir" -p 55439 -U support_test reporting_tests
 export CORE_REPORTING_TEST_DATABASE="Host=$database_dir;Port=55439;Username=support_test;Database=reporting_tests;Pooling=false"
 createdb -h "$database_dir" -p 55439 -U support_test payment_tests

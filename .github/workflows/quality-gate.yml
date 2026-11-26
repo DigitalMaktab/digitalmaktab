@@ -1,0 +1,59 @@
+# Runs scripts/tests/run-all.sh — the same gate used locally — on every push and pull request.
+# It checks out the sibling repositories next to this one, as on a developer machine. Repository
+# names are assumed to match the local folder names under the same GitHub owner; adjust the list
+# below if a repository is named differently. Private repositories need a token with read access
+# to all of them in the SIBLING_REPOS_TOKEN secret.
+name: quality-gate
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Check out this repository
+        uses: actions/checkout@v4
+        with:
+          path: digitalmaktab
+
+      - name: Check out sibling repositories
+        env:
+          TOKEN: ${{ secrets.SIBLING_REPOS_TOKEN || github.token }}
+          OWNER: ${{ github.repository_owner }}
+        run: |
+          for repo in digitalmaktab-core digitalmaktab-api digitalmaktab-country-afghanistan digitalmaktab-country-austria \
+                      digitalmaktab-spa-sdk digitalmaktab-spa-core digitalmaktab-spa-country-afghanistan \
+                      digitalmaktab-spa-country-austria digitalmaktab-spa; do
+            git clone --depth 1 "https://x-access-token:${TOKEN}@github.com/${OWNER}/${repo}.git" "$repo"
+          done
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install PostgreSQL and Redis (private test clusters are created by the scripts)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql postgresql-contrib redis-server
+          echo "/usr/lib/postgresql/$(ls /usr/lib/postgresql | sort -V | tail -1)/bin" >> "$GITHUB_PATH"
+          sudo systemctl stop postgresql redis-server || true
+
+      - name: Pack local packages into their consumers
+        working-directory: digitalmaktab
+        run: |
+          ./scripts/sync-dotnet.sh
+          ./scripts/sync-spa.sh
+
+      - name: Quality gate
+        working-directory: digitalmaktab
+        env:
+          SKIP_SLOW: "1"
+        run: ./scripts/tests/run-all.sh

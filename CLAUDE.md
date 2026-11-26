@@ -2884,3 +2884,39 @@ POST unsubscribes). Sending is OFF unless `ProspectEmail:SendingEnabled=true` wi
 `ProspectEmail:PublicApiUrl`; development databases hold real school addresses, so never enable it there.
 All app mail now goes through `IMailService.Send`, which picks SendGrid or SMTP by `MailSettings:Provider`
 (`MAIL_PROVIDER`); SENDGRID_API_KEY is required only for the SendGrid provider.
+
+## Code-quality baseline (2026-11-25)
+
+- Backend repos share `.editorconfig` (core, api, country-afghanistan, country-austria): one statement
+  per line, spaces around operators, multi-line blocks, 140 columns. All backend code was formatted on
+  2026-11-26 and `run-all.sh` fails on drift (`dotnet format whitespace <project> --verify-no-changes`);
+  run `dotnet format whitespace <project>` before committing. CA2016 (forward the CancellationToken) is a
+  warning and must stay at zero; CA1068 is a suggestion: 17 public APIs deliberately put callbacks or
+  optional arguments after the token, and reordering them breaks module callers.
+- School level: `CurriculumPlanning.ValidateGrade` checks a chosen level, and otherwise only the
+  country's grade range, so registration, transfer and promotion work for schools that never chose a
+  level (all schools created before 2026-11-17). Class generation, curriculum resolution and timetables
+  still require the level (`SchoolLevelRequired`). A year saved with dates only needs no level.
+- Background services implement `IHealthTrackedService` (the name they pass to `RecordRun`); root's
+  System status page (`GET api/root/system-status`) lists every registered service, its loop state and
+  run history, plus server and web-app modules. Jobs that root can start by hand implement
+  `IManualHostedJob` (one run at a time through `JobRunGate`).
+- Hand-written schema stubs in tests drift from Core (the Afghan academic-year test needed eight missing
+  columns/tables). Prefer building test schemas from real migrations; when a stub is unavoidable, add the
+  columns a new migration reads in the same change.
+- Quality gate: `./scripts/tests/run-all.sh` runs the static checks, Release build, SPA type checks and
+  every backend suite (Core 540 tests, Afghanistan, Austria) in private PostgreSQL clusters and exits
+  non-zero on any failure; `SKIP_SLOW=1` skips the actual-process load harness. The same script runs in
+  `.github/workflows/quality-gate.yml` once the repositories are on GitHub. Keep it green: a failing or
+  skipped suite is a bug, not background noise. Give a new env-gated test its database in the harness.
+- `ModelSnapshotDriftTests` fails when `DataContextModelSnapshot.cs` no longer matches the model.
+  Never hand-edit the snapshot: regenerate it with EF (`dotnet ef migrations add`, or EF's snapshot
+  generator) and list genuinely migration-owned SQL indexes in the test's allow-list.
+- Scheduled background jobs derive from Core `ScheduledBackgroundService` (one loop: delay, run, record
+  health under `HealthName`, never overlap, shutdown is not a failure, at least one second between runs).
+  Use its `DailyAt`/`WeeklyAt`; implement `IManualHostedJob` with `StartNow` for root's Run now. Do not
+  copy the old `ExecuteAsync`/`ComputeDelayToNextFire` loop into new services.
+- `ServiceLocator` is legacy (AutoMapper resolvers); a disposed provider reads as "no service". Tests
+  that set it must belong to `RegistrationHostCollection` (non-parallel) and assign it, never `??=`.
+- Test hosts must register what production registers for the controllers they call (for example
+  `MutationReceiptStore` + Data Protection in `ScopeHost`); a missing service shows up as a bare 500.

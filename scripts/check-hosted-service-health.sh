@@ -28,12 +28,12 @@ services_dir = pathlib.Path(sys.argv[1])
 if not services_dir.exists():
     print(f"ERROR: {services_dir} not found", file=sys.stderr); sys.exit(1)
 
-bg_class_pat = re.compile(r'\bclass\s+(\w+)\s*(?:\([^)]*\))?\s*(?::|,|\s)[^{]*BackgroundService\b')
+bg_class_pat = re.compile(r'\bclass\s+(\w+)\s*(?:\([^)]*\))?\s*(?::|,|\s)[^{]*(?:Scheduled)?BackgroundService\b')
 tracker_decl = re.compile(r'IHostedServiceHealthTracker\b')
 record_call = re.compile(r'\bhealth\.RecordRun\(|\bRecordRun\(')
 
 bg_files = []
-for p in sorted(services_dir.rglob("*BackgroundService.cs")):
+for p in sorted(services_dir.rglob("*.cs")):
     if "/obj/" in str(p) or "/bin/" in str(p): continue
     bg_files.append(p)
 
@@ -46,26 +46,33 @@ for p in bg_files:
         continue
     has_tracker = bool(tracker_decl.search(text))
     has_recordrun = bool(record_call.search(text))
-    if not (has_tracker and has_recordrun):
-        issues.append((p, has_tracker, has_recordrun))
+    # ScheduledBackgroundService owns the loop and records every run under HealthName.
+    if "ScheduledBackgroundService(" in text:
+        has_recordrun = True
+    # The name the service records under, so System status can tie the registered service to its runs.
+    has_name = "IHealthTrackedService" in text or "IManualHostedJob" in text or "ScheduledBackgroundService(" in text
+    if not (has_tracker and has_recordrun and has_name):
+        issues.append((p, has_tracker, has_recordrun, has_name))
 
 print("hosted-service health opt-in check")
-print(f"  BackgroundService files: {len(bg_files)}")
+print(f"  files scanned:           {len(bg_files)}")
 print(f"  not opted into tracker:  {len(issues)}")
 
 if not issues:
-    print("  ok — every BackgroundService injects IHostedServiceHealthTracker and calls RecordRun")
+    print("  ok — every BackgroundService injects the tracker, calls RecordRun and declares its HealthName")
     sys.exit(0)
 
 print()
 print("DRIFT DETECTED")
-for p, has_tracker, has_recordrun in issues:
+for p, has_tracker, has_recordrun, has_name in issues:
     rel = p.relative_to(services_dir.parent.parent.parent)
     print(f"  × {rel}")
     if not has_tracker:
         print("      - IHostedServiceHealthTracker not injected")
     if not has_recordrun:
         print("      - no RecordRun( call in the file body")
+    if not has_name:
+        print("      - does not implement IHealthTrackedService (HealthName = the RecordRun name)")
 print()
 print("Fix: inject IHostedServiceHealthTracker in the primary ctor and")
 print("bracket RunOnceAsync with health.RecordRun(name, success, err) calls")
