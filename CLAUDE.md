@@ -2935,7 +2935,7 @@ Core keeps two teacher registers; a country or school module decides which apply
   The daily register shows lessons scheduled vs recorded per teacher/day from the same source.
 A day without a row is NOT_SIGNED, never an absence; approved leave shows as ON_LEAVE (derived, not
 stored); weekends, holidays and days outside the year are NO_SCHOOL. Never infer presence or absence.
-Afghanistan: daily register with sign-in and sign-out plus taraqi talim. Austria: no daily register
+Afghanistan: one signature per teacher per school day (no sign-out) plus taraqi talim. Austria: no daily register
 (screens say so), lesson register only. Labels come from the policy's translation keys. SPA Core:
 `AppTeacherSignInCard` (teacher dashboard), `AppMyTeacherAttendance` (`/my-teacher-attendance`),
 `AppTeacherAttendanceRegister` (`/teacher-attendance-register`, capability `teacherAttendance.*`).
