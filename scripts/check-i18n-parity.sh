@@ -127,6 +127,7 @@ COUNTRY_ONLY_PREFIXES = (
     "ministry.",
     "ministryReports.",
     "sidebar.ministryReports.",
+    "teacherAttendance.af.",
 )
 
 def is_exempt(key):

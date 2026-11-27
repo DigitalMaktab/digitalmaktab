@@ -8,6 +8,8 @@ initdb -D "$database_dir/data" --auth=trust --username=support_test > "$database
 # locks for their DDL without serializing actual cross-host mutation races. This
 # setting belongs only to the disposable socket-only cluster, never the app DB.
 pg_ctl -D "$database_dir/data" -o "-h '' -k '$database_dir' -p 55439 -c max_locks_per_transaction=512" -l "$database_dir/server.log" -w start
+createdb -h "$database_dir" -p 55439 -U support_test teacher_attendance_tests
+export CORE_TEACHER_ATTENDANCE_TEST_DATABASE="Host=$database_dir;Port=55439;Username=support_test;Database=teacher_attendance_tests;Pooling=false"
 createdb -h "$database_dir" -p 55439 -U support_test person_query_tests
 export CORE_PERSON_QUERY_TEST_DATABASE="Host=$database_dir;Port=55439;Username=support_test;Database=person_query_tests;Pooling=false"
 createdb -h "$database_dir" -p 55439 -U support_test retention_query_tests

@@ -2920,3 +2920,23 @@ All app mail now goes through `IMailService.Send`, which picks SendGrid or SMTP 
   that set it must belong to `RegistrationHostCollection` (non-parallel) and assign it, never `??=`.
 - Test hosts must register what production registers for the controllers they call (for example
   `MutationReceiptStore` + Data Protection in `ScopeHost`); a missing service shows up as a bare 500.
+
+## Teacher attendance: daily register and lesson register (2026-11-27)
+
+Core keeps two teacher registers; a country or school module decides which apply through
+`ITeacherAttendancePolicyProvider` (school rule > country rule > `TeacherAttendancePolicies.Default`):
+- Daily register: Core `TeacherDailyAttendance`, one row per teacher per school-local day
+  (unique `SchoolId, TeacherId, Date` among active rows; `IRevisionedRecord`). Teachers sign in/out from
+  their own account (`api/teacher-attendance/me/sign-in|sign-out`): repeatable, first time wins, server
+  time, serialized per teacher/day by an advisory lock. The office records or corrects
+  (`PUT register/{teacherId}/{date}`) with Idempotency-Key + Revision through `MutationReceiptStore`;
+  changing a time the teacher signed needs a note, and each time keeps its source (SELF / OFFICE).
+- Lesson register: the existing `TeachingLesson` records (Afghan taraqi talim, Austrian Klassenbuch).
+  The daily register shows lessons scheduled vs recorded per teacher/day from the same source.
+A day without a row is NOT_SIGNED, never an absence; approved leave shows as ON_LEAVE (derived, not
+stored); weekends, holidays and days outside the year are NO_SCHOOL. Never infer presence or absence.
+Afghanistan: daily register with sign-in and sign-out plus taraqi talim. Austria: no daily register
+(screens say so), lesson register only. Labels come from the policy's translation keys. SPA Core:
+`AppTeacherSignInCard` (teacher dashboard), `AppMyTeacherAttendance` (`/my-teacher-attendance`),
+`AppTeacherAttendanceRegister` (`/teacher-attendance-register`, capability `teacherAttendance.*`).
+Lateness is marked by the office: no verified Afghan rule gives a grace period, so none is computed.
