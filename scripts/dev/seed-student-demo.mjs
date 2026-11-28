@@ -15,10 +15,12 @@
 // Run (Node 22+, no dependencies; the dev API must be running):
 //   node scripts/dev/seed-student-demo.mjs
 //   API_URL=http://localhost:5000/api node scripts/dev/seed-student-demo.mjs
+//   API_URL=https://<api host>/api DEMO_PASSWORD=<password> node scripts/dev/seed-student-demo.mjs
 
 const API = (process.env.API_URL ?? 'http://localhost:5000/api').replace(/\/$/, '');
 const DOMAIN = 'afghan-timetable.demo.local';
-const PASSWORD = 'Demo@1234';
+// The demo accounts' password: the development one, or DEMO_PASSWORD for a review school created elsewhere.
+const PASSWORD = process.env.DEMO_PASSWORD ?? 'Demo@1234';
 const ADMIN = `admin@${DOMAIN}`;
 const STUDENT = `student.01.01@${DOMAIN}`;
 const KABUL_OFFSET_MINUTES = 270; // Asia/Kabul is UTC+04:30 all year
